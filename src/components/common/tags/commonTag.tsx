@@ -15,21 +15,21 @@ export const CommonTag = ({
   onClick,
 }: CommonTagProps) => {
   const paddingClass = clsx(
-    "flex items-center justify-center gap-1",
     size === "default" && "px-[14px] py-[10px]",
     size === "small" && "px-[10px] py-[6px]"
   );
 
   const baseClass = clsx(
-    "rounded-tag rounded-[20px] transition-colors duration-200",
+    "flex items-center justify-center gap-1 rounded-[20px] transition-colors duration-200",
+    size === "default" && "border",
     paddingClass
   );
 
   const stateClass = clsx(
     active
-      ? "bg-main"
+      ? "bg-main border-main"
       : size === "default"
-      ? "bg-gray-white border border-gray-40"
+      ? "bg-gray-white border-gray-40"
       : "bg-gray-10"
   );
 
