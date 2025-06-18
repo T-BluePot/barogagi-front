@@ -27,6 +27,6 @@ export const Default: Story = {};
 
 export const Text: Story = {
   args: {
-    label: "지역 태그",
+    label: "뒤로 가기",
   },
 };
