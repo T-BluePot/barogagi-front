@@ -5,12 +5,14 @@ type CommonTagProps = {
   label: string;
   size?: "small" | "default";
   active: boolean;
+  onClick: () => void;
 };
 
 export const CommonTag = ({
   label,
   size = "default",
   active,
+  onClick,
 }: CommonTagProps) => {
   const paddingClass = clsx(
     "flex items-center justify-center gap-1",
@@ -39,7 +41,10 @@ export const CommonTag = ({
       : "text-gray-black text-description"
   );
   return (
-    <button className={clsx(baseClass, stateClass)}>
+    <button
+      className={clsx(baseClass, stateClass, "cursor-pointer")}
+      onClick={onClick}
+    >
       <span className={textClass}>{label}</span>
       {size === "default" && active && (
         <XMarkIcon className="h-4 w-4 text-gray-black" />
