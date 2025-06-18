@@ -47,6 +47,57 @@
   --tracking-description: -0.025em;
 }
 
+@layer utilities {
+  .typo-header {
+    font-size: var(--text-header);
+    font-weight: var(--font-weight-header);
+    line-height: var(--leading-header);
+    letter-spacing: var(--tracking-header);
+  }
+
+  .typo-title-01 {
+    font-size: var(--text-title-01);
+    font-weight: var(--font-weight-title-01);
+    line-height: var(--leading-title-01);
+    letter-spacing: var(--tracking-title-01);
+  }
+
+  .typo-title-02 {
+    font-size: var(--text-title-02);
+    font-weight: var(--font-weight-title-02);
+    line-height: var(--leading-title-02);
+    letter-spacing: var(--tracking-title-02);
+  }
+
+  .typo-subtitle {
+    font-size: var(--text-subtitle);
+    font-weight: var(--font-weight-subtitle);
+    line-height: var(--leading-subtitle);
+    letter-spacing: var(--tracking-subtitle);
+  }
+
+  .typo-body {
+    font-size: var(--text-body);
+    font-weight: var(--font-weight-body);
+    line-height: var(--leading-body);
+    letter-spacing: var(--tracking-body);
+  }
+
+  .typo-caption {
+    font-size: var(--text-caption);
+    font-weight: var(--font-weight-caption);
+    line-height: var(--leading-caption);
+    letter-spacing: var(--tracking-caption);
+  }
+
+  .typo-description {
+    font-size: var(--text-description);
+    font-weight: var(--font-weight-description);
+    line-height: var(--leading-description);
+    letter-spacing: var(--tracking-description);
+  }
+}
+
 body {
   font-family: "Pretendard Variable", sans-serif;
   font-size: 16px;
