@@ -8,7 +8,7 @@ interface TitleHeaderProps {
 export const TitleHeader = ({ isDarkBg = false, label }: TitleHeaderProps) => {
   const colorClass = clsx(isDarkBg ? "text-gray-white" : "text-gray-black");
   return (
-    <header className="flex w-screen h-header justify-center items-center px-screen gap-lg">
+    <header className="flex w-screen h-header items-center px-screen gap-lg">
       <span className={clsx("typo-title-01", colorClass)}>{label}</span>
     </header>
   );
