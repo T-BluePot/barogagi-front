@@ -5,6 +5,46 @@
   --color-main-dark: #8ed71b;
   --color-main-disable: #d6ff96;
   --color-alert-red: #ff3b38;
+
+  --color-gray-black: #1e1e1e;
+  --color-gray-90: #333333;
+  --color-gray-80: #454545;
+  --color-gray-70: #555555;
+  --color-gray-60: #676767;
+  --color-gray-50: #767676;
+  --color-gray-40: #888888;
+  --color-gray-30: #bfbfbf;
+  --color-gray-20: #d0d0d0;
+  --color-gray-10: #f1f3f5;
+  --color-gray-white: #ffffff;
+
+  --text-header: 28px;
+  --leading-header: 34px;
+  --tracking-header: -0.025em;
+
+  --text-title-01: 24px;
+  --leading-title-01: 30px;
+  --tracking-title-01: -0.025em;
+
+  --text-title-02: 20px;
+  --leading-title-02: 25px;
+  --tracking-title-02: -0.025em;
+
+  --text-subtitle: 16px;
+  --leading-subtitle: 21px;
+  --tracking-subtitle: -0.025em;
+
+  --text-body: 16px;
+  --leading-body: 21px;
+  --tracking-body: -0.025em;
+
+  --text-caption: 14px;
+  --leading-caption: 19px;
+  --tracking-caption: -0.025em;
+
+  --text-description: 12px;
+  --leading-description: 16px;
+  --tracking-description: -0.025em;
 }
 
 body {
@@ -28,5 +68,4 @@ h6 {
 
 p {
   margin: 0;
-  line-height: 1.5;
 }
