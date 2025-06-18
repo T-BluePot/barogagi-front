@@ -36,9 +36,9 @@ export const CommonTag = ({
   const textClass = clsx(
     size === "default"
       ? active
-        ? "text-gray-black text-caption"
-        : "text-gray-40 text-caption"
-      : "text-gray-black text-description"
+        ? "text-gray-black typo-caption"
+        : "text-gray-40 typo-caption"
+      : "text-gray-black typo-description"
   );
   return (
     <button
