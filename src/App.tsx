@@ -4,7 +4,8 @@ import { CommonTag } from "@/components/common/tags/commonTag";
 import { SelectTag } from "@/components/common/tags/SelectTag";
 import CommonButton from "@/components/common/buttons/CommonButton";
 import IconBox from "@/components/common/IconBox";
-import TextButton from "./components/common/buttons/TextButton";
+import TextButton from "@/components/common/buttons/TextButton";
+import SmallButton from "@/components/common/buttons/SmallButton";
 
 function App() {
   const [active, setActive] = useState<boolean>(true);
@@ -29,6 +30,7 @@ function App() {
         icon={<IconBox name="home" width={24} height={24} />}
         isDisabled={false}
       />
+      <SmallButton label="테스트버튼" />
     </div>
   );
 }
