@@ -21,7 +21,7 @@ export const Default: Story = {
   args: {
     label: "기본 태그",
     size: "default",
-    active: false,
+    isActive: false,
   },
 };
 
@@ -29,7 +29,7 @@ export const Active: Story = {
   args: {
     label: "활성화 태그",
     size: "default",
-    active: true,
+    isActive: true,
   },
 };
 
@@ -37,7 +37,7 @@ export const SmallInactive: Story = {
   args: {
     label: "작은 태그",
     size: "small",
-    active: false,
+    isActive: false,
   },
 };
 
@@ -45,6 +45,6 @@ export const SmallActive: Story = {
   args: {
     label: "작은 활성화 태그",
     size: "small",
-    active: true,
+    isActive: true,
   },
 };
