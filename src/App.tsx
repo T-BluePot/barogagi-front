@@ -13,7 +13,7 @@ function App() {
       <CommonTag
         size="small"
         label="테스트"
-        active={active}
+        isActive={active}
         onClick={() => setActive(!active)}
       />
       <SelectTag label="테스트2" onClick={() => setActive(!active)} />
