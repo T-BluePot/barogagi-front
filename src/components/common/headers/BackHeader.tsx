@@ -14,13 +14,13 @@ export const BackHeader = ({
 }: BackHeaderProps) => {
   const colorClass = clsx(isDarkBg ? "text-gray-white" : "text-gray-black");
   return (
-    <header className="flex w-screen h-header items-center px-screen gap-lg">
+    <header className="flex px-6 w-screen h-[60px] items-center px-screen gap-6 select-none">
       <ChevronLeftIcon
         className={clsx("h-6 w-6 cursor-pointer", colorClass)}
         onClick={onClick}
       />
       {label && (
-        <span className={clsx("typo-title-01", colorClass)}>{label}</span>
+        <span className={clsx("typo-title-02", colorClass)}>{label}</span>
       )}
     </header>
   );

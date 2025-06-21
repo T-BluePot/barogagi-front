@@ -14,10 +14,10 @@ export const CloseHeader = ({
 }: CloseHeaderProps) => {
   const colorClass = clsx(isDarkBg ? "text-gray-white" : "text-gray-black");
   return (
-    <header className="flex w-screen h-header justify-between items-center px-screen gap-lg">
+    <header className="flex px-6 w-screen h-[60px] justify-between items-center px-screen gap-6 select-none">
       <div>
         {label && (
-          <span className={clsx("typo-title-01", colorClass)}>{label}</span>
+          <span className={clsx("typo-title-02", colorClass)}>{label}</span>
         )}
       </div>
       <XMarkIcon
