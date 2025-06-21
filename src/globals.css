@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 @theme {
+  /* Color Scale */
   --color-main: #bafd4f;
   --color-main-dark: #8ed71b;
   --color-main-disable: #d6ff96;
   --color-alert-red: #ff3b38;
 
+  /* Gray Scale */
   --color-gray-black: #1e1e1e;
   --color-gray-90: #333333;
   --color-gray-80: #454545;
@@ -18,6 +20,7 @@
   --color-gray-10: #f1f3f5;
   --color-gray-white: #ffffff;
 
+  /* Font Settings */
   --text-header: 28px;
   --leading-header: 34px;
   --tracking-header: -0.025em;
@@ -47,6 +50,7 @@
   --tracking-description: -0.025em;
 }
 
+/* Typo Settings */
 @layer utilities {
   .typo-header {
     font-size: var(--text-header);
