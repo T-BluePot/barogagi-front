@@ -25,6 +25,7 @@ function App() {
         label="테스트 버튼"
         onClick={() => alert("버튼 클릭됨")}
         icon={<IconBox name="home" width={24} height={24} />}
+        isDisabled={false}
       />
     </div>
   );

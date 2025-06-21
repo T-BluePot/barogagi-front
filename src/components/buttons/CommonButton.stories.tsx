@@ -11,9 +11,9 @@ const meta: Meta<typeof Button> = {
 export default meta;
 type Story = StoryObj<typeof Button>;
 
-export const Primary: Story = {
+export const Default: Story = {
   args: {
-    label: "Primary Button",
+    label: "Default Button",
   },
 };
 
@@ -21,5 +21,12 @@ export const WithIcon: Story = {
   args: {
     label: "Icon 포함 버튼",
     icon: <IconBox name="home" width={24} height={24} />,
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    label: "Disabled Button",
+    isDisabled: true,
   },
 };
