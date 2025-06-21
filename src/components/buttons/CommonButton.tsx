@@ -1,18 +1,16 @@
 type ButtonProps = {
   label: string;
   onClick?: () => void;
-  variant?: "primary" | "secondary";
+  icon?: React.ReactNode; // 아이콘 slot 추가
 };
 
-const Button = ({ label, onClick, variant = "primary" }: ButtonProps) => {
-  const baseStyle = "px-4 py-2 rounded font-semibold focus:outline-none";
-  const variants = {
-    primary: "bg-main-dark text-white hover:bg-blue-700",
-    secondary: "bg-main-disable text-gray-800 hover:bg-gray-300",
-  };
+const Button = ({ label, onClick, icon }: ButtonProps) => {
+  const baseStyle =
+    "px-4 py-3 rounded-full w-full flex items-center justify-center typo-body focus:outline-none cursor-pointer transition-colors duration-200 bg-main text-black hover:bg-main-dark";
 
   return (
-    <button onClick={onClick} className={`${baseStyle} ${variants[variant]}`}>
+    <button onClick={onClick} className={baseStyle}>
+      {icon && <span className="mr-2 flex items-center">{icon}</span>}
       {label}
     </button>
   );

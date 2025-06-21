@@ -1,7 +1,9 @@
 import "./App.css";
 import { useState } from "react";
-import { CommonTag } from "./components/common/tags/commonTag";
-import { SelectTag } from "./components/common/tags/SelectTag";
+import { CommonTag } from "@/components/common/tags/commonTag";
+import { SelectTag } from "@/components/common/tags/SelectTag";
+import CommonButton from "@/components/buttons/CommonButton";
+import IconBox from "@/components/common/IconBox";
 
 function App() {
   const [active, setActive] = useState<boolean>(true);
@@ -18,6 +20,12 @@ function App() {
       />
       <SelectTag label="테스트2" onClick={() => setActive(!active)} />
       <p className="text-header leading-header tracking-header">제목</p>
+
+      <CommonButton
+        label="테스트 버튼"
+        onClick={() => alert("버튼 클릭됨")}
+        icon={<IconBox name="home" width={24} height={24} />}
+      />
     </div>
   );
 }
