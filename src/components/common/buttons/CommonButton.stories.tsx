@@ -13,7 +13,7 @@ type Story = StoryObj<typeof Button>;
 
 export const Default: Story = {
   args: {
-    label: "Default Button",
+    label: "기본 Button",
   },
 };
 
