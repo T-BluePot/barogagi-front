@@ -2,6 +2,16 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import Button from "./CommonButton";
 import IconBox from "@/components/common/IconBox";
 
+declare module "@/components/common/IconBox" {
+  interface IconBoxProps {
+    name: string;
+    width?: number;
+    height?: number;
+    className?: string;
+  }
+  const IconBox: React.FC<IconBoxProps>;
+}
+
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
