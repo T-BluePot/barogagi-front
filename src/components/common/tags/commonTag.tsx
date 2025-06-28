@@ -4,14 +4,14 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 type CommonTagProps = {
   label: string;
   size?: "small" | "default";
-  active: boolean;
+  isActive: boolean;
   onClick: () => void;
 };
 
 export const CommonTag = ({
   label,
   size = "default",
-  active,
+  isActive,
   onClick,
 }: CommonTagProps) => {
   const paddingClass = clsx(
@@ -26,7 +26,7 @@ export const CommonTag = ({
   );
 
   const stateClass = clsx(
-    active
+    isActive
       ? "bg-main border-main"
       : size === "default"
       ? "bg-gray-white border-gray-40"
@@ -35,7 +35,7 @@ export const CommonTag = ({
 
   const textClass = clsx(
     size === "default"
-      ? active
+      ? isActive
         ? "text-gray-black typo-caption"
         : "text-gray-40 typo-caption"
       : "text-gray-black typo-description"
@@ -46,7 +46,7 @@ export const CommonTag = ({
       onClick={onClick}
     >
       <span className={textClass}>{label}</span>
-      {size === "default" && active && (
+      {size === "default" && isActive && (
         <XMarkIcon className="h-4 w-4 text-gray-black" />
       )}
     </button>
