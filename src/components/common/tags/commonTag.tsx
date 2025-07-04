@@ -16,7 +16,7 @@ export const CommonTag = ({
 }: CommonTagProps) => {
   const paddingClass = clsx(
     size === "default" && "px-[14px] py-[10px]",
-    size === "small" && "px-[10px] py-[6px]"
+    size === "small" && "px-[12px] py-[6px]"
   );
 
   const baseClass = clsx(
