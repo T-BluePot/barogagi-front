@@ -14,7 +14,7 @@ export const CloseHeader = ({
 }: CloseHeaderProps) => {
   const colorClass = clsx(isDarkBg ? "text-gray-white" : "text-gray-black");
   return (
-    <header className="flex px-6 w-screen h-[60px] justify-between items-center gap-6 select-none">
+    <header className="flex px-6 w-full h-[60px] justify-between items-center gap-6 select-none">
       <div>
         {label && (
           <span className={clsx("typo-title-02", colorClass)}>{label}</span>
