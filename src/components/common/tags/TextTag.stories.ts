@@ -9,7 +9,13 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  argTypes: {},
+  argTypes: {
+    hasHash: {
+      control: "boolean",
+      description: "# 해시 존재 여부",
+      defaultValue: true,
+    },
+  },
   args: {},
 } satisfies Meta<typeof TextTag>;
 

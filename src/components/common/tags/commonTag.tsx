@@ -3,6 +3,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 type CommonTagProps = {
   label: string;
+  hasHash?: boolean;
   size?: "small" | "default";
   isActive: boolean;
   onClick: () => void;
@@ -10,6 +11,7 @@ type CommonTagProps = {
 
 export const CommonTag = ({
   label,
+  hasHash = true,
   size = "default",
   isActive,
   onClick,
@@ -45,6 +47,7 @@ export const CommonTag = ({
       className={clsx(baseClass, stateClass, "cursor-pointer")}
       onClick={onClick}
     >
+      {hasHash && <span className={textClass}>#</span>}
       <span className={textClass}>{label}</span>
       {size === "default" && isActive && (
         <XMarkIcon className="h-4 w-4 text-gray-black" />
