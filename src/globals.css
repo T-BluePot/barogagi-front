@@ -48,6 +48,20 @@
   --text-description: 12px;
   --leading-description: 16px;
   --tracking-description: -0.025em;
+
+  --text-tag: 12px;
+  --leading-tag: 16px;
+  --tracking-tag: -0.025em;
+
+  /* Font Weights */
+  --font-weight-header: 700;
+  --font-weight-title-01: 700;
+  --font-weight-title-02: 600;
+  --font-weight-subtitle: 600;
+  --font-weight-body: 500;
+  --font-weight-caption: 500;
+  --font-weight-description: 500;
+  --font-weight-tag: 400;
 }
 
 /* Typo Settings */
@@ -99,6 +113,13 @@
     font-weight: var(--font-weight-description);
     line-height: var(--leading-description);
     letter-spacing: var(--tracking-description);
+  }
+
+  .typo-tag {
+    font-size: var(--text-tag);
+    font-weight: var(--font-weight-tag);
+    line-height: var(--leading-tag);
+    letter-spacing: var(--tracking-tag);
   }
 }
 
