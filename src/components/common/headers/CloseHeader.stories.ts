@@ -7,6 +7,7 @@ import { CloseHeader } from "./CloseHeader";
 const meta = {
   title: "Components/CloseHeader",
   component: CloseHeader,
+  tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
   },

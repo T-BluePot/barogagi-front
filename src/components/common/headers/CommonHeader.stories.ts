@@ -6,6 +6,7 @@ import { CommonHeader } from "./CommonHeader";
 const meta = {
   title: "Components/CommonHeader",
   component: CommonHeader,
+  tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
   },

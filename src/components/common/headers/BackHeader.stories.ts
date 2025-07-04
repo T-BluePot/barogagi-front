@@ -7,6 +7,7 @@ import { BackHeader } from "./BackHeader";
 const meta = {
   title: "Components/BackHeader",
   component: BackHeader,
+  tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
   },
