@@ -5,8 +5,9 @@ import { action } from "storybook/actions";
 import { SelectTag } from "./SelectTag";
 
 const meta = {
-  title: "Example/SelectTag",
+  title: "Components/SelectTag",
   component: SelectTag,
+  tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },
