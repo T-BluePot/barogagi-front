@@ -1,7 +1,9 @@
 #root {
+  /* 패딩 값은 각 스크린에서 별도로 조정
   max-width: 1280px;
-  margin: 0 auto;
   padding: 2rem;
+  */
+  margin: 0 auto;
   text-align: center;
 }
 
