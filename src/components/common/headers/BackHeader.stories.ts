@@ -5,7 +5,7 @@ import { action } from "storybook/actions";
 import { BackHeader } from "./BackHeader";
 
 const meta = {
-  title: "Example/BackHeader",
+  title: "Components/BackHeader",
   component: BackHeader,
   parameters: {
     layout: "fullscreen",

@@ -4,7 +4,7 @@ import { action } from "storybook/actions";
 import { CommonHeader } from "./CommonHeader";
 
 const meta = {
-  title: "Example/CommonHeader",
+  title: "Components/CommonHeader",
   component: CommonHeader,
   parameters: {
     layout: "fullscreen",

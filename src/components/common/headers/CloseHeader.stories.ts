@@ -5,7 +5,7 @@ import { action } from "storybook/actions";
 import { CloseHeader } from "./CloseHeader";
 
 const meta = {
-  title: "Example/CloseHeader",
+  title: "Components/CloseHeader",
   component: CloseHeader,
   parameters: {
     layout: "fullscreen",

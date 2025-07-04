@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { TitleHeader } from "./TitleHeader";
 
 const meta = {
-  title: "Example/TitleHeader",
+  title: "Components/TitleHeader",
   component: TitleHeader,
   parameters: {
     layout: "fullscreen",
