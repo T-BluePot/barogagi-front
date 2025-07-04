@@ -13,7 +13,7 @@ export const TitleHeader = ({
   children,
 }: TitleHeaderProps) => {
   return (
-    <header className="flex px-6 w-full h-[60px] justify-between items-center gap-6 select-none bg-alert-red">
+    <header className="flex px-6 w-full h-[60px] justify-between items-center gap-6 select-none">
       <span
         className={clsx(
           "typo-title-02",
