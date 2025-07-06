@@ -4,8 +4,8 @@ import SmallButton from "@/components/common/buttons/SmallButton";
 interface CommonInputProps {
   label: string;
   placeholder: string;
-  error?: boolean;
   helperText?: string;
+  error?: boolean;
   value: string; // 현재 값
   setValue: (next: string) => void; // 값 변경 함수
   withButton?: boolean;
@@ -15,8 +15,8 @@ interface CommonInputProps {
 export const CommonInput = ({
   label,
   placeholder,
-  error = false,
   helperText,
+  error = false,
   value,
   setValue,
   withButton = false,
