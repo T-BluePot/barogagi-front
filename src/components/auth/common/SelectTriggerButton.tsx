@@ -50,11 +50,14 @@ export const SelectTriggerButton = ({
           {label}
         </span>
       )}
-      {value ? (
+
+      <div
+        className={`transition-transform duration-360 ${
+          isFocused ? "rotate-180" : "rotate-0"
+        }`}
+      >
         <KeyboardArrowUpIcon className="text-gray-60" />
-      ) : (
-        <KeyboardArrowDownIcon className="text-gray-60" />
-      )}
+      </div>
     </button>
   );
 };
