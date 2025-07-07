@@ -1,11 +1,5 @@
-import type { ReactNode } from "react";
 import { Sheet } from "react-modal-sheet";
-
-interface BottomModalLayoutProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-}
+import type { BottomModalLayoutProps } from "@/types/BottomModalTypes";
 
 export const BottomModalLayout = ({
   isOpen,

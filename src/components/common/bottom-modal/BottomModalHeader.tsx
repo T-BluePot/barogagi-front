@@ -1,11 +1,4 @@
-type BottomModalHeaderVariant = "title" | "actions" | "detail";
-
-interface BottomModalHeaderProps {
-  variant: BottomModalHeaderVariant;
-  title: string;
-  onCancel?: () => void;
-  onConfirm?: () => void;
-}
+import type { BottomModalHeaderProps } from "@/types/BottomModalTypes";
 
 export const BottomModalHeader = ({
   variant,
@@ -14,7 +7,7 @@ export const BottomModalHeader = ({
   onConfirm,
 }: BottomModalHeaderProps) => {
   return (
-    <div className="flex h-16 items-center justify-between px-6 border-b border-gray-100">
+    <div className="flex h-16 items-center justify-between px-6">
       {variant !== "title" && (
         <button onClick={onCancel} className="typo-subtitle text-gray-60">
           취소
