@@ -51,7 +51,7 @@ export const CommonInput = ({
             <InputAdornment position="end">
               <SmallButton
                 label="중복 확인"
-                isDisabled={value ? false : true}
+                isDisabled={!value}
                 onClick={onClickButton}
               />
             </InputAdornment>
