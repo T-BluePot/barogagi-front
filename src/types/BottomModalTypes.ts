@@ -8,29 +8,36 @@ export interface BottomModalLayoutProps {
 }
 
 /* 바텀 시트 헤더 **/
-type BottomModalHeaderVariant = "title" | "actions" | "detail";
-
-export interface BottomModalHeaderProps {
-  variant: BottomModalHeaderVariant;
+interface TitleHeaderProps {
+  variant: "title";
   title: string;
-  onCancel?: () => void;
-  onConfirm?: () => void;
+  onCancel?: never; // "title"일 때는 받지 않음
+  onConfirm?: never; // → 넘기면 타입 에러
 }
+
+interface ActionOrDetailHeaderProps {
+  variant: "actions" | "detail";
+  title: string;
+  onCancel: () => void; // 필수
+  onConfirm: () => void; // 필수
+}
+
+// 두 인터페이스를 유니언으로 합쳐 최종 Props 완성
+export type BottomModalHeaderProps =
+  | TitleHeaderProps
+  | ActionOrDetailHeaderProps;
 
 /* 기본 바텀 시트 **/
 export type CommonBottomModalProps = BottomModalLayoutProps &
-  Pick<BottomModalHeaderProps, "title">;
+  Omit<TitleHeaderProps, "variant">;
+
+type ActionOrDetailHeaderCore = Omit<ActionOrDetailHeaderProps, "variant">;
+
+/* ConfirmBottomModal 전용 props */
+type ConfirmBaseProps = BottomModalLayoutProps & ActionOrDetailHeaderCore;
 
 export type ConfirmBottomModalProps =
-  // ① 삭제 기능이 있는 경우 → onDelete 필수
-  | (BottomModalLayoutProps &
-      Pick<BottomModalHeaderProps, "title" | "onCancel" | "onConfirm"> & {
-        withDelete: true;
-        onDelete: () => void;
-      })
-  // ② 삭제 기능이 없는 경우 → onDelete 사용 불가
-  | (BottomModalLayoutProps &
-      Pick<BottomModalHeaderProps, "title" | "onCancel" | "onConfirm"> & {
-        withDelete?: false; // false 또는 아예 전달 안 함
-        onDelete?: never;
-      });
+  /* (1) 삭제 버튼 있는 경우 */
+  | (ConfirmBaseProps & { withDelete: true; onDelete: () => void })
+  /* (2) 삭제 버튼 없는 경우 */
+  | (ConfirmBaseProps & { withDelete?: false; onDelete?: never });

@@ -12,7 +12,12 @@ export const ConfirmBottomModal = ({
 }: ConfirmBottomModalProps) => {
   return (
     <BottomModalLayout {...layoutProps}>
-      <BottomModalHeader variant="detail" title={layoutProps.title} />
+      <BottomModalHeader
+        variant="detail"
+        title={layoutProps.title}
+        onCancel={layoutProps.onCancel}
+        onConfirm={layoutProps.onConfirm}
+      />
       {children}
       {withDelete && <BottomModalDeleteButton onClick={onDelete} />}
     </BottomModalLayout>
