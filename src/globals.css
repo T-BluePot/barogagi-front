@@ -145,3 +145,7 @@ h6 {
 p {
   margin: 0;
 }
+
+.react-modal-sheet-backdrop {
+  pointer-events: auto !important;
+}
