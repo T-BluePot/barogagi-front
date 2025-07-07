@@ -6,7 +6,7 @@ export const BottomModalDeleteButton = ({
   return (
     <button
       onClick={onClick}
-      className="flex h-14 items-center justify-center border-t border-gray-5"
+      className="flex h-14 items-center justify-center border-t border-gray-5 cursor-pointer"
     >
       <span className="typo-body text-alert-red">삭제하기</span>
     </button>
