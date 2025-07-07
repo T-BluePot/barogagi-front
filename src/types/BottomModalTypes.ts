@@ -19,4 +19,18 @@ export interface BottomModalHeaderProps {
 
 /* 기본 바텀 시트 **/
 export type CommonBottomModalProps = BottomModalLayoutProps &
-  Pick<BottomModalHeaderProps, "title" | "onCancel" | "onConfirm">;
+  Pick<BottomModalHeaderProps, "title">;
+
+export type ConfirmBottomModalProps =
+  // ① 삭제 기능이 있는 경우 → onDelete 필수
+  | (BottomModalLayoutProps &
+      Pick<BottomModalHeaderProps, "title" | "onCancel" | "onConfirm"> & {
+        withDelete: true;
+        onDelete: () => void;
+      })
+  // ② 삭제 기능이 없는 경우 → onDelete 사용 불가
+  | (BottomModalLayoutProps &
+      Pick<BottomModalHeaderProps, "title" | "onCancel" | "onConfirm"> & {
+        withDelete?: false; // false 또는 아예 전달 안 함
+        onDelete?: never;
+      });
