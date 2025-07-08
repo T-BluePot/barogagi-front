@@ -25,7 +25,7 @@ export const TermsConsentItem = ({
     <div className="flex w-full h-12 items-center gap-4">
       <CheckBoxButton
         isChecked={isConsented}
-        setIsChecked={() => onToggle(id)}
+        onCheckedChange={() => onToggle(id)}
       />
       <button
         type="button"
