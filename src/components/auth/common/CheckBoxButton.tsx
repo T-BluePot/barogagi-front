@@ -4,7 +4,7 @@ import CheckIcon from "@mui/icons-material/Check";
 
 type GapSize = "default" | "tight";
 
-interface CheckBoxButtonProps {
+export interface CheckBoxButtonProps {
   size?: "default" | "large"; // 체크 아이콘 사이즈
   gap?: GapSize; // 체크 - 라벨 간 간격
   isChecked: boolean; // 체크 여부
