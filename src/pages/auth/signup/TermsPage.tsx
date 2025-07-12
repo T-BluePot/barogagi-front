@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { TERMS_TEXT } from "@/constants/texts/auth/signup/terms";
 
 import { BackHeader } from "@/components/common/headers/BackHeader";
+import { PageTitle } from "@/components/auth/common/PageTitle";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { SelectAllConsentButton } from "@/components/auth/signup/SelectAllConsentButton";
@@ -57,9 +58,7 @@ const TermsPage = () => {
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
       <BackHeader isDarkBg={true} onClick={() => console.log("뒤로 가기")} />
       <div className="flex flex-col flex-1 w-full px-6 items-baseline">
-        <span className="typo-title-01 my-[60px] text-white text-left whitespace-pre-line">
-          {TERMS_TEXT.TITLE}
-        </span>
+        <PageTitle title={TERMS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">
           <SelectAllConsentButton
             label={TERMS_TEXT.AGREE_ALL}
