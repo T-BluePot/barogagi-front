@@ -1,8 +1,9 @@
 import { TermsConsentItem } from "./TermsConsentItem";
+import type { TermId } from "@/types/termsTypes";
 
 /** 약관 메타데이터 */
 export interface Term {
-  id: "privacy" | "marketing"; // 식별자
+  id: TermId; // 식별자
   label: string; // UI에 표시될 텍스트
   required: boolean; // 필수 여부
 }

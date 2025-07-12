@@ -58,11 +58,11 @@ const TermsPage = () => {
       <BackHeader isDarkBg={true} onClick={() => console.log("뒤로 가기")} />
       <div className="flex flex-col flex-1 w-full px-6 items-baseline">
         <span className="typo-title-01 my-[60px] text-white text-left whitespace-pre-line">
-          {TERMS_TEXT.title}
+          {TERMS_TEXT.TITLE}
         </span>
         <div className="flex flex-col w-full gap-4">
           <SelectAllConsentButton
-            label={TERMS_TEXT.agreeAll}
+            label={TERMS_TEXT.AGREE_ALL}
             isChecked={isAgreeAll}
             onCheckedChange={handleToggleAll}
           />
@@ -76,7 +76,7 @@ const TermsPage = () => {
       </div>
       <div className="mt-auto w-full p-6">
         <Button
-          label={TERMS_TEXT.nextButton}
+          label={TERMS_TEXT.NEXT_BUTTON}
           onClick={() => navigate("/signup/credentials")}
         />
       </div>
