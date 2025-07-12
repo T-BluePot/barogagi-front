@@ -99,6 +99,7 @@ const CredentialsPage = () => {
             placeholder={CREDENTIALS_TEXT.PASSWORD.PLACEHOLDER}
             value={password}
             setValue={setPassword}
+            isPassword={true}
             error={password !== "" && !!errors.password}
             helperText={password !== "" ? errors.password : ""}
           />
@@ -116,7 +117,7 @@ const CredentialsPage = () => {
         <Button
           label={CREDENTIALS_TEXT.NEXT_BUTTON}
           isDisabled={handleSyncValidate()}
-          onClick={() => navigate("/signup/credentials")}
+          onClick={() => navigate("/signup/verify")}
         />
       </div>
     </div>
