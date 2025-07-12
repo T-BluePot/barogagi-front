@@ -15,27 +15,29 @@ import {
  * - 특수문자, 공백 불허
  */
 
-export const idSchema = Yup.object({
-  id: Yup.string()
-    // 1. 영문 소문자로 시작
-    .test(
-      "must-start-with-letter",
-      ID_MESSAGES.MUST_START_WITH_LETTER,
-      (v = "") => /^[a-z]/.test(v)
-    )
-    // 2. 공백 포함 불가
-    .test("no-whitespace", ID_MESSAGES.NO_WHITESPACE, (value = "") =>
-      value === "" ? true : !/\s/.test(value)
-    )
-    // 3. 특수문자 포함 불가
-    .test("no-special-char", ID_MESSAGES.NO_SPECIAL_CHAR, (value = "") =>
-      value === "" ? true : /^[a-z0-9]*$/.test(value)
-    )
-    // 4. 전체 형식 검사: 영문 소문자 시작 + 숫자 포함, 총 4~16자
-    .test("valid-format", ID_MESSAGES.INVALID_FORMAT, (v = "") =>
-      /^[a-z][a-z0-9]{3,15}$/.test(v)
-    ),
-});
+export const idSchema = Yup.string()
+  // 1. 영문 소문자로 시작
+  .test(
+    "must-start-with-letter",
+    ID_MESSAGES.MUST_START_WITH_LETTER,
+    (v = "") => /^[a-z]/.test(v)
+  )
+  // 2. 공백 포함 불가
+  .test("no-whitespace", ID_MESSAGES.NO_WHITESPACE, (value = "") =>
+    value === "" ? true : !/\s/.test(value)
+  )
+  // 3. 특수문자 포함 불가
+  .test("no-special-char", ID_MESSAGES.NO_SPECIAL_CHAR, (value = "") =>
+    value === "" ? true : /^[a-z0-9]*$/.test(value)
+  )
+  // 4. 숫자 반드시 포함
+  .test("must-include-number", ID_MESSAGES.INVALID_FORMAT, (v = "") =>
+    v === "" ? true : /[0-9]/.test(v)
+  )
+  // 5. 전체 형식 검사: 영문 소문자 시작 + 영문/숫자 조합 + 길이 4~16자
+  .test("valid-format", ID_MESSAGES.INVALID_FORMAT, (v = "") =>
+    v === "" ? true : /^[a-z0-9]{4,16}$/.test(v)
+  );
 
 /**
  * 비밀번호 유효성 검사 스키마
