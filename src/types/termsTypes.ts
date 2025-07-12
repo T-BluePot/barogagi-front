@@ -1,7 +1,19 @@
-import { TERMS_LIST } from "@/constants/texts/auth/signup/terms";
+/** 약관 항목 정의 */
+export const TERMS_LIST = [
+  {
+    id: "PRIVACY",
+    label: "개인정보 수집 및 이용 동의 (필수)",
+    required: true,
+  },
+  {
+    id: "MARKETING",
+    label: "마케팅 정보 수신 동의 (선택)",
+    required: false,
+  },
+] as const;
 
 /** 약관 식별자 타입: "PRIVACY" | "MARKETING" */
-export type TermId = (typeof TERMS_LIST)[number]["ID"];
+export type TermId = (typeof TERMS_LIST)[number]["id"];
 
 /** 약관 메타데이터 구조 정의 */
 export interface Term {
@@ -17,7 +29,7 @@ export const TERMS_REQUIRED: Record<TermId, boolean> = {
 
 /** 약관 데이터 선언 */
 export const TERMS: Term[] = TERMS_LIST.map((termData) => ({
-  id: termData.ID,
-  label: termData.LABEL,
-  required: TERMS_REQUIRED[termData.ID],
+  id: termData.id,
+  label: termData.label,
+  required: termData.required,
 }));

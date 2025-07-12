@@ -17,8 +17,8 @@ const TermsPage = () => {
 
   // 약관별 동의 상태 초기화
   const [consents, setConsents] = useState<Record<string, boolean>>({
-    privacy: false,
-    marketing: false,
+    PRIVACY: false,
+    MARKETING: false,
   });
 
   // 토글 핸들러
@@ -32,26 +32,21 @@ const TermsPage = () => {
     alert(`약관 전문 보기: ${id}`); // 데모용
   };
 
+  // 전체 동의 상태 제어
   const handleToggleAll = () => {
-    const next = !isAgreeAll; // true ↔ false 반전
-    setIsAgreeAll(next); // 전체 플래그 업데이트
-
-    // 동일 값으로 개별 항목 덮어쓰기
-    setConsents(
-      (prev) =>
-        Object.fromEntries(Object.keys(prev).map((k) => [k, next])) as Record<
-          string,
-          boolean
-        >
-    );
+    const next = !isAgreeAll;
+    setIsAgreeAll(next);
+    setConsents({
+      PRIVACY: next,
+      MARKETING: next,
+    });
   };
 
   useEffect(() => {
     const allChecked = Object.values(consents).every(Boolean);
-    if (isAgreeAll !== allChecked) {
-      setIsAgreeAll(allChecked);
-    }
-  }, [consents, isAgreeAll]);
+    console.log("전체 동의 상태:", allChecked);
+    setIsAgreeAll(allChecked);
+  }, [consents]);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
