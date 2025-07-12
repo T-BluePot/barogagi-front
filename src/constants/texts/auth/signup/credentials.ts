@@ -5,10 +5,10 @@ export const CREDENTIALS_TEXT = {
 
 export const ID_MESSAGES = {
   REQUIRED: "아이디를 입력해주세요.",
-  INVALID_FORMAT: "아이디는 영문 소문자 시작, 숫자 포함 4~16자여야 합니다.",
+  MUST_START_WITH_LETTER: "아이디는 영문 소문자로 시작해야 합니다.",
   NO_WHITESPACE: "공백은 포함할 수 없습니다.",
   NO_SPECIAL_CHAR: "특수문자는 사용할 수 없습니다. (_ - @ 등)",
-  MUST_START_WITH_LETTER: "아이디는 영문 소문자로 시작해야 합니다.",
+  INVALID_FORMAT: "아이디는 영문 소문자 시작, 숫자 포함 4~16자여야 합니다.",
 };
 
 export const PASSWORD_MESSAGES = {
