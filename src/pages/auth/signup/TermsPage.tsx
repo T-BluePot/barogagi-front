@@ -48,6 +48,11 @@ const TermsPage = () => {
     setIsAgreeAll(allChecked);
   }, [consents]);
 
+  // 필수 동의 약관 동의 여부 확인 함수
+  const isAllRequiredConsentsChecked = (): boolean => {
+    return TERMS.some((term) => term.required && !consents[term.id]);
+  };
+
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
       <BackHeader isDarkBg={true} onClick={() => console.log("뒤로 가기")} />
@@ -72,6 +77,7 @@ const TermsPage = () => {
       <div className="mt-auto w-full p-6">
         <Button
           label={TERMS_TEXT.NEXT_BUTTON}
+          isDisabled={isAllRequiredConsentsChecked()}
           onClick={() => navigate("/signup/credentials")}
         />
       </div>
