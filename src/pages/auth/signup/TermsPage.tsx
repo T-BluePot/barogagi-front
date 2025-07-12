@@ -9,6 +9,7 @@ import Button from "@/components/common/buttons/CommonButton";
 import { SelectAllConsentButton } from "@/components/auth/signup/SelectAllConsentButton";
 import { TermsListSection } from "@/components/auth/signup/TermsListSection";
 import { TERMS } from "@/types/termsTypes";
+import { safeBack } from "@/utils/safeBack";
 
 const TermsPage = () => {
   const navigate = useNavigate();
@@ -56,7 +57,10 @@ const TermsPage = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
-      <BackHeader isDarkBg={true} onClick={() => console.log("뒤로 가기")} />
+      <BackHeader
+        isDarkBg={true}
+        onClick={() => safeBack(navigate, "/login")}
+      />
       <div className="flex flex-col flex-1 w-full px-6 items-baseline">
         <PageTitle title={TERMS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">
