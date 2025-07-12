@@ -99,7 +99,7 @@ const CredentialsPage = () => {
             placeholder={CREDENTIALS_TEXT.PASSWORD.PLACEHOLDER}
             value={password}
             setValue={setPassword}
-            isPassword={true}
+            type="password"
             error={password !== "" && !!errors.password}
             helperText={password !== "" ? errors.password : ""}
           />
@@ -108,6 +108,7 @@ const CredentialsPage = () => {
             placeholder={CREDENTIALS_TEXT.CONFIRM_PASSWORD.PLACEHOLDER}
             value={passwordConfirm}
             setValue={setPasswordConfirm}
+            type="password"
             error={passwordConfirm !== "" && !!errors.passwordConfirm}
             helperText={passwordConfirm !== "" ? errors.passwordConfirm : ""}
           />
