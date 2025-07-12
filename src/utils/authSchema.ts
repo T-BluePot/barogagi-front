@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import {
   ID_MESSAGES,
   PASSWORD_MESSAGES,
+  PW_CONFIRM_MESSAGES,
 } from "@/constants/texts/auth/signup/credentials";
 
 /**
@@ -64,4 +65,17 @@ export const passwordSchema = Yup.string()
   // - 허용 문자만 포함되어야 함
   .test("valid-format", PASSWORD_MESSAGES.INVALID_FORMAT, (v = "") =>
     /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@#$%^&*()]{8,20}$/.test(v)
+  );
+
+/**
+ * 비밀번호 확인 유효성 검사 스키마
+ */
+export const passwordConfirmSchema = (passwordValue: string) =>
+  Yup.string().test(
+    "match-password",
+    PW_CONFIRM_MESSAGES.NO_MATCH,
+    (value = "") => {
+      if (value === "") return true; // 비어 있으면 검증 통과 (에러 표시 안 함)
+      return value === passwordValue;
+    }
   );
