@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { TextField, InputAdornment } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SmallButton from "@/components/common/buttons/SmallButton";
 
 interface CommonInputProps {
@@ -10,6 +13,7 @@ interface CommonInputProps {
   setValue: (next: string) => void; // 값 변경 함수
   withButton?: boolean;
   onClickButton?: () => void;
+  isPassword?: boolean;
 }
 
 export const CommonInput = ({
@@ -21,7 +25,15 @@ export const CommonInput = ({
   setValue,
   withButton = false,
   onClickButton,
+  isPassword = false,
 }: CommonInputProps) => {
+  // 비밀번호 보이기/숨기기 상태 관리
+  const [showPassword, setShowPassword] = useState(false);
+
+  // 비밀번호 가시성 토글 핸들러
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
   return (
     <TextField
       label={label}
@@ -30,6 +42,7 @@ export const CommonInput = ({
       helperText={helperText}
       value={value}
       onChange={(e) => setValue(e.target.value)}
+      type={isPassword ? (showPassword ? "text" : "password") : "text"}
       variant="filled"
       slotProps={{
         root: {
@@ -55,6 +68,18 @@ export const CommonInput = ({
                 onClick={onClickButton}
               />
             </InputAdornment>
+          ) : isPassword ? (
+            <button
+              type="button"
+              className="cursor-pointer"
+              onClick={handleTogglePassword}
+            >
+              {showPassword ? (
+                <VisibilityOffIcon className="text-gray-40" />
+              ) : (
+                <VisibilityIcon className="text-gray-40" />
+              )}
+            </button>
           ) : undefined,
         },
 
