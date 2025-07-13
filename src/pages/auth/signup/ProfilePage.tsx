@@ -127,7 +127,7 @@ const ProfilePage = () => {
           content: PROFILE_TEXT.SKIP_MODAL.SUB_TITLE,
         }}
       />
-      <BackHeader isDarkBg={true} onClick={() => navigate(-2)} />
+      <BackHeader isDarkBg={true} onClick={() => navigate("/signup/verify")} />
       <div className="flex flex-col w-full px-6">
         <PageTitleWithSub
           title={PROFILE_TEXT.TITLE}
