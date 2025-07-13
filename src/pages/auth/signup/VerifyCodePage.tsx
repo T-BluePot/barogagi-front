@@ -48,16 +48,19 @@ const VerifyCodePage = () => {
       />
       <div className="flex flex-col w-full px-6">
         <PageTitle title={VERIFY_TEXT.CODE.TITLE} />
-        <div className="flex flex-col gap-6">
-          <CommonInput
-            label={VERIFY_TEXT.CODE.LABEL}
-            placeholder={VERIFY_TEXT.CODE.PLACEHOLDER}
-            value={code}
-            setValue={setCode}
-            type="tel"
-            error={!!formattedTime}
-            helperText={formattedTime}
-          />
+        <div className="flex flex-col w-full gap-6">
+          <div className="flex flex-col w-full">
+            <CommonInput
+              label={VERIFY_TEXT.CODE.LABEL}
+              placeholder={VERIFY_TEXT.CODE.PLACEHOLDER}
+              value={code}
+              setValue={setCode}
+              type="tel"
+            />
+            <div className="flex w-full px-4 mt-2 text-center items-baseline">
+              <span className="typo-body text-alert-red">{formattedTime}</span>
+            </div>
+          </div>
           <Button
             label={VERIFY_TEXT.CODE.NEXT_BUTTON}
             isDisabled={!code}
