@@ -46,7 +46,6 @@ const TermsPage = () => {
 
   useEffect(() => {
     const allChecked = Object.values(consents).every(Boolean);
-    console.log("전체 동의 상태:", allChecked);
     setIsAgreeAll(allChecked);
   }, [consents]);
 
