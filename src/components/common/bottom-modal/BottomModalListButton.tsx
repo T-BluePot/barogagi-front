@@ -13,8 +13,8 @@ export const BottomModalListButton = ({
   onClickChecked,
 }: BottomModalLisButtontProps) => {
   const textClass = clsx(
-    "typo-title-02",
-    isChecked ? "text-gray-black" : "text-gray-60"
+    "typo-body",
+    isChecked ? "text-gray-black" : "text-gray-40"
   );
   return (
     <div
@@ -22,7 +22,7 @@ export const BottomModalListButton = ({
       onClick={onClickChecked}
     >
       <span className={textClass}>{label}</span>
-      {isChecked && <CheckIcon className="text-main" />}
+      {isChecked && <CheckIcon className="text-main-dark" />}
     </div>
   );
 };
