@@ -61,7 +61,7 @@ const VerifyCodePage = () => {
           <Button
             label={VERIFY_TEXT.CODE.NEXT_BUTTON}
             isDisabled={!code}
-            onClick={() => navigate("/signup/verify")}
+            onClick={() => navigate("/signup/profile")}
           />
         </div>
       </div>
