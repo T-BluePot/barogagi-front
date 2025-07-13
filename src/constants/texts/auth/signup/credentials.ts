@@ -33,7 +33,6 @@ export const PW_CONFIRM_MESSAGES = {
 };
 
 export const NICKNAME_MESSAGES = {
-  NO_WHITESPACE: "공백은 포함할 수 없습니다.",
   ALLOWED_CHARS: "한글, 영문, 숫자만 입력할 수 있습니다.",
   INVALID_LENGTH: "닉네임은 2자 이상 12자 이하여야 합니다.",
 };
