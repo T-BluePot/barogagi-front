@@ -92,7 +92,7 @@ export const passwordConfirmSchema = (passwordValue: string) =>
 export const nicknameSchema = Yup.string()
   // 1. 허용 문자: 한글, 영문, 숫자, 공백만 가능 (특수문자 불허)
   .test("allowed-chars", NICKNAME_MESSAGES.ALLOWED_CHARS, (v = "") =>
-    v === "" ? true : /^[가-힣a-zA-Z0-9\s]+$/.test(v)
+    v === "" ? true : /^[ㄱ-ㅎ가-힣a-zA-Z0-9\s]+$/.test(v)
   )
 
   // 2. 길이: 공백 포함 기준 2자 이상 12자 이하
