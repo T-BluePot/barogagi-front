@@ -63,8 +63,8 @@ const CredentialsPage = () => {
     handleValidate();
   }, [id, password, passwordConfirm]);
 
-  const handleSyncValidate = (): boolean => {
-    // 모든 입력값이 공백 또는 빈 문자열인 경우 → false 반환
+  const shouldDisableButton = (): boolean => {
+    // 모든 입력값이 공백 또는 빈 문자열인 경우 → true 반환
     if ([id, password, passwordConfirm].every((v) => v.trim() === ""))
       return true;
 
@@ -117,7 +117,7 @@ const CredentialsPage = () => {
       <div className="mt-auto w-full p-6">
         <Button
           label={CREDENTIALS_TEXT.NEXT_BUTTON}
-          isDisabled={handleSyncValidate()}
+          isDisabled={shouldDisableButton()}
           onClick={() => navigate("/signup/verify")}
         />
       </div>
