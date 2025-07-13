@@ -112,7 +112,7 @@ const ProfilePage = () => {
       <CommonConfirmModal
         isOpen={openSkipModal}
         cancelButtonInfo={{
-          label: PROFILE_TEXT.SKIP_MODAL.CANCLE_LABEL,
+          label: PROFILE_TEXT.SKIP_MODAL.CANCEL_LABEL,
           onClick: closeSkipModal,
         }}
         confirmButtonInfo={{
