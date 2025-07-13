@@ -88,6 +88,8 @@ export const CommonInput = ({
             <button
               type="button"
               className="cursor-pointer"
+              tabIndex={0}
+              aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
               onClick={handleTogglePassword}
             >
               {showPassword ? (
