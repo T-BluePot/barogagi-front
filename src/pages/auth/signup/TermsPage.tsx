@@ -51,7 +51,7 @@ const TermsPage = () => {
   }, [consents]);
 
   // 필수 동의 약관 동의 여부 확인 함수
-  const isAllRequiredConsentsChecked = (): boolean => {
+  const hasUncheckedRequiredTerms = (): boolean => {
     return TERMS.some((term) => term.required && !consents[term.id]);
   };
 
@@ -80,7 +80,7 @@ const TermsPage = () => {
       <div className="mt-auto w-full p-6">
         <Button
           label={TERMS_TEXT.NEXT_BUTTON}
-          isDisabled={isAllRequiredConsentsChecked()}
+          isDisabled={hasUncheckedRequiredTerms()}
           onClick={() => navigate("/signup/credentials")}
         />
       </div>
