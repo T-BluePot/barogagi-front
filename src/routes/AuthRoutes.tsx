@@ -6,6 +6,7 @@ import TermsPage from "@/pages/auth/signup/TermsPage";
 import CredentialsPage from "@/pages/auth/signup/CredentialsPage";
 import VerifyPhonePage from "@/pages/auth/signup/VerifyPhonePage";
 import VerifyCodePage from "@/pages/auth/signup/VerifyCodePage";
+import ProfilePage from "@/pages/auth/signup/ProfilePage";
 
 export const AuthRoutes = () => (
   <Routes>
@@ -14,5 +15,6 @@ export const AuthRoutes = () => (
     <Route path="/signup/credentials" element={<CredentialsPage />} />
     <Route path="/signup/verify" element={<VerifyPhonePage />} />
     <Route path="/signup/verify/code" element={<VerifyCodePage />} />
+    <Route path="/signup/profile" element={<ProfilePage />} />
   </Routes>
 );
