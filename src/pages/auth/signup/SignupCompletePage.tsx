@@ -9,12 +9,7 @@ const SignupCompletePage = () => {
   const navigate = useNavigate();
 
   useBlockBackNavigation(() => {
-    navigate("/login", { replace: true }); // 뒤로가면 로그인 페이지로 강제 이동
-
-    // 약간의 시간 뒤 현재 페이지 다시 push (앞으로가기 방지용)
-    setTimeout(() => {
-      history.pushState(null, "", window.location.href);
-    }, 100);
+    navigate("/login", { replace: true, state: { preventBack: true } });
   });
 
   return (
