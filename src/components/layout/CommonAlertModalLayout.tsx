@@ -40,7 +40,7 @@ export default function CommonAlertModalLayout({
         <div className="flex-1 overflow-y-auto p-4">{children}</div>
         <div className="flex justify-center flex-shrink-0">
           <button
-            className="px-4 py-2 typo-tag text-black flex-grow-1 rounded-b-2xl rounded-t-none hover:bg-gray-10 transition border-t border-gray-10 "
+            className="px-4 py-3 typo-tag text-black flex-grow-1 rounded-b-2xl rounded-t-none hover:bg-gray-10 transition border-t border-gray-10 "
             onClick={buttonInfo.onClick}
           >
             {buttonInfo.label}
