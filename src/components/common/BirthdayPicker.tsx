@@ -44,7 +44,7 @@ export const BirthdayPicker = ({
     setDays(dayList);
 
     // 선택된 일이 존재하지 않는 경우 마지막 날로 보정
-    if (Number(userBirthDay) > lastDay) {
+    if (userBirthDay && Number(userBirthDay) > lastDay) {
       onChange(
         {
           userBirthYear,
@@ -54,7 +54,7 @@ export const BirthdayPicker = ({
         "day"
       );
     }
-  }, [userBirthYear, userBirthMonth, userBirthDay, onChange]);
+  }, [userBirthYear, userBirthMonth]);
 
   // Picker에서 요구하는 내부 구조
   const pickerValue = {
