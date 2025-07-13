@@ -32,17 +32,17 @@ export default function CommonConfirmModalLayout({
       onClick={cancelButtonInfo.onClick} // 배경 클릭 시 취소 액션 실행
     >
       <div
-        className={`bg-white rounded-2xl shadow-lg min-w-[280px] text-center transform transition-all duration-300 ${
+        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center transform transition-all duration-300 flex flex-col ${
           // 모달 컨테이너 애니메이션
           isVisible ? "scale-100" : "scale-95" // isVisible 상태에 따른 크기 변경
         }`}
         onClick={(e) => e.stopPropagation()} // 모달 내용 클릭 시 이벤트 전파 중지
       >
         {/* 모달 내용 영역 */}
-        <div className="">{children}</div>
+        <div className="flex-1 overflow-y-auto p-4">{children}</div>
 
         {/* 버튼 영역 */}
-        <div className="flex justify-center border-t border-gray-10">
+        <div className="flex justify-center border-t border-gray-10 flex-shrink-0">
           {" "}
           {/* 버튼 상단 테두리 */}
           {/* 취소 버튼 */}

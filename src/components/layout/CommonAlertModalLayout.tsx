@@ -31,14 +31,14 @@ export default function CommonAlertModalLayout({
       onClick={buttonInfo.onClick} // 배경 클릭 시 모달 닫기 (이벤트 전파 중지 필요)
     >
       <div
-        className={`bg-white rounded-2xl shadow-lg min-w-[280px] text-center transform transition-all duration-300 ${
+        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center transform transition-all duration-300 flex flex-col ${
           // 모달 컨테이너 애니메이션
           isVisible ? "scale-100" : "scale-95" // isVisible 상태에 따른 크기 변경
         }`}
         onClick={(e) => e.stopPropagation()} // 모달 내용 클릭 시 이벤트 전파 중지
       >
-        <div className="">{children}</div>
-        <div className="flex justify-center">
+        <div className="flex-1 overflow-y-auto p-4">{children}</div>
+        <div className="flex justify-center flex-shrink-0">
           <button
             className="px-4 py-2 typo-tag text-black flex-grow-1 rounded-b-2xl rounded-t-none hover:bg-gray-10 transition border-t border-gray-10 "
             onClick={buttonInfo.onClick}
