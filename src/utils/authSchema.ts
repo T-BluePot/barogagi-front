@@ -4,6 +4,7 @@ import {
   ID_MESSAGES,
   PASSWORD_MESSAGES,
   PW_CONFIRM_MESSAGES,
+  NICKNAME_MESSAGES,
 } from "@/constants/texts/auth/signup/credentials";
 
 /**
@@ -80,4 +81,21 @@ export const passwordConfirmSchema = (passwordValue: string) =>
       if (value === "") return true; // 비어 있으면 검증 통과 (에러 표시 안 함)
       return value === passwordValue;
     }
+  );
+
+/**
+ * 닉네임 유효성 검사 스키마
+ * 조건:
+ * - 한글, 영문, 숫자만 허용
+ * - 길이: 2자 이상 12자 이하
+ */
+export const nicknameSchema = Yup.string()
+  // 1. 허용 문자: 한글, 영문, 숫자, 공백만 가능 (특수문자 불허)
+  .test("allowed-chars", NICKNAME_MESSAGES.ALLOWED_CHARS, (v = "") =>
+    v === "" ? true : /^[가-힣a-zA-Z0-9\s]+$/.test(v)
+  )
+
+  // 2. 길이: 공백 포함 기준 2자 이상 12자 이하
+  .test("valid-length", NICKNAME_MESSAGES.INVALID_LENGTH, (v = "") =>
+    v === "" ? true : v.length >= 2 && v.length <= 12
   );
