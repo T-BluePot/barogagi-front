@@ -50,15 +50,15 @@ const ProfilePage = () => {
   }, [nickname]);
 
   const [gender, setGender] = useState<GenderType | null>(null);
-  const [oepnGenderModal, setOpenGenderModal] = useState<boolean>(false);
+  const [openGenderModal, setOpenGenderModal] = useState<boolean>(false);
   const handleCloseGenderModal = () => setOpenGenderModal(false);
 
   const [userBirthYear, setUserBirthYear] = useState("");
   const [userBirthMonth, setUserBirthMonth] = useState("");
   const [userBirthDay, setUserBirthDay] = useState("");
 
-  const [oepnBirthModal, setOepnBirthModal] = useState<boolean>(false);
-  const handleCloseBirthModal = () => setOepnBirthModal(false);
+  const [openBirthModal, setOpenBirthModal] = useState<boolean>(false);
+  const handleCloseBirthModal = () => setOpenBirthModal(false);
 
   // BirthdayPicker에서 전달받은 값을 상태에 반영
   const handleChange = (value: {
@@ -96,13 +96,13 @@ const ProfilePage = () => {
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
       <SelectGenderBottomModal
-        isOpen={oepnGenderModal}
+        isOpen={openGenderModal}
         onClose={handleCloseGenderModal}
         selectedGender={gender}
         onSelectGender={setGender}
       />
       <SelectBirthBottomModal
-        isOpen={oepnBirthModal}
+        isOpen={openBirthModal}
         onClose={handleCloseBirthModal}
         userBirthYear={userBirthYear}
         userBirthMonth={userBirthMonth}
@@ -153,7 +153,7 @@ const ProfilePage = () => {
           />
           <SelectTriggerButton
             label={PROFILE_TEXT.SELECT.BIRTH_LABEL}
-            onClick={() => setOepnBirthModal(true)}
+            onClick={() => setOpenBirthModal(true)}
             value={formattedBirth}
           />
         </div>
