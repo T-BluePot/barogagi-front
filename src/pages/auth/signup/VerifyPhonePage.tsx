@@ -5,7 +5,7 @@ import { safeBack } from "@/utils/safeBack";
 import { VERIFY_TEXT } from "@/constants/texts/auth/signup/verify";
 
 import { BackHeader } from "@/components/common/headers/BackHeader";
-import { PageTitleWithSub } from "@/components/auth/common/PageTitle";
+import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 import Button from "@/components/common/buttons/CommonButton";
 
@@ -21,7 +21,7 @@ const VerifyPhonePage = () => {
         onClick={() => safeBack(navigate, "/signup/credentials")}
       />
       <div className="flex flex-col w-full px-6">
-        <PageTitleWithSub
+        <PageTitle
           title={VERIFY_TEXT.PHONE.TITLE}
           subTitle={VERIFY_TEXT.PHONE.SUB_TITLE}
         />
