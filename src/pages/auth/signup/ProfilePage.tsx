@@ -1,23 +1,15 @@
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ValidationError } from "yup";
+
+import ProfileLayout from "@/components/auth/signup/ProfileLayout";
+
+import { PROFILE_TEXT } from "@/constants/texts/auth/signup/profile";
+import type { GenderType } from "@/types/auth/gender";
 
 import { useBlockBackNavigation } from "@/utils/useBlockBackNavigation";
 import { nicknameSchema } from "@/utils/authSchema";
-import type { GenderType } from "@/types/auth/gender";
 import { getGenderLabel } from "@/types/auth/gender";
-import { PROFILE_TEXT } from "@/constants/texts/auth/signup/profile";
-
-import { SelectGenderBottomModal } from "@/components/auth/signup/SelectGenderBottomModal";
-import { SelectBirthBottomModal } from "@/components/auth/signup/SelectBirthBottomModal";
-import CommonConfirmModal from "@/components/modal/CommonConfirmModal";
-
-import { BackHeader } from "@/components/common/headers/BackHeader";
-import { PageTitleWithSub } from "@/components/auth/common/PageTitle";
-import { CommonInput } from "@/components/auth/common/CommonInput";
-import { SelectTriggerButton } from "@/components/auth/common/SelectTriggerButton";
-import { CheckBoxButton } from "@/components/auth/common/CheckBoxButton";
-import Button from "@/components/common/buttons/CommonButton";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -49,19 +41,24 @@ const ProfilePage = () => {
     handleValidate();
   }, [nickname]);
 
+  // 성별 선택 모달
   const [gender, setGender] = useState<GenderType | null>(null);
-  const [openGenderModal, setOpenGenderModal] = useState<boolean>(false);
-  const handleCloseGenderModal = () => setOpenGenderModal(false);
+  const [isGenderModalOpen, setIsGenderModalOpen] = useState<boolean>(false);
+  const handleOpenGenderModal = () => setIsGenderModalOpen(true);
+  const handleCloseGenderModal = () => setIsGenderModalOpen(false);
 
+  // 생년월일 선택 모달
   const [userBirthYear, setUserBirthYear] = useState("");
   const [userBirthMonth, setUserBirthMonth] = useState("");
   const [userBirthDay, setUserBirthDay] = useState("");
 
-  const [openBirthModal, setOpenBirthModal] = useState<boolean>(false);
-  const handleCloseBirthModal = () => setOpenBirthModal(false);
+  const [isBirthModalOpen, setIsBirthModalOpen] = useState<boolean>(false);
+
+  const handleOpenBirthModal = () => setIsBirthModalOpen(true);
+  const handleCloseBirthModal = () => setIsBirthModalOpen(false);
 
   // BirthdayPicker에서 전달받은 값을 상태에 반영
-  const handleChange = (value: {
+  const handleChangeBirth = (value: {
     userBirthYear: string;
     userBirthMonth: string;
     userBirthDay: string;
@@ -76,10 +73,24 @@ const ProfilePage = () => {
       ? `${userBirthYear}년 ${userBirthMonth}월 ${userBirthDay}일`
       : undefined;
 
-  const [skipProfile, setSkipProfile] = useState<boolean>(false);
-  const [openSkipModal, setOpenSkipModal] = useState<boolean>(false);
+  // 프로필 설정 스킵 모달
+  const [isSkipProfile, setIsSkipProfile] = useState(false);
 
-  const closeSkipModal = () => setOpenSkipModal(false);
+  const [isSkipModalOpen, setIsSkipModalOpen] = useState<boolean>(false);
+  const handleOpenSkipModal = () => setIsSkipModalOpen(true);
+  const handleCloseSkipModal = () => setIsSkipModalOpen(false);
+  const handleSkipProfile = () => {
+    handleCloseSkipModal(); // 모달 닫기
+    navigate("/signup/complete"); // 화면 이동
+  };
+
+  useEffect(() => {
+    if (isSkipModalOpen) {
+      setIsSkipProfile(true);
+    } else {
+      setIsSkipProfile(false);
+    }
+  }, [isSkipModalOpen]);
 
   const isInvalid = (): boolean => {
     return (
@@ -94,88 +105,47 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-black">
-      <SelectGenderBottomModal
-        isOpen={openGenderModal}
-        onClose={handleCloseGenderModal}
-        selectedGender={gender}
-        onSelectGender={setGender}
-      />
-      <SelectBirthBottomModal
-        isOpen={openBirthModal}
-        onClose={handleCloseBirthModal}
-        userBirthYear={userBirthYear}
-        userBirthMonth={userBirthMonth}
-        userBirthDay={userBirthDay}
-        onChange={handleChange}
-      />
-      <CommonConfirmModal
-        isOpen={openSkipModal}
-        cancelButtonInfo={{
-          label: PROFILE_TEXT.SKIP_MODAL.CANCEL_LABEL,
-          onClick: closeSkipModal,
-        }}
-        confirmButtonInfo={{
-          label: PROFILE_TEXT.SKIP_MODAL.CONFIRM_LABEL,
-          onClick: () => {
-            setSkipProfile(true);
-            navigate("/signup/complete");
-          },
-        }}
-        modalContent={{
-          title: PROFILE_TEXT.SKIP_MODAL.TITLE,
-          content: PROFILE_TEXT.SKIP_MODAL.SUB_TITLE,
-        }}
-      />
-      <BackHeader isDarkBg={true} onClick={() => navigate("/signup/verify")} />
-      <div className="flex flex-col w-full px-6">
-        <PageTitleWithSub
-          title={PROFILE_TEXT.TITLE}
-          subTitle={PROFILE_TEXT.SUB_TITLE}
-        />
-        <div className="flex flex-col w-full gap-4">
-          <CommonInput
-            label={PROFILE_TEXT.NICKNAME.LABEL}
-            placeholder={PROFILE_TEXT.NICKNAME.PLACEHOLDER}
-            value={nickname}
-            setValue={setNickname}
-            withButton={true}
-            error={!!nickname.length && !!error.length}
-            helperText={nickname.length ? error : undefined}
-            onClickButton={() => {
-              // 닉네임 중복 확인 로직
-            }}
-          />
-          <SelectTriggerButton
-            label={PROFILE_TEXT.SELECT.GENDER_LABEL}
-            onClick={() => setOpenGenderModal(true)}
-            value={getGenderLabel(gender)}
-          />
-          <SelectTriggerButton
-            label={PROFILE_TEXT.SELECT.BIRTH_LABEL}
-            onClick={() => setOpenBirthModal(true)}
-            value={formattedBirth}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center justify-center w-full mt-auto  gap-4 p-6">
-        <CheckBoxButton
-          label={PROFILE_TEXT.CHECK_LABEL}
-          labelColor="gray"
-          gap="tight"
-          isChecked={skipProfile}
-          onCheckedChange={() => {
-            setOpenSkipModal(true);
-          }}
-        />
-        <Button
-          label={PROFILE_TEXT.NEXT_BUTTON}
-          isDisabled={isInvalid()}
-          onClick={() => navigate("/signup/complete")}
-        />
-      </div>
-    </div>
+    <ProfileLayout
+      genderProps={{
+        isGenderModalOpen: isGenderModalOpen,
+        handleOpenGenderModal: handleOpenGenderModal,
+        handleCloseGenderModal: handleCloseGenderModal,
+        gender: gender,
+        setGender: setGender,
+      }}
+      birthProps={{
+        isBirthModalOpen: isBirthModalOpen,
+        handleOpenBirthModal: handleOpenBirthModal,
+        handleCloseBirthModal: handleCloseBirthModal,
+        userBirthYear: userBirthYear,
+        userBirthMonth: userBirthMonth,
+        userBirthDay: userBirthDay,
+        handleChangeBirth: handleChangeBirth,
+      }}
+      skipProfileProps={{
+        isSkipModalOpen: isSkipModalOpen,
+        handleOpenSkipModal: handleOpenSkipModal,
+        handleCloseSkipModal: handleCloseSkipModal,
+        handleSkipProfile: handleSkipProfile,
+      }}
+      pageTitle={{
+        title: PROFILE_TEXT.TITLE,
+        subTitle: PROFILE_TEXT.SUB_TITLE,
+      }}
+      handleGoBack={() => navigate("/signup/verify")}
+      nickname={nickname}
+      setNickname={setNickname}
+      isNicknameError={!!nickname.length && !!error.length}
+      nicknameHelperText={nickname.length ? error : undefined}
+      checkNicknameDuplicate={() => {
+        // 닉네임 중복 여부 확인
+      }}
+      genderValue={getGenderLabel(gender)}
+      birthValue={formattedBirth}
+      isSkipProfile={isSkipProfile}
+      isDisabled={isInvalid()}
+      handleSubmitProfile={() => navigate("/signup/complete")}
+    />
   );
 };
 
