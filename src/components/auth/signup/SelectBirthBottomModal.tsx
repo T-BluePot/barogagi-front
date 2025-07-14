@@ -1,27 +1,31 @@
 import { CommonBottomModal } from "@/components/common/bottom-modal/CommonBottomModal";
 import { BirthdayPicker } from "@/components/common/BirthdayPicker";
-import type { BirthdayPickerProps } from "@/components/common/BirthdayPicker";
 
-interface SelectBirthBottomModalProps extends BirthdayPickerProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import type { SelectBirthProps } from "@/types/profileTypes";
 
 export const SelectBirthBottomModal = ({
-  isOpen,
-  onClose,
-  ...birthProps
-}: SelectBirthBottomModalProps) => {
+  isBirthModalOpen,
+  handleCloseBirthModal,
+  userBirthYear,
+  userBirthMonth,
+  userBirthDay,
+  handleChangeBirth,
+}: SelectBirthProps) => {
   return (
     <CommonBottomModal
       title="생년월일을 선택해주세요"
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isBirthModalOpen}
+      onClose={handleCloseBirthModal}
     >
       <div className="flex flex-col w-full px-6">
-        <BirthdayPicker {...birthProps} />
+        <BirthdayPicker
+          userBirthYear={userBirthYear}
+          userBirthMonth={userBirthMonth}
+          userBirthDay={userBirthDay}
+          onChange={handleChangeBirth}
+        />
         <button
-          onClick={onClose}
+          onClick={handleCloseBirthModal}
           className="flex h-14 items-center justify-center border-t border-gray-5 cursor-pointer"
         >
           <span className="typo-body text-gray-black">확인</span>

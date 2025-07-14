@@ -11,14 +11,11 @@ export interface BirthdayPickerProps {
   userBirthYear: string;
   userBirthMonth: string;
   userBirthDay: string;
-  onChange: (
-    value: {
-      userBirthYear: string;
-      userBirthMonth: string;
-      userBirthDay: string;
-    },
-    changedKey: "year" | "month" | "day"
-  ) => void;
+  onChange: (value: {
+    userBirthYear: string;
+    userBirthMonth: string;
+    userBirthDay: string;
+  }) => void;
 }
 
 export const BirthdayPicker = ({
@@ -45,14 +42,11 @@ export const BirthdayPicker = ({
 
     // 선택된 일이 존재하지 않는 경우 마지막 날로 보정
     if (userBirthDay && Number(userBirthDay) > lastDay) {
-      onChange(
-        {
-          userBirthYear,
-          userBirthMonth,
-          userBirthDay: String(lastDay).padStart(2, "0"),
-        },
-        "day"
-      );
+      onChange({
+        userBirthYear,
+        userBirthMonth,
+        userBirthDay: String(lastDay).padStart(2, "0"),
+      });
     }
   }, [userBirthYear, userBirthMonth]);
 
@@ -73,14 +67,11 @@ export const BirthdayPicker = ({
       changedKey === "month" ||
       changedKey === "day"
     ) {
-      onChange(
-        {
-          userBirthYear: newValue.year,
-          userBirthMonth: newValue.month,
-          userBirthDay: newValue.day,
-        },
-        changedKey
-      );
+      onChange({
+        userBirthYear: newValue.year,
+        userBirthMonth: newValue.month,
+        userBirthDay: newValue.day,
+      });
     }
   };
 
