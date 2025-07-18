@@ -14,7 +14,7 @@ interface HeaderConfig {
 // 라우트별 헤더 설정
 const HEADER_CONFIG: Record<string, HeaderConfig> = {
   // Auth 관련 라우트들
-  [ROUTES.HOME]: { type: "none" }, // 랜딩 페이지는 헤더 없음
+  [ROUTES.HOME]: { type: "none", isDarkBg: true }, // 랜딩 페이지는 헤더 없음
   [ROUTES.AUTH.SIGNIN]: {
     type: "back",
     label: "로그인",

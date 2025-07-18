@@ -3,7 +3,7 @@ export const ROUTES = {
   // Auth 관련
   HOME: "/",
   AUTH: {
-    SIGNIN: "/auth/signin",
+    SIGNIN: "/login",
     SIGNUP: "/auth/signup",
     SIGNUP_TERMS: "/auth/signup/terms",
   },

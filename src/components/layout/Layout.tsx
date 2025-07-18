@@ -69,7 +69,11 @@ export const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div
+      className={`min-h-screen flex flex-col ${
+        headerConfig.isDarkBg ? "bg-gray-black" : "bg-white"
+      }`}
+    >
       {renderHeader()}
       <main className="flex-1">{children}</main>
     </div>
