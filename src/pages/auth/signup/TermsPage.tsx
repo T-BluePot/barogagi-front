@@ -82,7 +82,7 @@ const TermsPage = () => {
           isDisabled={hasUncheckedRequiredTerms()}
           onClick={() => navigate("/signup/credentials")}
         />
-      </div>
+			</div>
     </div>
   );
 };
