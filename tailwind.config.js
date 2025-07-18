@@ -34,6 +34,26 @@ module.exports = {
         card: "0.75rem",
         button: "9999px",
       },
+      animation: {
+        "slide-left-to-right": "slideLeftToRight 3s ease-in-out infinite",
+        "slide-right-to-left": "slideRightToLeft 3s ease-in-out infinite",
+      },
+      keyframes: {
+        slideLeftToRight: {
+          "0%": { transform: "translateX(-100%)", opacity: "0" },
+          "20%": { transform: "translateX(-100%)", opacity: "0" },
+          "50%": { transform: "translateX(0%)", opacity: "1" },
+          "80%": { transform: "translateX(0%)", opacity: "1" },
+          "100%": { transform: "translateX(100%)", opacity: "0" },
+        },
+        slideRightToLeft: {
+          "0%": { transform: "translateX(100%)", opacity: "0" },
+          "20%": { transform: "translateX(100%)", opacity: "0" },
+          "50%": { transform: "translateX(0%)", opacity: "1" },
+          "80%": { transform: "translateX(0%)", opacity: "1" },
+          "100%": { transform: "translateX(-100%)", opacity: "0" },
+        },
+      },
     },
   },
   plugins: [],
