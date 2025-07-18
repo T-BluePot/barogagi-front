@@ -4,7 +4,7 @@ type Props = {
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
   className?: string;
-  variant?: "default" | "main-underline";
+  variant?: "default" | "main" | "main-underline";
 };
 
 const TextButton = ({
@@ -19,6 +19,7 @@ const TextButton = ({
 
   const variantStyles = {
     default: `text-gray-50 hover:text-black break-words`,
+    main: `text-main-dark hover:main-disable  break-words`,
     "main-underline": `text-main-dark hover:main-disable text-sm underline break-words`,
   };
 

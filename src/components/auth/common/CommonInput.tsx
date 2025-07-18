@@ -1,9 +1,11 @@
 import { TextField, InputAdornment } from "@mui/material";
 import SmallButton from "@/components/common/buttons/SmallButton";
+type InputType = "text" | "password" | "tel" | "email" | "number";
 
 interface CommonInputProps {
   label: string;
   placeholder: string;
+  type?: InputType;
   helperText?: string;
   error?: boolean;
   value: string; // 현재 값
@@ -15,6 +17,7 @@ interface CommonInputProps {
 export const CommonInput = ({
   label,
   placeholder,
+  type = "text", // 기본값은 text
   helperText,
   error = false,
   value,
@@ -24,8 +27,10 @@ export const CommonInput = ({
 }: CommonInputProps) => {
   return (
     <TextField
+      fullWidth
       label={label}
       placeholder={placeholder}
+      type={type}
       error={error}
       helperText={helperText}
       value={value}
