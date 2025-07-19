@@ -18,10 +18,9 @@ const TermsPage = () => {
   const [isAgreeAll, setIsAgreeAll] = useState(false);
 
   // 약관별 동의 상태 초기화
-  const [consents, setConsents] = useState<Record<string, boolean>>({
-    PRIVACY: false,
-    MARKETING: false,
-  });
+  const [consents, setConsents] = useState<Record<string, boolean>>(() =>
+   TERMS.reduce((acc, term) => ({ ...acc, [term.id]: false }), {})
+ );
 
   // 토글 핸들러
   const handleToggle = (id: string) => {
