@@ -37,10 +37,9 @@ const TermsPage = () => {
   const handleToggleAll = () => {
     const next = !isAgreeAll;
     setIsAgreeAll(next);
-    setConsents({
-      PRIVACY: next,
-      MARKETING: next,
-    });
+   setConsents(
+     TERMS.reduce((acc, term) => ({ ...acc, [term.id]: next }), {})
+    );
   };
 
   useEffect(() => {
