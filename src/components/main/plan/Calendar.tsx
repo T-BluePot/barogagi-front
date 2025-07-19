@@ -52,6 +52,8 @@ export default function Calendar({
           return (
             <div className="flex h-16 justify-center items-center gap-6">
               <button
+                aria-label="이전 달로 이동"
+                type="button"
                 onClick={decreaseMonth}
                 disabled={prevMonthButtonDisabled}
                 className="cursor-pointer"
@@ -60,6 +62,8 @@ export default function Calendar({
               </button>
               <span className="typo-caption text-gray-black">{`${year}년 ${month}월`}</span>
               <button
+                aria-label="다음 달로 이동"
+                type="button"
                 onClick={increaseMonth}
                 disabled={nextMonthButtonDisabled}
                 className="cursor-pointer"
@@ -98,7 +102,10 @@ export default function Calendar({
                 </div>
               </div>
               {isMarked && (
-                <div className="w-1.5 h-1.5 rounded-full bg-alert-red" />
+                <div
+                  aria-label="일정 있음"
+                  className="w-1.5 h-1.5 rounded-full bg-alert-red"
+                />
               )}
             </div>
           );
