@@ -18,8 +18,8 @@ const TermsPage = () => {
   const [isAgreeAll, setIsAgreeAll] = useState(false);
 
   // 약관별 동의 상태 초기화
-  const [consents, setConsents] = useState<Record<string, boolean>>(() =>
-   TERMS.reduce((acc, term) => ({ ...acc, [term.id]: false }), {})
+ const [consents, setConsents] = useState<Record<string, boolean>>(() =>
+   Object.fromEntries(TERMS.map(term => [term.id, false]))
  );
 
   // 토글 핸들러
@@ -37,9 +37,9 @@ const TermsPage = () => {
   const handleToggleAll = () => {
     const next = !isAgreeAll;
     setIsAgreeAll(next);
-   setConsents(
-     TERMS.reduce((acc, term) => ({ ...acc, [term.id]: next }), {})
-    );
+    setConsents(
+     Object.fromEntries(TERMS.map(term => [term.id, next]))
+   );
   };
 
   useEffect(() => {
