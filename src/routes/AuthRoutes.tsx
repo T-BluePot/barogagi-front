@@ -11,6 +11,7 @@ import SignupCompletePage from "@/pages/auth/signup/SignupCompletePage";
 /* 메인 페이지 */
 // 일정 생성 탭
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
+import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
 
 export const AuthRoutes = () => (
   <Routes>
@@ -24,5 +25,6 @@ export const AuthRoutes = () => (
     <Route path="/signup/complete" element={<SignupCompletePage />} />
     {/* 일정 생성 */}
     <Route path="/plan/date" element={<SelectDatePage />} />
+    <Route path="/plan/location" element={<SelectLocationPage />} />
   </Routes>
 );
