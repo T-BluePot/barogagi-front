@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { safeBack } from "@/utils/safeBack";
 import { SELECT_DATE_TEXT } from "@/constants/texts/main/plan/selectDate";
 
 import { BackHeader } from "@/components/common/headers/BackHeader";
@@ -16,9 +17,7 @@ const SelectDatePage = () => {
     <div className="flex flex-col w-full min-h-screen gap-6 bg-gray-white">
       <BackHeader
         label={SELECT_DATE_TEXT.HEADER_TITLE}
-        onClick={() => {
-          // 일정 탭 메인 화면
-        }}
+        onClick={() => safeBack(navigate, "/plan")}
       />
 
       <div className="flex flex-col w-full px-6">
