@@ -4,6 +4,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export interface CourseCardProps {
+  scheduleNum: number | string;
   date: string; // 예: "2025년 4월 25일"
   title: string; // 예: "서울 데이트 코스"
   tags: string[]; // 예: ["이색체험", "서울"]
