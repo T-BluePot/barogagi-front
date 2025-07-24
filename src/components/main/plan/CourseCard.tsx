@@ -1,23 +1,18 @@
 import { CommonTag } from "@/components/common/tags/commonTag";
+import type { Schedule } from "@/types/schedule";
 
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-export interface CourseCardProps {
-  scheduleNum: number | string;
-  date: string; // 예: "2025년 4월 25일"
-  title: string; // 예: "서울 데이트 코스"
-  tags: string[]; // 예: ["이색체험", "서울"]
+interface CourseCardProps extends Schedule {
   onEdit: () => void; // 일정 카드용 수정 콜백
   onDelete: () => void; // 삭제 아이콘 버튼용 삭제 콜백
 }
 
 export const CourseCard = ({
-  date,
-  title,
-  tags,
   onEdit,
   onDelete,
+  ...scheduleProps
 }: CourseCardProps) => {
   return (
     <div
@@ -30,10 +25,12 @@ export const CourseCard = ({
           {/* 날짜 */}
           <div className="flex items-center gap-1">
             <CalendarTodayIcon className="!text-[12px] text-gray-40" />
-            <span className="typo-description text-gray-40">{date}</span>
+            <span className="typo-description text-gray-40">
+              {scheduleProps.date}
+            </span>
           </div>
           {/* 일정명 */}
-          <span className="typo-title-02">{title}</span>
+          <span className="typo-title-02">{scheduleProps.scheduleTitle}</span>
         </div>
         <button
           type="button"
@@ -48,7 +45,7 @@ export const CourseCard = ({
       </div>
       {/* 태그 */}
       <div className="flex gap-2">
-        {tags.map((tag, idx) => (
+        {scheduleProps.tags.map((tag, idx) => (
           <CommonTag key={idx} label={tag} size="small" />
         ))}
       </div>
