@@ -5,15 +5,15 @@ type CommonTagProps = {
   label: string;
   hasHash?: boolean;
   size?: "small" | "default";
-  isActive: boolean;
-  onClick: () => void;
+  isActive?: boolean;
+  onClick?: () => void;
 };
 
 export const CommonTag = ({
   label,
   hasHash = true,
   size = "default",
-  isActive,
+  isActive = true,
   onClick,
 }: CommonTagProps) => {
   const paddingClass = clsx(
