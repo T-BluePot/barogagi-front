@@ -5,7 +5,7 @@ export const mockSchedules = [
     scheduleNm: "부산 여행",
     startDate: "2025-05-05",
     endDate: "2025-05-05",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 2,
@@ -13,7 +13,7 @@ export const mockSchedules = [
     scheduleNm: "자격증 시험",
     startDate: "2025-05-18",
     endDate: "2025-05-18",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 3,
@@ -21,7 +21,7 @@ export const mockSchedules = [
     scheduleNm: "운동 등록일",
     startDate: "2025-06-02",
     endDate: "2025-06-02",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 4,
@@ -29,7 +29,7 @@ export const mockSchedules = [
     scheduleNm: "팀 회식",
     startDate: "2025-06-14",
     endDate: "2025-06-14",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 5,
@@ -37,7 +37,7 @@ export const mockSchedules = [
     scheduleNm: "할머니 생신",
     startDate: "2025-06-20",
     endDate: "2025-06-20",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 6,
@@ -45,7 +45,7 @@ export const mockSchedules = [
     scheduleNm: "포트폴리오 발표",
     startDate: "2025-07-03",
     endDate: "2025-07-03",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 7,
@@ -53,7 +53,7 @@ export const mockSchedules = [
     scheduleNm: "스터디 모임",
     startDate: "2025-07-10",
     endDate: "2025-07-10",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 8,
@@ -61,7 +61,7 @@ export const mockSchedules = [
     scheduleNm: "면접 일정",
     startDate: "2025-07-18",
     endDate: "2025-07-18",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 9,
@@ -69,7 +69,7 @@ export const mockSchedules = [
     scheduleNm: "휴가 시작",
     startDate: "2025-08-01",
     endDate: "2025-08-01",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 10,
@@ -77,7 +77,7 @@ export const mockSchedules = [
     scheduleNm: "친구 결혼식",
     startDate: "2025-08-13",
     endDate: "2025-08-13",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 11,
@@ -85,7 +85,7 @@ export const mockSchedules = [
     scheduleNm: "전시회 관람",
     startDate: "2025-08-27",
     endDate: "2025-08-27",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 12,
@@ -93,7 +93,7 @@ export const mockSchedules = [
     scheduleNm: "개강",
     startDate: "2025-09-02",
     endDate: "2025-09-02",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 13,
@@ -101,7 +101,7 @@ export const mockSchedules = [
     scheduleNm: "건강검진",
     startDate: "2025-09-10",
     endDate: "2025-09-10",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 14,
@@ -109,7 +109,7 @@ export const mockSchedules = [
     scheduleNm: "플젝 마감",
     startDate: "2025-09-21",
     endDate: "2025-09-21",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
   {
     scheduleNum: 15,
@@ -117,6 +117,6 @@ export const mockSchedules = [
     scheduleNm: "등산 모임",
     startDate: "2025-09-30",
     endDate: "2025-09-30",
-    radius: 0,
+    tags: ["이색체험", "맛집"],
   },
 ];
