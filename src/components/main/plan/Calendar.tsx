@@ -9,7 +9,7 @@ import { formatDateToKorean } from "@/utils/date";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
-interface CalendarProps {
+export interface CalendarProps {
   withTitle?: boolean;
   selectedDate: Date | null;
   onChangeDate: (date: Date | null) => void;
