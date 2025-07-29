@@ -8,7 +8,7 @@ import type { Schedule } from "@/types/schedule";
 export function getMarkedDates(schedules: Schedule[]): Record<string, true> {
   const marked: Record<string, true> = {};
   schedules.forEach((schedule) => {
-    marked[schedule.startDate] = true;
+    marked[schedule.date] = true;
   });
   return marked;
 }
