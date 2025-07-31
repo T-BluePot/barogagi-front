@@ -13,22 +13,20 @@ export const PlanViewToggleButton = ({
   toggleViewType,
 }: PlanViewToggleButtonProps) => {
   return (
-    <div>
-      <button
-        onClick={toggleViewType}
-        type="button"
-        aria-label={viewType === "list" ? "목록으로 보기" : "달력으로 보기"}
-        className="flex justify-center items-center px-3 py-2 gap-1.5 rounded-[10px] bg-gray-5 cursor-pointer"
-      >
-        {viewType === "list" ? (
-          <FormatListBulletedIcon className="!text-[16px] text-gray-80" />
-        ) : (
-          <CalendarTodayIcon className="!text-[16px] text-gray-80" />
-        )}
-        <span className="typo-description text-gray-80">
-          {viewType === "list" ? "목록으로 보기" : "달력으로 보기"}
-        </span>
-      </button>
-    </div>
+    <button
+      onClick={toggleViewType}
+      type="button"
+      aria-label={viewType === "list" ? "목록으로 보기" : "달력으로 보기"}
+      className="flex justify-center items-center px-3 py-2 gap-2 rounded-[10px] bg-gray-5 cursor-pointer"
+    >
+      {viewType === "list" ? (
+        <FormatListBulletedIcon className="!text-[16px] text-gray-80 " />
+      ) : (
+        <CalendarTodayIcon className="!text-[16px] text-gray-80" />
+      )}
+      <div className="typo-description text-gray-80">
+        {viewType === "list" ? "목록으로 보기" : "달력으로 보기"}
+      </div>
+    </button>
   );
 };

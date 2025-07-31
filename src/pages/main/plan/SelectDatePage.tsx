@@ -27,7 +27,7 @@ const SelectDatePage = () => {
           onChangeDate={(date) => setSelectedDate(date)}
         />
       </div>
-      <div className="mt-auto w-full p-8">
+      <div className="mt-auto w-full p-6">
         <Button
           label={
             !selectedDate
