@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TabMenuBar from "@/components/common/tab-menu/TabManuBar";
 import type { TabItem } from "@/components/common/tab-menu/TabManuBar";
@@ -7,7 +6,6 @@ import IdFindContent from "@/components/auth/find/IdFindContent";
 import PwFindContent from "@/components/auth/find/PwFindContent";
 
 const AccountFindPage = () => {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("id");
 
@@ -32,10 +30,6 @@ const AccountFindPage = () => {
     setSearchParams({ tab: tabId });
   };
 
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case "id":
@@ -49,17 +43,6 @@ const AccountFindPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <div className="flex items-center px-4 py-4">
-        <button
-          onClick={handleBackClick}
-          className="p-2 -ml-2 text-white hover:text-gray-300"
-        >
-          <ChevronLeftIcon className="w-6 h-6" />
-        </button>
-        <h1 className="ml-4 text-xl font-medium">계정 찾기</h1>
-      </div>
-
       {/* Tab Menu */}
       <div className="px-4">
         <TabMenuBar

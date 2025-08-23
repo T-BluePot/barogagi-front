@@ -30,6 +30,11 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
     label: "약관 동의",
     isDarkBg: true,
   },
+  [ROUTES.AUTH.FIND_ACCOUNT]: {
+    type: "back",
+    label: "계정 찾기",
+    isDarkBg: true,
+  },
 
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {
