@@ -6,6 +6,7 @@ export const ROUTES = {
     SIGNIN: "/login",
     SIGNUP: "/auth/signup",
     SIGNUP_TERMS: "/auth/signup/terms",
+    FIND_ACCOUNT: "/find",
   },
 
   // 메인 앱
@@ -29,6 +30,7 @@ export const getRoutePath = {
     signin: () => ROUTES.AUTH.SIGNIN,
     signup: () => ROUTES.AUTH.SIGNUP,
     signupTerms: () => ROUTES.AUTH.SIGNUP_TERMS,
+    findAccount: () => ROUTES.AUTH.FIND_ACCOUNT,
   },
   main: {
     home: () => ROUTES.MAIN.HOME,

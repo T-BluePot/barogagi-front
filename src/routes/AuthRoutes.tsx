@@ -8,10 +8,16 @@ import VerifyPhonePage from "@/pages/auth/signup/VerifyPhonePage";
 import VerifyCodePage from "@/pages/auth/signup/VerifyCodePage";
 import ProfilePage from "@/pages/auth/signup/ProfilePage";
 import SignupCompletePage from "@/pages/auth/signup/SignupCompletePage";
+
+/* auth/signin 로직 */
+import EmailLoginPage from "@/pages/auth/signin/EmailLoginPage";
+
+/* auth/find 로직 */
+import AccountFindPage from "@/pages/auth/find/AccountFindPage";
+
 /* 메인 페이지 */
 // 일정 생성 탭
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
-import EmailLoginPage from "@/pages/auth/signin/EmailLoginPage";
 
 export const AuthRoutes = () => (
   <Routes>
@@ -25,6 +31,8 @@ export const AuthRoutes = () => (
     <Route path="/signup/verify/code" element={<VerifyCodePage />} />
     <Route path="/signup/profile" element={<ProfilePage />} />
     <Route path="/signup/complete" element={<SignupCompletePage />} />
+    {/* 계정 찾기 */}
+    <Route path="/find" element={<AccountFindPage />} />
     {/* 일정 생성 */}
     <Route path="/plan/date" element={<SelectDatePage />} />
   </Routes>
