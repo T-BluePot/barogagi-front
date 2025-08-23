@@ -18,10 +18,14 @@
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "react": "^19.1.0",
+    "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",
+    "react-mobile-picker": "^1.1.2",
     "react-modal-sheet": "^4.4.0",
-    "react-router-dom": "^7.6.3"
+    "react-router-dom": "^7.6.3",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.0.1",

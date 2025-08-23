@@ -23,7 +23,7 @@ export const Default: Story = {
   args: {
     size: "large",
     isChecked: false,
-    setIsChecked: action("isChecked"),
+    onCheckedChange: action("isChecked"),
     label: "전체 동의하기",
   },
 };
@@ -32,7 +32,7 @@ export const Skip: Story = {
   args: {
     gap: "tight",
     isChecked: false,
-    setIsChecked: action("isChecked"),
+    onCheckedChange: action("isChecked"),
     label: "다음에 입력할게요.",
     labelColor: "gray",
   },
