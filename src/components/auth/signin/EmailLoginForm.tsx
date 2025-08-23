@@ -8,8 +8,18 @@ export const EmailLoginForm = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const handleLogin = () => {
+    // 로그인 로직
+    console.log("로그인 시도:", { email, password });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleLogin();
+  };
+
   return (
-    <form className="">
+    <form className="" onSubmit={handleSubmit}>
       <CommonInput
         label="이메일"
         placeholder="이메일을 입력하세요"
@@ -25,12 +35,7 @@ export const EmailLoginForm = () => {
         setValue={setPassword}
       />
       <div className="mt-16">
-        <CommonButton
-          label="로그인 하기"
-          onClick={() => {
-            // 로그인 로직
-          }}
-        />
+        <CommonButton label="로그인 하기" onClick={handleLogin} />
         <div className="flex justify-center items-center mt-4 text-main text-sm">
           <TextButton
             label="아이디 찾기"
