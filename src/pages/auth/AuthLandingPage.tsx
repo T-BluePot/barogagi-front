@@ -6,9 +6,9 @@ const AuthLandingPage = () => {
   // 소셜 로그인 버튼 클릭 핸들러
 
   return (
-    <div className="min-h-screen bg-gray-black flex flex-col items-center justify-end-safe px-6">
+    <div className="min-h-screen bg-gray-black flex flex-col items-center justify-between px-6">
       {/* 로고 및 제목 영역 */}
-      <div className="flex flex-col items-center justify-center grow-1">
+      <div className="flex flex-col items-center justify-center flex-1">
         {/* 상단 라인 - 왼쪽에서 오른쪽으로 */}
         <div className="w-full h-1 mb-6 relative overflow-hidden">
           <div className="w-1/2 h-full bg-main animate-slide-left-to-right"></div>
