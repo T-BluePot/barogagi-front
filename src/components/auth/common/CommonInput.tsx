@@ -3,7 +3,6 @@ import { TextField, InputAdornment } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SmallButton from "@/components/common/buttons/SmallButton";
-type InputType = "text" | "password" | "tel" | "email" | "number";
 
 type InputType = "text" | "password" | "tel" | "email" | "number";
 
@@ -17,7 +16,6 @@ interface CommonInputProps {
   setValue: (next: string) => void; // 값 변경 함수
   withButton?: boolean;
   onClickButton?: () => void;
-  type?: InputType;
 }
 
 export const CommonInput = ({
@@ -30,7 +28,6 @@ export const CommonInput = ({
   setValue,
   withButton = false,
   onClickButton,
-  type = "text",
 }: CommonInputProps) => {
   // 비밀번호 보이기/숨기기 상태 관리
   const [showPassword, setShowPassword] = useState(false);
@@ -57,7 +54,6 @@ export const CommonInput = ({
       fullWidth
       label={label}
       placeholder={placeholder}
-      type={type}
       error={error}
       helperText={helperText}
       value={value}
