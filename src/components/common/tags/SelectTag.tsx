@@ -12,6 +12,7 @@ export const SelectTag = ({
 }: SelectTagProps) => {
   return (
     <button
+      type="button"
       onClick={onClick}
       className="flex items-center justify-center rounded-[20px] px-[14px] py-[10px] border border-gray-black gap-1"
     >
