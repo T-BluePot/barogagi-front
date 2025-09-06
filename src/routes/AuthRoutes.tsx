@@ -14,9 +14,12 @@ import PlanListPage from "@/pages/main/plan/PlanListPage";
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
 import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
 import TravelStylePage from "@/pages/main/plan/TravelStylePage";
+import EmailLoginPage from "@/pages/auth/signin/EmailLoginPage";
 
 export const AuthRoutes = () => (
   <Routes>
+    <Route path="/" element={<AuthLandingPage />} />
+    <Route path="/login" element={<EmailLoginPage />} />
     <Route path="/login" element={<AuthLandingPage />} />
     {/* 회원가입 로직 페이지 */}
     <Route path="/signup" element={<TermsPage />} />

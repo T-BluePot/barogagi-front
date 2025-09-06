@@ -1,0 +1,46 @@
+/* 로고 라인 애니메이션 */
+@keyframes slideLeftToRight {
+  0% {
+    transform: translateX(-200%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(220%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideRightToLeft {
+  0% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-220%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-left-to-right {
+  animation: slideLeftToRight 1.5s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-slide-right-to-left {
+  animation: slideRightToLeft 1.5s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+/* 추가 로고 관련 애니메이션들을 여기에 정의할 수 있습니다 */

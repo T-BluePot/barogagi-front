@@ -13,7 +13,7 @@ declare module "@/components/common/IconBox" {
 }
 
 const meta: Meta<typeof Button> = {
-  title: "Components/Button",
+  title: "Components/Common/Buttons/CommonButton",
   component: Button,
   tags: ["autodocs"],
 };

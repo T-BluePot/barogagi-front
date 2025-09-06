@@ -9,25 +9,25 @@ type InputType = "text" | "password" | "tel" | "email" | "number";
 interface CommonInputProps {
   label: string;
   placeholder: string;
+  type?: InputType;
   helperText?: string;
   error?: boolean;
   value: string; // 현재 값
   setValue: (next: string) => void; // 값 변경 함수
   withButton?: boolean;
   onClickButton?: () => void;
-  type?: InputType;
 }
 
 export const CommonInput = ({
   label,
   placeholder,
+  type = "text", // 기본값은 text
   helperText,
   error = false,
   value,
   setValue,
   withButton = false,
   onClickButton,
-  type = "text",
 }: CommonInputProps) => {
   // 비밀번호 보이기/숨기기 상태 관리
   const [showPassword, setShowPassword] = useState(false);
@@ -51,6 +51,7 @@ export const CommonInput = ({
 
   return (
     <TextField
+      fullWidth
       label={label}
       placeholder={placeholder}
       error={error}

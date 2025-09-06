@@ -3,15 +3,31 @@ type Props = {
   onClick?: () => void;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
+  className?: string;
+  variant?: "default" | "main" | "main-underline";
 };
 
-const TextButton = ({ label, onClick, disabled, type = "button" }: Props) => {
-  const baseStyle = `px-4 py-3 typo-body cursor-pointer transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`;
-  const typoStyle = `text-gray-50 hover:text-black break-words`;
+const TextButton = ({
+  label,
+  onClick,
+  disabled,
+  type = "button",
+  variant = "default",
+  className,
+}: Props) => {
+  const baseStyle = `px-4 py-3 typo-body cursor-pointer transition-colors duration-200`;
+
+  const variantStyles = {
+    default: `text-gray-50 hover:text-black break-words`,
+    main: `text-main-dark hover:main-disable  break-words`,
+    "main-underline": `text-main-dark hover:main-disable text-sm underline break-words`,
+  };
+
+  const typoStyle = variantStyles[variant];
 
   return (
     <button
-      className={baseStyle}
+      className={`${baseStyle} ${className || ""}`}
       onClick={onClick}
       disabled={disabled}
       type={type}
