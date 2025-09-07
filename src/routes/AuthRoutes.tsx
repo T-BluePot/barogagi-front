@@ -4,8 +4,8 @@ import AuthLandingPage from "@/pages/auth/AuthLandingPage";
 /* auth/signup 로직 */
 import TermsPage from "@/pages/auth/signup/TermsPage";
 import CredentialsPage from "@/pages/auth/signup/CredentialsPage";
-import VerifyPhonePage from "@/pages/auth/signup/VerifyPhonePage";
-import VerifyCodePage from "@/pages/auth/signup/VerifyCodePage";
+/* use shared verify code page */
+import VerifyCodePage from "@/pages/auth/verify/VerifyCodePage";
 import ProfilePage from "@/pages/auth/signup/ProfilePage";
 import SignupCompletePage from "@/pages/auth/signup/SignupCompletePage";
 
@@ -15,6 +15,9 @@ import EmailLoginPage from "@/pages/auth/signin/EmailLoginPage";
 /* auth/find 로직 */
 import AccountFindPage from "@/pages/auth/find/AccountFindPage";
 
+/* unified verify page */
+import VerifyPage from "@/pages/auth/verify/VerifyPage";
+
 /* 메인 페이지 */
 // 일정 생성 탭
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
@@ -23,16 +26,20 @@ export const AuthRoutes = () => (
   <Routes>
     <Route path="/" element={<AuthLandingPage />} />
     <Route path="/login" element={<EmailLoginPage />} />
-    <Route path="/login" element={<AuthLandingPage />} />
     {/* 회원가입 로직 페이지 */}
     <Route path="/signup" element={<TermsPage />} />
     <Route path="/signup/credentials" element={<CredentialsPage />} />
-    <Route path="/signup/verify" element={<VerifyPhonePage />} />
+    {/* legacy signup verify route -> redirect to unified verify page for signup flow */}
+    <Route path="/signup/verify" element={<VerifyPage />} />
+    {/* keep legacy signup code route but use shared component */}
     <Route path="/signup/verify/code" element={<VerifyCodePage />} />
     <Route path="/signup/profile" element={<ProfilePage />} />
     <Route path="/signup/complete" element={<SignupCompletePage />} />
     {/* 계정 찾기 */}
     <Route path="/find" element={<AccountFindPage />} />
+    {/* unified verify route with flow param */}
+    <Route path="/verify/:flow" element={<VerifyPage />} />
+    <Route path="/verify/:flow/code" element={<VerifyCodePage />} />
     {/* 일정 생성 */}
     <Route path="/plan/date" element={<SelectDatePage />} />
   </Routes>

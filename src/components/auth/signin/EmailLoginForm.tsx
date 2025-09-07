@@ -55,7 +55,7 @@ export const EmailLoginForm = () => {
             label="회원가입"
             variant="main"
             className="typo-tag"
-            onClick={() => navigate("/auth/signup")}
+            onClick={() => navigate("/verify/signup")}
           />
         </div>
       </div>

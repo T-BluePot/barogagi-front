@@ -8,7 +8,7 @@ export const VERIFY_TEXT = {
     PLACEHOLDER: "하이픈(-) 없이 숫자만 입력해주세요.",
   },
   CODE: {
-    TITLE: "휴대폰로 전송된 인증 번호를\n입력해주세요",
+    TITLE: "휴대폰으로 전송된 인증 번호를\n입력해주세요",
     NEXT_BUTTON: "확인",
 
     LABEL: "인증 번호",
