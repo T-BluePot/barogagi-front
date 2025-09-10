@@ -2,7 +2,7 @@ import type { Region } from "@/types/main/plan/region";
 
 import { SearchInput } from "@/components/common/inputs/SearchInput";
 import type { SearchInputProps } from "@/components/common/inputs/SearchInput";
-import AddCurrentLocationButton from "@/pages/main/plan/AddCurrentLocationButton";
+import AddCurrentLocationButton from "./AddCurrentLocationButton";
 
 interface SearchComponentProps extends SearchInputProps {
   regions: Region[];
