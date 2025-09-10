@@ -23,8 +23,9 @@ export const SearchInput = ({
   return (
     <div className={inputClass}>
       <input
-        type="text"
+        type="search"
         placeholder={searchPlaceholder}
+        aria-label={searchPlaceholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         className="flex-1 outline-none"
@@ -32,7 +33,11 @@ export const SearchInput = ({
       {!value ? (
         <SearchIcon className="text-gray-80" />
       ) : (
-        <button aria-label="검색창 초기화" onClick={onClearSearchInput}>
+        <button
+          type="button"
+          aria-label="검색창 초기화"
+          onClick={onClearSearchInput}
+        >
           <CancelIcon className="text-gray-20 cursor-pointer" />
         </button>
       )}
