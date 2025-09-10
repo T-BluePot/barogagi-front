@@ -6,4 +6,4 @@ export const TRAVEL_STYLE_TEXT = {
   SEC_SUB_TITLE: "여행을 더 즐겁게 만들 포인트를 남겨주세요",
   PLACEHOLDER: "여행 스타일, 선호 사항 등을 자유롭게 적어주세요",
   NEXT_BUTTON: "일정 생성하기",
-};
+} as const;
