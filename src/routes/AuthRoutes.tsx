@@ -20,7 +20,6 @@ export const AuthRoutes = () => (
   <Routes>
     <Route path="/" element={<AuthLandingPage />} />
     <Route path="/login" element={<EmailLoginPage />} />
-    <Route path="/login" element={<AuthLandingPage />} />
     {/* 회원가입 로직 페이지 */}
     <Route path="/signup" element={<TermsPage />} />
     <Route path="/signup/credentials" element={<CredentialsPage />} />
