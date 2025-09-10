@@ -51,7 +51,8 @@ export const getRoutePath = {
     travelStyle: () => ROUTES.PLAN.TRAVEL_STYLE,
   },
   user: {
-    detail: (id: string) => ROUTES.USER.DETAIL.replace(":id", id),
+    detail: (id: string) =>
+      ROUTES.USER.DETAIL.replace(":id", encodeURIComponent(id)),
   },
 };
 
