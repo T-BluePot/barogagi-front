@@ -17,6 +17,13 @@ export const ROUTES = {
     NOTIFICATION: "/notification",
   },
 
+  PLAN: {
+    LIST: "/plan", // 일정 리스트 메인
+    DATE: "/plan/date", // 날짜 선택
+    LOCATION: "/plan/location", // 지역 선택
+    TRAVEL_STYLE: "/plan/travelStyle", // 여행 스타일 선택
+  },
+
   // 추가 기능들
   USER: {
     DETAIL: "/user/:id", // 동적 라우트
@@ -37,6 +44,12 @@ export const getRoutePath = {
     chat: () => ROUTES.MAIN.CHAT,
     notification: () => ROUTES.MAIN.NOTIFICATION,
   },
+  plan: {
+    list: () => ROUTES.PLAN.LIST,
+    date: () => ROUTES.PLAN.DATE,
+    location: () => ROUTES.PLAN.LOCATION,
+    travelStyle: () => ROUTES.PLAN.TRAVEL_STYLE,
+  },
   user: {
     detail: (id: string) => ROUTES.USER.DETAIL.replace(":id", id),
   },
@@ -53,5 +66,9 @@ export const ALL_ROUTES = [
   ROUTES.MAIN.SETTINGS,
   ROUTES.MAIN.CHAT,
   ROUTES.MAIN.NOTIFICATION,
+  ROUTES.PLAN.LIST,
+  ROUTES.PLAN.DATE,
+  ROUTES.PLAN.LOCATION,
+  ROUTES.PLAN.TRAVEL_STYLE,
   ROUTES.USER.DETAIL,
 ] as const;
