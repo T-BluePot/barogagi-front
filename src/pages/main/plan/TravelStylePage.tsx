@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { safeBack } from "@/utils/safeBack";
-import { TRAVEL_STYLE_TEXT } from "@/constants/texts/main/plan/travelStlye";
+import { TRAVEL_STYLE_TEXT } from "@/constants/texts/main/plan/travelStyle";
 
 import type { ActiveMap } from "@/components/main/plan/TravelStyleTagContainer";
 
@@ -69,7 +69,7 @@ const TravelStylePage = () => {
           isDisabled={isAllInactive(actives)}
           onClick={() => {
             // 추후 선택된 일정 넘기기 로직 추가
-            navigate("/plan/travelStlye");
+            navigate("/plan/travelStyle");
           }}
         />
       </div>

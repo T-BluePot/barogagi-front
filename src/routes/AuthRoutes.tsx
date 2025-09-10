@@ -32,6 +32,6 @@ export const AuthRoutes = () => (
     <Route path="/plan" element={<PlanListPage />} />
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
-    <Route path="/plan/travelStlye" element={<TravelStylePage />} />
+    <Route path="/plan/travelStyle" element={<TravelStylePage />} />
   </Routes>
 );
