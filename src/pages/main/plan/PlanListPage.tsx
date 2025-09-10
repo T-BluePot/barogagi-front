@@ -10,6 +10,7 @@ import type { PlanViewType } from "@/components/main/plan/PlanViewToggleButton";
 import { CalendarView } from "@/components/main/plan/CalendarView";
 import { ListView } from "@/components/main/plan/ListView";
 import { AddScheduleButton } from "@/components/main/plan/AddScheduleButton";
+import { ROUTES } from "@/constants/routes";
 
 const PlanListPage = () => {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ const PlanListPage = () => {
         )}
       </div>
       <div className="fixed bottom-6 right-6">
-        <AddScheduleButton onAddSchedule={() => navigate("/plan/date")} />
+        <AddScheduleButton onAddSchedule={() => navigate(ROUTES.PLAN.DATE)} />
       </div>
     </div>
   );

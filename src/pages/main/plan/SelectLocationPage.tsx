@@ -11,6 +11,7 @@ import { PageTitle } from "@/components/auth/common/PageTitle";
 import Button from "@/components/common/buttons/CommonButton";
 import { SearchComponent } from "@/components/main/plan/SearchComponent";
 import { RegionTagContainer } from "@/components/main/plan/RegionTagContainer";
+import { ROUTES } from "@/constants/routes";
 
 const SelectLocationPage = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const SelectLocationPage = () => {
     <div className="flex flex-col w-full min-h-screen bg-gray-white">
       <BackHeader
         label={SELECT_LOCATION_TEXT.HEADER_TITLE}
-        onClick={() => safeBack(navigate, "/plan/date")}
+        onClick={() => safeBack(navigate, ROUTES.PLAN.DATE)}
       />
       <div className="flex flex-1 flex-col w-full p-6">
         <div className="flex flex-col w-full gap-4 pb-8">
@@ -79,7 +80,7 @@ const SelectLocationPage = () => {
             isDisabled={!hasSelection}
             onClick={() => {
               // 추후 선택된 일정 넘기기 로직 추가
-              navigate("/plan/travelStyle");
+              navigate(ROUTES.PLAN.TRAVEL_STYLE);
             }}
           />
         </div>

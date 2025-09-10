@@ -13,6 +13,7 @@ import TextInput from "@/components/common/inputs/TextInput";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { mockStlyes } from "@/mock/styles";
+import { ROUTES } from "@/constants/routes";
 
 const TravelStylePage = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const TravelStylePage = () => {
     <div className="flex flex-col w-full min-h-screen bg-gray-white">
       <BackHeader
         label={TRAVEL_STYLE_TEXT.HEADER_TITLE}
-        onClick={() => safeBack(navigate, "/plan/location")}
+        onClick={() => safeBack(navigate, ROUTES.PLAN.LOCATION)}
       />
       <div className="flex flex-col mt-6 gap-8 px-6">
         <div className={sectionClass}>
@@ -69,7 +70,7 @@ const TravelStylePage = () => {
           isDisabled={isAllInactive(actives)}
           onClick={() => {
             // 추후 선택된 일정 넘기기 로직 추가
-            navigate("/plan/travelStyle");
+            navigate(ROUTES.PLAN.LIST);
           }}
         />
       </div>
