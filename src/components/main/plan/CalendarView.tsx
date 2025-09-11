@@ -10,8 +10,8 @@ import { formatDateToKorean } from "@/utils/date";
 
 interface CalendarViewProps extends CalendarProps {
   schedules: Schedule[];
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit: (scheduleNum: number) => void;
+  onDelete: (scheduleNum: number) => void;
 }
 
 export const CalendarView = ({
@@ -48,17 +48,17 @@ export const CalendarView = ({
             )}
           </div>
           <div className="flex flex-1 flex-col w-full gap-4">
-            {filteredSchedules.map((schedule, idx) => {
+            {filteredSchedules.map((schedule) => {
               return (
                 <SimpleCourseCard
-                  key={idx}
+                  key={schedule.scheduleNum}
                   userNum={schedule.userNum}
                   scheduleNum={schedule.scheduleNum}
                   date={schedule.date}
                   scheduleTitle={schedule.scheduleTitle}
                   tags={schedule.tags}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
+                  onEdit={() => onEdit(schedule.scheduleNum)}
+                  onDelete={() => onDelete(schedule.scheduleNum)}
                 />
               );
             })}
