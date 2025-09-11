@@ -150,3 +150,23 @@ p {
 .react-modal-sheet-backdrop {
   pointer-events: auto !important;
 }
+
+/* ===== MS/레거시 Edge/IE 계열: X(지우기), 비밀번호 눈모양 제거 ===== */
+input::-ms-clear,
+input::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ===== WebKit/Blink 계열(Chrome/Edge(Chromium)/Safari): 
+   검색 인풋 오른쪽 X, 왼쪽 돋보기/결과 장식 제거 ===== */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none; /* 오래된 WebKit 호환 */
+  appearance: none; /* 표준 속성 */
+  /* 필요시 display:none 추가 가능 */
+  /* display: none; */
+}
