@@ -27,6 +27,8 @@ export const SimpleCourseCard = ({
         <button
           type="button"
           className="cursor-pointer"
+          title="일정 삭제"
+          aria-label="일정 삭제"
           onClick={(e) => {
             e.stopPropagation(); // 부모 onClick으로의 전파 방지
             onDelete(); // 삭제 콜백 실행
