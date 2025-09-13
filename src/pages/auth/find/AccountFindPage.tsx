@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import TabMenuBar from "@/components/common/tab-menu/TabManuBar";
 import type { TabItem } from "@/components/common/tab-menu/TabManuBar";
 import IdFindContent from "@/components/auth/find/IdFindContent";

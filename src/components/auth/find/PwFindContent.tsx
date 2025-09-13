@@ -1,11 +1,20 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PwFindContent = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
-    // 비밀번호 재설정 로직
-    console.log("비밀번호 재설정:", phoneNumber);
+    if (!phoneNumber.trim()) {
+      alert("휴대전화 번호를 입력해주세요.");
+      return;
+    }
+
+    // 공통 인증 페이지로 이동 (reset-password flow)
+    navigate("/verify/reset-password", {
+      state: { phone: phoneNumber, flow: "reset-password" },
+    });
   };
 
   return (
