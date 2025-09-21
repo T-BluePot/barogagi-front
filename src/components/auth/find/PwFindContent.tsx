@@ -17,8 +17,8 @@ const PwFindContent = () => {
       return;
     }
 
-    // 공통 인증 페이지로 이동 (reset-password flow)
-    navigate("/verify/reset-password", {
+    // 비밀번호 재설정 인증 코드 페이지로 이동
+    navigate("/verify/reset-password/code", {
       state: { phone: phoneNumber, flow: "reset-password" },
     });
   };
@@ -37,8 +37,6 @@ const PwFindContent = () => {
           value={phoneNumber}
           setValue={setPhoneNumber}
           type="tel"
-          error={phoneNumber !== "" && !!errors.phoneNumber}
-          helperText={phoneNumber !== "" ? errors.phoneNumber : ""}
         />
       </div>
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/buttons/CommonButton";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 import { PageTitle } from "@/components/auth/common/PageTitle";
@@ -8,10 +9,18 @@ import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 
 const IdFindContent = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
-    // 아이디 찾기 로직
-    console.log("아이디 찾기:", phoneNumber);
+    if (!phoneNumber.trim()) {
+      alert("휴대전화 번호를 입력해주세요.");
+      return;
+    }
+
+    // 아이디 찾기 인증 코드 페이지로 이동
+    navigate("/verify/find-id/code", {
+      state: { phone: phoneNumber, flow: "find-id" },
+    });
   };
 
   return (
@@ -27,8 +36,6 @@ const IdFindContent = () => {
           value={phoneNumber}
           setValue={setPhoneNumber}
           type="tel"
-          error={phoneNumber !== "" && !!errors.phoneNumber}
-          helperText={phoneNumber !== "" ? errors.phoneNumber : ""}
         />
       </div>
       <Button label="본인 인증하기" onClick={handleSubmit} />

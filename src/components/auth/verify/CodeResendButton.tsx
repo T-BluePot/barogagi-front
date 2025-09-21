@@ -15,7 +15,7 @@ const CodeResendButton = ({ initialPhone = "" }: Props) => {
   // send is triggered elsewhere; this component focuses on showing timer and offering resend
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-max-content">
       {/* phone input is left to consumer; this component focuses on send/resend status and timer */}
       <div className="flex items-center justify-between">
         <div className="typo-body">

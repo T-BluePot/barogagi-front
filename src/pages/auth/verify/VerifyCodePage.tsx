@@ -6,11 +6,16 @@ import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyCodeForm } from "@/components/auth/verify/VerifyCodeForm";
+import {
+  FIND_ID_TEXTS,
+  FIND_PW_TEXTS,
+} from "@/constants/texts/auth/find/findAuth";
 
 type LocationState = {
   phone?: string;
   returnTo?: string;
   flow?: string;
+  label?: string;
 };
 
 const VerifyCodePage = () => {
@@ -20,6 +25,20 @@ const VerifyCodePage = () => {
   const state = (location.state as LocationState) ?? {};
 
   const flow = paramFlow ?? state.flow ?? "signup";
+
+  // flow에 따른 헤더 라벨 설정
+  const getHeaderLabel = () => {
+    if (state.label) return state.label;
+
+    switch (flow) {
+      case "find-id":
+        return FIND_ID_TEXTS.PAGE_TITLE;
+      case "reset-password":
+        return FIND_PW_TEXTS.PAGE_TITLE;
+      default:
+        return "인증하기";
+    }
+  };
 
   const handleConfirm = (code: string) => {
     if (!code.trim()) return;
@@ -39,6 +58,7 @@ const VerifyCodePage = () => {
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
       <BackHeader
+        label={getHeaderLabel()}
         isDarkBg={true}
         onClick={() => safeBack(navigate, `/verify/${flow}`)}
       />

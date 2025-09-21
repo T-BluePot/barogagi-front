@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 import { CommonInput } from "../common/CommonInput";
 import CommonButton from "@/components/common/buttons/CommonButton";
-import CodeResendButton from "./CodeResendButton";
+import CodeResendButton from "@/components/auth/verify/CodeResendButton";
 
 type VerifyCodeFormProps = {
   initialSeconds?: number;
@@ -52,8 +52,12 @@ export const VerifyCodeForm = ({
           setValue={setCode}
           type="tel"
         />
-
-        {/* <CodeResendButton/> */}
+        <div className="flex mt-2">
+          <div className="flex grow-1 text-center items-baseline">
+            <span className="typo-body text-alert-red">{formattedTime}</span>
+          </div>
+          <CodeResendButton />
+        </div>
       </div>
       <CommonButton
         label={VERIFY_TEXT.CODE.NEXT_BUTTON}
