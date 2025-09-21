@@ -4,7 +4,6 @@ import Button from "@/components/common/buttons/CommonButton";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 
-import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 import { FIND_PW_TEXTS } from "@/constants/texts/auth/find/findAuth";
 
 const PwFindContent = () => {
@@ -32,15 +31,19 @@ const PwFindContent = () => {
 
       <div className="space-y-4">
         <CommonInput
-          label={VERIFY_TEXT.PHONE.LABEL}
-          placeholder={VERIFY_TEXT.PHONE.PLACEHOLDER}
+          label={FIND_PW_TEXTS.LABEL}
+          placeholder={FIND_PW_TEXTS.PLACEHOLDER}
           value={phoneNumber}
           setValue={setPhoneNumber}
           type="tel"
         />
       </div>
 
-      <Button label="본인 인증하기" onClick={handleSubmit} />
+      <Button
+        label={FIND_PW_TEXTS.BUTTON}
+        isDisabled={!/^\d{10,11}$/.test(phoneNumber)}
+        onClick={handleSubmit}
+      />
     </div>
   );
 };

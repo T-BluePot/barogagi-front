@@ -5,7 +5,6 @@ import { CommonInput } from "@/components/auth/common/CommonInput";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 
 import { FIND_ID_TEXTS } from "@/constants/texts/auth/find/findAuth";
-import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 
 const IdFindContent = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -31,14 +30,18 @@ const IdFindContent = () => {
       />
       <div className="space-y-4">
         <CommonInput
-          label={VERIFY_TEXT.PHONE.LABEL}
-          placeholder={VERIFY_TEXT.PHONE.PLACEHOLDER}
+          label={FIND_ID_TEXTS.LABEL}
+          placeholder={FIND_ID_TEXTS.PLACEHOLDER}
           value={phoneNumber}
           setValue={setPhoneNumber}
           type="tel"
         />
       </div>
-      <Button label="본인 인증하기" onClick={handleSubmit} />
+      <Button
+        label={FIND_ID_TEXTS.BUTTON}
+        isDisabled={!/^\d{10,11}$/.test(phoneNumber)}
+        onClick={handleSubmit}
+      />
     </div>
   );
 };
