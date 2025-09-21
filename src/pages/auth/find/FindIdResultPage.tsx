@@ -39,7 +39,7 @@ const FindIdResultPage = () => {
   };
 
   const handleLogin = () => {
-    navigate("/signin");
+    navigate("/login");
   };
 
   if (!result) {

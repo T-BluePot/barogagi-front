@@ -37,11 +37,13 @@ const IdFindContent = () => {
           type="tel"
         />
       </div>
-      <Button
-        label={FIND_ID_TEXTS.BUTTON}
-        isDisabled={!/^\d{10,11}$/.test(phoneNumber)}
-        onClick={handleSubmit}
-      />
+      <div className="mb-6">
+        <Button
+          label={FIND_ID_TEXTS.BUTTON}
+          isDisabled={!/^\d{10,11}$/.test(phoneNumber)}
+          onClick={handleSubmit}
+        />
+      </div>
     </div>
   );
 };

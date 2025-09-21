@@ -54,7 +54,7 @@ const FullScreenModalContent = ({
       </div>
 
       {/* 버튼 영역 */}
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-sm mb-6">
         <CommonButton
           label={buttonLabel}
           onClick={onButtonClick}

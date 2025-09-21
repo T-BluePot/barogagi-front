@@ -8,7 +8,7 @@ import { FIND_PW_TEXTS } from "@/constants/texts/auth/find/findAuth";
 import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
-import CommonButton from "@/components/common/buttons/CommonButton";
+import Button from "@/components/common/buttons/CommonButton";
 
 const FindPwResetPage = () => {
   const navigate = useNavigate();
@@ -98,11 +98,13 @@ const FindPwResetPage = () => {
               helperText={passwordConfirm !== "" ? errors.passwordConfirm : ""}
             />
           </div>
-          <CommonButton
-            label={FIND_PW_TEXTS.RESET.BUTTON}
-            isDisabled={!isFormValid}
-            onClick={handleSubmit}
-          />
+          <div className="mb-6">
+            <Button
+              label={FIND_PW_TEXTS.RESET.BUTTON}
+              isDisabled={!isFormValid}
+              onClick={handleSubmit}
+            />
+          </div>
         </div>
       </div>
     </div>

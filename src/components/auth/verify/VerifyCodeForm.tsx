@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 import { CommonInput } from "../common/CommonInput";
-import CommonButton from "@/components/common/buttons/CommonButton";
+import Button from "@/components/common/buttons/CommonButton";
 import CodeResendButton from "@/components/auth/verify/CodeResendButton";
 
 type VerifyCodeFormProps = {
@@ -53,17 +53,19 @@ export const VerifyCodeForm = ({
           type="tel"
         />
         <div className="flex mt-2">
-          <div className="flex grow-1 text-center items-baseline">
+          <div className="flex grow-1 texcpt-center items-baseline">
             <span className="typo-body text-alert-red">{formattedTime}</span>
           </div>
           <CodeResendButton />
         </div>
       </div>
-      <CommonButton
-        label={VERIFY_TEXT.CODE.NEXT_BUTTON}
-        isDisabled={!code}
-        onClick={() => onConfirm(code)}
-      />
+      <div className="mb-6">
+        <Button
+          label={VERIFY_TEXT.CODE.NEXT_BUTTON}
+          isDisabled={!code}
+          onClick={() => onConfirm(code)}
+        />
+      </div>
     </div>
   );
 };
