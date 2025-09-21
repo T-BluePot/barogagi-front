@@ -3,8 +3,22 @@ export const FIND_ID_TEXTS = {
   TITLE: "아이디 확인을 위해\n휴대폰 번호를 입력해주세요",
   SUB_TITLE: "가입 시 등록한 번호로 인증번호를 보내드려요",
   LABEL: "휴대전화 번호",
-
   BUTTON: "본인 인증하기",
+
+  // ID 찾기 결과
+  RESULT: {
+    NOT_FOUND: {
+      TITLE: "아이디를 찾을 수 없어요...",
+      DESCRIPTION:
+        "입력하신 번호로 등록된 아이디를 찾을 수 없어요.\n다른 번호를 입력해보시겠어요?",
+      BUTTON: "다시 찾기",
+    },
+    FOUND: {
+      TITLE: "등록된 아이디는",
+      SUFFIX: "입니다.",
+      BUTTON: "로그인 하러 가기",
+    },
+  },
 };
 
 export const FIND_PW_TEXTS = {
