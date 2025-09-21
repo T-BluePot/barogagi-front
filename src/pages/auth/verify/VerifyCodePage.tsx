@@ -47,9 +47,9 @@ const VerifyCodePage = () => {
     if (flow === "signup") {
       navigate("/signup/profile");
     } else if (flow === "find-id") {
-      navigate("/find", { state: { phone: state.phone } });
+      navigate("/find/result", { state: { phone: state.phone } });
     } else if (flow === "reset-password") {
-      navigate("/reset-password");
+      navigate("/find/reset-password");
     } else {
       navigate("/");
     }

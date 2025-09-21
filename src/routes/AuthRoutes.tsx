@@ -14,6 +14,8 @@ import EmailLoginPage from "@/pages/auth/signin/EmailLoginPage";
 
 /* auth/find 로직 */
 import AccountFindPage from "@/pages/auth/find/AccountFindPage";
+import FindIdResultPage from "@/pages/auth/find/FindIdResultPage";
+import FindPwResetPage from "@/pages/auth/find/FindPwResetPage";
 
 /* unified verify page */
 import VerifyPage from "@/pages/auth/verify/VerifyPage";
@@ -37,6 +39,8 @@ export const AuthRoutes = () => (
     <Route path="/signup/complete" element={<SignupCompletePage />} />
     {/* 계정 찾기 */}
     <Route path="/find" element={<AccountFindPage />} />
+    <Route path="/find/result" element={<FindIdResultPage />} />
+    <Route path="/find/reset-password" element={<FindPwResetPage />} />
     {/* unified verify route with flow param */}
     <Route path="/verify/:flow" element={<VerifyPage />} />
     <Route path="/verify/:flow/code" element={<VerifyCodePage />} />
