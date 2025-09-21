@@ -42,7 +42,7 @@ const AccountFindPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen">
       {/* Tab Menu */}
       <div className="px-4">
         <TabMenuBar

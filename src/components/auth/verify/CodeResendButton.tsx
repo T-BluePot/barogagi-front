@@ -3,22 +3,16 @@ import { usePhoneVerify } from "@/hooks/usePhoneVerify";
 
 type Props = {
   initialPhone?: string;
-  onSent?: (phone: string) => void;
-  flow?: string;
 };
 
-const PhoneVerificationForm = ({ initialPhone = "", onSent, flow }: Props) => {
-  const { status, error, remainingSeconds, formattedTime, sendCode, resend } =
-    usePhoneVerify();
+const CodeResendButton = ({ initialPhone = "" }: Props) => {
+  const { status, error, formattedTime, resend } = usePhoneVerify();
 
   useEffect(() => {
     // if initialPhone is provided, auto-send? (opt-in)
   }, [initialPhone]);
 
-  const handleSend = async (phone: string) => {
-    const ok = await sendCode(phone);
-    if (ok && onSent) onSent(phone);
-  };
+  // send is triggered elsewhere; this component focuses on showing timer and offering resend
 
   return (
     <div className="space-y-4">
@@ -40,4 +34,4 @@ const PhoneVerificationForm = ({ initialPhone = "", onSent, flow }: Props) => {
   );
 };
 
-export default PhoneVerificationForm;
+export default CodeResendButton;

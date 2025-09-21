@@ -1,19 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 import { safeBack } from "@/utils/safeBack";
-import { VERIFY_TEXT } from "@/constants/texts/auth/signup/verify";
+import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 
 import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
-import { CommonInput } from "@/components/auth/common/CommonInput";
-import Button from "@/components/common/buttons/CommonButton";
+import { VerifyForm } from "@/components/auth/verify/VerifyForm";
 
 type Flow = "signup" | "find-id" | "reset-password";
 
-type LocationState = {
-  phone?: string;
-};
+type LocationState = { phone?: string };
 
 const FLOW_CONFIG: Record<
   Flow,
@@ -55,8 +52,6 @@ const VerifyPage = () => {
 
   const state = (location.state as LocationState) ?? {};
 
-  const [phone, setPhone] = useState<string>(state.phone ?? "");
-
   useEffect(() => {
     // validate flow
     if (!flow || !["signup", "find-id", "reset-password"].includes(flow)) {
@@ -67,14 +62,8 @@ const VerifyPage = () => {
 
   const current = flow ? FLOW_CONFIG[flow as Flow] : FLOW_CONFIG.signup;
 
-  const handleNext = () => {
-    if (!phone.trim()) {
-      alert("휴대전화 번호를 입력해주세요.");
-      return;
-    }
-
-    // 실제 구현에서는 여기서 인증 코드 전송 API 호출
-    // phone 등 민감 정보는 URL에 두지 않고 state로 전달
+  const handleNext = (phone: string) => {
+    // TODO: 인증코드 전송 API 호출 후 페이지 이동
     navigate(current.nextPath, { state: { phone } });
   };
 
@@ -87,20 +76,13 @@ const VerifyPage = () => {
       />
       <div className="flex flex-col w-full px-6">
         <PageTitle title={current.title} subTitle={current.subTitle} />
-        <div className="flex flex-col gap-6">
-          <CommonInput
-            label={current.label}
-            placeholder={"010-1234-5678"}
-            value={phone}
-            setValue={setPhone}
-            type="tel"
-          />
-          <Button
-            label={current.buttonLabel}
-            isDisabled={!phone}
-            onClick={handleNext}
-          />
-        </div>
+        <VerifyForm
+          label={current.label}
+          placeholder={"phone number"}
+          initialPhone={state.phone}
+          buttonLabel={current.buttonLabel}
+          onNext={handleNext}
+        />
       </div>
     </div>
   );
