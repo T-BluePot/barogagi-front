@@ -62,7 +62,7 @@ const FindPwResetPage = () => {
     console.log("비밀번호 변경:", { password, passwordConfirm });
 
     // 성공 시 로그인 페이지로 이동
-    navigate("/signin");
+    navigate("/login");
   };
 
   const isFormValid =
