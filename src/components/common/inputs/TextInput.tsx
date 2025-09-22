@@ -23,7 +23,7 @@ const TextInput = ({
 
   if (size === "large") {
     // 여러 줄 입력용 textarea
-    const fieldClass = clsx(baseClass, "h-[120px]");
+    const fieldClass = clsx(baseClass, "h-[120px] resize-none");
     return (
       <textarea
         className={fieldClass}
