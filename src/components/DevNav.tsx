@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const DevNav = () => {
   const navigate = useNavigate();
   return (
-    <nav className="flex flex-row w-full gap-6">
+    <nav className="flex flex-row w-full gap-6 flex-wrap">
       <button onClick={() => navigate("/signup")}>TermsPage</button>
       <button onClick={() => navigate("/")}>AuthLandingPage</button>
       <button onClick={() => navigate("/login")}>EmailLoginPage</button>

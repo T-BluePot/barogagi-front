@@ -7,6 +7,7 @@ interface HeaderConfig {
   type: HeaderType;
   label?: string;
   isDarkBg?: boolean;
+  backPath?: string; // 뒤로가기 경로 지정
   rightAction?: () => void;
   rightIcon?: React.ReactNode;
 }
@@ -19,6 +20,7 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
     type: "back",
     label: "로그인",
     isDarkBg: true,
+    backPath: ROUTES.HOME, // 홈(랜딩) 페이지로 이동
   },
   [ROUTES.AUTH.SIGNUP]: {
     type: "back",
@@ -29,6 +31,12 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
     type: "title",
     label: "약관 동의",
     isDarkBg: true,
+  },
+  [ROUTES.AUTH.FIND_ACCOUNT]: {
+    type: "back" as HeaderType,
+    label: "계정 찾기",
+    isDarkBg: true,
+    backPath: ROUTES.AUTH.SIGNIN, // 로그인 페이지로 이동
   },
 
   // 메인 앱 라우트들

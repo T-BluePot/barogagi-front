@@ -1,7 +1,7 @@
 type Props = {
   label: string;
   onClick?: () => void;
-  disabled?: boolean;
+  isDisabled?: boolean;
   type?: "button" | "submit" | "reset";
   className?: string;
   variant?: "default" | "main" | "main-underline";
@@ -10,7 +10,7 @@ type Props = {
 const TextButton = ({
   label,
   onClick,
-  disabled,
+  isDisabled,
   type = "button",
   variant = "default",
   className,
@@ -29,7 +29,7 @@ const TextButton = ({
     <button
       className={`${baseStyle} ${className || ""}`}
       onClick={onClick}
-      disabled={disabled}
+      disabled={isDisabled}
       type={type}
       aria-label={label}
     >

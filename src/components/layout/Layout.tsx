@@ -5,6 +5,7 @@ import { CloseHeader } from "@/components/common/headers/CloseHeader";
 import { CommonHeader } from "@/components/common/headers/CommonHeader";
 import { useHeaderConfig } from "@/hooks/useHeaderConfig";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
+import { useNavigate } from "react-router-dom";
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,10 +13,18 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const headerConfig = useHeaderConfig();
+  const navigate = useNavigate();
   const { goBack, goToHome, goToProfile } = useAppNavigation();
 
   // 뒤로가기 핸들러
   const handleBack = () => {
+    // backPath가 설정되어 있으면 해당 경로로 이동
+    if (headerConfig.backPath) {
+      navigate(headerConfig.backPath);
+      return;
+    }
+
+    // 기본 뒤로가기 동작
     if (window.history.length > 1) {
       goBack();
     } else {
@@ -74,6 +83,7 @@ export const Layout = ({ children }: LayoutProps) => {
         headerConfig.isDarkBg ? "bg-gray-black" : "bg-white"
       }`}
     >
+      {renderHeader()}
       <main className="flex-1">{children}</main>
     </div>
   );
