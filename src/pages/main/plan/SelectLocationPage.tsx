@@ -22,14 +22,14 @@ const SelectLocationPage = () => {
 
   // 지역 선택 처리
   const handleSelectRegion = (regionNum: number) => {
-    // 태그 3개 제한
-    if (selectedRegionNums.length >= 3) {
-      alert(SELECT_LOCATION_TEXT.ALERT_TAG); // 테스트 전용
-      return;
-    }
-    // 중복 방지
-    if (selectedRegionNums.includes(regionNum)) return;
-    setSelectedRegionNums([...selectedRegionNums, regionNum]);
+    setSelectedRegionNums((prev) => {
+      if (prev.length >= 3) {
+        alert(SELECT_LOCATION_TEXT.ALERT_TAG); // TODO: 토스트로 교체
+        return prev;
+      }
+      if (prev.includes(regionNum)) return prev;
+      return [...prev, regionNum];
+    });
   };
 
   return (
