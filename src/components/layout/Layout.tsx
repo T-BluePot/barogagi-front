@@ -74,7 +74,6 @@ export const Layout = ({ children }: LayoutProps) => {
         headerConfig.isDarkBg ? "bg-gray-black" : "bg-white"
       }`}
     >
-      {renderHeader()}
       <main className="flex-1">{children}</main>
     </div>
   );
