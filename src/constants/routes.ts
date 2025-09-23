@@ -6,6 +6,7 @@ export const ROUTES = {
     SIGNIN: "/login",
     SIGNUP: "/signup",
     SIGNUP_TERMS: "/signup/terms",
+
     FIND_ACCOUNT: "/find",
   },
 

@@ -22,6 +22,7 @@ const SelectLocationPage = () => {
 
   // 지역 선택 처리
   const handleSelectRegion = (regionNum: number) => {
+
     setSelectedRegionNums((prev) => {
       if (prev.length >= 3) {
         alert(SELECT_LOCATION_TEXT.ALERT_TAG); // TODO: 토스트로 교체
@@ -30,6 +31,7 @@ const SelectLocationPage = () => {
       if (prev.includes(regionNum)) return prev;
       return [...prev, regionNum];
     });
+
   };
 
   return (
