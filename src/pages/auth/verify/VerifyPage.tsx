@@ -8,7 +8,7 @@ import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyForm } from "@/components/auth/verify/VerifyForm";
 
-type Flow = "signup" | "find-id" | "reset-password";
+type Flow = "signup-verify" | "find-id" | "reset-password";
 
 type LocationState = { phone?: string };
 
@@ -22,8 +22,8 @@ const FLOW_CONFIG: Record<
     buttonLabel: string;
   }
 > = {
-  signup: {
-    nextPath: "/verify/signup/code",
+  "signup-verify": {
+    nextPath: "/verify/signup-verify/code",
     title: VERIFY_TEXT.PHONE.TITLE,
     subTitle: VERIFY_TEXT.PHONE.SUB_TITLE,
     label: VERIFY_TEXT.PHONE.LABEL,
@@ -54,13 +54,18 @@ const VerifyPage = () => {
 
   useEffect(() => {
     // validate flow
-    if (!flow || !["signup", "find-id", "reset-password"].includes(flow)) {
+    if (
+      !flow ||
+      !["signup-verify", "find-id", "reset-password"].includes(flow)
+    ) {
       navigate("/", { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flow]);
 
-  const current = flow ? FLOW_CONFIG[flow as Flow] : FLOW_CONFIG.signup;
+  const current = flow
+    ? FLOW_CONFIG[flow as Flow]
+    : FLOW_CONFIG["signup-verify"];
 
   const handleNext = (phone: string) => {
     // TODO: 인증코드 전송 API 호출 후 페이지 이동
@@ -72,7 +77,7 @@ const VerifyPage = () => {
       <BackHeader
         isDarkBg={true}
         onClick={() => safeBack(navigate, "/")}
-        label={"인증"}
+        label={"인증하기"}
       />
       <div className="flex flex-col w-full px-6">
         <PageTitle title={current.title} subTitle={current.subTitle} />

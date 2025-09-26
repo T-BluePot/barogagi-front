@@ -44,7 +44,7 @@ const VerifyCodePage = () => {
     if (!code.trim()) return;
 
     // TODO: API 검증 성공 후 플로우에 따라 이동
-    if (flow === "signup") {
+    if (flow === "signup-verify") {
       navigate("/signup/profile");
     } else if (flow === "find-id") {
       navigate("/find/result?tab=id", { state: { phone: state.phone } });
