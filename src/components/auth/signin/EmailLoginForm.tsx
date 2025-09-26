@@ -3,6 +3,7 @@ import { CommonInput } from "@/components/auth/common/CommonInput";
 import CommonButton from "@/components/common/buttons/CommonButton";
 import TextButton from "@/components/common/buttons/TextButton";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 export const EmailLoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,7 +56,7 @@ export const EmailLoginForm = () => {
             label="회원가입"
             variant="main"
             className="typo-tag"
-            onClick={() => navigate("/verify/signup")}
+            onClick={() => navigate(ROUTES.AUTH.SIGNUP.TERMS)}
           />
         </div>
       </div>

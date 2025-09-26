@@ -1,18 +1,33 @@
 // 라우트 경로 상수
+const MAIN_BASE = "/home" as const;
+const PLAN_BASE = "/plan" as const;
+const USER_BASE = "/user" as const;
+
 export const ROUTES = {
+  ROOT: "/", // Landing page (전역 홈)
   // Auth 관련
-  HOME: "/",
+
   AUTH: {
     SIGNIN: "/login",
-    SIGNUP: "/signup",
-    SIGNUP_TERMS: "/signup/terms",
-
+    SIGNUP: {
+      TERMS: "/signup",
+      CREDENTIALS: "/signup/credentials",
+      VERIFY: "/verify/signup-verify",
+      PROFILE: "/signup/profile",
+      COMPLETE: "/signup/complete",
+    },
     FIND_ACCOUNT: "/find",
   },
 
-  // 메인 앱
+  // 메인: 탭 관리
+  TABS: {
+    MAIN: MAIN_BASE,
+    PLAN: PLAN_BASE,
+    USER: USER_BASE,
+  },
+
   MAIN: {
-    HOME: "/home",
+    HOME: MAIN_BASE,
     PROFILE: "/profile",
     SETTINGS: "/settings",
     CHAT: "/chat",
@@ -20,7 +35,7 @@ export const ROUTES = {
   },
 
   PLAN: {
-    LIST: "/plan", // 일정 리스트 메인
+    LIST: PLAN_BASE, // 일정 리스트 메인
     DATE: "/plan/date", // 날짜 선택
     LOCATION: "/plan/location", // 지역 선택
     TRAVEL_STYLE: "/plan/travelStyle", // 여행 스타일 선택
@@ -28,6 +43,7 @@ export const ROUTES = {
 
   // 추가 기능들
   USER: {
+    BASE: USER_BASE,
     DETAIL: "/user/:id", // 동적 라우트
   },
 } as const;
@@ -36,8 +52,13 @@ export const ROUTES = {
 export const getRoutePath = {
   auth: {
     signin: () => ROUTES.AUTH.SIGNIN,
-    signup: () => ROUTES.AUTH.SIGNUP,
-    signupTerms: () => ROUTES.AUTH.SIGNUP_TERMS,
+    signup: {
+      terms: () => ROUTES.AUTH.SIGNUP.TERMS,
+      credentials: () => ROUTES.AUTH.SIGNUP.CREDENTIALS,
+      verify: () => ROUTES.AUTH.SIGNUP.VERIFY,
+      profile: () => ROUTES.AUTH.SIGNUP.PROFILE,
+      complete: () => ROUTES.AUTH.SIGNUP.COMPLETE,
+    },
     findAccount: () => ROUTES.AUTH.FIND_ACCOUNT,
   },
   main: {
@@ -61,15 +82,20 @@ export const getRoutePath = {
 
 // 모든 라우트를 배열로 추출 (타입 체크용)
 export const ALL_ROUTES = [
-  ROUTES.HOME,
+  ROUTES.ROOT,
   ROUTES.AUTH.SIGNIN,
-  ROUTES.AUTH.SIGNUP,
-  ROUTES.AUTH.SIGNUP_TERMS,
+  ROUTES.AUTH.SIGNUP.TERMS,
+  ROUTES.AUTH.SIGNUP.CREDENTIALS,
+  ROUTES.AUTH.SIGNUP.VERIFY,
+  ROUTES.AUTH.SIGNUP.PROFILE,
+  ROUTES.AUTH.SIGNUP.COMPLETE,
+  // ROUTES.AUTH.SIGNUP_TERMS,
   ROUTES.MAIN.HOME,
   ROUTES.MAIN.PROFILE,
   ROUTES.MAIN.SETTINGS,
   ROUTES.MAIN.CHAT,
   ROUTES.MAIN.NOTIFICATION,
+  // 일정 로작
   ROUTES.PLAN.LIST,
   ROUTES.PLAN.DATE,
   ROUTES.PLAN.LOCATION,

@@ -9,10 +9,9 @@ export const useAppNavigation = () => {
 
   return {
     // Auth 관련 네비게이션
-    goToHome: () => navigate(ROUTES.HOME),
+    goToLanding: () => navigate(ROUTES.ROOT),
     goToSignIn: () => navigate(ROUTES.AUTH.SIGNIN),
-    goToSignUp: () => navigate(ROUTES.AUTH.SIGNUP),
-    goToSignUpTerms: () => navigate(ROUTES.AUTH.SIGNUP_TERMS),
+    goToSignUp: () => navigate(ROUTES.AUTH.SIGNUP.TERMS),
 
     // 메인 앱 네비게이션
     goToMainHome: () => navigate(ROUTES.MAIN.HOME),

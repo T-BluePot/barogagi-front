@@ -35,7 +35,7 @@ export const AuthRoutes = () => (
     <Route path="/signup" element={<TermsPage />} />
     <Route path="/signup/credentials" element={<CredentialsPage />} />
     {/* legacy signup verify route -> redirect to unified verify page for signup flow */}
-    <Route path="/signup/verify" element={<VerifyPage />} />
+
     {/* keep legacy signup code route but use shared component */}
     <Route path="/signup/verify/code" element={<VerifyCodePage />} />
     <Route path="/signup/profile" element={<ProfilePage />} />

@@ -2,19 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ValidationError } from "yup";
 
-import { safeBack } from "@/utils/safeBack";
 import {
   idSchema,
   passwordSchema,
   passwordConfirmSchema,
 } from "@/utils/authSchema";
 
-import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { CREDENTIALS_TEXT } from "@/constants/texts/auth/signup/credentials";
+import { ROUTES } from "@/constants/routes";
 
 const CredentialsPage = () => {
   const navigate = useNavigate();
@@ -75,10 +74,6 @@ const CredentialsPage = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
-      <BackHeader
-        isDarkBg={true}
-        onClick={() => safeBack(navigate, "/signup")}
-      />
       <div className="flex flex-col w-full px-6">
         <PageTitle title={CREDENTIALS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">
@@ -118,7 +113,7 @@ const CredentialsPage = () => {
         <Button
           label={CREDENTIALS_TEXT.NEXT_BUTTON}
           isDisabled={shouldDisableButton()}
-          onClick={() => navigate("/signup/verify")}
+          onClick={() => navigate(ROUTES.AUTH.SIGNUP.VERIFY)}
         />
       </div>
     </div>
