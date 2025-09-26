@@ -14,13 +14,18 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const headerConfig = useHeaderConfig();
   const navigate = useNavigate();
-  const { goBack, goToHome, goToProfile } = useAppNavigation();
+  const { goBack, goToLanding, goToProfile } = useAppNavigation();
 
   // 뒤로가기 핸들러
   const handleBack = () => {
     // backPath가 설정되어 있으면 해당 경로로 이동
-    if (headerConfig.backPath) {
+    if (headerConfig.type === "back" && headerConfig.backPath) {
       navigate(headerConfig.backPath);
+      return;
+    }
+
+    if (headerConfig.type === "close" && headerConfig.closePath) {
+      navigate(headerConfig.closePath);
       return;
     }
 
@@ -28,13 +33,13 @@ export const Layout = ({ children }: LayoutProps) => {
     if (window.history.length > 1) {
       goBack();
     } else {
-      goToHome();
+      goToLanding();
     }
   };
 
   // 닫기 핸들러 (모달이나 특별한 경우)
   const handleClose = () => {
-    goToHome();
+    goToLanding();
   };
 
   // 헤더 렌더링
@@ -80,7 +85,9 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <div
       className={`min-h-screen flex flex-col ${
-        headerConfig.isDarkBg ? "bg-gray-black" : "bg-white"
+        headerConfig && "isDarkBg" in headerConfig && headerConfig.isDarkBg
+          ? "bg-gray-black"
+          : "bg-white"
       }`}
     >
       {renderHeader()}

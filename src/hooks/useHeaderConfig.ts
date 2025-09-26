@@ -1,5 +1,7 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, matchPath } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+
+/*
 
 type HeaderType = "none" | "back" | "title" | "close" | "common";
 
@@ -12,31 +14,68 @@ interface HeaderConfig {
   rightIcon?: React.ReactNode;
 }
 
-// 라우트별 헤더 설정
+*/
+
+export type HeaderConfig =
+  | { type: "none" }
+  | { type: "common"; rightPath?: string }
+  | { type: "title"; label: string; isDarkBg?: boolean }
+  | { type: "close"; label?: string; isDarkBg?: boolean; closePath?: string }
+  | { type: "back"; label?: string; isDarkBg?: boolean; backPath?: string };
+
+/** 라우트별 헤더 설정 */
+
+// 섹션별 공통 규칙 (예: /signup/*)
+const SECTION_RULES: Array<{ pattern: string; config: HeaderConfig }> = [
+  {
+    pattern: "/signup/*", // /signup으로 시작하는 모든 하위 경로
+    config: {
+      type: "back",
+      label: "회원가입",
+      isDarkBg: true,
+      backPath: ROUTES.AUTH.SIGNIN,
+    },
+  },
+];
+
+// 경로에 따른 헤더 설정
 const HEADER_CONFIG: Record<string, HeaderConfig> = {
-  // Auth 관련 라우트들
-  [ROUTES.HOME]: { type: "none", isDarkBg: true }, // 랜딩 페이지는 헤더 없음
+  // Auth 관련
+  [ROUTES.ROOT]: { type: "none" }, // 랜딩 페이지는 헤더 없음
   [ROUTES.AUTH.SIGNIN]: {
     type: "back",
     label: "로그인",
     isDarkBg: true,
-    backPath: ROUTES.HOME, // 홈(랜딩) 페이지로 이동
+    backPath: ROUTES.ROOT, // 홈(랜딩) 페이지로 이동
   },
-  [ROUTES.AUTH.SIGNUP]: {
-    type: "back",
-    label: "회원가입",
-    isDarkBg: true,
-  },
-  [ROUTES.AUTH.SIGNUP_TERMS]: {
-    type: "title",
-    label: "약관 동의",
-    isDarkBg: true,
-  },
+  [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none" },
   [ROUTES.AUTH.FIND_ACCOUNT]: {
-    type: "back" as HeaderType,
+    type: "back",
     label: "계정 찾기",
     isDarkBg: true,
     backPath: ROUTES.AUTH.SIGNIN, // 로그인 페이지로 이동
+  },
+
+  // Plan 관련
+  [ROUTES.PLAN.LIST]: {
+    type: "none",
+  },
+  [ROUTES.PLAN.DATE]: {
+    type: "back",
+    label: "날짜 선택",
+    isDarkBg: false,
+    backPath: ROUTES.PLAN.LIST,
+  },
+  [ROUTES.PLAN.LOCATION]: {
+    type: "back",
+    label: "지역 선택",
+    isDarkBg: false,
+    backPath: ROUTES.PLAN.DATE,
+  },
+  [ROUTES.PLAN.TRAVEL_STYLE]: {
+    type: "back",
+    label: "여행 스타일 선택",
+    isDarkBg: false,
   },
 
   // 메인 앱 라우트들
@@ -74,7 +113,6 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
 // 기본 헤더 설정
 const DEFAULT_HEADER_CONFIG: HeaderConfig = {
   type: "common",
-  isDarkBg: false,
 };
 
 export const useHeaderConfig = () => {
@@ -82,11 +120,11 @@ export const useHeaderConfig = () => {
 
   // 현재 경로에 맞는 헤더 설정 가져오기
   const getHeaderConfig = (): HeaderConfig => {
-    // 정확한 경로 매칭
+    // 1. 정확한 경로 매칭
     const exactMatch = HEADER_CONFIG[location.pathname];
     if (exactMatch) return exactMatch;
 
-    // 동적 라우트 매칭 (예: /user/:id)
+    // 2. 동적 라우트 매칭 (예: /user/:id)
     const dynamicMatch = Object.keys(HEADER_CONFIG).find((route) => {
       if (route.includes(":")) {
         const routePattern = route.replace(/:[^/]+/g, "[^/]+");
@@ -98,6 +136,14 @@ export const useHeaderConfig = () => {
 
     if (dynamicMatch) return HEADER_CONFIG[dynamicMatch];
 
+    // 3. 섹션 규칙 매칭 (예: /signup/*)
+    for (const rule of SECTION_RULES) {
+      // end:false 로 하위 경로까지 포괄
+      if (matchPath({ path: rule.pattern, end: false }, location.pathname)) {
+        return rule.config;
+      }
+    }
+
     // 기본값 반환
     return DEFAULT_HEADER_CONFIG;
   };
@@ -105,7 +151,11 @@ export const useHeaderConfig = () => {
   return getHeaderConfig();
 };
 
-// 헤더 설정을 동적으로 업데이트하는 Hook
+/* 
+- 헤더 설정을 동적으로 업데이트하는 Hook
+> 현재 문제: HEADER_CONFIG의 타입이 as const로 고정되어 있어(읽기 전용) 업데이트 불가
+            해당 코드에 대한 필요성이 있는지 검토 필요
+
 export const useUpdateHeaderConfig = () => {
   const updateConfig = (path: string, config: HeaderConfig) => {
     HEADER_CONFIG[path] = config;
@@ -113,3 +163,6 @@ export const useUpdateHeaderConfig = () => {
 
   return updateConfig;
 };
+
+> 런타임 오버라이드 훅으로 변경 필요
+*/
