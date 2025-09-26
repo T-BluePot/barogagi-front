@@ -2,11 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { SELECT_LOCATION_TEXT } from "@/constants/texts/main/plan/selectLocation";
-import { safeBack } from "@/utils/safeBack";
 
 import { mockRegions } from "@/mock/regions";
 
-import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import Button from "@/components/common/buttons/CommonButton";
 import { SearchComponent } from "@/components/main/plan/SearchComponent";
@@ -22,7 +20,6 @@ const SelectLocationPage = () => {
 
   // 지역 선택 처리
   const handleSelectRegion = (regionNum: number) => {
-
     setSelectedRegionNums((prev) => {
       if (prev.length >= 3) {
         alert(SELECT_LOCATION_TEXT.ALERT_TAG); // TODO: 토스트로 교체
@@ -31,19 +28,12 @@ const SelectLocationPage = () => {
       if (prev.includes(regionNum)) return prev;
       return [...prev, regionNum];
     });
-
   };
 
   return (
     // h-dvh: 동적 뷰포트 높이를 사용해 모바일 브라우저 바 높이 변화에도 안정적
     // overflow-hidden: 페이지 바깥 스크롤을 차단
     <div className="flex h-dvh flex-col w-full bg-gray-white overflow-hidden">
-      {/* 상단 헤더는 고정 높이 영역 */}
-      <BackHeader
-        label={SELECT_LOCATION_TEXT.HEADER_TITLE}
-        onClick={() => safeBack(navigate, ROUTES.PLAN.DATE)}
-      />
-
       {/* 본문: 내부 스크롤만 허용하기 위해 min-h-0 + overflow-hidden */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* 좌우 패딩 및 상단 영역 묶음 */}

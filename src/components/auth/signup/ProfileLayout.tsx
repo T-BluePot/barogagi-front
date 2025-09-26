@@ -11,7 +11,6 @@ import { SelectGenderBottomModal } from "@/components/auth/signup/SelectGenderBo
 import { SelectBirthBottomModal } from "@/components/auth/signup/SelectBirthBottomModal";
 import { SkipProfileModal } from "@/components/auth/signup/SkipProfileModal";
 
-import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 import { SelectTriggerButton } from "@/components/auth/common/SelectTriggerButton";
@@ -45,7 +44,6 @@ const ProfileLayout = ({
   birthProps,
   skipProfileProps,
   pageTitle,
-  handleGoBack,
   // 프로필 설정
   nickname,
   setNickname,
@@ -71,7 +69,6 @@ const ProfileLayout = ({
       <SkipProfileModal {...skipProfileProps} />
 
       {/* 화면 레이아웃 */}
-      <BackHeader isDarkBg={true} onClick={handleGoBack} />
       <div className="flex flex-col w-full px-6">
         <PageTitle {...pageTitle} />
         <div className="flex flex-col w-full gap-4">

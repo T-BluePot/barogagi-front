@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { safeBack } from "@/utils/safeBack";
 import { SELECT_DATE_TEXT } from "@/constants/texts/main/plan/selectDate";
 
-import { BackHeader } from "@/components/common/headers/BackHeader";
 import Calendar from "@/components/main/plan/Calendar";
 import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
@@ -16,12 +14,7 @@ const SelectDatePage = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen gap-6 bg-gray-white">
-      <BackHeader
-        label={SELECT_DATE_TEXT.HEADER_TITLE}
-        onClick={() => safeBack(navigate, ROUTES.PLAN.LIST)}
-      />
-
-      <div className="flex flex-col w-full px-6">
+      <div className="flex flex-col w-full px-6 mt-6">
         <Calendar
           withTitle={true}
           selectedDate={selectedDate}

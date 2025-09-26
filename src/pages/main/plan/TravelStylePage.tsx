@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { safeBack } from "@/utils/safeBack";
 import { TRAVEL_STYLE_TEXT } from "@/constants/texts/main/plan/travelStyle";
 
 import type { ActiveMap } from "@/components/main/plan/TravelStyleTagContainer";
 
-import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { TravelStyleTagContainer } from "@/components/main/plan/TravelStyleTagContainer";
 import TextInput from "@/components/common/inputs/TextInput";
@@ -31,10 +29,6 @@ const TravelStylePage = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-white">
-      <BackHeader
-        label={TRAVEL_STYLE_TEXT.HEADER_TITLE}
-        onClick={() => safeBack(navigate, ROUTES.PLAN.LOCATION)}
-      />
       <div className="flex flex-col mt-6 gap-8 px-6">
         <div className={sectionClass}>
           <PageTitle
