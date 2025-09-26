@@ -34,10 +34,6 @@ export const AuthRoutes = () => (
     {/* 회원가입 로직 페이지 */}
     <Route path="/signup" element={<TermsPage />} />
     <Route path="/signup/credentials" element={<CredentialsPage />} />
-    {/* legacy signup verify route -> redirect to unified verify page for signup flow */}
-
-    {/* keep legacy signup code route but use shared component */}
-    <Route path="/signup/verify/code" element={<VerifyCodePage />} />
     <Route path="/signup/profile" element={<ProfilePage />} />
     <Route path="/signup/complete" element={<SignupCompletePage />} />
     {/* 계정 찾기 */}
