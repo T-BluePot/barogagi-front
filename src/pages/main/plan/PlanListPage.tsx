@@ -38,12 +38,14 @@ const PlanListPage = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen gap-6 bg-gray-white">
-      <TitleHeader label="내 일정">
-        <PlanViewToggleButton
-          viewType={viewMode}
-          toggleViewType={toggleViewType}
-        />
-      </TitleHeader>
+      <div className="sticky top-0 z-10 bg-gray-white">
+        <TitleHeader label="내 일정">
+          <PlanViewToggleButton
+            viewType={viewMode}
+            toggleViewType={toggleViewType}
+          />
+        </TitleHeader>
+      </div>
       <div className="flex flex-1 w-full overflow-hidden">
         {viewMode === "calendar" ? (
           <div className="flex flex-1">
