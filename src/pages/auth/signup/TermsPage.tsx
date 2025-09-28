@@ -49,8 +49,8 @@ const TermsPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-black">
-      <div className="flex flex-col flex-1 w-full px-6 items-baseline">
+    <div className="flex flex-col h-full">
+      <div className="flex flex-1 flex-col w-full px-6 items-baseline">
         <PageTitle title={TERMS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">
           <SelectAllConsentButton

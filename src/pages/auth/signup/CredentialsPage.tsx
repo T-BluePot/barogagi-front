@@ -73,7 +73,7 @@ const CredentialsPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-black">
+    <div className="flex flex-col items-center justify-between h-full bg-gray-black">
       <div className="flex flex-col w-full px-6">
         <PageTitle title={CREDENTIALS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">

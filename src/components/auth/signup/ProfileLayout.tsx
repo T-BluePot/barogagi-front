@@ -60,7 +60,7 @@ const ProfileLayout = ({
   handleSubmitProfile,
 }: ProfileLayoutProps) => {
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-black">
+    <div className="flex flex-col w-full h-full">
       {/* 성별 선택 모달 */}
       <SelectGenderBottomModal {...genderProps} />
       {/* 생년월일 선택 모달 */}
