@@ -28,7 +28,7 @@ const TravelStylePage = () => {
   const [travelNotes, setTravelNotes] = useState<string>("");
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-white">
+    <div className="flex flex-col w-full h-full bg-gray-white">
       <div className="flex flex-col mt-6 gap-8 px-6">
         <div className={sectionClass}>
           <PageTitle
@@ -58,7 +58,7 @@ const TravelStylePage = () => {
           />
         </div>
       </div>
-      <div className="fixed w-full bottom-0 items-center p-6">
+      <div className="mt-auto w-full p-6">
         <Button
           label={TRAVEL_STYLE_TEXT.NEXT_BUTTON}
           isDisabled={isAllInactive(actives)}

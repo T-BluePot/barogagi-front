@@ -31,9 +31,7 @@ const SelectLocationPage = () => {
   };
 
   return (
-    // h-dvh: 동적 뷰포트 높이를 사용해 모바일 브라우저 바 높이 변화에도 안정적
-    // overflow-hidden: 페이지 바깥 스크롤을 차단
-    <div className="flex h-dvh flex-col w-full bg-gray-white overflow-hidden">
+    <div className="flex h-full flex-col w-full bg-gray-white overflow-hidden">
       {/* 본문: 내부 스크롤만 허용하기 위해 min-h-0 + overflow-hidden */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* 좌우 패딩 및 상단 영역 묶음 */}
@@ -83,23 +81,20 @@ const SelectLocationPage = () => {
       </div>
 
       {/* 하단 푸터: fixed 제거, 문서 흐름 내 마지막 행으로 배치 */}
-      <div className="flex-none w-full">
-        <div className="flex justify-center items-center p-6">
-          <div className="w-full max-w-screen-sm">
-            <Button
-              label={
-                !hasSelection
-                  ? SELECT_LOCATION_TEXT.NEXT_BUTTON.disabled
-                  : SELECT_LOCATION_TEXT.NEXT_BUTTON.enabled
-              }
-              isDisabled={!hasSelection}
-              onClick={() => {
-                // 추후 선택된 일정 넘기기 로직 추가
-                navigate(ROUTES.PLAN.TRAVEL_STYLE);
-              }}
-            />
-          </div>
-        </div>
+
+      <div className="mt-auto w-full p-6">
+        <Button
+          label={
+            !hasSelection
+              ? SELECT_LOCATION_TEXT.NEXT_BUTTON.disabled
+              : SELECT_LOCATION_TEXT.NEXT_BUTTON.enabled
+          }
+          isDisabled={!hasSelection}
+          onClick={() => {
+            // 추후 선택된 일정 넘기기 로직 추가
+            navigate(ROUTES.PLAN.TRAVEL_STYLE);
+          }}
+        />
       </div>
     </div>
   );

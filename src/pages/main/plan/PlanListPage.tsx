@@ -37,7 +37,7 @@ const PlanListPage = () => {
   const markedDates = getMarkedDates(scheduleLists);
 
   return (
-    <div className="flex flex-col w-full min-h-screen gap-6 bg-gray-white">
+    <div className="flex flex-col w-full gap-6 bg-gray-white">
       <div className="sticky top-0 z-10 bg-gray-white">
         <TitleHeader label="내 일정">
           <PlanViewToggleButton
