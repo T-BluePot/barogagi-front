@@ -77,6 +77,11 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
     label: "여행 스타일 선택",
     isDarkBg: false,
   },
+  [ROUTES.PLAN.COMPLETE]: {
+    type: "close",
+    label: "추천 루트",
+    isDarkBg: false,
+  },
 
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {
