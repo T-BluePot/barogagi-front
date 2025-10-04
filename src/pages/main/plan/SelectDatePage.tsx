@@ -13,7 +13,7 @@ const SelectDatePage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   return (
-    <div className="flex flex-col w-full min-h-screen gap-6 bg-gray-white">
+    <div className="flex flex-col w-full h-full gap-6 bg-gray-white">
       <div className="flex flex-col w-full px-6 mt-6">
         <Calendar
           withTitle={true}
