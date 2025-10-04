@@ -39,6 +39,7 @@ export const ROUTES = {
     DATE: "/plan/date", // 날짜 선택
     LOCATION: "/plan/location", // 지역 선택
     TRAVEL_STYLE: "/plan/travelStyle", // 여행 스타일 선택
+    COMPLETE: "/plan/complete", // 추천 루트 완료
   },
 
   // 추가 기능들
