@@ -64,7 +64,7 @@ const TravelStylePage = () => {
           isDisabled={isAllInactive(actives)}
           onClick={() => {
             // 추후 선택된 일정 넘기기 로직 추가
-            navigate(ROUTES.PLAN.COMPLETE);
+            navigate(ROUTES.PLAN.CREATE);
           }}
         />
       </div>

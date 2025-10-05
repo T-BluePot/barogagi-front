@@ -6,14 +6,14 @@ interface FooterProps {
   handleConfirm: () => void;
 }
 
-const PlanRoutesCompleteFooter = ({
+const PlanRoutesCreateFooter = ({
   handleRegenerate,
   handleConfirm,
 }: FooterProps) => {
   return (
     <>
       <div className="h-5 bg-gradient-to-b from-gray-white/0 to-gray-white" />
-      <div className="flex flex-row w-full p-6 gap-4 items-center bg-gray-white">
+      <div className="flex flex-row w-full p-6 justify-between items-center bg-gray-white">
         <TextButton
           label="다시 생성하기"
           className="shrink-0"
@@ -25,4 +25,4 @@ const PlanRoutesCompleteFooter = ({
   );
 };
 
-export default PlanRoutesCompleteFooter;
+export default PlanRoutesCreateFooter;
