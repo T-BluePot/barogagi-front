@@ -6,7 +6,7 @@ interface FooterProps {
   handleConfirm: () => void;
 }
 
-const PlanRoutesCreateFooter = ({
+const RoutesCreateFooter = ({
   handleRegenerate,
   handleConfirm,
 }: FooterProps) => {
@@ -25,4 +25,4 @@ const PlanRoutesCreateFooter = ({
   );
 };
 
-export default PlanRoutesCreateFooter;
+export default RoutesCreateFooter;
