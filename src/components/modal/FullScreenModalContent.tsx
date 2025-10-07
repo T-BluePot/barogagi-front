@@ -21,45 +21,54 @@ const FullScreenModalContent = ({
   const hasContent = title || content || highlightText;
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 px-6">
-      {/* 텍스트 영역 */}
-      <div className="flex flex-1 justify-center flex-col items-center text-center mb-16 ">
-        {/* 제목은 항상 표시 (기본값 포함) */}
-        <div className="pb-3">
-          <h1 className="typo-title-01 text-white mb-6 whitespace-pre-line">
-            {displayTitle}
-          </h1>
+    <div className="flex flex-col h-full">
+      {/* 스크롤 가능한 콘텐츠 영역 */}
+      <div className="flex-1 overflow-y-auto px-6">
+        <div className="flex flex-col items-center justify-center min-h-full py-8">
+          {/* 텍스트 영역 */}
+          <div className="flex flex-col items-center text-center space-y-6">
+            {/* 제목은 항상 표시 (기본값 포함) */}
+            <div>
+              <h1 className="typo-title-01 text-white whitespace-pre-line">
+                {displayTitle}
+              </h1>
 
-          {/* 강조 텍스트 (아이디) */}
-          {highlightText && (
-            <div className="mb-4">
-              <span className="typo-title-01 text-main">{highlightText}</span>
+              {/* 강조 텍스트 (아이디) */}
+              {highlightText && (
+                <div className="mt-4">
+                  <span className="typo-title-01 text-main">
+                    {highlightText}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* 내용이 있을 때만 표시 */}
+            {displayContent && (
+              <p className="typo-body text-gray-30 whitespace-pre-line leading-relaxed max-w-md">
+                {displayContent}
+              </p>
+            )}
+
+            {/* 아무 내용도 없을 때 기본 메시지 */}
+            {!hasContent && (
+              <p className="typo-body text-gray-30">
+                내용을 불러오는 중입니다...
+              </p>
+            )}
+          </div>
         </div>
-
-        {/* 내용이 있을 때만 표시 */}
-        {displayContent && (
-          <p className="typo-body text-gray-30 mb-8 whitespace-pre-line leading-relaxed">
-            {displayContent}
-          </p>
-        )}
-
-        {/* 아무 내용도 없을 때 기본 메시지 */}
-        {!hasContent && (
-          <p className="typo-body text-gray-30 mb-8">
-            내용을 불러오는 중입니다...
-          </p>
-        )}
       </div>
 
-      {/* 버튼 영역 */}
-      <div className="w-full max-w-sm mb-6">
-        <CommonButton
-          label={buttonLabel}
-          onClick={onButtonClick}
-          isDisabled={false}
-        />
+      {/* 하단 고정 버튼 영역 */}
+      <div className="flex-none px-6 pb-6 pt-4 bg-gray-black">
+        <div className="w-full max-w-sm mx-auto">
+          <CommonButton
+            label={buttonLabel}
+            onClick={onButtonClick}
+            isDisabled={false}
+          />
+        </div>
       </div>
     </div>
   );
