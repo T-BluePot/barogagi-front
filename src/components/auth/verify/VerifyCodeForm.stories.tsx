@@ -107,25 +107,3 @@ export const WithTitle: Story = {
     ),
   ],
 };
-
-export const Mobile: Story = {
-  args: {
-    initialSeconds: 180,
-    onConfirm: action("onConfirm"),
-    onExpired: action("onExpired"),
-  },
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
-    },
-  },
-  decorators: [
-    (Story) => (
-      <div className="min-h-screen bg-gray-900 p-6">
-        <div className="max-w-md mx-auto">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
-};

@@ -7,7 +7,7 @@ interface SnsButtonsGroupProps {
 
 export const SnsButtonsGroup = (props: SnsButtonsGroupProps) => {
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-6 justify-center">
       {/* 네이버 버튼 */}
       <SnsButton
         platform="naver"

@@ -47,16 +47,14 @@ export const Mobile: Story = {
 export const WithNavigation: Story = {
   decorators: [
     (Story) => (
-      <MemoryRouter>
-        <div className="min-h-screen bg-gray-900 p-6">
-          <div className="max-w-md mx-auto">
-            <div className="mb-6 text-white">
-              <h2 className="text-lg">비밀번호 재설정 페이지</h2>
-            </div>
-            <Story />
+      <div className="min-h-screen bg-gray-900 p-6">
+        <div className="max-w-md mx-auto">
+          <div className="mb-6 text-white">
+            <h2 className="text-lg">비밀번호 재설정 페이지</h2>
           </div>
+          <Story />
         </div>
-      </MemoryRouter>
+      </div>
     ),
   ],
 };
