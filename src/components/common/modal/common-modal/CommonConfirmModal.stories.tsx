@@ -193,7 +193,7 @@ export const InteractiveDemo: Story = {
             onClick: () => {
               setIsOpen(false);
               setResult("확인 버튼을 클릭했습니다.");
-              () => console.log("confirmClick");
+              console.log("confirmClick");
             },
           }}
           cancelButtonInfo={{
@@ -201,7 +201,7 @@ export const InteractiveDemo: Story = {
             onClick: () => {
               setIsOpen(false);
               setResult("취소 버튼을 클릭했습니다.");
-              () => console.log("cancelClick");
+              console.log("cancelClick");
             },
           }}
         />

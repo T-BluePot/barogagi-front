@@ -42,8 +42,6 @@ export const Required: Story = {
     id: "privacy",
     label: "개인정보 처리방침 (필수)",
     isConsented: false,
-    onToggle: () => console.log("onToggle"),
-    onOpenDetail: () => console.log("onOpenDetail"),
   },
   decorators: [
     (Story) => (
@@ -59,8 +57,6 @@ export const RequiredChecked: Story = {
     id: "privacy",
     label: "개인정보 처리방침 (필수)",
     isConsented: true,
-    onToggle: () => console.log("onToggle"),
-    onOpenDetail: () => console.log("onOpenDetail"),
   },
   decorators: [
     (Story) => (
@@ -76,8 +72,6 @@ export const Optional: Story = {
     id: "marketing",
     label: "마케팅 수신 동의 (선택)",
     isConsented: false,
-    onToggle: () => console.log("onToggle"),
-    onOpenDetail: () => console.log("onOpenDetail"),
   },
   decorators: [
     (Story) => (
@@ -93,8 +87,6 @@ export const OptionalChecked: Story = {
     id: "marketing",
     label: "마케팅 수신 동의 (선택)",
     isConsented: true,
-    onToggle: () => console.log("onToggle"),
-    onOpenDetail: () => console.log("onOpenDetail"),
   },
   decorators: [
     (Story) => (
@@ -110,8 +102,6 @@ export const LongLabel: Story = {
     id: "terms",
     label: "바로가기 서비스 이용약관 및 개인정보 처리방침 동의 (필수)",
     isConsented: false,
-    onToggle: () => console.log("onToggle"),
-    onOpenDetail: () => console.log("onOpenDetail"),
   },
   decorators: [
     (Story) => (
@@ -127,32 +117,35 @@ export const Multiple: Story = {
     id: "terms",
     label: "이용약관 (필수)",
     isConsented: true,
-    onToggle: () => console.log("onToggle"),
-    onOpenDetail: () => console.log("onOpenDetail"),
   },
-  render: () => (
-    <div className="w-96 p-6 bg-gray-900 space-y-4">
-      <TermsConsentItem
-        id="terms"
-        label="이용약관 (필수)"
-        isConsented={true}
-        onToggle={() => console.log("onToggle")}
-        onOpenDetail={() => console.log("onOpenDetail")}
-      />
-      <TermsConsentItem
-        id="privacy"
-        label="개인정보 처리방침 (필수)"
-        isConsented={true}
-        onToggle={() => console.log("onToggle")}
-        onOpenDetail={() => console.log("onOpenDetail")}
-      />
-      <TermsConsentItem
-        id="marketing"
-        label="마케팅 수신 동의 (선택)"
-        isConsented={false}
-        onToggle={() => console.log("onToggle")}
-        onOpenDetail={() => console.log("onOpenDetail")}
-      />
-    </div>
-  ),
+  render: () => {
+    const handleToggle = () => console.log("onToggle");
+    const handleOpenDetail = () => console.log("onOpenDetail");
+
+    return (
+      <div className="w-96 p-6 bg-gray-900 space-y-4">
+        <TermsConsentItem
+          id="terms"
+          label="이용약관 (필수)"
+          isConsented={true}
+          onToggle={handleToggle}
+          onOpenDetail={handleOpenDetail}
+        />
+        <TermsConsentItem
+          id="privacy"
+          label="개인정보 처리방침 (필수)"
+          isConsented={true}
+          onToggle={handleToggle}
+          onOpenDetail={handleOpenDetail}
+        />
+        <TermsConsentItem
+          id="marketing"
+          label="마케팅 수신 동의 (선택)"
+          isConsented={false}
+          onToggle={handleToggle}
+          onOpenDetail={handleOpenDetail}
+        />
+      </div>
+    );
+  },
 };

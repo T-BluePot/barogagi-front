@@ -154,7 +154,7 @@ export const InteractiveDemo: Story = {
             ...args.buttonInfo,
             onClick: () => {
               setIsOpen(false);
-              () => console.log("closeClick");
+              console.log("closeClick");
             },
           }}
         />
