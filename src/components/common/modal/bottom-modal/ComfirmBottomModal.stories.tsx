@@ -2,7 +2,7 @@ import { ConfirmBottomModal } from "./ComfirmBottomModal";
 import { BottomModalListButton } from "./BottomModalListButton";
 
 export default {
-  title: "Components/Common/Modal/Bottom Modal/ConfirmBottomModal",
+  title: "Components/Modal/Bottom Modal/ConfirmBottomModal",
   component: ConfirmBottomModal,
   parameters: {
     layout: "fullscreen",

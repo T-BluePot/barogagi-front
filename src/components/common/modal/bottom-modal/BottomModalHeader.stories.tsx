@@ -1,7 +1,7 @@
 import { BottomModalHeader } from "./BottomModalHeader";
 
 export default {
-  title: "Components/Common/Modal/Bottom Modal/BottomModalHeader",
+  title: "Components/Modal/Bottom Modal/BottomModalHeader",
   component: BottomModalHeader,
   parameters: {
     layout: "centered",

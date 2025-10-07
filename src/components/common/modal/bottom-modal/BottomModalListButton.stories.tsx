@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { BottomModalListButton } from "./BottomModalListButton";
 
 const meta: Meta<typeof BottomModalListButton> = {
-  title: "Components/Common/Modal/Bottom Modal/BottomModalListButton",
+  title: "Components/Modal/Bottom Modal/BottomModalListButton",
   component: BottomModalListButton,
   parameters: {
     layout: "centered",

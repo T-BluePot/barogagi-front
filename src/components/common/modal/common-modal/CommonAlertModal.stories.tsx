@@ -4,7 +4,7 @@ import { action } from "storybook/actions";
 import CommonAlertModal from "./CommonAlertModal";
 
 const meta = {
-  title: "Components/Modal/CommonAlertModal",
+  title: "Components/Modal/Common Modal/CommonAlertModal",
   component: CommonAlertModal,
   parameters: {
     layout: "fullscreen",

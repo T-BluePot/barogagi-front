@@ -4,7 +4,7 @@ import { action } from "storybook/actions";
 import CommonConfirmModal from "./CommonConfirmModal";
 
 const meta = {
-  title: "Components/Modal/CommonConfirmModal",
+  title: "Components/Modal/Common Modal/CommonConfirmModal",
   component: CommonConfirmModal,
   parameters: {
     layout: "fullscreen",

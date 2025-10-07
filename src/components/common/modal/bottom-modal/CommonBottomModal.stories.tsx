@@ -2,7 +2,7 @@ import { CommonBottomModal } from "./CommonBottomModal";
 import { BottomModalListButton } from "./BottomModalListButton";
 
 export default {
-  title: "Components/Common/Modal/Bottom Modal/CommonBottomModal",
+  title: "Components/Modal/Bottom Modal/CommonBottomModal",
   component: CommonBottomModal,
   parameters: {
     layout: "fullscreen",
