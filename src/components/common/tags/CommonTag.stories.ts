@@ -5,7 +5,7 @@ import { action } from "storybook/actions";
 import { CommonTag } from "./commonTag";
 
 const meta = {
-  title: "Components/CommonTag",
+  title: "Components/Common/Tag/CommonTag",
   component: CommonTag,
   tags: ["autodocs"],
   parameters: {

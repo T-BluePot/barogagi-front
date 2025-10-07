@@ -5,7 +5,7 @@ import { action } from "storybook/actions";
 import { CloseHeader } from "./CloseHeader";
 
 const meta = {
-  title: "Components/CloseHeader",
+  title: "Components/Common/Header/CloseHeader",
   component: CloseHeader,
   tags: ["autodocs"],
   parameters: {

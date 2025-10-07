@@ -5,7 +5,7 @@ import { action } from "storybook/actions";
 import { SelectTag } from "./SelectTag";
 
 const meta = {
-  title: "Components/SelectTag",
+  title: "Components/Common/Tag/SelectTag",
   component: SelectTag,
   tags: ["autodocs"],
   parameters: {
