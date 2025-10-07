@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import CommonAlertModal from "./CommonAlertModal";
 
 const meta = {
@@ -48,7 +47,7 @@ export const Default: Story = {
     },
     buttonInfo: {
       label: "확인",
-      onClick: action("buttonClick"),
+      onClick: () => console.log("buttonClick"),
     },
   },
 };
@@ -63,7 +62,7 @@ export const LongContent: Story = {
     },
     buttonInfo: {
       label: "확인",
-      onClick: action("buttonClick"),
+      onClick: () => console.log("buttonClick"),
     },
   },
 };
@@ -77,7 +76,7 @@ export const ErrorAlert: Story = {
     },
     buttonInfo: {
       label: "다시 시도",
-      onClick: action("retryClick"),
+      onClick: () => console.log("retryClick"),
     },
   },
 };
@@ -91,7 +90,7 @@ export const SuccessAlert: Story = {
     },
     buttonInfo: {
       label: "완료",
-      onClick: action("completeClick"),
+      onClick: () => console.log("completeClick"),
     },
   },
 };
@@ -105,7 +104,7 @@ export const WarningAlert: Story = {
     },
     buttonInfo: {
       label: "이해했습니다",
-      onClick: action("acknowledgeClick"),
+      onClick: () => console.log("acknowledgeClick"),
     },
   },
 };
@@ -119,7 +118,7 @@ export const CustomButtonLabel: Story = {
     },
     buttonInfo: {
       label: "나중에 하기",
-      onClick: action("postponeClick"),
+      onClick: () => console.log("postponeClick"),
     },
   },
 };
@@ -133,7 +132,7 @@ export const InteractiveDemo: Story = {
     },
     buttonInfo: {
       label: "닫기",
-      onClick: action("closeClick"),
+      onClick: () => console.log("closeClick"),
     },
   },
   render: (args) => {
@@ -155,7 +154,7 @@ export const InteractiveDemo: Story = {
             ...args.buttonInfo,
             onClick: () => {
               setIsOpen(false);
-              action("closeClick")();
+              () => console.log("closeClick");
             },
           }}
         />
@@ -173,7 +172,7 @@ export const Closed: Story = {
     },
     buttonInfo: {
       label: "확인",
-      onClick: action("buttonClick"),
+      onClick: () => console.log("buttonClick"),
     },
   },
 };

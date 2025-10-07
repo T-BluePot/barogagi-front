@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import { VerifyCodeForm } from "./VerifyCodeForm";
 
 const meta = {
@@ -24,8 +23,8 @@ const meta = {
     },
   },
   args: {
-    onConfirm: action("onConfirm"),
-    onExpired: action("onExpired"),
+    onConfirm: () => console.log("onConfirm"),
+    onExpired: () => console.log("onExpired"),
   },
 } satisfies Meta<typeof VerifyCodeForm>;
 
@@ -35,8 +34,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     initialSeconds: 180,
-    onConfirm: action("onConfirm"),
-    onExpired: action("onExpired"),
+    onConfirm: () => console.log("onConfirm"),
+    onExpired: () => console.log("onExpired"),
   },
   decorators: [
     (Story) => (
@@ -52,8 +51,8 @@ export const Default: Story = {
 export const ShortTimer: Story = {
   args: {
     initialSeconds: 30,
-    onConfirm: action("onConfirm"),
-    onExpired: action("onExpired"),
+    onConfirm: () => console.log("onConfirm"),
+    onExpired: () => console.log("onExpired"),
   },
   decorators: [
     (Story) => (
@@ -69,8 +68,8 @@ export const ShortTimer: Story = {
 export const LongTimer: Story = {
   args: {
     initialSeconds: 600,
-    onConfirm: action("onConfirm"),
-    onExpired: action("onExpired"),
+    onConfirm: () => console.log("onConfirm"),
+    onExpired: () => console.log("onExpired"),
   },
   decorators: [
     (Story) => (
@@ -86,8 +85,8 @@ export const LongTimer: Story = {
 export const WithTitle: Story = {
   args: {
     initialSeconds: 180,
-    onConfirm: action("onConfirm"),
-    onExpired: action("onExpired"),
+    onConfirm: () => console.log("onConfirm"),
+    onExpired: () => console.log("onExpired"),
   },
   decorators: [
     (Story) => (

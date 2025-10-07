@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import { SelectAllConsentButton } from "./SelectAllConsentButton";
 
 const meta = {
@@ -27,7 +26,7 @@ const meta = {
     },
   },
   args: {
-    onCheckedChange: action("onCheckedChange"),
+    onCheckedChange: () => console.log("onCheckedChange"),
   },
 } satisfies Meta<typeof SelectAllConsentButton>;
 
@@ -38,7 +37,7 @@ export const Default: Story = {
   args: {
     label: "모두 동의하기",
     isChecked: false,
-    onCheckedChange: action("onCheckedChange"),
+    onCheckedChange: () => console.log("onCheckedChange"),
   },
   decorators: [
     (Story) => (
@@ -53,7 +52,7 @@ export const Checked: Story = {
   args: {
     label: "모두 동의하기",
     isChecked: true,
-    onCheckedChange: action("onCheckedChange"),
+    onCheckedChange: () => console.log("onCheckedChange"),
   },
   decorators: [
     (Story) => (
@@ -68,7 +67,7 @@ export const LongLabel: Story = {
   args: {
     label: "모든 이용약관 및 개인정보 처리방침에 동의합니다",
     isChecked: false,
-    onCheckedChange: action("onCheckedChange"),
+    onCheckedChange: () => console.log("onCheckedChange"),
   },
   decorators: [
     (Story) => (

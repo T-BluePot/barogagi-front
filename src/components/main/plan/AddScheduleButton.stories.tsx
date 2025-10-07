@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import { AddScheduleButton } from "./AddScheduleButton";
 
 const meta = {
@@ -23,7 +22,7 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    onAddSchedule: action("onAddSchedule"),
+    onAddSchedule: () => console.log("onAddSchedule"),
   },
 } satisfies Meta<typeof AddScheduleButton>;
 
@@ -32,13 +31,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    onAddSchedule: action("onAddSchedule"),
+    onAddSchedule: () => console.log("onAddSchedule"),
   },
 };
 
 export const WithCustomBackground: Story = {
   args: {
-    onAddSchedule: action("onAddSchedule"),
+    onAddSchedule: () => console.log("onAddSchedule"),
   },
   decorators: [
     (Story) => (
@@ -51,7 +50,7 @@ export const WithCustomBackground: Story = {
 
 export const MultipleButtons: Story = {
   args: {
-    onAddSchedule: action("onAddSchedule"),
+    onAddSchedule: () => console.log("onAddSchedule"),
   },
   render: (args) => (
     <div className="flex gap-4 items-center">

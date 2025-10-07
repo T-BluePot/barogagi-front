@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import AddCurrentLocationButton from "./AddCurrentLocationButton";
 
 const meta = {
@@ -23,7 +22,7 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    handleAddCurrentLocation: action("handleAddCurrentLocation"),
+    handleAddCurrentLocation: () => console.log("handleAddCurrentLocation"),
   },
 } satisfies Meta<typeof AddCurrentLocationButton>;
 
@@ -32,13 +31,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    handleAddCurrentLocation: action("handleAddCurrentLocation"),
+    handleAddCurrentLocation: () => console.log("handleAddCurrentLocation"),
   },
 };
 
 export const InForm: Story = {
   args: {
-    handleAddCurrentLocation: action("handleAddCurrentLocation"),
+    handleAddCurrentLocation: () => console.log("handleAddCurrentLocation"),
   },
   decorators: [
     (Story) => (
@@ -54,7 +53,7 @@ export const InForm: Story = {
 
 export const MultipleButtons: Story = {
   args: {
-    handleAddCurrentLocation: action("handleAddCurrentLocation"),
+    handleAddCurrentLocation: () => console.log("handleAddCurrentLocation"),
   },
   render: (args) => (
     <div className="space-y-4">

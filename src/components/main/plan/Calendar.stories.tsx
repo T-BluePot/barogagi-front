@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import Calendar from "./Calendar";
 
 const meta = {
@@ -40,7 +39,7 @@ export const Default: Story = {
   args: {
     withTitle: false,
     selectedDate: new Date(2025, 4, 15), // 2025년 5월 15일
-    onChangeDate: action("onChangeDate"),
+    onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
       "2025-05-05": true,
       "2025-05-10": true,
@@ -61,7 +60,7 @@ export const WithTitle: Story = {
   args: {
     withTitle: true,
     selectedDate: new Date(2025, 4, 15), // 2025년 5월 15일
-    onChangeDate: action("onChangeDate"),
+    onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
       "2025-05-05": true,
       "2025-05-10": true,
@@ -82,7 +81,7 @@ export const NoSelectedDate: Story = {
   args: {
     withTitle: false,
     selectedDate: null,
-    onChangeDate: action("onChangeDate"),
+    onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
       "2025-05-05": true,
       "2025-05-10": true,
@@ -102,7 +101,7 @@ export const NoMarkedDates: Story = {
   args: {
     withTitle: false,
     selectedDate: new Date(2025, 4, 15),
-    onChangeDate: action("onChangeDate"),
+    onChangeDate: () => console.log("onChangeDate"),
     markedDates: {},
   },
   decorators: [
@@ -118,7 +117,7 @@ export const ManyMarkedDates: Story = {
   args: {
     withTitle: true,
     selectedDate: new Date(2025, 4, 15),
-    onChangeDate: action("onChangeDate"),
+    onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
       "2025-05-01": true,
       "2025-05-03": true,
@@ -148,7 +147,7 @@ export const Interactive: Story = {
   args: {
     withTitle: true,
     selectedDate: new Date(2025, 4, 15),
-    onChangeDate: action("onChangeDate"),
+    onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
       "2025-05-05": true,
       "2025-05-10": true,
@@ -163,7 +162,7 @@ export const Interactive: Story = {
 
     const handleDateChange = (date: Date | null) => {
       setSelectedDate(date);
-      action("onChangeDate")(date);
+      console.log("onChangeDate", date);
     };
 
     return (

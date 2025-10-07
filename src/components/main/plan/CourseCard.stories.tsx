@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import { CourseCard } from "./CourseCard";
 
 const meta = {
@@ -23,8 +22,8 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    onEdit: action("onEdit"),
-    onDelete: action("onDelete"),
+    onEdit: () => console.log("onEdit"),
+    onDelete: () => console.log("onDelete"),
   },
 } satisfies Meta<typeof CourseCard>;
 
@@ -38,8 +37,8 @@ export const Default: Story = {
     date: "2025-05-05",
     scheduleTitle: "부산 여행",
     tags: ["이색체험", "맛집"],
-    onEdit: action("onEdit"),
-    onDelete: action("onDelete"),
+    onEdit: () => console.log("onEdit"),
+    onDelete: () => console.log("onDelete"),
   },
   decorators: [
     (Story) => (
@@ -58,8 +57,8 @@ export const LongTitle: Story = {
     scheduleTitle:
       "매우 긴 제목을 가진 일정입니다. 이 제목은 여러 줄에 걸쳐 표시될 수 있습니다.",
     tags: ["휴식", "자연", "힐링", "사진촬영"],
-    onEdit: action("onEdit"),
-    onDelete: action("onDelete"),
+    onEdit: () => console.log("onEdit"),
+    onDelete: () => console.log("onDelete"),
   },
   decorators: [
     (Story) => (
@@ -86,8 +85,8 @@ export const ManyTags: Story = {
       "쇼핑",
       "문화",
     ],
-    onEdit: action("onEdit"),
-    onDelete: action("onDelete"),
+    onEdit: () => console.log("onEdit"),
+    onDelete: () => console.log("onDelete"),
   },
   decorators: [
     (Story) => (
@@ -105,8 +104,8 @@ export const SingleTag: Story = {
     date: "2025-08-10",
     scheduleTitle: "간단한 일정",
     tags: ["휴식"],
-    onEdit: action("onEdit"),
-    onDelete: action("onDelete"),
+    onEdit: () => console.log("onEdit"),
+    onDelete: () => console.log("onDelete"),
   },
   decorators: [
     (Story) => (
@@ -124,8 +123,8 @@ export const NoTags: Story = {
     date: "2025-09-01",
     scheduleTitle: "태그가 없는 일정",
     tags: [],
-    onEdit: action("onEdit"),
-    onDelete: action("onDelete"),
+    onEdit: () => console.log("onEdit"),
+    onDelete: () => console.log("onDelete"),
   },
   decorators: [
     (Story) => (
@@ -143,8 +142,8 @@ export const Multiple: Story = {
     date: "2025-05-05",
     scheduleTitle: "부산 여행",
     tags: ["이색체험", "맛집"],
-    onEdit: action("onEdit"),
-    onDelete: action("onDelete"),
+    onEdit: () => console.log("onEdit"),
+    onDelete: () => console.log("onDelete"),
   },
   render: (args) => (
     <div className="w-96 p-4 space-y-4">

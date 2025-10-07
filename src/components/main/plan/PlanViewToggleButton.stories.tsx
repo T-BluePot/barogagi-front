@@ -1,6 +1,5 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import { PlanViewToggleButton } from "./PlanViewToggleButton";
 import type { PlanViewType } from "./PlanViewToggleButton";
 
@@ -31,7 +30,7 @@ const meta = {
     },
   },
   args: {
-    toggleViewType: action("toggleViewType"),
+    toggleViewType: () => console.log("toggleViewType"),
   },
 } satisfies Meta<typeof PlanViewToggleButton>;
 
@@ -41,21 +40,21 @@ type Story = StoryObj<typeof meta>;
 export const ListView: Story = {
   args: {
     viewType: "list",
-    toggleViewType: action("toggleViewType"),
+    toggleViewType: () => console.log("toggleViewType"),
   },
 };
 
 export const CalendarView: Story = {
   args: {
     viewType: "calendar",
-    toggleViewType: action("toggleViewType"),
+    toggleViewType: () => console.log("toggleViewType"),
   },
 };
 
 export const Interactive: Story = {
   args: {
     viewType: "list",
-    toggleViewType: action("toggleViewType"),
+    toggleViewType: () => console.log("toggleViewType"),
   },
   render: function InteractiveToggle(args) {
     const [viewType, setViewType] = React.useState<PlanViewType>(args.viewType);
@@ -75,7 +74,7 @@ export const Interactive: Story = {
 export const WithCustomBackground: Story = {
   args: {
     viewType: "list",
-    toggleViewType: action("toggleViewType"),
+    toggleViewType: () => console.log("toggleViewType"),
   },
   decorators: [
     (Story) => (

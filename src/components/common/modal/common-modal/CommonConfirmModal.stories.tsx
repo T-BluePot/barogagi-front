@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 import CommonConfirmModal from "./CommonConfirmModal";
 
 const meta = {
@@ -51,11 +50,11 @@ export const Default: Story = {
     },
     confirmButtonInfo: {
       label: "확인",
-      onClick: action("confirmClick"),
+      onClick: () => console.log("confirmClick"),
     },
     cancelButtonInfo: {
       label: "취소",
-      onClick: action("cancelClick"),
+      onClick: () => console.log("cancelClick"),
     },
   },
 };
@@ -69,11 +68,11 @@ export const DeleteConfirm: Story = {
     },
     confirmButtonInfo: {
       label: "삭제",
-      onClick: action("deleteClick"),
+      onClick: () => console.log("deleteClick"),
     },
     cancelButtonInfo: {
       label: "취소",
-      onClick: action("cancelClick"),
+      onClick: () => console.log("cancelClick"),
     },
   },
 };
@@ -87,11 +86,11 @@ export const SaveConfirm: Story = {
     },
     confirmButtonInfo: {
       label: "저장",
-      onClick: action("saveClick"),
+      onClick: () => console.log("saveClick"),
     },
     cancelButtonInfo: {
       label: "저장 안함",
-      onClick: action("dontSaveClick"),
+      onClick: () => console.log("dontSaveClick"),
     },
   },
 };
@@ -105,11 +104,11 @@ export const LogoutConfirm: Story = {
     },
     confirmButtonInfo: {
       label: "로그아웃",
-      onClick: action("logoutClick"),
+      onClick: () => console.log("logoutClick"),
     },
     cancelButtonInfo: {
       label: "계속 사용",
-      onClick: action("stayClick"),
+      onClick: () => console.log("stayClick"),
     },
   },
 };
@@ -124,11 +123,11 @@ export const LongContent: Story = {
     },
     confirmButtonInfo: {
       label: "진행",
-      onClick: action("proceedClick"),
+      onClick: () => console.log("proceedClick"),
     },
     cancelButtonInfo: {
       label: "취소",
-      onClick: action("cancelClick"),
+      onClick: () => console.log("cancelClick"),
     },
   },
 };
@@ -142,11 +141,11 @@ export const CustomLabels: Story = {
     },
     confirmButtonInfo: {
       label: "지금 업데이트",
-      onClick: action("updateNowClick"),
+      onClick: () => console.log("updateNowClick"),
     },
     cancelButtonInfo: {
       label: "나중에",
-      onClick: action("updateLaterClick"),
+      onClick: () => console.log("updateLaterClick"),
     },
   },
 };
@@ -160,11 +159,11 @@ export const InteractiveDemo: Story = {
     },
     confirmButtonInfo: {
       label: "확인",
-      onClick: action("confirmClick"),
+      onClick: () => console.log("confirmClick"),
     },
     cancelButtonInfo: {
       label: "취소",
-      onClick: action("cancelClick"),
+      onClick: () => console.log("cancelClick"),
     },
   },
   render: (args) => {
@@ -194,7 +193,7 @@ export const InteractiveDemo: Story = {
             onClick: () => {
               setIsOpen(false);
               setResult("확인 버튼을 클릭했습니다.");
-              action("confirmClick")();
+              () => console.log("confirmClick");
             },
           }}
           cancelButtonInfo={{
@@ -202,7 +201,7 @@ export const InteractiveDemo: Story = {
             onClick: () => {
               setIsOpen(false);
               setResult("취소 버튼을 클릭했습니다.");
-              action("cancelClick")();
+              () => console.log("cancelClick");
             },
           }}
         />
@@ -220,11 +219,11 @@ export const Closed: Story = {
     },
     confirmButtonInfo: {
       label: "확인",
-      onClick: action("confirmClick"),
+      onClick: () => console.log("confirmClick"),
     },
     cancelButtonInfo: {
       label: "취소",
-      onClick: action("cancelClick"),
+      onClick: () => console.log("cancelClick"),
     },
   },
 };
