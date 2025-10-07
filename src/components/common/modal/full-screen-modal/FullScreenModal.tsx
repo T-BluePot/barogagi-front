@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import FullScreenModalLayout from "../layout/FullScreenModalLayout";
-import FullScreenModalContent from "./FullScreenModalContent";
+import FullScreenModalContent from "../FullScreenModalContent";
 
 type Props = {
   isOpen: boolean;

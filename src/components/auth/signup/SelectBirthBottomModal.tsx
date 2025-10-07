@@ -1,4 +1,4 @@
-import { CommonBottomModal } from "@/components/common/bottom-modal/CommonBottomModal";
+import { CommonBottomModal } from "@/components/common/modal/bottom-modal/CommonBottomModal";
 import { BirthdayPicker } from "@/components/common/BirthdayPicker";
 
 import type { SelectBirthProps } from "@/types/profileTypes";
