@@ -12,7 +12,7 @@ const RoutesCreateFooter = ({
 }: FooterProps) => {
   return (
     <>
-      <div className="h-5 bg-gradient-to-b from-gray-white/0 to-gray-white" />
+      <div className="h-2 bg-gradient-to-b from-gray-white/0 to-gray-white" />
       <div className="flex flex-row w-full p-6 justify-between items-center bg-gray-white">
         <TextButton
           label="다시 생성하기"
