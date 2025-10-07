@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CommonAlertModalLayout from "../layout/CommonAlertModalLayout";
+import CommonAlertModalLayout from "@/components/layout/CommonAlertModalLayout";
 import CommonModalContent from "./CommonModalContent";
 import type { CommonAlertModalPropsType } from "@/types/modalTypes";
 

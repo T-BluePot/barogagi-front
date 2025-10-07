@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CommonConfirmModalLayout from "../layout/CommonConfirmModalLayout";
+import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
 import CommonModalContent from "./CommonModalContent";
 import type { CommonConfirmModalPropsType } from "@/types/modalTypes";
 
