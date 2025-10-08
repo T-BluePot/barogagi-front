@@ -12,6 +12,7 @@ export const EmailLoginForm = () => {
   const handleLogin = () => {
     // 로그인 로직
     console.log("로그인 시도:", { email, password });
+    navigate(ROUTES.MAIN.HOME);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
