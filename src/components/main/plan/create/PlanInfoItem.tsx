@@ -3,12 +3,12 @@ import LocationPinIcon from "@mui/icons-material/LocationPin";
 
 type Variant = "time" | "location";
 
-interface ScheduleInfoItemProps {
+interface PlanInfoItemProps {
   variant: Variant;
   value: string;
 }
 
-export const ScheduleInfoItem = ({ variant, value }: ScheduleInfoItemProps) => {
+export const PlanInfoItem = ({ variant, value }: PlanInfoItemProps) => {
   return (
     <div className="flex flex-row items-center gap-1">
       {variant === "time" && (

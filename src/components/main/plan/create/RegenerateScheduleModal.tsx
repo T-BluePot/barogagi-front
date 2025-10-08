@@ -2,17 +2,17 @@ import CommonConfirmModal from "@/components/modal/CommonConfirmModal";
 
 import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 
-interface RegeneratePlanModalProps {
+interface RegenerateScheduleModalProps {
   isRegenerateOpen: boolean;
   onRegenerateCancel: () => void;
   onCegenerateConfirm: () => void;
 }
 
-export const RegeneratePlanModal = ({
+export const RegenerateScheduleModal = ({
   isRegenerateOpen,
   onRegenerateCancel,
   onCegenerateConfirm,
-}: RegeneratePlanModalProps) => {
+}: RegenerateScheduleModalProps) => {
   return (
     <CommonConfirmModal
       isOpen={isRegenerateOpen}

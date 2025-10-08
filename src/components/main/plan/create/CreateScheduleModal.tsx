@@ -2,17 +2,17 @@ import CommonConfirmModal from "@/components/modal/CommonConfirmModal";
 
 import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 
-interface CreatePlanModalProps {
+interface CreateScheduleModalProps {
   isConfirmOpen: boolean;
   onConfirmCancel: () => void;
   onConfirmConfirm: () => void;
 }
 
-export const CreatePlanModal = ({
+export const CreateScheduleModal = ({
   isConfirmOpen,
   onConfirmCancel,
   onConfirmConfirm,
-}: CreatePlanModalProps) => {
+}: CreateScheduleModalProps) => {
   return (
     <CommonConfirmModal
       isOpen={isConfirmOpen}
