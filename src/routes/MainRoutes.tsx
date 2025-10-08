@@ -12,11 +12,13 @@ import HomePage from "@/pages/main/HomePage";
 
 export const MainRoutes = () => (
   <Routes>
+    {/* Home 페이지 */}
+    <Route path="/" element={<HomePage />} />
+    <Route path="/home" element={<HomePage />} />
     {/* 일정 생성 */}
     <Route path="/plan" element={<PlanListPage />} />
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
     <Route path="/plan/travelStyle" element={<TravelStylePage />} />
-    <Route path="/home" element={<HomePage />} />
   </Routes>
 );

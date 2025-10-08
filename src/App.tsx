@@ -2,7 +2,7 @@ import "./App.css";
 import DevNav from "@/components/DevNav";
 import { AuthRoutes } from "@/routes/AuthRoutes";
 import { MainRoutes } from "@/routes/MainRoutes";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 
 function App() {
@@ -10,8 +10,10 @@ function App() {
     <BrowserRouter>
       <DevNav />
       <Layout>
-        <AuthRoutes />
-        <MainRoutes />
+        <Routes>
+          <Route path="/auth/*" element={<AuthRoutes />} />
+          <Route path="/*" element={<MainRoutes />} />
+        </Routes>
       </Layout>
     </BrowserRouter>
   );
