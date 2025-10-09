@@ -41,7 +41,7 @@ export const CourseCard = ({
             className="cursor-pointer"
             onClick={(e) => {
               e.stopPropagation(); // 부모 onClick으로의 전파 방지
-              onDelete(); // 삭제 콜백 실행
+              onDelete?.(); // 삭제 콜백 실행 (옵셔널 체이닝)
             }}
           >
             <DeleteOutlineIcon className="text-gray-30 !text-[20px]" />
