@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-type PAGEROUTE = "auth" | "main";
+type PAGEROUTE = "auth" | "main" | "home";
 
 export const PageTitle = ({
   type = "auth",
@@ -11,17 +11,15 @@ export const PageTitle = ({
   title: string;
   subTitle?: string;
 }) => {
-  const containerClass = clsx(
-    "flex flex-col w-full",
-    type === "auth" ? "gap-3 my-[60px]" : "gap-2"
-  );
+  const containerClass = clsx("flex flex-col w-full", {
+    "gap-3 my-[60px]": type === "auth",
+    "gap-2 mt-6 mb-8": type === "main" || type === "home",
+  });
 
-  const titleClass = clsx(
-    "text-left whitespace-pre-line",
-    type === "auth"
-      ? "typo-title-01 text-white"
-      : "typo-title-02 text-gray-black"
-  );
+  const titleClass = clsx("text-left whitespace-pre-line", {
+    "typo-title-01 text-white": type === "auth" || type === "home",
+    "typo-title-02 text-gray-black": type === "main",
+  });
 
   const subTitleClass = clsx(
     "text-left whitespace-pre-line",
