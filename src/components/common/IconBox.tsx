@@ -6,6 +6,7 @@ interface IconBoxProps {
   name: string;
   width?: number;
   height?: number;
+  weight?: number;
   className?: string;
 }
 
@@ -13,6 +14,7 @@ const IconBox: React.FC<IconBoxProps> = ({
   name,
   width = 24,
   height = 24,
+  weight = 300,
   className,
 }) => {
   return (
@@ -26,7 +28,13 @@ const IconBox: React.FC<IconBoxProps> = ({
     >
       <span
         className="material-icons"
-        style={{ fontSize: width, width, height, lineHeight: `${height}px` }}
+        style={{
+          fontSize: width,
+          width,
+          height,
+          fontWeight: weight,
+          lineHeight: `${height}px`,
+        }}
         aria-hidden="true"
       >
         {name}
