@@ -1,9 +1,7 @@
 import { CourseCard } from "../../plan/CourseCard";
 import ContentWrapper from "./ContentWrapper";
 
-type Props = {};
-
-const UpcomingScheduleSection: React.FC<Props> = () => {
+const UpcomingScheduleSection: React.FC = () => {
   // 목 데이터
   const mockScheduleData = {
     scheduleNum: 1,
@@ -15,13 +13,14 @@ const UpcomingScheduleSection: React.FC<Props> = () => {
   };
 
   const handleEdit = () => {
-    console.log("일정 수정하기");
+    // TODO: 일정 수정 페이지로 이동 또는 수정 모달 표시
   };
+
   const handleTitleClick = () => {
-    console.log("타이틀 클릭됨");
+    // TODO: 전체 일정 목록 페이지로 이동
   };
+
   return (
-    
     <ContentWrapper
       title="곧 다가오는"
       highlightText="일정"
