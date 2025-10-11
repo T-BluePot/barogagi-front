@@ -60,6 +60,10 @@ const TrendingCarousel: React.FC<Props> = ({ items = [] }) => {
   const gap = 16; // 16px
   const translateX = -(currentIndex * (itemWidth + gap));
 
+  // 드래그 제약 범위 계산
+  // 첫 번째 아이템(0)부터 마지막 아이템까지 이동 가능
+  const maxTranslateX = -((displayItems.length - 1) * (itemWidth + gap));
+
   const handleDragEnd = (
     _: unknown,
     info: {
@@ -105,8 +109,8 @@ const TrendingCarousel: React.FC<Props> = ({ items = [] }) => {
           animate={{ x: translateX }}
           drag="x"
           dragConstraints={{
-            left: translateX,
-            right: translateX,
+            left: maxTranslateX, // 마지막 아이템까지 이동 가능
+            right: 0, // 첫 번째 아이템 위치를 넘지 않음
           }}
           dragElastic={0.2}
           dragMomentum={false}
