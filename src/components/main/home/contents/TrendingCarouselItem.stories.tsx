@@ -41,7 +41,7 @@ export const Cafe: Story = {
   },
 };
 
-export const Date: Story = {
+export const DateSpot: Story = {
   args: {
     item: {
       id: 2,
