@@ -8,15 +8,16 @@ export const ROUTES = {
   // Auth 관련
 
   AUTH: {
-    SIGNIN: "/login",
+    LANDING: "/auth",
+    SIGNIN: "/auth/login",
     SIGNUP: {
-      TERMS: "/signup",
-      CREDENTIALS: "/signup/credentials",
-      VERIFY: "/verify/signup-verify",
-      PROFILE: "/signup/profile",
-      COMPLETE: "/signup/complete",
+      TERMS: "/auth/signup",
+      CREDENTIALS: "/auth/signup/credentials",
+      VERIFY: "/auth/verify/signup-verify",
+      PROFILE: "/auth/signup/profile",
+      COMPLETE: "/auth/signup/complete",
     },
-    FIND_ACCOUNT: "/find",
+    FIND_ACCOUNT: "/auth/find",
   },
 
   // 메인: 탭 관리

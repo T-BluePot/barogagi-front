@@ -6,7 +6,7 @@ const AuthLandingPage = () => {
   // 소셜 로그인 버튼 클릭 핸들러
 
   return (
-    <div className="min-h-screen bg-gray-black flex flex-col items-center justify-between px-6">
+    <div className="h-full bg-gray-black flex flex-col items-center justify-between px-6 py-8">
       {/* 로고 및 제목 영역 */}
       <div className="flex flex-col items-center justify-center flex-1">
         {/* 상단 라인 - 왼쪽에서 오른쪽으로 */}

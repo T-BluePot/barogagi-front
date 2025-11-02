@@ -22,19 +22,19 @@ import VerifyPage from "@/pages/auth/verify/VerifyPage";
 
 export const AuthRoutes = () => (
   <Routes>
-    <Route path="/auth" element={<AuthLandingPage />} />
-    <Route path="/auth/login" element={<EmailLoginPage />} />
+    <Route path="/" element={<AuthLandingPage />} />
+    <Route path="/login" element={<EmailLoginPage />} />
     {/* 회원가입 로직 페이지 */}
-    <Route path="/auth/signup" element={<TermsPage />} />
-    <Route path="/auth/signup/credentials" element={<CredentialsPage />} />
-    <Route path="/auth/signup/profile" element={<ProfilePage />} />
-    <Route path="/auth/signup/complete" element={<SignupCompletePage />} />
+    <Route path="/signup" element={<TermsPage />} />
+    <Route path="/signup/credentials" element={<CredentialsPage />} />
+    <Route path="/signup/profile" element={<ProfilePage />} />
+    <Route path="/signup/complete" element={<SignupCompletePage />} />
     {/* 계정 찾기 */}
-    <Route path="/auth/find" element={<AccountFindPage />} />
-    <Route path="/auth/find/result" element={<FindIdResultPage />} />
-    <Route path="/auth/find/reset-password" element={<FindPwResetPage />} />
+    <Route path="/find" element={<AccountFindPage />} />
+    <Route path="/find/result" element={<FindIdResultPage />} />
+    <Route path="/find/reset-password" element={<FindPwResetPage />} />
     {/* unified verify route with flow param */}
-    <Route path="/auth/verify/:flow" element={<VerifyPage />} />
-    <Route path="/auth/verify/:flow/code" element={<VerifyCodePage />} />
+    <Route path="/verify/:flow" element={<VerifyPage />} />
+    <Route path="/verify/:flow/code" element={<VerifyCodePage />} />
   </Routes>
 );
