@@ -1,5 +1,8 @@
 import { useRef } from "react";
 import clsx from "clsx";
+
+import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
+
 import CancelIcon from "@mui/icons-material/Cancel";
 
 interface ScheduleTitleInputProps {
@@ -24,7 +27,7 @@ const ScheduleTitleInput = ({
   return (
     <div
       ref={wrapperRef}
-      className="relative flex w-full justify-between items-center px-1 py-2 border-b border-gray-40 focus:outline-none"
+      className="relative flex w-full h-12 justify-between items-center px-1 py-2 border-b border-gray-40 focus:outline-none"
       onBlur={(e) => {
         // 포커스가 벗어났을 때 (단, 내부의 다른 요소로 이동하는 경우는 제외)
         const relatedTarget = e.relatedTarget as Node | null;
@@ -35,7 +38,7 @@ const ScheduleTitleInput = ({
         }
         // 사용자가 일정명을 비우지 않도록 기본값 설정
         if (scheduleName.trim() === "") {
-          setScheduleName("오늘의 일정");
+          setScheduleName(ROUTES_CREATE_TEXT.HEADER.DEFAULT_SCHEDULE_NAME);
         }
         setEditMode(false);
       }}
@@ -44,7 +47,7 @@ const ScheduleTitleInput = ({
         ref={inputRef}
         type="text"
         className={clsx(inputClass, inputFontClass, inputPlaceholder)}
-        placeholder="일정에 어울리는 제목을 지어볼까요?"
+        placeholder={ROUTES_CREATE_TEXT.HEADER.SCHEDULE_NAME_PLACEHOLDER}
         value={scheduleName}
         onChange={(e) => {
           setScheduleName(e.target.value);
@@ -61,7 +64,7 @@ const ScheduleTitleInput = ({
         }}
         className="absolute right-1"
       >
-        <CancelIcon className="!text-[16px] !text-gray-black" />
+        <CancelIcon fontSize="small" className="!text-gray-black" />
       </button>
     </div>
   );
