@@ -21,12 +21,12 @@ interface PlanDetailCardProps {
    */
   isOpen: boolean; // 카드 확장 여부
   setIsOpen: (isOpen: boolean) => void; // 카드 확장 상태 변경 함수
-  placeAdress?: string;
-  placeInfo?: string;
+  placeAddress?: string; // 장소 주소
+  placeInfo?: string; // 장소 설명
+  placeLink?: string; // 장소 링크
 
   src: string; // 이미지 소스 URL
   alt?: string; // 이미지 대체 텍스트
-  handleOpenMap?: () => void;
 }
 
 export const PlanDetailCard = ({
@@ -38,11 +38,11 @@ export const PlanDetailCard = ({
   tags,
   isOpen = false,
   setIsOpen,
-  placeAdress,
+  placeAddress,
   placeInfo,
   src,
   alt = "장소 이미지",
-  handleOpenMap,
+  placeLink,
 }: PlanDetailCardProps) => {
   const planTime = `${startTime} ~ ${endTime}`;
 
@@ -57,12 +57,12 @@ export const PlanDetailCard = ({
   // 지도 영역 클릭 시 이벤트 전파 차단
   const handleMapClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    handleOpenMap?.();
+    window.open(placeLink, "_blank"); // 새 탭에서 장소 링크 열기
   };
 
   return (
     <div
-      className="flex flex-col items-baseline px-5 pt-4 bg-gray-white rounded-xl gap-4 select-none"
+      className="flex flex-col items-baseline px-5 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
       onClick={handleCardClick}
     >
       {/* 일정 정보 영역 */}
@@ -71,9 +71,9 @@ export const PlanDetailCard = ({
           <span className="typo-subtitle truncate">{planName}</span>
           <button
             onClick={handleEditClick}
-            className="rounded-full bg-transparent p-1.5 hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
+            className="rounded-full bg-transparent p-1 hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
           >
-            <MoreVertIcon className="text-gray-40" />
+            <MoreVertIcon className="text-gray-40 !text-[20px]" />
           </button>
         </div>
         <div>
@@ -95,7 +95,7 @@ export const PlanDetailCard = ({
       >
         <GradientImage src={src} alt={alt}>
           <div className="flex flex-wrap flex-col w-full items-baseline gap-1">
-            <span className="typo-tag text-gray-20">{placeAdress}</span>
+            <span className="typo-tag text-gray-20">{placeAddress}</span>
             <span className="typo-tag text-gray-white text-left">
               {placeInfo}
             </span>
