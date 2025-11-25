@@ -1,25 +1,20 @@
-import TextButton from "@/components/common/buttons/TextButton";
 import Button from "@/components/common/buttons/CommonButton";
 
+import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
+
 interface FooterProps {
-  handleRegenerate: () => void;
-  handleConfirm: () => void;
+  onConfirm: () => void;
 }
 
-const RoutesCreateFooter = ({
-  handleRegenerate,
-  handleConfirm,
-}: FooterProps) => {
+const RoutesCreateFooter = ({ onConfirm }: FooterProps) => {
   return (
     <>
       <div className="h-2 bg-gradient-to-b from-gray-white/0 to-gray-white" />
       <div className="flex flex-row w-full p-6 justify-between items-center bg-gray-white">
-        <TextButton
-          label="다시 생성하기"
-          className="shrink-0"
-          onClick={handleRegenerate}
+        <Button
+          label={ROUTES_CREATE_TEXT.FOOTER_BUTTON_LABEL}
+          onClick={onConfirm}
         />
-        <Button label="일정 생성하기" onClick={handleConfirm} />
       </div>
     </>
   );
