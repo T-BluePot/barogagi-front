@@ -52,6 +52,14 @@ const ScheduleTitleInput = ({
         onChange={(e) => {
           setScheduleName(e.target.value);
         }}
+        onKeyDown={(e) => {
+          // Enter 키가 눌렸는지 확인
+          if (e.key === "Enter") {
+            // 현재 input의 값을 scheduleName에 저장
+            setScheduleName(e.currentTarget.value);
+            e.currentTarget.blur(); // 포커스 해제
+          }
+        }}
         autoFocus
       />
       <button
