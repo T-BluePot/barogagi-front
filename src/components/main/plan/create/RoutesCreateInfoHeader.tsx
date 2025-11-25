@@ -1,4 +1,4 @@
-import EditIcon from "@mui/icons-material/Edit";
+import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import { formatDate } from "@/utils/date";
 
 import ScheduleTitleInput from "./ScheduleTitleInput";
@@ -21,13 +21,15 @@ const RoutesCreateInfoHeader = ({
   setEditMode,
 }: InfoHeaderProps) => {
   return (
-    <header>
+    <header className="flex flex-col w-full">
       {/* 날짜 영역 */}
       <div className="flex px-1 w-full justify-between">
-        <span className="typo-subtitle">{formatDate(scheduleDate)}</span>
+        <span className="typo-subtitle text-gray-80">
+          {formatDate(scheduleDate)}
+        </span>
       </div>
       {/* 일정명 영역 */}
-      <div className="flex flex-col w-full items-baseline gap-2">
+      <div className="flex flex-col w-full h-12 pb-[1px] items-baseline gap-2">
         {!editMode && (
           <button
             className="cursor-pointer"
@@ -35,10 +37,13 @@ const RoutesCreateInfoHeader = ({
               setEditMode(true);
             }}
           >
-            <div className="flex flex-row items-end gap-1 px-1 py-2">
+            <div className="flex flex-row items-end gap-2 px-1 py-2">
               <span className="typo-title-01">{scheduleName}</span>
               <div>
-                <EditIcon className="!text-[16px] text-gray-50" />
+                <ModeEditOutlineOutlinedIcon
+                  fontSize="small"
+                  className="text-gray-40"
+                />
               </div>
             </div>
           </button>
