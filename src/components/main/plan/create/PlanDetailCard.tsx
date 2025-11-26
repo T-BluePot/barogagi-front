@@ -50,6 +50,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   };
 
   const planTime = `${startTime} ~ ${endTime}`;
+
   return (
     <div
       className="flex flex-col items-baseline px-5 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
@@ -60,6 +61,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
         <div className="flex w-full justify-between items-center">
           <span className="typo-subtitle truncate">{planName}</span>
           <button
+            ref={moreButtonRef}
             onClick={handleEditClick}
             className="rounded-full bg-transparent p-1 hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
           >
