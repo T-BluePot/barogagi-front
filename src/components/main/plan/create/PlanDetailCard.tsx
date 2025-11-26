@@ -22,13 +22,11 @@ export const PlanDetailCard = (props: PlanDetailCardProps) => {
   // 태그
   const tagNames = props.tags.map((t) => t.tagNm);
   // 컴포넌트 영역
-  const handleOpenCardMenu = props.handleOpenCardMenu;
+  const handleOpenCardMenu = props.onOpenCardMenu;
   const isOpen = props.isOpen;
-  const setIsOpen = props.setIsOpen;
+  const onToggleOpen = props.onToggleOpen;
 
   const planTime = `${startTime} ~ ${endTime}`;
-
-  const handleCardClick = () => setIsOpen(!isOpen);
 
   // 편집 버튼 클릭 시 이벤트 전파 차단
   const handleEditClick = (e: React.MouseEvent) => {
@@ -45,7 +43,7 @@ export const PlanDetailCard = (props: PlanDetailCardProps) => {
   return (
     <div
       className="flex flex-col items-baseline px-5 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
-      onClick={handleCardClick}
+      onClick={onToggleOpen}
     >
       {/* 일정 정보 영역 */}
       <div className="flex flex-col w-full gap-2">

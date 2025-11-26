@@ -57,6 +57,6 @@ export interface PlanDetailCardProps {
   // ===== UI 전용 =====
   src: string;
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  handleOpenCardMenu: () => void;
+  onToggleOpen: () => void;
+  onOpenCardMenu: () => void;
 }
