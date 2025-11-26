@@ -9,7 +9,7 @@ import { GradientImage } from "./GradientImage";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import clsx from "clsx";
 
-export const PlanDetailCard = (props: PlanDetailCardProps) => {
+const PlanDetailCard = (props: PlanDetailCardProps) => {
   // 일정 정보
   const planName = props.plan.planNm;
   const startTime = props.plan.startTime;
@@ -95,3 +95,5 @@ export const PlanDetailCard = (props: PlanDetailCardProps) => {
     </div>
   );
 };
+
+export default PlanDetailCard;
