@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { PlanInfo } from "./PlanInfo";
 import { TextTag } from "@/components/common/tags/TextTag";
 
@@ -13,25 +14,33 @@ export const PlanDetailCard = (props: PlanDetailCardProps) => {
   const planName = props.plan.planNm;
   const startTime = props.plan.startTime;
   const endTime = props.plan.endTime;
+
   // 장소 정보
   const planPlace = props.place.regionNm;
   const placeAddress = props.place.address;
   const placeInfo = props.place.placeDescription;
   const placeLink = props.place.planLink;
   const src = props.src;
+
   // 태그
   const tagNames = props.tags.map((t) => t.tagNm);
   // 컴포넌트 영역
-  const handleOpenCardMenu = props.onOpenCardMenu;
   const isOpen = props.isOpen;
   const onToggleOpen = props.onToggleOpen;
 
-  const planTime = `${startTime} ~ ${endTime}`;
+  const onOpenCardMenu = props.onOpenCardMenu;
 
-  // 편집 버튼 클릭 시 이벤트 전파 차단
-  const handleEditClick = (e: React.MouseEvent) => {
+  // 메뉴 버튼에 ref 연결
+  const moreButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  // 메뉴 버튼 클릭 시: 이벤트 전파 막고, ref + planNum 부모로 전달
+  const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    handleOpenCardMenu();
+
+    onOpenCardMenu({
+      planNum: props.plan.planNum,
+      anchorEl: moreButtonRef.current,
+    });
   };
 
   // 지도 영역 클릭 시 이벤트 전파 차단
@@ -40,6 +49,7 @@ export const PlanDetailCard = (props: PlanDetailCardProps) => {
     window.open(placeLink, "_blank"); // 새 탭에서 장소 링크 열기
   };
 
+  const planTime = `${startTime} ~ ${endTime}`;
   return (
     <div
       className="flex flex-col items-baseline px-5 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"

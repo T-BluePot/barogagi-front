@@ -46,6 +46,12 @@ export interface PlanWithRelations {
   tags: Tag[]; // 태그 정보 목록
 }
 
+// Popover를 띄우기 위해 필요한 정보 타입
+export interface CardMenuAnchorInfo {
+  planNum: number; // 어떤 카드인지
+  anchorEl: HTMLElement | null; // 팝오버 기준이 될 DOM 요소
+}
+
 /**
  * PLAN + PLACE + TAG + UI 상태를 합쳐 만든
  * 최종 카드 컴포넌트용 타입
@@ -58,5 +64,5 @@ export interface PlanDetailCardProps {
   src: string;
   isOpen: boolean;
   onToggleOpen: () => void;
-  onOpenCardMenu: () => void;
+  onOpenCardMenu: (info: CardMenuAnchorInfo) => void; // 메뉴 팝오버 열기 요청
 }
