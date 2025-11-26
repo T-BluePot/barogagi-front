@@ -1,49 +1,31 @@
 import { PlanInfo } from "./PlanInfo";
 import { TextTag } from "@/components/common/tags/TextTag";
 
+import type { PlanDetailCardProps } from "@/types/main/plan/scheduleRoutes";
+
 import { GradientImage } from "./GradientImage";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import clsx from "clsx";
 
-interface PlanDetailCardProps {
-  /**
-   * 일정 상세 카드 컴포넌트 Props
-   */
-  handleEditPlan: () => void; // 일정 편집 버튼 클릭 핸들러
-  planName: string; // 일정명
-  startTime: string; // 시작 시간
-  endTime: string; // 종료 시간
-  planPlace: string; // 장소명
-  tags: string[]; // 태그 목록
-  /**
-   * 카드 상호작용 관련 Props
-   */
-  isOpen: boolean; // 카드 확장 여부
-  setIsOpen: (isOpen: boolean) => void; // 카드 확장 상태 변경 함수
-  placeAddress?: string; // 장소 주소
-  placeInfo?: string; // 장소 설명
-  placeLink?: string; // 장소 링크
+export const PlanDetailCard = (props: PlanDetailCardProps) => {
+  // 일정 정보
+  const planName = props.plan.planNm;
+  const startTime = props.plan.startTime;
+  const endTime = props.plan.endTime;
+  // 장소 정보
+  const planPlace = props.place.regionNm;
+  const placeAddress = props.place.address;
+  const placeInfo = props.place.placeDescription;
+  const placeLink = props.place.planLink;
+  const src = props.src;
+  // 태그
+  const tagNames = props.tags.map((t) => t.tagNm);
+  // 컴포넌트 영역
+  const handleOpenCardMenu = props.handleOpenCardMenu;
+  const isOpen = props.isOpen;
+  const setIsOpen = props.setIsOpen;
 
-  src: string; // 이미지 소스 URL
-  alt?: string; // 이미지 대체 텍스트
-}
-
-export const PlanDetailCard = ({
-  handleEditPlan,
-  planName,
-  startTime,
-  endTime,
-  planPlace,
-  tags,
-  isOpen = false,
-  setIsOpen,
-  placeAddress,
-  placeInfo,
-  src,
-  alt = "장소 이미지",
-  placeLink,
-}: PlanDetailCardProps) => {
   const planTime = `${startTime} ~ ${endTime}`;
 
   const handleCardClick = () => setIsOpen(!isOpen);
@@ -51,7 +33,7 @@ export const PlanDetailCard = ({
   // 편집 버튼 클릭 시 이벤트 전파 차단
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    handleEditPlan();
+    handleOpenCardMenu();
   };
 
   // 지도 영역 클릭 시 이벤트 전파 차단
@@ -82,7 +64,7 @@ export const PlanDetailCard = ({
       </div>
       {/* 일정 태그 영역 */}
       <div className="flex flex-wrap w-full gap-2">
-        {tags.map((tag, idx) => (
+        {tagNames.map((tag, idx) => (
           <TextTag key={idx} label={tag} />
         ))}
       </div>
@@ -93,7 +75,7 @@ export const PlanDetailCard = ({
         )}
         onClick={handleMapClick}
       >
-        <GradientImage src={src} alt={alt}>
+        <GradientImage src={src} alt={planName}>
           <div className="flex flex-wrap flex-col w-full items-baseline gap-1">
             <span className="typo-tag text-gray-20">{placeAddress}</span>
             <span className="typo-tag text-gray-white text-left">
