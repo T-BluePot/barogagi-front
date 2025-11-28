@@ -63,7 +63,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
           <button
             ref={moreButtonRef}
             onClick={handleEditClick}
-            className="rounded-full bg-transparent p-1 hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
+            className="rounded-full bg-transparent w-[24px] h-[24px] hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
           >
             <MoreVertIcon className="text-gray-40 !text-[20px]" />
           </button>
