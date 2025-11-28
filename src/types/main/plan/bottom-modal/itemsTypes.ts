@@ -1,5 +1,5 @@
 // 아이콘 키값 타입
-export type IconKey = "Time" | "Place" | "Note";
+export type IconKey = "Time" | "Place" | "Note" | "Tag";
 
 // 요소 색상 타입
 export type ColorState = "default" | "placeholder";
