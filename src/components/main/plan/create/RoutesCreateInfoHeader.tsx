@@ -1,4 +1,4 @@
-import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { formatDate } from "@/utils/date";
 
 import ScheduleTitleInput from "./ScheduleTitleInput";
@@ -37,13 +37,10 @@ const RoutesCreateInfoHeader = ({
               setEditMode(true);
             }}
           >
-            <div className="flex flex-row items-end gap-2 px-1 py-2">
+            <div className="flex flex-row items-end gap-1 px-1 py-2">
               <span className="typo-title-01">{scheduleName}</span>
               <div>
-                <ModeEditOutlineOutlinedIcon
-                  fontSize="small"
-                  className="text-gray-40"
-                />
+                <EditOutlinedIcon fontSize="small" className="text-gray-40" />
               </div>
             </div>
           </button>
