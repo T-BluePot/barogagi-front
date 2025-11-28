@@ -15,23 +15,27 @@ interface TitleHeaderProps {
   onConfirm?: never; // → 넘기면 타입 에러
 }
 
-interface ActionOrDetailHeaderProps {
+interface DetailHeaderProps {
   variant: "actions" | "detail";
   title: string;
   onCancel: () => void; // 필수
   onConfirm: () => void; // 필수
 }
 
+export interface TitleWithActionHeaderProps {
+  title: string;
+  actionLabel: string;
+  onClickAction: () => void;
+}
+
 // 두 인터페이스를 유니언으로 합쳐 최종 Props 완성
-export type BottomModalHeaderProps =
-  | TitleHeaderProps
-  | ActionOrDetailHeaderProps;
+export type BottomModalHeaderProps = TitleHeaderProps | DetailHeaderProps;
 
 /* 기본 바텀 시트 **/
 export type CommonBottomModalProps = BottomModalLayoutProps &
   Omit<TitleHeaderProps, "variant">;
 
-type ActionOrDetailHeaderCore = Omit<ActionOrDetailHeaderProps, "variant">;
+type ActionOrDetailHeaderCore = Omit<DetailHeaderProps, "variant">;
 
 /* ConfirmBottomModal 전용 props */
 type ConfirmBaseProps = BottomModalLayoutProps & ActionOrDetailHeaderCore;
