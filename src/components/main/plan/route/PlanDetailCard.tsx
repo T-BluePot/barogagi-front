@@ -4,7 +4,7 @@ import { TextTag } from "@/components/common/tags/TextTag";
 
 import type { PlanDetailCardProps } from "@/types/main/plan/scheduleRoutes";
 
-import { GradientImage } from "./GradientImage";
+import { GradientImage } from "../create/GradientImage";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import clsx from "clsx";
