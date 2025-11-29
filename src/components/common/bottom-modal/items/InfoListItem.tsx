@@ -10,13 +10,15 @@ interface CommonInfoItemProps {
   placeholder: string;
   label?: string;
   icon: IconType;
-  onClick: () => void;
+  disabled?: boolean;
+  onClick?: () => void;
 }
 
 export const CommonInfoItem = ({
   placeholder,
   label,
   icon,
+  disabled = false,
   onClick,
 }: CommonInfoItemProps) => {
   const isEmpty = !label || label.trim().length === 0;
@@ -26,7 +28,7 @@ export const CommonInfoItem = ({
   );
 
   return (
-    <InfoItemContainer onClick={onClick} icon={icon}>
+    <InfoItemContainer disabled={disabled} onClick={onClick} icon={icon}>
       <div className={textClass}>{label ? label : placeholder}</div>
     </InfoItemContainer>
   );
