@@ -26,7 +26,7 @@ import PlanListPage from "@/pages/main/plan/PlanListPage";
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
 import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
 import TravelStylePage from "@/pages/main/plan/TravelStylePage";
-import ScheduleRoutesCreatePage from "@/pages/main/plan/ScheduleRoutesCreatePage";
+import ScheduleRoutesPage from "@/pages/main/plan/ScheduleRoutesPage";
 
 export const AuthRoutes = () => (
   <Routes>
@@ -49,6 +49,6 @@ export const AuthRoutes = () => (
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
     <Route path="/plan/travelStyle" element={<TravelStylePage />} />
-    <Route path="/plan/create" element={<ScheduleRoutesCreatePage />} />
+    <Route path="/plan/create" element={<ScheduleRoutesPage />} />
   </Routes>
 );
