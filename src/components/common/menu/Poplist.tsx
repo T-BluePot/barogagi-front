@@ -26,7 +26,7 @@ export const PopList = ({
       className="flex flex-row py-2 pl-3 pr-4 gap-3 justify-center"
     >
       <div>{children}</div>
-      <text className={textClass}>{label}</text>
+      <p className={textClass}>{label}</p>
     </button>
   );
 };
