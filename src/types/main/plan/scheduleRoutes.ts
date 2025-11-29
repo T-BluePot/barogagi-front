@@ -66,3 +66,6 @@ export interface PlanDetailCardProps {
   onToggleOpen: () => void;
   onOpenCardMenu: (info: CardMenuAnchorInfo) => void; // 메뉴 팝오버 열기 요청
 }
+
+// planNum 기준으로 메모를 저장하는 맵 타입
+export type PlanNoteMap = Record<number, string>;
