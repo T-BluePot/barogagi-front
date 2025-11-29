@@ -13,7 +13,7 @@ interface InfoHeaderProps {
   scheduleDate: Date; // 일정 날짜
 }
 
-const RoutesCreateInfoHeader = ({
+const ScheduleRouteInfoHeader = ({
   scheduleName,
   setScheduleName,
   scheduleDate,
@@ -57,4 +57,4 @@ const RoutesCreateInfoHeader = ({
   );
 };
 
-export default RoutesCreateInfoHeader;
+export default ScheduleRouteInfoHeader;
