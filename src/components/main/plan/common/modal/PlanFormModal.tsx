@@ -25,6 +25,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
         onClickAction={action.onClickAction}
       />
       <CommonInfoItem
+        disabled
         placeholder="시간 추가"
         label={time}
         icon={{
@@ -32,7 +33,6 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
           type: "key",
           name: "Time",
         }}
-        onClick={info.onClickTime}
       />
       <CommonInfoItem
         placeholder="장소 추가"
