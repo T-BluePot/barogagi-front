@@ -26,8 +26,8 @@ interface ModalBaseInfo {
   startTime?: string;
   endTime?: string;
   address?: string;
-  onClickTime: () => void;
-  onClickAdress: () => void;
+  // onClickTime: () => void;
+  onClickAdress: () => void; // 장소 수정
 }
 
 /**
