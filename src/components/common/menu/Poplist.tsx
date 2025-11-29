@@ -25,7 +25,7 @@ export const PopList = ({
       onClick={onClickItem}
       className="flex flex-row py-2 pl-3 pr-4 gap-3 justify-center"
     >
-      <view>{children}</view>
+      <div>{children}</div>
       <text className={textClass}>{label}</text>
     </button>
   );
