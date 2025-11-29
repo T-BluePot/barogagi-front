@@ -42,7 +42,7 @@ export const BottomActionHeader = ({
       <span className="typo-title-02 text-gray-black">{title}</span>
       <button
         onClick={onClickAction}
-        className="typo-subtitle text-gray-60 cursor-pointer"
+        className="typo-caption text-gray-60 cursor-pointer"
       >
         {actionLabel}
       </button>
