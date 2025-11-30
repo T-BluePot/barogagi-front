@@ -28,7 +28,7 @@ export const GradientImage = ({
 
       {/* 지도 이동 레이어 */}
       <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 active:bg-black/20 transition-colors">
-        <span className="typo-tag text-gray-white/80">지도 보러가기</span>
+        <span className="typo-tag text-gray-white/40">지도 보러가기</span>
       </div>
 
       {/* 설명 레이어 */}
