@@ -10,6 +10,10 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import clsx from "clsx";
 
 const PlanDetailCard = (props: PlanDetailCardProps) => {
+  // 카드 타입
+  const simple = props.mode === "simple";
+  const edit = props.mode === "edit";
+
   // 일정 정보
   const planName = props.plan.planNm;
   const startTime = props.plan.startTime;
@@ -24,11 +28,10 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
 
   // 태그
   const tagNames = props.tags.map((t) => t.tagNm);
+
   // 컴포넌트 영역
   const isOpen = props.isOpen;
   const onToggleOpen = props.onToggleOpen;
-
-  const onOpenCardMenu = props.onOpenCardMenu;
 
   // 메뉴 버튼에 ref 연결
   const moreButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -37,7 +40,9 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
-    onOpenCardMenu({
+    if (simple) return; // 생성 단계에서 메뉴 클릭 이벤트 발생 가능성 방지
+
+    props.onOpenCardMenu({
       planNum: props.plan.planNum,
       anchorEl: moreButtonRef.current,
     });
@@ -53,23 +58,25 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
 
   return (
     <div
-      className="flex flex-col items-baseline px-5 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
+      className="flex flex-col items-baseline px-6 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
       onClick={onToggleOpen}
     >
       {/* 일정 정보 영역 */}
-      <div className="flex flex-col w-full gap-2">
-        <div className="flex w-full justify-between items-center">
+      <div className="flex w-full justify-between items-baseline">
+        <div className="flex flex-col justify-start items-start gap-2">
           <span className="typo-subtitle truncate">{planName}</span>
-          <button
-            ref={moreButtonRef}
-            onClick={handleEditClick}
-            className="rounded-full bg-transparent w-[24px] h-[24px] hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
-          >
-            <MoreVertIcon className="text-gray-40 !text-[20px]" />
-          </button>
+          <PlanInfo timeValue={planTime} locationValue={planPlace} />
         </div>
         <div>
-          <PlanInfo timeValue={planTime} locationValue={planPlace} />
+          {edit && (
+            <button
+              ref={moreButtonRef}
+              onClick={handleEditClick}
+              className="rounded-full bg-transparent w-[24px] h-[24px] hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
+            >
+              <MoreVertIcon className="text-gray-40 !text-[20px]" />
+            </button>
+          )}
         </div>
       </div>
       {/* 일정 태그 영역 */}
