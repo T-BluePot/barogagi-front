@@ -46,26 +46,39 @@ export interface PlanWithRelations {
   tags: Tag[]; // 태그 정보 목록
 }
 
+// 카드 공통 필드
+interface PlanDetailCardBase {
+  plan: Plan;
+  place: Place;
+  tags: Tag[];
+  src: string;
+  isOpen: boolean;
+  onToggleOpen: () => void;
+}
+
+// simple 모드: 메뉴 버튼 없음
+export interface PlanDetailCardSimple extends PlanDetailCardBase {
+  mode: "simple";
+  onOpenCardMenu?: never;
+}
+
 // Popover를 띄우기 위해 필요한 정보 타입
 export interface CardMenuAnchorInfo {
   planNum: number; // 어떤 카드인지
   anchorEl: HTMLElement | null; // 팝오버 기준이 될 DOM 요소
 }
 
+// edit 모드: 메뉴 팝오버 기능 있음
+export interface PlanDetailCardEdit extends PlanDetailCardBase {
+  mode: "edit";
+  onOpenCardMenu: (info: CardMenuAnchorInfo) => void;
+}
+
 /**
  * PLAN + PLACE + TAG + UI 상태를 합쳐 만든
  * 최종 카드 컴포넌트용 타입
  */
-export interface PlanDetailCardProps {
-  plan: Plan;
-  place: Place;
-  tags: Tag[];
-  // ===== UI 전용 =====
-  src: string;
-  isOpen: boolean;
-  onToggleOpen: () => void;
-  onOpenCardMenu: (info: CardMenuAnchorInfo) => void; // 메뉴 팝오버 열기 요청
-}
+export type PlanDetailCardProps = PlanDetailCardSimple | PlanDetailCardEdit;
 
 // planNum 기준으로 메모를 저장하는 맵 타입
 export type PlanNoteMap = Record<number, string>;
