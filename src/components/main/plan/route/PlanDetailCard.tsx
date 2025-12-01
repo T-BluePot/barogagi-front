@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { PlanInfo } from "./PlanInfo";
 import { TextTag } from "@/components/common/tags/TextTag";
 
-import type { PlanDetailCardProps } from "@/types/main/plan/scheduleRoutes";
+import type { PlanDetailCardProps } from "@/types/main/plan/planListTypes";
 
 import { GradientImage } from "../create/GradientImage";
 
@@ -11,8 +11,8 @@ import clsx from "clsx";
 
 const PlanDetailCard = (props: PlanDetailCardProps) => {
   // 카드 타입
-  const simple = props.mode === "simple";
-  const edit = props.mode === "edit";
+  const simple = props.mode === "create";
+  const edit = props.mode === "detail";
 
   // 일정 정보
   const planName = props.plan.planNm;
