@@ -1,11 +1,7 @@
-import type { PlanWithRelations } from "@/types/main/plan/scheduleRoutes";
-// Plan + Place + Tag[] + 이미지 src 까지만 포함하는 목업용 타입
-export interface PlanCardMock extends PlanWithRelations {
-  src: string; // 카드 썸네일 이미지 URL
-}
+import type { PlanDataProps } from "@/types/main/plan/planListTypes";
 
 // mockPlans: 실제 화면에 뿌릴 때, 부모가 UI 상태를 더해서 PlanDetailCardProps로 변환해 줄 예정
-export const mockPlans: PlanCardMock[] = [
+export const mockPlans: PlanDataProps[] = [
   {
     plan: {
       planNum: 1,
