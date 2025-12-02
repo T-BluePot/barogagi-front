@@ -73,7 +73,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           onClose={handleCloseMenu}
           listItems={[
             {
-              label: ROUTES_CREATE_TEXT.POP_MENU.EDIT_LABLE,
+              label: ROUTES_CREATE_TEXT.POP_MENU.EDIT_LABEL,
               children: <ModeEditIcon className="!text-[16px]" />,
               onClickItem: handleClickEdit,
             },
@@ -88,7 +88,6 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           ]}
         />
       )}
-      {}
       <div className="flex w-full p-6 bg-gray-white">
         <ScheduleRouteInfoHeader
           editMode={editMode}

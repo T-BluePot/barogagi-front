@@ -10,13 +10,13 @@ export const ROUTES_CREATE_TEXT = {
     SCHEDULE_NAME_PLACEHOLDER: "일정에 어울리는 제목을 지어볼까요?",
   },
   POP_MENU: {
-    EDIT_LABLE: "수정하기",
+    EDIT_LABEL: "수정하기",
     DELETE_LABEL: "삭제하기",
     DELETE_MODAL: {
-      TITLE: "일정을 식제하시겠어요?",
+      TITLE: "일정을 삭제하시겠어요?",
       CONTENT:
         "삭제된 일정은 다시 되돌릴 수 없어요.\n정말로 이 일정을 삭제할까요?",
-      CANCLE_LABEL: "취소",
+      CANCEL_LABEL: "취소",
       CONFIRM_LABEL: "확인",
     },
   },

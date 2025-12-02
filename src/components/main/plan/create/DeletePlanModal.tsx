@@ -24,7 +24,7 @@ const DeletePlanModal = ({
         onClick: onClickConfirm,
       }}
       cancelButtonInfo={{
-        label: ROUTES_CREATE_TEXT.POP_MENU.DELETE_MODAL.CANCLE_LABEL,
+        label: ROUTES_CREATE_TEXT.POP_MENU.DELETE_MODAL.CANCEL_LABEL,
         onClick: onClickCancle,
       }}
     />
