@@ -1,5 +1,3 @@
-import { create } from "storybook/internal/theming";
-
 // 라우트 경로 상수
 const MAIN_BASE = "/home" as const;
 const PLAN_BASE = "/plan" as const;
@@ -76,7 +74,7 @@ export const getRoutePath = {
     date: () => ROUTES.PLAN.DATE,
     location: () => ROUTES.PLAN.LOCATION,
     travelStyle: () => ROUTES.PLAN.TRAVEL_STYLE,
-    create,
+    create: () => ROUTES.PLAN.CREATE,
   },
   user: {
     detail: (id: string) =>
