@@ -22,7 +22,13 @@ export const InfoItemContainer = ({
     !disabled && "hover:bg-gray-5 active:bg-gray-5"
   );
   return (
-    <div role="button" className={containerClass} onClick={onClick}>
+    <div
+      role="button"
+      className={containerClass}
+      onClick={disabled ? undefined : onClick}
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled}
+    >
       <IconRenderer icon={icon} />
       {children}
     </div>
