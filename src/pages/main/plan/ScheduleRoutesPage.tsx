@@ -41,8 +41,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 일정 삭제하기 modal -----
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
+  const [deletePlanNum, setDeletePlanNum] = useState<number | null>(null); // 삭제할 일정 num
+
   const handleRequestDelete = (planNum: number) => {
-    // 추후 서버 연결 시 일정 번호 넘겨 삭제하는 로직 추가
+    setDeletePlanNum(planNum);
     setIsDeleteModalOpen(true);
   };
 
@@ -115,7 +117,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             isOpen={isDeleteModalOpen}
             onClickCancle={() => setIsDeleteModalOpen(false)}
             onClickConfirm={() => {
-              // 일정 삭제 로직 추가
+              // 추후 서버 연결 시 deletePlanNum를 넘겨 삭제하는 로직 추가
               setIsDeleteModalOpen(false);
             }}
           />
