@@ -1,5 +1,5 @@
 import { BottomModalLayout } from "@/components/layout/BottomModalLayout";
-import { BottomActionHeader } from "@/components/common/bottom-modal/BottomModalHeader";
+import { BottomActionHeader } from "@/components/common/modal/bottom-modal/BottomModalHeader";
 import {
   CommonInfoItem,
   InputInfoItem,

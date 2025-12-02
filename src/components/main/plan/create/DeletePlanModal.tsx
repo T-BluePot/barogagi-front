@@ -1,4 +1,4 @@
-import CommonConfirmModal from "@/components/modal/CommonConfirmModal";
+import CommonConfirmModal from "@/components/common/modal/common-modal/CommonConfirmModal";
 import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 
 interface DeletePlanModalProps {
