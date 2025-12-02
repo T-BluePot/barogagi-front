@@ -88,6 +88,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         }}
       />
       {/* 팝메뉴- 일정 수정 및 삭제 모달 */}
+
       {editPlanForm && (
         <>
           <PlanFormModal
@@ -113,16 +114,17 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                 handleChangeNote(editPlanForm.plan.planNum, next),
             }}
           />
-          <DeletePlanModal
-            isOpen={isDeleteModalOpen}
-            onClickCancle={() => setIsDeleteModalOpen(false)}
-            onClickConfirm={() => {
-              // 추후 서버 연결 시 deletePlanNum를 넘겨 삭제하는 로직 추가
-              setIsDeleteModalOpen(false);
-            }}
-          />
         </>
       )}
+      <DeletePlanModal
+        isOpen={isDeleteModalOpen}
+        onClickCancle={() => setIsDeleteModalOpen(false)}
+        onClickConfirm={() => {
+          // 추후 서버 연결 시 deletePlanNum를 넘겨 삭제하는 로직 추가
+          setIsDeleteModalOpen(false);
+        }}
+      />
+      {/* 공통 콘텐츠 영역 */}
       {isCreate && (
         <ScheduleRoutesContent
           header={{
