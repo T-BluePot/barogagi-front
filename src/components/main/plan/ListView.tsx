@@ -3,20 +3,24 @@ import type { Schedule } from "@/types/scheduleTypes";
 
 interface ListViewProps {
   schedules: Schedule[];
-  onEdit: () => void;
-  onDelete: () => void;
+  onclickCard: (scheduleNum: number) => void;
+  onDelete: (scheduleNum: number) => void;
 }
 
-export const ListView = ({ schedules, onEdit, onDelete }: ListViewProps) => {
+export const ListView = ({
+  schedules,
+  onclickCard,
+  onDelete,
+}: ListViewProps) => {
   return (
     <div className="flex flex-col w-full gap-4 pb-6">
-      {schedules.map((schedule, idx) => {
+      {schedules.map((schedule) => {
         return (
           <CourseCard
-            key={idx}
+            key={schedule.scheduleNum}
             schedule={schedule}
-            onEdit={onEdit}
-            onDelete={onDelete}
+            onclickCard={() => onclickCard(schedule.scheduleNum)}
+            onDelete={() => onDelete(schedule.scheduleNum)}
           />
         );
       })}
