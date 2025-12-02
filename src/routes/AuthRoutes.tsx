@@ -27,6 +27,7 @@ import SelectDatePage from "@/pages/main/plan/SelectDatePage";
 import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
 import TravelStylePage from "@/pages/main/plan/TravelStylePage";
 import ScheduleRoutesPage from "@/pages/main/plan/ScheduleRoutesPage";
+import LocationSearchPage from "@/pages/main/plan/LocationSearchPage";
 
 export const AuthRoutes = () => (
   <Routes>
@@ -49,6 +50,18 @@ export const AuthRoutes = () => (
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
     <Route path="/plan/travelStyle" element={<TravelStylePage />} />
-    <Route path="/plan/create" element={<ScheduleRoutesPage />} />
+    {/* 추천 루트: /plan/create */}
+    <Route
+      path="/plan/create"
+      element={<ScheduleRoutesPage variant="create" />}
+    />
+
+    {/* 상세 화면: /plan/:id/detail */}
+    <Route
+      path="/plan/:id/detail"
+      element={<ScheduleRoutesPage variant="detail" />}
+    />
+    {/* 공통 장소 검색 페이지 */}
+    <Route path="/plan/location-search" element={<LocationSearchPage />} />
   </Routes>
 );
