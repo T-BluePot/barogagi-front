@@ -26,8 +26,8 @@ export const GradientImage = ({
       {/* 그라데이션 오버레이 */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-black/30 to-gray-black pointer-events-none" />
 
-      {/* 지도 이동 레이어 */}
-      <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 active:bg-black/20 transition-colors">
+      {/* 라벨 레이어 */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <span className="typo-tag text-gray-white/40">지도 보러가기</span>
       </div>
 
