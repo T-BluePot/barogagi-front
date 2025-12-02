@@ -14,7 +14,8 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
   const edit = info.mode === "Edit";
 
   const title = info.planNm;
-  const time = `${info.startTime} ~ ${info.endTime}`;
+  const time =
+    info.startTime && info.endTime ? `${info.startTime} ~ ${info.endTime}` : "";
   const place = info.address;
 
   return (
