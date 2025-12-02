@@ -22,9 +22,9 @@ export const InfoItemContainer = ({
     !disabled && "hover:bg-gray-5 active:bg-gray-5"
   );
   return (
-    <button className={containerClass} disabled={disabled} onClick={onClick}>
+    <div role="button" className={containerClass} onClick={onClick}>
       <IconRenderer icon={icon} />
       {children}
-    </button>
+    </div>
   );
 };
