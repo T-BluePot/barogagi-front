@@ -129,7 +129,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             onChangeScheduleName: setScheduleName,
           }}
           plans={mockPlans}
-          // isEditable 생략 → create 모드로 동작
+          // isEditable false → create 모드로 동작
           isEditable={false}
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
@@ -144,7 +144,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             onChangeScheduleName: setScheduleName,
           }}
           plans={mockPlans}
-          // isEditable 생략 → create 모드로 동작
+          // isEditable true → detail 모드로 동작: popMenu 연동
           isEditable={isDetail}
           onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
