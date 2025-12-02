@@ -4,7 +4,7 @@ import {
   CommonInfoItem,
   InputInfoItem,
   TagInfoItem,
-} from "@/components/common/bottom-modal/items/InfoListItem";
+} from "@/components/common/modal/bottom-modal/items/InfoListItem";
 
 import type { PlanFormModalProps } from "@/types/main/plan/bottom-modal/planFromTypes";
 

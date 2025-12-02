@@ -2,7 +2,7 @@ import { useState } from "react";
 import clsx from "clsx";
 
 import { InfoItemContainer } from "./InfoItemContainer";
-import { TextTag } from "../../tags/TextTag";
+import { TextTag } from "../../../tags/TextTag";
 
 import type { IconType } from "@/types/main/plan/bottom-modal/itemsTypes";
 
