@@ -5,7 +5,7 @@ import { action } from "storybook/actions";
 import { BackHeader } from "./BackHeader";
 
 const meta = {
-  title: "Components/BackHeader",
+  title: "Components/Common/Header/BackHeader",
   component: BackHeader,
   tags: ["autodocs"],
   parameters: {

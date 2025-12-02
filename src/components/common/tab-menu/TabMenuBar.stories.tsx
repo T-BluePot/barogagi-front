@@ -37,7 +37,8 @@ const TabMenuBarWithState = ({ tabs }: { tabs: TabItem[] }) => {
       />
       <div className="mt-4 p-4 bg-gray-800 rounded">
         <p className="text-white text-sm">
-          현재 활성 탭: <span className="text-lime-400 font-semibold">{activeTab}</span>
+          현재 활성 탭:{" "}
+          <span className="text-lime-400 font-semibold">{activeTab}</span>
         </p>
       </div>
     </div>
@@ -45,6 +46,15 @@ const TabMenuBarWithState = ({ tabs }: { tabs: TabItem[] }) => {
 };
 
 export const Default: Story = {
+  args: {
+    tabs: [
+      { id: "tab1", label: "첫 번째 탭" },
+      { id: "tab2", label: "두 번째 탭" },
+      { id: "tab3", label: "세 번째 탭" },
+    ],
+    activeTab: "tab1",
+    onTabChange: () => {},
+  },
   render: () => (
     <TabMenuBarWithState
       tabs={[
@@ -57,6 +67,14 @@ export const Default: Story = {
 };
 
 export const TwoTabs: Story = {
+  args: {
+    tabs: [
+      { id: "id", label: "아이디 찾기" },
+      { id: "password", label: "비밀번호 재설정" },
+    ],
+    activeTab: "id",
+    onTabChange: () => {},
+  },
   render: () => (
     <TabMenuBarWithState
       tabs={[
@@ -68,6 +86,17 @@ export const TwoTabs: Story = {
 };
 
 export const ManyTabs: Story = {
+  args: {
+    tabs: [
+      { id: "home", label: "홈" },
+      { id: "profile", label: "프로필" },
+      { id: "settings", label: "설정" },
+      { id: "notifications", label: "알림" },
+      { id: "help", label: "도움말" },
+    ],
+    activeTab: "home",
+    onTabChange: () => {},
+  },
   render: () => (
     <TabMenuBarWithState
       tabs={[
@@ -82,6 +111,14 @@ export const ManyTabs: Story = {
 };
 
 export const LongLabels: Story = {
+  args: {
+    tabs: [
+      { id: "very-long-tab-1", label: "매우 긴 탭 제목 첫 번째" },
+      { id: "very-long-tab-2", label: "매우 긴 탭 제목 두 번째" },
+    ],
+    activeTab: "very-long-tab-1",
+    onTabChange: () => {},
+  },
   render: () => (
     <TabMenuBarWithState
       tabs={[
@@ -93,12 +130,13 @@ export const LongLabels: Story = {
 };
 
 export const SingleTab: Story = {
+  args: {
+    tabs: [{ id: "only", label: "유일한 탭" }],
+    activeTab: "only",
+    onTabChange: () => {},
+  },
   render: () => (
-    <TabMenuBarWithState
-      tabs={[
-        { id: "only", label: "유일한 탭" },
-      ]}
-    />
+    <TabMenuBarWithState tabs={[{ id: "only", label: "유일한 탭" }]} />
   ),
 };
 

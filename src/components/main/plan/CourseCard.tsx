@@ -6,12 +6,14 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 interface CourseCardProps extends Schedule {
   onEdit: () => void; // 일정 카드용 수정 콜백
-  onDelete: () => void; // 삭제 아이콘 버튼용 삭제 콜백
+  onDelete?: () => void; // 삭제 아이콘 버튼용 삭제 콜백
+  isDeleteDisabled?: boolean; // 삭제 버튼 비활성화 여부
 }
 
 export const CourseCard = ({
   onEdit,
   onDelete,
+  isDeleteDisabled = false,
   ...scheduleProps
 }: CourseCardProps) => {
   return (
@@ -32,16 +34,19 @@ export const CourseCard = ({
           {/* 일정명 */}
           <span className="typo-title-02">{scheduleProps.scheduleTitle}</span>
         </div>
-        <button
-          type="button"
-          className="cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation(); // 부모 onClick으로의 전파 방지
-            onDelete(); // 삭제 콜백 실행
-          }}
-        >
-          <DeleteOutlineIcon className="text-gray-30 !text-[20px]" />
-        </button>
+        {/* 삭제 버튼 */}
+        {!isDeleteDisabled && (
+          <button
+            type="button"
+            className="cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation(); // 부모 onClick으로의 전파 방지
+              onDelete?.(); // 삭제 콜백 실행 (옵셔널 체이닝)
+            }}
+          >
+            <DeleteOutlineIcon className="text-gray-30 !text-[20px]" />
+          </button>
+        )}
       </div>
       {/* 태그 */}
       <div className="flex gap-2">

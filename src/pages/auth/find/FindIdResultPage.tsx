@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FIND_ID_TEXTS } from "@/constants/texts/auth/find/findAuth";
-import { FullScreenModal } from "@/components/modal/FullScreenModal";
+import { FullScreenModal } from "@/components/common/modal/full-screen-modal/FullScreenModal";
 
 type FindIdResult = {
   success: boolean;

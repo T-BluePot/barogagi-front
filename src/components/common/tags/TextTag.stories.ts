@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { TextTag } from "./TextTag";
 
 const meta = {
-  title: "Components/TextTag",
+  title: "Components/Common/Tag/TextTag",
   component: TextTag,
   tags: ["autodocs"],
   parameters: {

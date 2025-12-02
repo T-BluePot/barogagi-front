@@ -1,8 +1,8 @@
 import { GENDER_LIST } from "@/types/auth/gender";
 import type { SelectGenderProps } from "@/types/profileTypes";
 
-import { CommonBottomModal } from "@/components/common/bottom-modal/CommonBottomModal";
-import { BottomModalListButton } from "@/components/common/bottom-modal/BottomModalListButton";
+import { CommonBottomModal } from "@/components/common/modal/bottom-modal/CommonBottomModal";
+import { BottomModalListButton } from "@/components/common/modal/bottom-modal/BottomModalListButton";
 
 export const SelectGenderBottomModal = ({
   isGenderModalOpen,

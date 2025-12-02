@@ -1,4 +1,4 @@
-import CommonConfirmModal from "@/components/modal/CommonConfirmModal";
+import CommonConfirmModal from "@/components/common/modal/common-modal/CommonConfirmModal";
 import { PROFILE_TEXT } from "@/constants/texts/auth/signup/profile";
 
 import type { SkipProfileProps } from "@/types/profileTypes";

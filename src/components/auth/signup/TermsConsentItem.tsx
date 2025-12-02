@@ -32,7 +32,9 @@ export const TermsConsentItem = ({
         onClick={() => onOpenDetail(id)}
         className="flex flex-1 items-center justify-between gap-4 cursor-pointer"
       >
-        <span className="typo-body text-gray-20 underline">{label}</span>
+        <span className="typo-body text-gray-20 underline text-left">
+          {label}
+        </span>
         <ArrowForwardIosIcon className="size-6 text-gray-40" />
       </button>
     </div>

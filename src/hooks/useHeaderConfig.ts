@@ -18,7 +18,7 @@ interface HeaderConfig {
 
 export type HeaderConfig =
   | { type: "none" }
-  | { type: "common"; rightPath?: string }
+  | { type: "common"; rightPath?: string; isDarkBg?: boolean }
   | { type: "title"; label: string; isDarkBg?: boolean }
   | { type: "close"; label?: string; isDarkBg?: boolean; closePath?: string }
   | { type: "back"; label?: string; isDarkBg?: boolean; backPath?: string };
@@ -85,8 +85,8 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
 
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {
-    type: "title",
-    label: "바로가기",
+    type: "common",
+    isDarkBg: true,
   },
   [ROUTES.MAIN.PROFILE]: {
     type: "back",

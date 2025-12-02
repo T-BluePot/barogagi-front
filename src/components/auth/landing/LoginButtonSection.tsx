@@ -1,9 +1,7 @@
 import { SnsButtonsGroup } from "@/components/common/buttons/SnsButtonsGroup";
 import { EmailLoginButton } from "../signin/EmailLoginButton";
 
-type Props = {};
-
-export default function LoginButtonSection({}: Props) {
+export default function LoginButtonSection() {
   return (
     <div className="mb-8">
       <SnsButtonsGroup

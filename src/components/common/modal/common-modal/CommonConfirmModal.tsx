@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import CommonAlertModalLayout from "../layout/CommonAlertModalLayout";
+import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
 import CommonModalContent from "./CommonModalContent";
-import type { CommonAlertModalPropsType } from "@/types/modalTypes";
+import type { CommonConfirmModalPropsType } from "@/types/modalTypes";
 
-const CommonAlertModal = ({
+const CommonConfirmModal = ({
   isOpen,
-  buttonInfo, // buttonLabel, onClose 대신 buttonInfo 사용
+  confirmButtonInfo,
+  cancelButtonInfo,
   modalContent,
-}: CommonAlertModalPropsType) => {
+}: CommonConfirmModalPropsType) => {
   // shouldRenderLayout: 모달 레이아웃 컴포넌트 자체를 DOM에 렌더링할지 여부 (사라지는 애니메이션 후 제거)
   const [shouldRenderLayout, setShouldRenderLayout] = useState(isOpen);
   // showAnimation: 나타나고 사라지는 애니메이션 상태 제어 (Layout 컴포넌트에 전달하는 isVisible prop)
@@ -38,19 +39,20 @@ const CommonAlertModal = ({
     return null;
   }
 
-  // CommonAlertModalLayout에 필요한 props 전달
+  // CommonConfirmModalLayout에 필요한 props 전달
   return (
-    <CommonAlertModalLayout
+    <CommonConfirmModalLayout
       isVisible={showAnimation} // Layout의 애니메이션 상태 제어
-      buttonInfo={buttonInfo} // buttonLabel, onClick 대신 buttonInfo 전달
+      confirmButtonInfo={confirmButtonInfo}
+      cancelButtonInfo={cancelButtonInfo}
       onCloseComplete={() => setShouldRenderLayout(false)} // Layout의 애니메이션 완료 후 레이아웃 제거
     >
       <CommonModalContent
         title={modalContent.title}
         content={modalContent.content}
       />
-    </CommonAlertModalLayout>
+    </CommonConfirmModalLayout>
   );
 };
 
-export default CommonAlertModal;
+export default CommonConfirmModal;
