@@ -1,4 +1,4 @@
-import type { Schedule } from "@/types/schedule";
+import type { Schedule } from "@/types/scheduleTypes";
 
 /**
  * 일정 배열에서 날짜만 추출하여 중복 없이 표시할 markedDates 객체를 반환합니다.
@@ -8,7 +8,7 @@ import type { Schedule } from "@/types/schedule";
 export function getMarkedDates(schedules: Schedule[]): Record<string, true> {
   const marked: Record<string, true> = {};
   schedules.forEach((schedule) => {
-    marked[schedule.date] = true;
+    marked[schedule.startDate] = true;
   });
   return marked;
 }

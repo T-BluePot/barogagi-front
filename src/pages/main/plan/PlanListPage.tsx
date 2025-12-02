@@ -23,18 +23,9 @@ const PlanListPage = () => {
     } else setViewMode("list");
   };
 
-  // list 모드용 데이터
-  const scheduleLists = mockSchedules.map((s) => ({
-    scheduleNum: s.scheduleNum,
-    userNum: s.membershipNo,
-    date: s.startDate,
-    scheduleTitle: s.scheduleNm,
-    tags: s.tags,
-  }));
-
   // calendar 모드
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const markedDates = getMarkedDates(scheduleLists);
+  const markedDates = getMarkedDates(mockSchedules);
 
   return (
     <div
@@ -56,7 +47,7 @@ const PlanListPage = () => {
               selectedDate={selectedDate}
               onChangeDate={(date) => setSelectedDate(date)}
               markedDates={markedDates}
-              schedules={scheduleLists}
+              schedules={mockSchedules}
               onDelete={() => {
                 // 삭제 로직
               }}
@@ -68,7 +59,7 @@ const PlanListPage = () => {
         ) : (
           <div className="flex w-full px-6">
             <ListView
-              schedules={scheduleLists}
+              schedules={mockSchedules}
               onDelete={() => {
                 // 삭제 로직
               }}

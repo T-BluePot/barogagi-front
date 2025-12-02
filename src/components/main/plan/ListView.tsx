@@ -1,5 +1,5 @@
 import { CourseCard } from "./CourseCard";
-import type { Schedule } from "@/types/schedule";
+import type { Schedule } from "@/types/scheduleTypes";
 
 interface ListViewProps {
   schedules: Schedule[];
@@ -14,11 +14,7 @@ export const ListView = ({ schedules, onEdit, onDelete }: ListViewProps) => {
         return (
           <CourseCard
             key={idx}
-            userNum={schedule.userNum}
-            scheduleNum={schedule.scheduleNum}
-            date={schedule.date}
-            scheduleTitle={schedule.scheduleTitle}
-            tags={schedule.tags}
+            schedule={schedule}
             onEdit={onEdit}
             onDelete={onDelete}
           />
