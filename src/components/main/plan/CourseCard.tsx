@@ -2,24 +2,24 @@ import { CommonTag } from "@/components/common/tags/commonTag";
 import type { Schedule } from "@/types/scheduleTypes";
 
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface CourseCardProps {
   schedule: Schedule;
-  onEdit: () => void; // 일정 카드용 수정 콜백
+  onclickCard: () => void; // 일정 카드용 수정 콜백
   onDelete?: () => void; // 삭제 아이콘 버튼용 삭제 콜백
   isDeleteDisabled?: boolean; // 삭제 버튼 비활성화 여부
 }
 
 export const CourseCard = ({
   schedule,
-  onEdit,
+  onclickCard,
   onDelete,
   isDeleteDisabled = false,
 }: CourseCardProps) => {
   return (
     <div
-      onClick={onEdit}
+      onClick={onclickCard}
       className="flex flex-col w-full p-6 items-baseline border border-gray-black rounded-xl gap-4 cursor-pointer"
     >
       {/* 카드 헤더 */}
@@ -45,7 +45,7 @@ export const CourseCard = ({
               onDelete?.(); // 삭제 콜백 실행 (옵셔널 체이닝)
             }}
           >
-            <DeleteOutlineIcon className="text-gray-30 !text-[20px]" />
+            <DeleteIcon className="text-gray-black !text-[20px]" />
           </button>
         )}
       </div>
