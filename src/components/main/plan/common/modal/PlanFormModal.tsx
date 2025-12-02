@@ -32,6 +32,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
           type: "key",
           name: "Time",
         }}
+        onClick={info.onClickTime}
       />
       <CommonInfoItem
         placeholder="장소 추가"
@@ -41,7 +42,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
           type: "key",
           name: "Place",
         }}
-        onClick={info.onClickAdress}
+        onClick={info.onClickAddress}
       />
       {create && <TagInfoItem tags={info.tags} onClick={info.onClickTags} />}
       {edit && (

@@ -102,7 +102,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
               startTime: editPlanForm.plan.startTime,
               endTime: editPlanForm.plan.endTime,
               address: editPlanForm.place.address,
-              onClickAdress: () => {},
+              onClickAddress: () => {},
+              onClickTime: () => {},
               // --- 일정 노트 아이템 관련 ---
               note: planNotes[editPlanForm.plan.planNum],
               noteValue: planNotes[editPlanForm.plan.planNum] ?? "",
