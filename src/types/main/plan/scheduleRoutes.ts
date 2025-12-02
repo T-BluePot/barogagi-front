@@ -35,7 +35,7 @@ interface ScheduleRoutesContentBase {
 
 // create 화면: 편집 불가 + 일정 완성 푸터
 interface ScheduleRoutesContentCreate extends ScheduleRoutesContentBase {
-  isEditable: false; // 생략되면 기본 false로 간주
+  isEditable: false; // create 모드에서는 false로 구분
   footer: CreateFooterProps;
 }
 
