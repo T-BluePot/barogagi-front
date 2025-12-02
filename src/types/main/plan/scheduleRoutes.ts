@@ -7,9 +7,7 @@ import type { PlanDataProps } from "./planListTypes";
  */
 export type Variant = "create" | "detail";
 
-/**
- * scheduleRoutesContent 컴포넌트에서 사용되는 타입
- */
+// ----- scheduleRoutesContent 컴포넌트에서 사용되는 타입 -----
 
 // 헤더 정보
 interface ContentHeaderProps {
@@ -37,7 +35,7 @@ interface ScheduleRoutesContentBase {
 
 // create 화면: 편집 불가 + 일정 완성 푸터
 interface ScheduleRoutesContentCreate extends ScheduleRoutesContentBase {
-  isEditable?: false; // 생략되면 기본 false로 간주
+  isEditable: false; // 생략되면 기본 false로 간주
   footer: CreateFooterProps;
 }
 
@@ -53,3 +51,7 @@ interface ScheduleRoutesContentDetail
 export type ScheduleRoutesContentProps =
   | ScheduleRoutesContentCreate
   | ScheduleRoutesContentDetail;
+
+export interface ScheduleRoutesPageProps {
+  variant: Variant;
+}
