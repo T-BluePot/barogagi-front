@@ -2,7 +2,7 @@ import { CommonTag } from "@/components/common/tags/commonTag";
 import type { Schedule } from "@/types/scheduleTypes";
 
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 interface CourseCardProps {
   schedule: Schedule;
@@ -45,7 +45,7 @@ export const CourseCard = ({
               onDelete?.(); // 삭제 콜백 실행 (옵셔널 체이닝)
             }}
           >
-            <DeleteIcon className="text-gray-black !text-[20px]" />
+            <DeleteOutlineIcon className="text-gray-black !text-[20px]" />
           </button>
         )}
       </div>
