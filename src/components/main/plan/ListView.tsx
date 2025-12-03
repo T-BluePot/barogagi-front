@@ -3,13 +3,13 @@ import type { Schedule } from "@/types/scheduleTypes";
 
 interface ListViewProps {
   schedules: Schedule[];
-  onclickCard: (scheduleNum: number) => void;
+  onClickCard: (scheduleNum: number) => void;
   onDelete: (scheduleNum: number) => void;
 }
 
 export const ListView = ({
   schedules,
-  onclickCard,
+  onClickCard,
   onDelete,
 }: ListViewProps) => {
   return (
@@ -19,7 +19,7 @@ export const ListView = ({
           <CourseCard
             key={schedule.scheduleNum}
             schedule={schedule}
-            onclickCard={() => onclickCard(schedule.scheduleNum)}
+            onClickCard={() => onClickCard(schedule.scheduleNum)}
             onDelete={() => onDelete(schedule.scheduleNum)}
           />
         );

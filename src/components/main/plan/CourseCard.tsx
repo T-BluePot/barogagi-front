@@ -6,20 +6,20 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 interface CourseCardProps {
   schedule: Schedule;
-  onclickCard: () => void; // 일정 카드용 수정 콜백
+  onClickCard: () => void; // 일정 카드용 수정 콜백
   onDelete?: () => void; // 삭제 아이콘 버튼용 삭제 콜백
   isDeleteDisabled?: boolean; // 삭제 버튼 비활성화 여부
 }
 
 export const CourseCard = ({
   schedule,
-  onclickCard,
+  onClickCard,
   onDelete,
   isDeleteDisabled = false,
 }: CourseCardProps) => {
   return (
     <div
-      onClick={onclickCard}
+      onClick={onClickCard}
       className="flex flex-col w-full p-6 items-baseline border border-gray-black rounded-xl gap-4 cursor-pointer"
     >
       {/* 카드 헤더 */}
