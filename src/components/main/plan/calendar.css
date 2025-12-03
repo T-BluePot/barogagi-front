@@ -21,19 +21,12 @@
   color: #1e1e1e;
 }
 
-.react-datepicker__current-month {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 48px;
-}
-
 .react-datepicker__day-names {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 48px;
-  padding-inline: 6px;
+  padding-inline: 8px;
 }
 
 .react-datepicker__day-name {
@@ -60,7 +53,7 @@
   align-items: center;
   font-size: 14px;
   font-weight: 600;
-  padding-block: 12px;
+  padding-block: 4px;
   color: #1e1e1e;
 }
 

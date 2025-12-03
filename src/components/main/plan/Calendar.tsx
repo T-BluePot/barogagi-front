@@ -90,7 +90,7 @@ export default function Calendar({
           const isMarked = markedDates?.[dateKey];
 
           return (
-            <div className="flex flex-col justify-center items-center w-full h-full gap-1">
+            <div className="flex flex-col justify-between items-center w-full h-full gap-2">
               <div
                 className={clsx(
                   "rounded-full w-10 h-10 flex items-center justify-center",
