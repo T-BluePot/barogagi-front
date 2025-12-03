@@ -13,7 +13,7 @@ const ButtonWithText = ({
   button,
 }: ButtonWithTextProps) => {
   return (
-    <div className="flex flex-col justify-center gap-1">
+    <div className="flex flex-col items-center gap-1">
       <button
         type="button"
         aria-label={textLabel}
