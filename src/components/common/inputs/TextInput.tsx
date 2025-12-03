@@ -21,9 +21,11 @@ const TextInput = ({
   const baseClass =
     "flex justify-baseline items-baseline w-full border border-gray-20 rounded-[8px] p-4";
 
+  const textClass = "typo-caption";
+
   if (size === "large") {
     // 여러 줄 입력용 textarea
-    const fieldClass = clsx(baseClass, "h-[120px] resize-none");
+    const fieldClass = clsx(baseClass, textClass, "h-[120px] resize-none");
     return (
       <textarea
         className={fieldClass}
@@ -36,7 +38,7 @@ const TextInput = ({
   }
 
   // 한 줄 입력용 input
-  const fieldClass = clsx(baseClass, "h-12");
+  const fieldClass = clsx(baseClass, textClass, "h-12");
   return (
     <input
       type="text"
