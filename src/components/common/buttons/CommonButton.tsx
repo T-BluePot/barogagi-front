@@ -1,4 +1,4 @@
-type ButtonProps = {
+export type ButtonProps = {
   label: string;
   onClick?: () => void;
   icon?: React.ReactNode; // 아이콘 slot 추가
