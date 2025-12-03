@@ -12,7 +12,7 @@ import { ListView } from "@/components/main/plan/ListView";
 import { AddScheduleButton } from "@/components/main/plan/AddScheduleButton";
 import { ROUTES } from "@/constants/routes";
 
-const PlanListPage = () => {
+const ScheduleListPage = () => {
   const navigate = useNavigate();
 
   const [viewMode, setViewMode] = useState<PlanViewType>("list");
@@ -31,6 +31,16 @@ const PlanListPage = () => {
   const handleOpenDetail = (scheduleNum: number) => {
     // 여기서 URL에 scheduleNum을 박아서 이동
     navigate(`/plan/${scheduleNum}/detail`);
+  };
+
+  const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+  const [deleteScheduleNum, setDeleteScheduleNum] = useState<number | null>(
+    null
+  ); // 삭제할 계획 num
+
+  const handleDeleteSchedule = (scheduleNum: number) => {
+    setDeleteScheduleNum(scheduleNum);
+    setIsDeleteOpen(true);
   };
 
   return (
@@ -57,19 +67,15 @@ const PlanListPage = () => {
               onDelete={() => {
                 // 삭제 로직
               }}
-              onEdit={() => {
-                /* scheduleNum로 추천 루트 페이지 이동 **/
-              }}
+              onClickCard={handleOpenDetail}
             />
           </div>
         ) : (
           <div className="flex w-full h-full px-6">
             <ListView
               schedules={mockSchedules}
-              onDelete={() => {
-                // 삭제 로직
-              }}
-              onclickCard={handleOpenDetail}
+              onDelete={handleDeleteSchedule}
+              onClickCard={handleOpenDetail}
             />
           </div>
         )}
@@ -81,4 +87,4 @@ const PlanListPage = () => {
   );
 };
 
-export default PlanListPage;
+export default ScheduleListPage;

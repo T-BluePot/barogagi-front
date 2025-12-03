@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 /* 메인 페이지 */
 // 일정 생성 탭
-import PlanListPage from "@/pages/main/plan/PlanListPage";
+import ScheduleListPage from "@/pages/main/plan/ScheduleListPage";
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
 import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
 import TravelStylePage from "@/pages/main/plan/TravelStylePage";
@@ -18,7 +18,7 @@ export const MainRoutes = () => (
     <Route path="/" element={<HomePage />} />
     <Route path="/home" element={<HomePage />} />
     {/* 일정 생성 */}
-    <Route path="/plan" element={<PlanListPage />} />
+    <Route path="/plan" element={<ScheduleListPage />} />
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
     <Route path="/plan/travelStyle" element={<TravelStylePage />} />

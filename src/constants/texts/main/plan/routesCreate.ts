@@ -13,9 +13,9 @@ export const ROUTES_CREATE_TEXT = {
     EDIT_LABEL: "수정하기",
     DELETE_LABEL: "삭제하기",
     DELETE_MODAL: {
-      TITLE: "일정을 삭제하시겠어요?",
+      TITLE: "계획을 삭제하시겠어요?",
       CONTENT:
-        "삭제된 일정은 다시 되돌릴 수 없어요.\n정말로 이 일정을 삭제할까요?",
+        "삭제된 계획은 다시 되돌릴 수 없어요.\n정말로 이 계획을 삭제할까요?",
       CANCEL_LABEL: "취소",
       CONFIRM_LABEL: "확인",
     },
