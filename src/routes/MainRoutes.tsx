@@ -34,6 +34,6 @@ export const MainRoutes = () => (
       element={<ScheduleRoutesPage variant="detail" />}
     />
     {/* 공통 장소 검색 페이지 */}
-    <Route path="/plan/location-search" element={<LocationSearchPage />} />
+    <Route path="/plan/search" element={<LocationSearchPage />} />
   </Routes>
 );

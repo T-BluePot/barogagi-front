@@ -41,6 +41,7 @@ export const ROUTES = {
     TRAVEL_STYLE: "/plan/travelStyle", // 여행 스타일 선택
     CREATE: "/plan/create", // 추천 루트 완료
     DETAIL: "/plan/:id/detail", // 루트 상세 페이지
+    SEARCH: "/plan/search", // 장소 검색 페이지
   },
 
   // 추가 기능들
@@ -77,6 +78,7 @@ export const getRoutePath = {
     travelStyle: () => ROUTES.PLAN.TRAVEL_STYLE,
     create: () => ROUTES.PLAN.CREATE,
     detail: () => ROUTES.PLAN.DETAIL,
+    search: () => ROUTES.PLAN.SEARCH,
   },
   user: {
     detail: (id: string) =>
@@ -106,4 +108,6 @@ export const ALL_ROUTES = [
   ROUTES.PLAN.TRAVEL_STYLE,
   ROUTES.USER.DETAIL,
   ROUTES.PLAN.CREATE,
+  ROUTES.PLAN.DETAIL,
+  ROUTES.PLAN.SEARCH,
 ] as const;
