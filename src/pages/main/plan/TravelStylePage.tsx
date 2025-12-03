@@ -16,7 +16,7 @@ import { ROUTES } from "@/constants/routes";
 const TravelStylePage = () => {
   const navigate = useNavigate();
 
-  const sectionClass = "flex flex-col gap-4";
+  const sectionClass = "flex flex-col";
 
   const [actives, setActives] = useState<ActiveMap>({});
 
@@ -44,7 +44,7 @@ const TravelStylePage = () => {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className={sectionClass}>
           <PageTitle
             type="main"
             title={TRAVEL_STYLE_TEXT.SEC_TITLE}
