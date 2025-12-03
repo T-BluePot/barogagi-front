@@ -4,15 +4,13 @@ import type { PlanDataProps } from "@/types/main/plan/planListTypes";
 export const filterPlansByScheduleNum = (
   isDetail: boolean,
   plans: PlanDataProps[],
-  scheduleNum?: string
+  scheduleNum?: number
 ): PlanDataProps[] => {
   // id가 없으면 전체 plans 반환
   if (!isDetail || !scheduleNum) return plans;
 
   // id가 있으면 해당 id만 필터링
-  return plans.filter(
-    (item) => String(item.plan.scheduleNum) === String(scheduleNum)
-  );
+  return plans.filter((item) => item.plan.scheduleNum === scheduleNum);
 };
 
 // 선택된 계획만 필터링하는 함수

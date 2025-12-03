@@ -28,7 +28,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   const { id } = useParams<{ id: string }>(); // /plan/:id/detail 에서 사용
   // 내 일정 페이지에서 넘어온 num 기반 필터된 plan 리스트
-  const plansForPage = filterPlansByScheduleNum(isDetail, mockPlans, id);
+  const plansForPage = filterPlansByScheduleNum(
+    isDetail,
+    mockPlans,
+    id ? Number(id) : undefined
+  );
 
   useEffect(() => {
     // 추후 서버 연동 시 수정 가능성 존재
