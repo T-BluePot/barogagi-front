@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { ROUTES } from "@/constants/routes";
+import { SCHEDULE_LIST_TEXT } from "@/constants/texts/main/plan/scheduleList";
 import { mockSchedules } from "@/mock/schedules";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
@@ -10,7 +12,8 @@ import type { PlanViewType } from "@/components/main/plan/PlanViewToggleButton";
 import { CalendarView } from "@/components/main/plan/CalendarView";
 import { ListView } from "@/components/main/plan/ListView";
 import { AddScheduleButton } from "@/components/main/plan/AddScheduleButton";
-import { ROUTES } from "@/constants/routes";
+
+import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 
 const ScheduleListPage = () => {
   const navigate = useNavigate();
@@ -36,11 +39,16 @@ const ScheduleListPage = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [deleteScheduleNum, setDeleteScheduleNum] = useState<number | null>(
     null
-  ); // 삭제할 계획 num
+  ); // 삭제할 일정 num
 
+  // 삭제 버튼 클릭 액션 함수
   const handleDeleteSchedule = (scheduleNum: number) => {
     setDeleteScheduleNum(scheduleNum);
     setIsDeleteOpen(true);
+  };
+
+  const handelCloseDeleteModal = () => {
+    setIsDeleteOpen(false);
   };
 
   return (
@@ -48,8 +56,16 @@ const ScheduleListPage = () => {
       className="flex flex-col w-full h-full
      gap-6 bg-gray-white overflow-hidden"
     >
+      <DeleteScheduleModal
+        isOpen={isDeleteOpen}
+        onClickCancle={handelCloseDeleteModal}
+        onClickConfirm={() => {
+          // 서버 연동시 삭제 로직 추가
+          handelCloseDeleteModal();
+        }}
+      />
       <div className="shrink-0 sticky top-0 z-10 bg-gray-white">
-        <TitleHeader label="내 일정">
+        <TitleHeader label={SCHEDULE_LIST_TEXT.HEADER}>
           <PlanViewToggleButton
             viewType={viewMode}
             toggleViewType={toggleViewType}
@@ -64,9 +80,7 @@ const ScheduleListPage = () => {
               onChangeDate={(date) => setSelectedDate(date)}
               markedDates={markedDates}
               schedules={mockSchedules}
-              onDelete={() => {
-                // 삭제 로직
-              }}
+              onDelete={handleDeleteSchedule}
               onClickCard={handleOpenDetail}
             />
           </div>
