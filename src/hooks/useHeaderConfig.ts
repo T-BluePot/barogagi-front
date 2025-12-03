@@ -82,6 +82,10 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
     label: "추천 루트",
     isDarkBg: false,
   },
+  [ROUTES.PLAN.DETAIL]: {
+    type: "back",
+    isDarkBg: false,
+  },
 
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {
