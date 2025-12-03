@@ -158,6 +158,10 @@ p {
   scrollbar-width: none;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 /* ===== MS/레거시 Edge/IE 계열: X(지우기), 비밀번호 눈모양 제거 ===== */
 input::-ms-clear,
 input::-ms-reveal {
