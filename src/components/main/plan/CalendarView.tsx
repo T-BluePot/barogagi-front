@@ -4,19 +4,19 @@ import Calendar from "./Calendar";
 import type { CalendarProps } from "./Calendar";
 
 import { SimpleCourseCard } from "./SimpleCourseCard";
-import type { Schedule } from "@/types/schedule";
+import type { Schedule } from "@/types/scheduleTypes";
 
 import { formatDateToKorean } from "@/utils/date";
 
 interface CalendarViewProps extends CalendarProps {
   schedules: Schedule[];
-  onEdit: (scheduleNum: number) => void;
+  onClickCard: (scheduleNum: number) => void;
   onDelete: (scheduleNum: number) => void;
 }
 
 export const CalendarView = ({
   schedules,
-  onEdit,
+  onClickCard,
   onDelete,
   ...props
 }: CalendarViewProps) => {
@@ -27,11 +27,11 @@ export const CalendarView = ({
 
   // 일정 여부 필터링
   const filteredSchedules = schedules.filter(
-    (schedule) => schedule.date === selectedDate
+    (schedule) => schedule.startDate === selectedDate
   );
 
   return (
-    <div className="flex flex-col w-full h-full gap-4 pb-6 bg-gray-5">
+    <div className="flex flex-col w-full h-full gap-4 pb-6 bg-gray-5 overflow-y-auto hide-scrollbar">
       <div className="flex-none">
         <Calendar {...props} />
       </div>
@@ -47,17 +47,13 @@ export const CalendarView = ({
               </span>
             )}
           </div>
-          <div className="flex flex-1 flex-col w-full gap-4">
+          <div className="flex flex-1 flex-col w-full gap-4 hide-scrollbar">
             {filteredSchedules.map((schedule) => {
               return (
                 <SimpleCourseCard
                   key={schedule.scheduleNum}
-                  userNum={schedule.userNum}
-                  scheduleNum={schedule.scheduleNum}
-                  date={schedule.date}
-                  scheduleTitle={schedule.scheduleTitle}
-                  tags={schedule.tags}
-                  onEdit={() => onEdit(schedule.scheduleNum)}
+                  schedule={schedule}
+                  onClickCard={() => onClickCard(schedule.scheduleNum)}
                   onDelete={() => onDelete(schedule.scheduleNum)}
                 />
               );
