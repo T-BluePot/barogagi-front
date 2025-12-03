@@ -47,7 +47,7 @@ export const CalendarView = ({
               </span>
             )}
           </div>
-          <div className="flex flex-1 flex-col w-full gap-4 hide-scrollbar">
+          <div className="flex-1 flex-col w-full pb-6 gap-4 hide-scrollbar">
             {filteredSchedules.map((schedule) => {
               return (
                 <SimpleCourseCard
