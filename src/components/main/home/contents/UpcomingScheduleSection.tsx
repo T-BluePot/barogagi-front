@@ -23,7 +23,7 @@ const UpcomingScheduleSection: React.FC = () => {
     >
       <CourseCard
         schedule={mockScheduleData}
-        onclickCard={handleEdit}
+        onClickCard={handleEdit}
         isDeleteDisabled
       />
     </ContentWrapper>

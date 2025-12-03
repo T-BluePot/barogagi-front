@@ -4,13 +4,13 @@ import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 interface DeletePlanModalProps {
   isOpen: boolean;
   onClickConfirm: () => void;
-  onClickCancle: () => void;
+  onClickCancel: () => void;
 }
 
 const DeletePlanModal = ({
   isOpen,
   onClickConfirm,
-  onClickCancle,
+  onClickCancel,
 }: DeletePlanModalProps) => {
   return (
     <CommonConfirmModal
@@ -25,7 +25,7 @@ const DeletePlanModal = ({
       }}
       cancelButtonInfo={{
         label: ROUTES_CREATE_TEXT.POP_MENU.DELETE_MODAL.CANCEL_LABEL,
-        onClick: onClickCancle,
+        onClick: onClickCancel,
       }}
     />
   );

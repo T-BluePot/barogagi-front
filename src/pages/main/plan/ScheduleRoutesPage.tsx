@@ -127,7 +127,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       )}
       <DeletePlanModal
         isOpen={isDeleteModalOpen}
-        onClickCancle={() => setIsDeleteModalOpen(false)}
+        onClickCancel={() => setIsDeleteModalOpen(false)}
         onClickConfirm={() => {
           // 추후 서버 연결 시 deletePlanNum를 넘겨 삭제하는 로직 추가
           setIsDeleteModalOpen(false);

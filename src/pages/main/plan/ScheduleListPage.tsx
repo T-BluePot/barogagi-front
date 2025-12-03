@@ -58,7 +58,7 @@ const ScheduleListPage = () => {
     >
       <DeleteScheduleModal
         isOpen={isDeleteOpen}
-        onClickCancle={handelCloseDeleteModal}
+        onClickCancel={handelCloseDeleteModal}
         onClickConfirm={() => {
           // 서버 연동시 삭제 로직 추가
           handelCloseDeleteModal();

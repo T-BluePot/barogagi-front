@@ -4,13 +4,13 @@ import { SCHEDULE_LIST_TEXT } from "@/constants/texts/main/plan/scheduleList";
 interface DeleteScheduleModalProps {
   isOpen: boolean;
   onClickConfirm: () => void;
-  onClickCancle: () => void;
+  onClickCancel: () => void;
 }
 
 const DeleteScheduleModal = ({
   isOpen,
   onClickConfirm,
-  onClickCancle,
+  onClickCancel,
 }: DeleteScheduleModalProps) => {
   return (
     <CommonConfirmModal
@@ -25,7 +25,7 @@ const DeleteScheduleModal = ({
       }}
       cancelButtonInfo={{
         label: SCHEDULE_LIST_TEXT.DELETE_MODAL.CANCEL_LABEL,
-        onClick: onClickCancle,
+        onClick: onClickCancel,
       }}
     />
   );
