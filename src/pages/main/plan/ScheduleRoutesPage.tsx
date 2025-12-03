@@ -33,7 +33,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   useEffect(() => {
     // 추후 서버 연동 시 수정 가능성 존재
     setScheduleName("오늘의 일정");
-    console.log(plansForPage);
   }, []);
 
   // ----- 헤더 영역 -----
