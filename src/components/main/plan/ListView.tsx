@@ -13,7 +13,7 @@ export const ListView = ({
   onDelete,
 }: ListViewProps) => {
   return (
-    <div className="flex flex-col w-full gap-4 pb-6">
+    <div className="flex flex-col w-full h-full gap-4 pb-6 overflow-y-auto hide-scrollbar">
       {schedules.map((schedule) => {
         return (
           <CourseCard

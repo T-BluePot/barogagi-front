@@ -27,12 +27,18 @@ const PlanListPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const markedDates = getMarkedDates(mockSchedules);
 
+  // 카드 클릭 시 상세 페이지로 이동하는 함수
+  const handleOpenDetail = (scheduleNum: number) => {
+    // 여기서 URL에 scheduleNum을 박아서 이동
+    navigate(`/plan/${scheduleNum}/detail`);
+  };
+
   return (
     <div
-      className="flex flex-col w-full
-     gap-6 bg-gray-white"
+      className="flex flex-col w-full h-full
+     gap-6 bg-gray-white overflow-hidden"
     >
-      <div className="sticky top-0 z-10 bg-gray-white">
+      <div className="shrink-0 sticky top-0 z-10 bg-gray-white">
         <TitleHeader label="내 일정">
           <PlanViewToggleButton
             viewType={viewMode}
@@ -40,9 +46,9 @@ const PlanListPage = () => {
           />
         </TitleHeader>
       </div>
-      <div className="flex flex-1 w-full overflow-hidden">
+      <div className="flex-1 w-full min-h-0">
         {viewMode === "calendar" ? (
-          <div className="flex flex-1">
+          <div className="flex w-full h-full">
             <CalendarView
               selectedDate={selectedDate}
               onChangeDate={(date) => setSelectedDate(date)}
@@ -57,15 +63,13 @@ const PlanListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex w-full px-6">
+          <div className="flex w-full h-full px-6">
             <ListView
               schedules={mockSchedules}
               onDelete={() => {
                 // 삭제 로직
               }}
-              onEdit={() => {
-                /* scheduleNum로 추천 루트 페이지 이동 **/
-              }}
+              onclickCard={handleOpenDetail}
             />
           </div>
         )}
