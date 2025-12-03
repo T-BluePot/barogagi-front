@@ -39,7 +39,7 @@ export const CourseCard = ({
         {!isDeleteDisabled && (
           <button
             type="button"
-            className="cursor-pointer"
+            className="cursor-pointer w-6 h-6 rounded-full hover:bg-gray-10 active:bg-gray-10"
             onClick={(e) => {
               e.stopPropagation(); // 부모 onClick으로의 전파 방지
               onDelete?.(); // 삭제 콜백 실행 (옵셔널 체이닝)
