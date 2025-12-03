@@ -1,17 +1,18 @@
 import { TextTag } from "@/components/common/tags/TextTag";
-import type { Schedule } from "@/types/schedule";
+import type { Schedule } from "@/types/scheduleTypes";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-interface SimpleCourseCardProps extends Schedule {
+interface SimpleCourseCardProps {
   onEdit: () => void; // 일정 카드용 수정 콜백
   onDelete: () => void; // 삭제 아이콘 버튼용 삭제 콜백
+  schedule: Schedule;
 }
 
 export const SimpleCourseCard = ({
   onEdit,
   onDelete,
-  ...scheduleProps
+  schedule,
 }: SimpleCourseCardProps) => {
   return (
     <div
@@ -22,7 +23,7 @@ export const SimpleCourseCard = ({
       <div className="flex w-full justify-between items-baseline">
         <div className="flex flex-col items-baseline gap-2">
           {/* 일정명 */}
-          <span className="typo-title-02">{scheduleProps.scheduleTitle}</span>
+          <span className="typo-title-02">{schedule.scheduleNm}</span>
         </div>
         <button
           type="button"
@@ -39,8 +40,8 @@ export const SimpleCourseCard = ({
       </div>
       {/* 태그 */}
       <div className="flex gap-2">
-        {scheduleProps.tags.map((tag, idx) => (
-          <TextTag key={idx} label={tag} />
+        {schedule.tags.map((tag, idx) => (
+          <TextTag key={idx} label={tag.tagNm} />
         ))}
       </div>
     </div>
