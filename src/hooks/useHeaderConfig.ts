@@ -86,6 +86,9 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
     type: "back",
     isDarkBg: false,
   },
+  [ROUTES.PLAN.SEARCH]: {
+    type: "none",
+  },
 
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {
