@@ -22,7 +22,7 @@ const meta: Meta<typeof ButtonWithText> = {
   component: ButtonWithText,
   tags: ["autodocs"],
   parameters: {
-    layout: "center",
+    layout: "centered",
   },
 };
 
