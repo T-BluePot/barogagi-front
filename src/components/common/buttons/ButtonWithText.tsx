@@ -13,12 +13,12 @@ const ButtonWithText = ({
   button,
 }: ButtonWithTextProps) => {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col justify-center gap-1">
       <button
         type="button"
         aria-label={textLabel}
         onClick={onClickText}
-        className="typo-description text-gray-40 underline"
+        className="typo-description text-gray-40 text-center underline"
       >
         {textLabel}
       </button>
