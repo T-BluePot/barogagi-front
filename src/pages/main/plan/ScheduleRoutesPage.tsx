@@ -7,6 +7,7 @@ import type {
   PlanNoteMap,
 } from "@/types/main/plan/planListTypes";
 import {
+  findScheduleByNum,
   filterPlansByScheduleNum,
   findPlanByNum,
 } from "@/utils/main/plan/filterList";
@@ -17,6 +18,7 @@ import { CreateScheduleModal } from "@/components/main/plan/create/CreateSchedul
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 
+import { mockSchedules } from "@/mock/schedules";
 import { mockPlans } from "@/mock/plans"; // 추후 실제 데이터로 변경
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
@@ -27,21 +29,52 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const isDetail = variant === "detail";
 
   const { id } = useParams<{ id: string }>(); // /plan/:id/detail 에서 사용
-  // 내 일정 페이지에서 넘어온 num 기반 필터된 plan 리스트
+
+  // ----- 헤더 영역 -----
+  const [scheduleName, setScheduleName] = useState<string>("");
+  const [scheduleDate, setScheduleDate] = useState<Date>(new Date());
+
+  const scheduleNum = id ? Number(id) : undefined;
+
+  // ----- 현재 페이지에서 사용할 plan 리스트: scheduleNum 기준 필터 -----
   const plansForPage = filterPlansByScheduleNum(
     isDetail,
     mockPlans,
     id ? Number(id) : undefined
   );
 
+  // ----- 일정 이름 / 날짜 초기 세팅 -----
   useEffect(() => {
-    // 추후 서버 연동 시 수정 가능성 존재
-    setScheduleName("오늘의 일정");
-  }, []);
+    // create 모드: 기본값 세팅
+    if (!isDetail) {
+      setScheduleName("오늘의 일정");
+      setScheduleDate(new Date());
+      return;
+    }
 
-  // ----- 헤더 영역 -----
-  const [scheduleName, setScheduleName] = useState<string>("");
-  const scheduleDate = new Date();
+    // detail 모드인데 id가 없는 경우: 방어 코드
+    if (!scheduleNum || Number.isNaN(scheduleNum)) {
+      setScheduleName("오늘의 일정");
+      setScheduleDate(new Date());
+      return;
+    }
+
+    // mockSchedules 에서 현재 schedule 찾기
+    const currentSchedule = findScheduleByNum(mockSchedules, scheduleNum);
+
+    if (!currentSchedule) {
+      // 해당 schedule 이 없으면 기본값 사용
+      setScheduleName("오늘의 일정");
+      setScheduleDate(new Date());
+      return;
+    }
+
+    // 찾은 schedule 기반으로 이름 / 날짜 세팅
+    setScheduleName(currentSchedule.scheduleNm);
+
+    // startDate 를 Date 객체로 변환 (예: "2025-01-02")
+    setScheduleDate(new Date(currentSchedule.startDate));
+  }, [isDetail, scheduleNum]);
 
   // ----- 일정 list 영역 -----
   // 수정할 일정 함수
