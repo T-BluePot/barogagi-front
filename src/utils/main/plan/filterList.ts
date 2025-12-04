@@ -1,4 +1,13 @@
+import type { Schedule } from "@/types/scheduleTypes";
 import type { PlanDataProps } from "@/types/main/plan/planListTypes";
+
+// ScheduleNum을 기반으로 하나의 schedule을 찾는 함수
+export const findScheduleByNum = (
+  schedules: Schedule[],
+  scheduleNum: number
+): Schedule | undefined => {
+  return schedules.find((item) => item.scheduleNum === scheduleNum);
+};
 
 // 내 일정 페이지에서 넘어온 scheduleNum 값을 기반으로 plans를 필터링하는 함수
 export const filterPlansByScheduleNum = (
