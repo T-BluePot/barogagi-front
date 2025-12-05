@@ -22,17 +22,20 @@ export const MainRoutes = () => (
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
     <Route path="/plan/travelStyle" element={<TravelStylePage />} />
-    {/* 추천 루트: /plan/create */}
     <Route
       path="/plan/create"
       element={<ScheduleRoutesPage variant="create" />}
     />
 
-    {/* 상세 화면: /plan/:id/detail */}
+    {/* 일정 상세 화면: /plan/:id/detail */}
     <Route
       path="/plan/:id/detail"
       element={<ScheduleRoutesPage variant="detail" />}
-    />
+    >
+      {/* 자식 검색 페이지 */}
+      <Route path="search" element={<LocationSearchPage />} />
+    </Route>
+
     {/* 공통 장소 검색 페이지 */}
     <Route path="/plan/search" element={<LocationSearchPage />} />
   </Routes>
