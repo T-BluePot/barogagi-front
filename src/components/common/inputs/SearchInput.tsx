@@ -28,7 +28,7 @@ export const SearchInput = ({
         aria-label={searchPlaceholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="flex-1 outline-none"
+        className="flex-1 outline-none typo-caption"
       />
       {!value ? (
         <SearchIcon className="text-gray-80" />
