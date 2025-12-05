@@ -7,7 +7,14 @@ export const BottomModalLayout = ({
   children,
 }: BottomModalLayoutProps) => {
   return (
-    <Sheet isOpen={isOpen} onClose={onClose} detent="content-height">
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      detent="content-height"
+      style={{
+        zIndex: 100, // 추후 연동될 다른 페이지 및 모달들과 조정을 위함
+      }}
+    >
       <Sheet.Container>
         <Sheet.Header />
         <Sheet.Content>{children}</Sheet.Content>
