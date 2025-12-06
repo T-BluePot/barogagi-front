@@ -84,6 +84,3 @@ export interface PlanDetailCardEdit extends PlanDetailCardBase {
  * 최종 카드 컴포넌트용 타입
  */
 export type PlanDetailCardProps = PlanDetailCardSimple | PlanDetailCardEdit;
-
-// planNum 기준으로 메모를 저장하는 맵 타입
-export type PlanNoteMap = Record<number, string>;
