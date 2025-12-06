@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { LocationIcon } from "./LocationIcon";
 
 export interface LocationListItemProps {
@@ -13,7 +14,7 @@ const LocationListItem = ({
 }: LocationListItemProps) => {
   const subTextClass = `typo-description text-gray-60`;
   return (
-    <div className="flex flex-row px-6 py-4 justify-between items-center border-b border-gray-5">
+    <div className="flex flex-row px-6 py-4 justify-between items-center border-b border-gray-5 active:bg-gray-5">
       {/* 장소 정보 */}
       <div className="flex flex-row items-center gap-5">
         <LocationIcon />
@@ -23,7 +24,7 @@ const LocationListItem = ({
         </div>
       </div>
       <button onClick={onClick}>
-        <div className={subTextClass}>등록</div>
+        <div className={clsx(subTextClass, "active:underline")}>등록</div>
       </button>
     </div>
   );
