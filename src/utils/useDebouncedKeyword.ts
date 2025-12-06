@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
 
+interface UseDebouncedKeywordOptions {
+  minLength?: number;
+  delay?: number;
+}
+
+interface UseDebouncedKeywordParams {
+  value: string;
+  options?: UseDebouncedKeywordOptions;
+}
+
 /**
  * 사용자 입력 키워드를 디바운스 처리하여 반환하는 커스텀 훅
  * @param value - 사용자 입력 키워드
@@ -8,18 +18,11 @@ import { useEffect, useState } from "react";
  * @return 디바운스 처리된 키워드
  * 조건을 만족하지 못하면 항상 빈 문자열("")을 반환
  */
-
-interface UseDebouncedKeywordParams {
-  value: string;
-  minLength?: number;
-  delay?: number;
-}
-
 export const useDebouncedKeyword = ({
   value,
-  minLength = 2,
-  delay = 300,
+  options,
 }: UseDebouncedKeywordParams): string => {
+  const { minLength = 2, delay = 400 } = options ?? {};
   // 실제 검색 카운트 값
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
 
