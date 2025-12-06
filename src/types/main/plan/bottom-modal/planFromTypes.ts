@@ -58,3 +58,16 @@ export interface PlanFormModalProps {
   action: ModalAction;
   info: ModalInfo;
 }
+
+// 일정 수정용 드래프트 타입
+export interface EditPlanDraft {
+  planNum: number;
+  planNm: string;
+  address: string;
+  startTime: string;
+  endTime: string;
+  note: string;
+}
+
+// planNum 기준으로 메모를 저장하는 맵 타입
+export type PlanNoteMap = Record<number, string>;
