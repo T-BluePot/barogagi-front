@@ -10,17 +10,28 @@ const SearchLocationSection = ({
   searchLocations,
   onClickAddLocation,
 }: SearchLocationSectionprops) => {
+  const isEmpty = searchLocations.length === 0;
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto hide-scrollbar">
-      {searchLocations.map((loc, idx) => (
-        <div key={idx}>
-          <LocationListItem
-            locationNm={loc.locationNm}
-            locationAdress={loc.locationAddress}
-            onClick={onClickAddLocation}
-          />
+      {isEmpty ? (
+        <div>
+          <p className="w-full typo-caption py-4 text-gray-60 text-center">
+            검색 결과가 없습니다.
+          </p>
         </div>
-      ))}
+      ) : (
+        <>
+          {searchLocations.map((loc, idx) => (
+            <div key={idx}>
+              <LocationListItem
+                locationNm={loc.locationNm}
+                locationAdress={loc.locationAddress}
+                onClick={onClickAddLocation}
+              />
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 };
