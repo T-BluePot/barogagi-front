@@ -9,6 +9,7 @@ import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
 import ScheduleStylePage from "@/pages/main/plan/ScheduleStylePage";
 import ScheduleRoutesPage from "@/pages/main/plan/ScheduleRoutesPage";
 import LocationSearchPage from "@/pages/main/plan/LocationSearchPage";
+import { PlanSettingPage } from "@/pages/main/plan/PlanSettingPage";
 
 // 메인 페이지
 import HomePage from "@/pages/main/HomePage";
@@ -27,6 +28,7 @@ export const MainRoutes = () => (
     {/* 일정 생성 */}
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
+    <Route path="/plan/setting" element={<PlanSettingPage />} />
     <Route path="/plan/style" element={<ScheduleStylePage />} />
     <Route
       path="/plan/create"

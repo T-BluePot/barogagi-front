@@ -39,6 +39,7 @@ export const ROUTES = {
     LIST: PLAN_BASE, // 일정 리스트 메인
     DATE: "/plan/date", // 날짜 선택
     LOCATION: "/plan/location", // 지역 선택
+    SETTING: "/plan/setting", // 일정 세팅
     STYLE: "/plan/style", // 일정 스타일 선택
     CREATE: "/plan/create", // 추천 루트 완료
     DETAIL: "/plan/:id/detail", // 루트 상세 페이지
