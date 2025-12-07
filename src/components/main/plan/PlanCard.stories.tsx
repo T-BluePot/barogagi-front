@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import ScheduleCourseCard from "./ScheduleCourseCard";
+import PlanCard from "./PlanCard";
 
 const meta = {
-  title: "Components/Main/Plan/ScheduleCourseCard",
-  component: ScheduleCourseCard,
+  title: "Components/Main/Plan/PlanCard",
+  component: PlanCard,
   parameters: {
     layout: "centered",
   },
@@ -24,7 +24,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof ScheduleCourseCard>;
+} satisfies Meta<typeof PlanCard>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

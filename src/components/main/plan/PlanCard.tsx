@@ -3,7 +3,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
-export interface ScheduleCourseData {
+export interface PlanData {
   id: string | number;
   emoji: string;
   title: string;
@@ -12,8 +12,8 @@ export interface ScheduleCourseData {
   location?: string;
 }
 
-interface ScheduleCourseCardProps {
-  data: ScheduleCourseData;
+interface PlanCardProps {
+  data: PlanData;
   isDeleteMode?: boolean;
   onDelete?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
@@ -21,14 +21,14 @@ interface ScheduleCourseCardProps {
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
-const ScheduleCourseCard = ({
+const PlanCard = ({
   data,
   isDeleteMode = false,
   onDelete,
   onTimeClick,
   onLocationClick,
   dragHandleProps,
-}: ScheduleCourseCardProps) => {
+}: PlanCardProps) => {
   const { id, emoji, title, startTime, endTime, location } = data;
 
   const hasTime = startTime && endTime;
@@ -97,4 +97,4 @@ const ScheduleCourseCard = ({
   );
 };
 
-export default ScheduleCourseCard;
+export default PlanCard;

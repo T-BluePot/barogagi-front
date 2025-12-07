@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import ScheduleCourseCardList from "./ScheduleCourseCardList";
-import type { ScheduleCourseData } from "./ScheduleCourseCard";
+import PlanCardList from "./PlanCardList";
+import type { PlanData } from "./PlanCard";
 
-const mockItems: ScheduleCourseData[] = [
+const mockItems: PlanData[] = [
   {
     id: 1,
     emoji: "🥓",
@@ -35,8 +35,8 @@ const mockItems: ScheduleCourseData[] = [
 ];
 
 const meta = {
-  title: "Components/Main/Plan/ScheduleCourseCardList",
-  component: ScheduleCourseCardList,
+  title: "Components/Main/Plan/PlanCardList",
+  component: PlanCardList,
   parameters: {
     layout: "centered",
   },
@@ -58,7 +58,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof ScheduleCourseCardList>;
+} satisfies Meta<typeof PlanCardList>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -17,12 +17,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import ScheduleCourseCard, {
-  type ScheduleCourseData,
-} from "./ScheduleCourseCard";
+import PlanCard, { type PlanData } from "./PlanCard";
 
 interface SortableCardProps {
-  data: ScheduleCourseData;
+  data: PlanData;
   isDeleteMode: boolean;
   onDelete?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
@@ -55,7 +53,7 @@ const SortableCard = ({
 
   return (
     <div ref={setNodeRef} style={style}>
-      <ScheduleCourseCard
+      <PlanCard
         data={data}
         isDeleteMode={isDeleteMode}
         onDelete={onDelete}
@@ -69,23 +67,23 @@ const SortableCard = ({
   );
 };
 
-interface ScheduleCourseCardListProps {
-  items: ScheduleCourseData[];
+interface PlanCardListProps {
+  items: PlanData[];
   isDeleteMode?: boolean;
-  onOrderChange?: (items: ScheduleCourseData[]) => void;
+  onOrderChange?: (items: PlanData[]) => void;
   onDelete?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
   onLocationClick?: (id: string | number) => void;
 }
 
-const ScheduleCourseCardList = ({
+const PlanCardList = ({
   items: initialItems,
   isDeleteMode = false,
   onOrderChange,
   onDelete,
   onTimeClick,
   onLocationClick,
-}: ScheduleCourseCardListProps) => {
+}: PlanCardListProps) => {
   const [items, setItems] = useState(initialItems);
 
   const sensors = useSensors(
@@ -143,4 +141,4 @@ const ScheduleCourseCardList = ({
   );
 };
 
-export default ScheduleCourseCardList;
+export default PlanCardList;
