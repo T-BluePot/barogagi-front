@@ -12,7 +12,7 @@ const PlanAddButton = ({
   isDisabled = false,
 }: PlanAddButtonProps) => {
   const baseStyle =
-    "flex items-center justify-center gap-1 w-full py-3 rounded-xl border border-dashed border-gray-40 transition-colors duration-200 cursor-pointer";
+    "flex items-center justify-center gap-1 w-full h-20 rounded-xl border border-dashed border-gray-40 transition-colors duration-200 cursor-pointer";
 
   const stateStyle = isDisabled
     ? "text-gray-40 cursor-not-allowed"

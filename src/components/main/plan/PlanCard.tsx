@@ -16,7 +16,7 @@ export interface PlanData {
 
 interface PlanCardProps {
   data: PlanData;
-  onDelete?: (id: string | number) => void;
+  onDeleteClick?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
   onLocationClick?: (id: string | number) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
@@ -27,7 +27,7 @@ const DELETE_BUTTON_WIDTH = 72; // 삭제 버튼 너비
 
 const PlanCard = ({
   data,
-  onDelete,
+  onDeleteClick,
   onTimeClick,
   onLocationClick,
   dragHandleProps,
@@ -60,7 +60,12 @@ const PlanCard = ({
   };
 
   const handleDeleteClick = () => {
-    onDelete?.(id);
+    // 부모에게 삭제 요청 전달 (모달은 부모에서 관리)
+    onDeleteClick?.(id);
+  };
+
+  // 삭제 완료 후 카드 상태 초기화 (외부에서 호출 가능하도록 export 필요 시 수정)
+  const resetSwipeState = () => {
     animate(x, 0, { type: "spring", stiffness: 300, damping: 30 });
     setIsOpen(false);
   };
@@ -68,14 +73,12 @@ const PlanCard = ({
   const handleCardClick = () => {
     // 열려있으면 닫기
     if (isOpen) {
-      animate(x, 0, { type: "spring", stiffness: 300, damping: 30 });
-      setIsOpen(false);
+      resetSwipeState();
     }
   };
 
   return (
     <div className="relative">
-      {/* 삭제 버튼 (카드 뒤에 고정) */}
       <button
         type="button"
         onClick={handleDeleteClick}
