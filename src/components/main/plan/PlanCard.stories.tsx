@@ -9,10 +9,6 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    isDeleteMode: {
-      control: "boolean",
-      description: "삭제 모드 여부 (true: 쓰레기통, false: 드래그 핸들)",
-    },
     onDelete: { action: "deleted" },
     onTimeClick: { action: "time clicked" },
     onLocationClick: { action: "location clicked" },
@@ -29,7 +25,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// 기본 상태 (시간/장소 미입력)
+// 기본 상태 (시간/장소 미입력) - 왼쪽으로 스와이프하여 삭제
 export const Default: Story = {
   args: {
     data: {
@@ -37,7 +33,6 @@ export const Default: Story = {
       emoji: "🥓",
       title: "브런치",
     },
-    isDeleteMode: false,
   },
 };
 
@@ -52,22 +47,6 @@ export const WithTimeAndLocation: Story = {
       endTime: "11:30",
       location: "부천시",
     },
-    isDeleteMode: false,
-  },
-};
-
-// 삭제 모드
-export const DeleteMode: Story = {
-  args: {
-    data: {
-      id: 3,
-      emoji: "🥓",
-      title: "브런치",
-      startTime: "10:00",
-      endTime: "11:30",
-      location: "부천시",
-    },
-    isDeleteMode: true,
   },
 };
 
@@ -81,7 +60,6 @@ export const WithTimeOnly: Story = {
       startTime: "14:00",
       endTime: "15:30",
     },
-    isDeleteMode: false,
   },
 };
 
@@ -94,6 +72,5 @@ export const WithLocationOnly: Story = {
       title: "점심",
       location: "서울시 강남구",
     },
-    isDeleteMode: false,
   },
 };

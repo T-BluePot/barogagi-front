@@ -21,7 +21,6 @@ import PlanCard, { type PlanData } from "./PlanCard";
 
 interface SortableCardProps {
   data: PlanData;
-  isDeleteMode: boolean;
   onDelete?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
   onLocationClick?: (id: string | number) => void;
@@ -30,7 +29,6 @@ interface SortableCardProps {
 /** 드래그 가능한 개별 카드 래퍼 */
 const SortableCard = ({
   data,
-  isDeleteMode,
   onDelete,
   onTimeClick,
   onLocationClick,
@@ -55,13 +53,10 @@ const SortableCard = ({
     <div ref={setNodeRef} style={style}>
       <PlanCard
         data={data}
-        isDeleteMode={isDeleteMode}
         onDelete={onDelete}
         onTimeClick={onTimeClick}
         onLocationClick={onLocationClick}
-        dragHandleProps={
-          !isDeleteMode ? { ...attributes, ...listeners } : undefined
-        }
+        dragHandleProps={{ ...attributes, ...listeners }}
       />
     </div>
   );
@@ -69,7 +64,6 @@ const SortableCard = ({
 
 interface PlanCardListProps {
   items: PlanData[];
-  isDeleteMode?: boolean;
   onOrderChange?: (items: PlanData[]) => void;
   onDelete?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
@@ -78,7 +72,6 @@ interface PlanCardListProps {
 
 const PlanCardList = ({
   items: initialItems,
-  isDeleteMode = false,
   onOrderChange,
   onDelete,
   onTimeClick,
@@ -129,7 +122,6 @@ const PlanCardList = ({
             <SortableCard
               key={item.id}
               data={item}
-              isDeleteMode={isDeleteMode}
               onDelete={onDelete}
               onTimeClick={onTimeClick}
               onLocationClick={onLocationClick}

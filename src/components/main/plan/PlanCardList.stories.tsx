@@ -42,10 +42,6 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    isDeleteMode: {
-      control: "boolean",
-      description: "삭제 모드 여부",
-    },
     onOrderChange: { action: "order changed" },
     onDelete: { action: "deleted" },
     onTimeClick: { action: "time clicked" },
@@ -63,19 +59,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// 기본 (드래그 모드)
+// 기본 (드래그 & 스와이프 삭제)
 export const Default: Story = {
   args: {
     items: mockItems,
-    isDeleteMode: false,
-  },
-};
-
-// 삭제 모드
-export const DeleteMode: Story = {
-  args: {
-    items: mockItems,
-    isDeleteMode: true,
   },
 };
 
@@ -83,7 +70,6 @@ export const DeleteMode: Story = {
 export const EmptyList: Story = {
   args: {
     items: [],
-    isDeleteMode: false,
   },
 };
 
@@ -91,6 +77,5 @@ export const EmptyList: Story = {
 export const SingleItem: Story = {
   args: {
     items: [mockItems[0]],
-    isDeleteMode: false,
   },
 };
