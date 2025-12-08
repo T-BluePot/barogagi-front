@@ -5,12 +5,15 @@ import LocationListItem from "./LocationListItem";
 
 import ClearAllModal from "./ClearAllModal";
 
-import type { location } from "@/mock/locations";
+import type {
+  EditPlanPlace,
+  OnSelectPlace,
+} from "@/types/main/plan/bottom-modal/planFromTypes";
 
 interface RecentSearchSectionProps {
   onClickClear: () => void; // 최근 검색어 비우기
-  recentLocations: location[]; // 최근 추가한 장소 (최대 10개, 로컬에서 저장)
-  onClickAddLocation: () => void; // 장소 추가
+  recentLocations: EditPlanPlace[]; // 최근 추가한 장소 (최대 10개, 로컬에서 저장)
+  onClickAddLocation: OnSelectPlace; // 장소 추가
 }
 
 const RecentSearchSection = ({
@@ -37,8 +40,9 @@ const RecentSearchSection = ({
           {recentLocations.map((loc, idx) => (
             <div key={idx}>
               <LocationListItem
-                locationNm={loc.locationNm}
-                locationAdress={loc.locationAddress}
+                location={{
+                  ...loc,
+                }}
                 addModalProps={{
                   handleConfirm: onClickAddLocation,
                 }}

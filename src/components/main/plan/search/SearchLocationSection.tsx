@@ -1,11 +1,15 @@
 import LocationListItem from "./LocationListItem";
-import type { location } from "@/mock/locations";
+
+import type {
+  EditPlanPlace,
+  OnSelectPlace,
+} from "@/types/main/plan/bottom-modal/planFromTypes";
 
 import EmptyStateSection from "../common/EmptyStateSection";
 
 interface SearchLocationSectionprops {
-  searchLocations: location[]; // 검색된 장소 목록
-  onClickAddLocation: () => void; // 장소 추가
+  searchLocations: EditPlanPlace[]; // 검색된 장소 목록
+  onClickAddLocation: OnSelectPlace; // 장소 추가
 }
 
 const SearchLocationSection = ({
@@ -22,8 +26,7 @@ const SearchLocationSection = ({
           {searchLocations.map((loc, idx) => (
             <div key={idx}>
               <LocationListItem
-                locationNm={loc.locationNm}
-                locationAdress={loc.locationAddress}
+                location={{ ...loc }}
                 addModalProps={{
                   handleConfirm: onClickAddLocation,
                 }}
