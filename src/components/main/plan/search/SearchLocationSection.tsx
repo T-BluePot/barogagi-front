@@ -23,10 +23,10 @@ const SearchLocationSection = ({
         <EmptyStateSection />
       ) : (
         <>
-          {searchLocations.map((loc, idx) => (
-            <div key={idx}>
+          {searchLocations.map((loc) => (
+            <div key={loc.placeNum}>
               <LocationListItem
-                location={{ ...loc }}
+                location={loc}
                 addModalProps={{
                   handleConfirm: onClickAddLocation,
                 }}

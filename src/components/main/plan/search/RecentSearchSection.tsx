@@ -37,12 +37,10 @@ const RecentSearchSection = ({
       <RecentSearchHeader onclick={() => setIsClearAllModalOpen(true)} />
       {hasRecentLocations && (
         <div className="flex flex-col w-full h-full overflow-y-auto hide-scrollbar">
-          {recentLocations.map((loc, idx) => (
-            <div key={idx}>
+          {recentLocations.map((loc) => (
+            <div key={loc.placeNum}>
               <LocationListItem
-                location={{
-                  ...loc,
-                }}
+                location={loc}
                 addModalProps={{
                   handleConfirm: onClickAddLocation,
                 }}
