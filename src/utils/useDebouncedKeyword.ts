@@ -22,7 +22,7 @@ export const useDebouncedKeyword = ({
   value,
   options,
 }: UseDebouncedKeywordParams): string => {
-  const { minLength = 2, delay = 400 } = options ?? {};
+  const { minLength = 2, delay = 300 } = options ?? {};
   // 실제 검색 카운트 값
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
 
