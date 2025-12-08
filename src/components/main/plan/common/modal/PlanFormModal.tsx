@@ -23,7 +23,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
       <BottomActionHeader
         title={title ?? "내 일정"}
         actionLabel={create ? "제목 작성하기" : "제목 수정하기"}
-        onClickAction={action.onClickAction}
+        onClickAction={action.onClickEditTitle}
       />
       <CommonInfoItem
         placeholder="시간 추가"
