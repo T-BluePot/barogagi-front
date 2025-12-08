@@ -77,7 +77,8 @@ export const getRoutePath = {
     location: () => ROUTES.PLAN.LOCATION,
     travelStyle: () => ROUTES.PLAN.TRAVEL_STYLE,
     create: () => ROUTES.PLAN.CREATE,
-    detail: () => ROUTES.PLAN.DETAIL,
+    detail: (id: string) =>
+      ROUTES.PLAN.DETAIL.replace(":id", encodeURIComponent(id)),
     search: () => ROUTES.PLAN.SEARCH,
   },
   user: {
