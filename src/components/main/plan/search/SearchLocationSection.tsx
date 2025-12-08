@@ -1,5 +1,8 @@
 import LocationListItem from "./LocationListItem";
 import type { location } from "@/mock/locations";
+
+import EmptyStateSection from "../common/EmptyStateSection";
+
 import { COMMON_TEXT } from "@/constants/texts/main/common";
 
 interface SearchLocationSectionprops {
@@ -15,11 +18,7 @@ const SearchLocationSection = ({
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto hide-scrollbar">
       {isEmpty ? (
-        <div>
-          <p className="w-full typo-caption py-4 text-gray-60 text-center">
-            {COMMON_TEXT.EMPTY_STATE}
-          </p>
-        </div>
+        <EmptyStateSection />
       ) : (
         <>
           {searchLocations.map((loc, idx) => (

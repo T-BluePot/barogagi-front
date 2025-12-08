@@ -1,13 +1,14 @@
 import { useMemo } from "react";
 
 import type { Region } from "@/types/main/plan/region";
-import { COMMON_TEXT } from "@/constants/texts/main/common";
 
 import { normalizeKo } from "@/utils/ko";
 import { filterRegionsKorean } from "@/utils/regionFilter";
+import { useDebouncedKeyword } from "@/utils/useDebouncedKeyword";
 
 import { SearchInput } from "@/components/common/inputs/SearchInput";
 import type { SearchInputProps } from "@/components/common/inputs/SearchInput";
+import EmptyStateSection from "./common/EmptyStateSection";
 
 interface SearchComponentProps {
   searchInput: SearchInputProps;
@@ -22,7 +23,7 @@ export const SearchComponent = ({
 }: SearchComponentProps) => {
   // 입력 키워드 정규화 적용
   const keyword = normalizeKo(searchInput.value);
-  const hasInput = keyword.length > 0;
+  const hasInput = useDebouncedKeyword({ value: keyword });
 
   // 필터링(항상 Region[])
   const filtered = useMemo<Region[]>(() => {
@@ -64,8 +65,8 @@ export const SearchComponent = ({
                 </li>
               ))
             ) : (
-              <li className="w-full typo-caption py-4 text-gray-60 text-center">
-                {COMMON_TEXT.EMPTY_STATE}
+              <li>
+                <EmptyStateSection />
               </li>
             )}
           </ul>
