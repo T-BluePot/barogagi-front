@@ -73,7 +73,7 @@ export interface EditPlanDraft {
   // Place 섹션: 위치 관련 정보
   place: {
     placeNum: number | null; // PLACE_NUM, 아직 선택 안 했으면 null
-    placeName: string; // UI 표시용 장소 이름 (regionNm)
+    placeNm: string; // UI 표시용 장소 이름 (regionNm)
     address: string; // UI 표시용 전체 주소
   };
 
