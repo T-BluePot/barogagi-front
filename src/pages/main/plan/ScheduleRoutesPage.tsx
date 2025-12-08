@@ -38,7 +38,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const plansForPage = filterPlansByScheduleNum(
     isDetail,
     mockPlans,
-    id ? Number(id) : undefined
+    scheduleNum
   );
 
   // ----- 일정 이름 / 날짜 초기 세팅 -----
