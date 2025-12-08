@@ -39,7 +39,9 @@ const RecentSearchSection = ({
               <LocationListItem
                 locationNm={loc.locationNm}
                 locationAdress={loc.locationAddress}
-                onClick={onClickAddLocation}
+                addModalProps={{
+                  handleConfirm: onClickAddLocation,
+                }}
               />
             </div>
           ))}

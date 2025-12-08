@@ -3,8 +3,6 @@ import type { location } from "@/mock/locations";
 
 import EmptyStateSection from "../common/EmptyStateSection";
 
-import { COMMON_TEXT } from "@/constants/texts/main/common";
-
 interface SearchLocationSectionprops {
   searchLocations: location[]; // 검색된 장소 목록
   onClickAddLocation: () => void; // 장소 추가
@@ -26,7 +24,9 @@ const SearchLocationSection = ({
               <LocationListItem
                 locationNm={loc.locationNm}
                 locationAdress={loc.locationAddress}
-                onClick={onClickAddLocation}
+                addModalProps={{
+                  handleConfirm: onClickAddLocation,
+                }}
               />
             </div>
           ))}
