@@ -1,5 +1,9 @@
+import { useState } from "react";
+
 import RecentSearchHeader from "./RecentSearchHeader";
 import LocationListItem from "./LocationListItem";
+
+import ClearAllModal from "./ClearAllModal";
 
 import type { location } from "@/mock/locations";
 
@@ -14,10 +18,20 @@ const RecentSearchSection = ({
   recentLocations,
   onClickAddLocation,
 }: RecentSearchSectionProps) => {
+  const [isClearAllModalOpen, setIsClearAllModalOpen] =
+    useState<boolean>(false);
   const hasRecentLocations = recentLocations && recentLocations.length !== 0;
   return (
     <div className="flex flex-col h-full overflow-auto">
-      <RecentSearchHeader onclick={onClickClear} />
+      <ClearAllModal
+        isOpen={isClearAllModalOpen}
+        handleClearAll={() => {
+          onClickClear();
+          setIsClearAllModalOpen(false);
+        }}
+        handleCancel={() => setIsClearAllModalOpen(false)}
+      />
+      <RecentSearchHeader onclick={() => setIsClearAllModalOpen(true)} />
       {hasRecentLocations && (
         <div className="flex flex-col w-full h-full overflow-y-auto hide-scrollbar">
           {recentLocations.map((loc, idx) => (
