@@ -27,6 +27,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const isDetail = variant === "detail";
 
   const { id } = useParams<{ id: string }>(); // /plan/:id/detail 에서 사용
+  // 내 일정 페이지에서 넘어온 num 기반 필터된 plan 리스트
 
   // ----- 헤더 영역 -----
   const [scheduleName, setScheduleName] = useState<string>("");
@@ -159,7 +160,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
               setIsEditModalOpen(false);
             },
             onConfirm: () => {},
-            onClickAction: () => {},
+            onClickEditTitle: () => {},
           }}
           info={{
             mode: "Edit",
