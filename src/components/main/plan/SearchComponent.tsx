@@ -1,12 +1,14 @@
 import { useMemo } from "react";
 
 import type { Region } from "@/types/main/plan/region";
+import { COMMON_TEXT } from "@/constants/texts/main/common";
 
 import { normalizeKo } from "@/utils/ko";
 import { filterRegionsKorean } from "@/utils/regionFilter";
 
 import { SearchInput } from "@/components/common/inputs/SearchInput";
 import type { SearchInputProps } from "@/components/common/inputs/SearchInput";
+
 interface SearchComponentProps {
   searchInput: SearchInputProps;
   regions: Region[];
@@ -63,7 +65,7 @@ export const SearchComponent = ({
               ))
             ) : (
               <li className="w-full typo-caption py-4 text-gray-60 text-center">
-                검색 결과가 없습니다.
+                {COMMON_TEXT.EMPTY_STATE}
               </li>
             )}
           </ul>

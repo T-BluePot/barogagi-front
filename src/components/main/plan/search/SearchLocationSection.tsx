@@ -1,5 +1,6 @@
 import LocationListItem from "./LocationListItem";
 import type { location } from "@/mock/locations";
+import { COMMON_TEXT } from "@/constants/texts/main/common";
 
 interface SearchLocationSectionprops {
   searchLocations: location[]; // 검색된 장소 목록
@@ -16,7 +17,7 @@ const SearchLocationSection = ({
       {isEmpty ? (
         <div>
           <p className="w-full typo-caption py-4 text-gray-60 text-center">
-            검색 결과가 없습니다.
+            {COMMON_TEXT.EMPTY_STATE}
           </p>
         </div>
       ) : (
