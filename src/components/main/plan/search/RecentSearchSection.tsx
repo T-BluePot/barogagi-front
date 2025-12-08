@@ -34,7 +34,7 @@ const RecentSearchSection = ({
         }}
         handleCancel={() => setIsClearAllModalOpen(false)}
       />
-      <RecentSearchHeader onclick={() => setIsClearAllModalOpen(true)} />
+      <RecentSearchHeader onClick={() => setIsClearAllModalOpen(true)} />
       {hasRecentLocations && (
         <div className="flex flex-col w-full h-full overflow-y-auto hide-scrollbar">
           {recentLocations.map((loc) => (
