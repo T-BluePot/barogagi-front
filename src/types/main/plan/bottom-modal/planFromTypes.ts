@@ -85,5 +85,11 @@ export interface EditPlanDraft {
    */
 }
 
+// place 섹션만 추출한 전용 타입
+export type EditPlanPlace = EditPlanDraft["place"];
+
+// 장소 선택 핸들러 공통 타입
+export type OnSelectPlace = (location: EditPlanPlace) => void;
+
 // planNum 기준으로 메모를 저장하는 맵 타입
 export type PlanNoteMap = Record<number, string>;
