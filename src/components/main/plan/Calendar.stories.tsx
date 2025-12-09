@@ -6,7 +6,7 @@ const meta = {
   title: "Components/Main/Plan/Calendar",
   component: Calendar,
   parameters: {
-    layout: "centered",
+    layout: "fullscreen",
     backgrounds: {
       default: "light",
       values: [
@@ -47,13 +47,6 @@ export const Default: Story = {
       "2025-05-25": true,
     },
   },
-  decorators: [
-    (Story) => (
-      <div className="w-96 p-4">
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export const WithTitle: Story = {
@@ -68,13 +61,6 @@ export const WithTitle: Story = {
       "2025-05-25": true,
     },
   },
-  decorators: [
-    (Story) => (
-      <div className="w-96 p-4">
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export const NoSelectedDate: Story = {
@@ -88,13 +74,6 @@ export const NoSelectedDate: Story = {
       "2025-05-20": true,
     },
   },
-  decorators: [
-    (Story) => (
-      <div className="w-96 p-4">
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export const NoMarkedDates: Story = {
@@ -104,13 +83,6 @@ export const NoMarkedDates: Story = {
     onChangeDate: () => console.log("onChangeDate"),
     markedDates: {},
   },
-  decorators: [
-    (Story) => (
-      <div className="w-96 p-4">
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export const ManyMarkedDates: Story = {
@@ -134,13 +106,6 @@ export const ManyMarkedDates: Story = {
       "2025-05-30": true,
     },
   },
-  decorators: [
-    (Story) => (
-      <div className="w-96 p-4">
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export const Interactive: Story = {
