@@ -6,7 +6,7 @@ import type { Schedule } from "@/types/scheduleTypes";
 import { mockSchedules, pastMockSchedules } from "@/mock/schedules";
 
 const meta: Meta<typeof ListView> = {
-  title: "Components/Main/Plan/List/ListView", // Storybook 좌측 네비게이션에 표시될 그룹/이름
+  title: "Components/Main/Plan/Main/ListView", // Storybook 좌측 네비게이션에 표시될 그룹/이름
   component: ListView,
   parameters: {
     // 리스트 전체를 화면 폭에 맞게 보기 위해 fullscreen 레이아웃 사용

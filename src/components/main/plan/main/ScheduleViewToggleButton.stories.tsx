@@ -6,7 +6,7 @@ import {
 } from "./ScheduleViewToggleButton";
 
 const meta = {
-  title: "Components/Main/Plan/List/ScheduleViewToggleButton",
+  title: "Components/Main/Plan/Main/ScheduleViewToggleButton",
   component: ScheduleViewToggleButton,
   parameters: {
     layout: "centered",
