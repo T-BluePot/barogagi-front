@@ -5,16 +5,19 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import clsx from "clsx";
 
+import { CalendarTitle } from "./CalendarTitle";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 export interface CalendarProps {
+  withTitle?: boolean;
   selectedDate: Date | null;
   onChangeDate: (date: Date | null) => void;
   markedDates?: Record<string, true>;
 }
 
 export default function Calendar({
+  withTitle = false,
   selectedDate,
   onChangeDate,
   markedDates,
@@ -26,6 +29,9 @@ export default function Calendar({
 
   return (
     <div className="flex flex-col w-full items-baseline gap-8">
+      {withTitle && selectedDate && (
+        <CalendarTitle selectedDate={selectedDate} />
+      )}
       <DatePicker
         locale={ko}
         inline // 캘린더 유지
