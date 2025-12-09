@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { AddScheduleButton } from "./AddScheduleButton";
+import AddScheduleButton from "./AddScheduleButton";
 
 const meta = {
-  title: "Components/Main/Plan/AddScheduleButton",
+  title: "Components/Main/Plan/Main/AddScheduleButton",
   component: AddScheduleButton,
   parameters: {
     layout: "centered",
