@@ -10,17 +10,17 @@ import { SearchInput } from "@/components/common/inputs/SearchInput";
 import type { SearchInputProps } from "@/components/common/inputs/SearchInput";
 import EmptyStateSection from "./common/EmptyStateSection";
 
-interface SearchComponentProps {
-  searchInput: SearchInputProps;
-  regions: Region[];
-  handleSelectRegion: (regionNum: number) => void;
+interface RegionSearchContainerProps {
+  searchInput: SearchInputProps; // 검색어 상태 관리 props
+  regions: Region[]; // 전체 지역 데이터
+  handleSelectRegion: (regionNum: number) => void; // 지역 선택 시 호출되는 핸들러
 }
 
-export const SearchComponent = ({
+const RegionSearchContainer = ({
   searchInput,
   regions,
   handleSelectRegion,
-}: SearchComponentProps) => {
+}: RegionSearchContainerProps) => {
   // 입력 키워드 정규화 적용
   const keyword = normalizeKo(searchInput.value);
   const hasInput = useDebouncedKeyword({ value: keyword });
@@ -75,3 +75,5 @@ export const SearchComponent = ({
     </div>
   );
 };
+
+export default RegionSearchContainer;
