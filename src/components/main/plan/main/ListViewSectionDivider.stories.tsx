@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import ListViewSectionDivider from "./ListViewSectionDivider";
+import ListViewDivider from "./ListViewDivider";
 
-const meta: Meta<typeof ListViewSectionDivider> = {
-  title: "Components/Main/Plan/Main/ListViewSectionDivider",
-  component: ListViewSectionDivider,
+const meta: Meta<typeof ListViewDivider> = {
+  title: "Components/Main/Plan/Main/ListViewDivider",
+  component: ListViewDivider,
   parameters: {
     layout: "fullscreen",
     backgrounds: {

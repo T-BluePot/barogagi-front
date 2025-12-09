@@ -1,6 +1,6 @@
 import { ScheduleList, type ScheduleCardActions } from "./ScheduleList";
 import type { Schedule } from "@/types/scheduleTypes";
-import ListViewSectionDivider from "./ListViewSectionDivider";
+import ListViewDivider from "./ListViewDivider";
 
 interface ListViewProps extends ScheduleCardActions {
   schedules: Schedule[]; // 현재 일정 (필수)
@@ -24,7 +24,7 @@ const ListView = ({
       {/* 지난 일정이 있을 때: 구분선 + 지난 일정 리스트 */}
       {hasPast && (
         <div className="flex flex-col gap-4">
-          <ListViewSectionDivider />
+          <ListViewDivider />
           <ScheduleList
             isPast
             schedules={pastSchedules!}

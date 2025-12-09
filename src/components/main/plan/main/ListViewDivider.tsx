@@ -1,4 +1,4 @@
-const ListViewSectionDivider = () => {
+const ListViewDivider = () => {
   return (
     <div className="flex w-full justify-center items-center flex-row gap-4">
       <hr className="flex-1 h-[1px] bg-gray-60" />
@@ -8,4 +8,4 @@ const ListViewSectionDivider = () => {
   );
 };
 
-export default ListViewSectionDivider;
+export default ListViewDivider;
