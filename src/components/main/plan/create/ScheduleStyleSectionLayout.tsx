@@ -6,7 +6,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const TravelStyleSectionLayout = ({
+const ScheduleStyleSectionLayout = ({
   title,
   subTitle,
   children,
@@ -20,4 +20,4 @@ const TravelStyleSectionLayout = ({
   );
 };
 
-export default TravelStyleSectionLayout;
+export default ScheduleStyleSectionLayout;

@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { TRAVEL_STYLE_TEXT } from "@/constants/texts/main/plan/travelStyle";
+import { SHCEDULE_STYLE_TEXT } from "@/constants/texts/main/plan/scheduleStyle";
 
-import type { ActiveMap } from "@/components/main/plan/TravelStyleTagContainer";
+import type { ActiveMap } from "@/components/main/plan/ScheduleStyleTagContainer";
 
 import { PageTitle } from "@/components/auth/common/PageTitle";
-import { TravelStyleTagContainer } from "@/components/main/plan/TravelStyleTagContainer";
+import { ScheduleStyleTagContainer } from "@/components/main/plan/ScheduleStyleTagContainer";
 import TextInput from "@/components/common/inputs/TextInput";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { mockStlyes } from "@/mock/styles";
 import { ROUTES } from "@/constants/routes";
 
-const TravelStylePage = () => {
+const ScheduleStylePage = () => {
   const navigate = useNavigate();
 
   const sectionClass = "flex flex-col";
@@ -25,7 +25,7 @@ const TravelStylePage = () => {
   };
 
   // 여행 참고사항 입력값 상태
-  const [travelNotes, setTravelNotes] = useState<string>("");
+  const [schedulelNotes, setScheduleNotes] = useState<string>("");
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-white">
@@ -33,11 +33,11 @@ const TravelStylePage = () => {
         <div className={sectionClass}>
           <PageTitle
             type="main"
-            title={TRAVEL_STYLE_TEXT.TITLE}
-            subTitle={TRAVEL_STYLE_TEXT.SUB_TITLE}
+            title={SHCEDULE_STYLE_TEXT.TITLE}
+            subTitle={SHCEDULE_STYLE_TEXT.SUB_TITLE}
           />
           <div className="flex flex-wrap gap-4">
-            <TravelStyleTagContainer
+            <ScheduleStyleTagContainer
               styles={mockStlyes}
               actives={actives}
               setActives={setActives}
@@ -47,20 +47,20 @@ const TravelStylePage = () => {
         <div className={sectionClass}>
           <PageTitle
             type="main"
-            title={TRAVEL_STYLE_TEXT.SEC_TITLE}
-            subTitle={TRAVEL_STYLE_TEXT.SEC_SUB_TITLE}
+            title={SHCEDULE_STYLE_TEXT.SEC_TITLE}
+            subTitle={SHCEDULE_STYLE_TEXT.SEC_SUB_TITLE}
           />
           <TextInput
             size="large"
-            placeholder={TRAVEL_STYLE_TEXT.PLACEHOLDER}
-            value={travelNotes}
-            onChange={setTravelNotes}
+            placeholder={SHCEDULE_STYLE_TEXT.PLACEHOLDER}
+            value={schedulelNotes}
+            onChange={setScheduleNotes}
           />
         </div>
       </div>
       <div className="mt-auto w-full p-6">
         <Button
-          label={TRAVEL_STYLE_TEXT.NEXT_BUTTON}
+          label={SHCEDULE_STYLE_TEXT.NEXT_BUTTON}
           isDisabled={isAllInactive(actives)}
           onClick={() => {
             // 추후 선택된 일정 넘기기 로직 추가
@@ -72,4 +72,4 @@ const TravelStylePage = () => {
   );
 };
 
-export default TravelStylePage;
+export default ScheduleStylePage;

@@ -38,7 +38,7 @@ export const ROUTES = {
     LIST: PLAN_BASE, // 일정 리스트 메인
     DATE: "/plan/date", // 날짜 선택
     LOCATION: "/plan/location", // 지역 선택
-    TRAVEL_STYLE: "/plan/travelStyle", // 여행 스타일 선택
+    STYLE: "/plan/style", // 일정 스타일 선택
     CREATE: "/plan/create", // 추천 루트 완료
     DETAIL: "/plan/:id/detail", // 루트 상세 페이지
     SEARCH: "/plan/search", // 장소 검색 페이지
@@ -75,7 +75,7 @@ export const getRoutePath = {
     list: () => ROUTES.PLAN.LIST,
     date: () => ROUTES.PLAN.DATE,
     location: () => ROUTES.PLAN.LOCATION,
-    travelStyle: () => ROUTES.PLAN.TRAVEL_STYLE,
+    style: () => ROUTES.PLAN.STYLE,
     create: () => ROUTES.PLAN.CREATE,
     detail: (id: string) =>
       ROUTES.PLAN.DETAIL.replace(":id", encodeURIComponent(id)),
@@ -106,7 +106,7 @@ export const ALL_ROUTES = [
   ROUTES.PLAN.LIST,
   ROUTES.PLAN.DATE,
   ROUTES.PLAN.LOCATION,
-  ROUTES.PLAN.TRAVEL_STYLE,
+  ROUTES.PLAN.STYLE,
   ROUTES.USER.DETAIL,
   ROUTES.PLAN.CREATE,
   ROUTES.PLAN.DETAIL,

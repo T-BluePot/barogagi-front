@@ -1,22 +1,22 @@
 import { CommonTag } from "@/components/common/tags/commonTag";
-import type { TravelStyle } from "@/types/main/plan/travelStyles";
+import type { ScheduleStyle } from "@/types/main/plan/scheduleStyles";
 import type { Dispatch, SetStateAction } from "react";
 
 // id에 따라 활성화 여부 체크
 export type ActiveMap = Record<number, boolean>;
 
-interface TravelStyleTagContainerProps {
-  styles: TravelStyle[];
+interface ScheduleStyleTagContainerProps {
+  styles: ScheduleStyle[];
   actives: ActiveMap;
   setActives: Dispatch<SetStateAction<ActiveMap>>;
 }
 
-export const TravelStyleTagContainer = ({
+export const ScheduleStyleTagContainer = ({
   styles,
   actives,
   setActives,
-}: TravelStyleTagContainerProps) => {
-  // 여행 태그는 최대 10개까지 출력
+}: ScheduleStyleTagContainerProps) => {
+  // 일정 태그는 최대 10개까지 출력
   const styleTags = styles.slice(0, 10);
 
   const toggle = (id: number) => {

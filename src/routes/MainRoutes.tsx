@@ -5,7 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import ScheduleListPage from "@/pages/main/plan/ScheduleListPage";
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
 import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
-import TravelStylePage from "@/pages/main/plan/TravelStylePage";
+import ScheduleStylePage from "@/pages/main/plan/ScheduleStylePage";
 import ScheduleRoutesPage from "@/pages/main/plan/ScheduleRoutesPage";
 import LocationSearchPage from "@/pages/main/plan/LocationSearchPage";
 
@@ -21,7 +21,7 @@ export const MainRoutes = () => (
     <Route path="/plan" element={<ScheduleListPage />} />
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
-    <Route path="/plan/travelStyle" element={<TravelStylePage />} />
+    <Route path="/plan/style" element={<ScheduleStylePage />} />
     <Route
       path="/plan/create"
       element={<ScheduleRoutesPage variant="create" />}
