@@ -5,7 +5,7 @@ import type { Dispatch, SetStateAction } from "react";
 // id에 따라 활성화 여부 체크
 export type ActiveMap = Record<number, boolean>;
 
-interface ScheduleStyleTagContainerProps {
+export interface ScheduleStyleTagContainerProps {
   styles: ScheduleStyle[];
   actives: ActiveMap;
   setActives: Dispatch<SetStateAction<ActiveMap>>;
