@@ -93,7 +93,7 @@ const SelectLocationPage = () => {
             isDisabled: !hasSelection,
             onClick: () => {
               // 추후 선택된 일정 넘기기 로직 추가
-              navigate(ROUTES.PLAN.TRAVEL_STYLE);
+              navigate(ROUTES.PLAN.STYLE);
             },
           }}
         />
