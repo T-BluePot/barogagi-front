@@ -8,7 +8,7 @@ import { useDebouncedKeyword } from "@/utils/useDebouncedKeyword";
 
 import { SearchInput } from "@/components/common/inputs/SearchInput";
 import type { SearchInputProps } from "@/components/common/inputs/SearchInput";
-import EmptyStateSection from "./common/EmptyStateSection";
+import EmptyStateSection from "../common/EmptyStateSection";
 
 interface RegionSearchContainerProps {
   searchInput: SearchInputProps; // 검색어 상태 관리 props
