@@ -1,4 +1,4 @@
-import { ListView, type ScheduleCardActions } from "./ListView";
+import { ScheduleList, type ScheduleCardActions } from "./ScheduleList";
 import type { Schedule } from "@/types/scheduleTypes";
 import ListViewSectionDivider from "./ListViewSectionDivider";
 
@@ -16,7 +16,7 @@ const ListViewSection = ({
   const hasPast = pastSchedules && pastSchedules.length > 0;
   return (
     <div className="flex flex-col w-full h-full pb-6 gap-4 overflow-y-scroll hide-scrollbar">
-      <ListView
+      <ScheduleList
         schedules={schedules}
         onClickCard={onClickCard}
         onDelete={onDelete}
@@ -25,7 +25,7 @@ const ListViewSection = ({
       {hasPast && (
         <div className="flex flex-col gap-4">
           <ListViewSectionDivider />
-          <ListView
+          <ScheduleList
             isPast
             schedules={pastSchedules!}
             onClickCard={onClickCard}

@@ -6,17 +6,17 @@ export interface ScheduleCardActions {
   onDelete: (scheduleNum: number) => void;
 }
 
-interface ListViewProps extends ScheduleCardActions {
+interface ScheduleListProps extends ScheduleCardActions {
   isPast?: boolean;
   schedules: Schedule[];
 }
 
-export const ListView = ({
+export const ScheduleList = ({
   isPast = false,
   schedules,
   onClickCard,
   onDelete,
-}: ListViewProps) => {
+}: ScheduleListProps) => {
   return (
     <div className="flex flex-col w-full gap-4">
       {schedules.map((schedule) => {

@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { ListView } from "./ListView";
+import { ScheduleList } from "./ScheduleList";
 import type { Schedule } from "@/types/scheduleTypes";
 
 import { mockSchedules, pastMockSchedules } from "@/mock/schedules";
 
-const meta: Meta<typeof ListView> = {
-  title: "Components/Main/Plan/Main/ListView", // Storybook 좌측 네비게이션에 표시될 그룹/이름
-  component: ListView,
+const meta: Meta<typeof ScheduleList> = {
+  title: "Components/Main/Plan/Main/ScheduleList", // Storybook 좌측 네비게이션에 표시될 그룹/이름
+  component: ScheduleList,
   parameters: {
     // 리스트 전체를 화면 폭에 맞게 보기 위해 fullscreen 레이아웃 사용
     layout: "fullscreen",
