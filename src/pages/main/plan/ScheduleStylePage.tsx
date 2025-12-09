@@ -6,7 +6,7 @@ import { SCHEDULE_STYLE_TEXT } from "@/constants/texts/main/plan/scheduleStyle";
 import type { ActiveMap } from "@/components/main/plan/ScheduleStyleTagContainer";
 
 import StyleTagSection from "@/components/main/plan/create/StyleTagSction";
-import SectionSpacer from "@/components/main/plan/common/SectionSpacer";
+import SectionSpacer from "@/components/layout/SectionSpacer";
 import StyleNoteSction from "@/components/main/plan/create/StyleNoteSction";
 import Button from "@/components/common/buttons/CommonButton";
 
