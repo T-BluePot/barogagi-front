@@ -1,6 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
 
-export const AddScheduleButton = ({
+const AddScheduleButton = ({
   onAddSchedule,
 }: {
   onAddSchedule: () => void;
@@ -17,3 +17,5 @@ export const AddScheduleButton = ({
     </button>
   );
 };
+
+export default AddScheduleButton;
