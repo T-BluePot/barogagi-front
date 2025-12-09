@@ -1,4 +1,4 @@
-import { ScheduleListCard } from "./ScheduleListCard";
+import { ScheduleCard } from "./ScheduleCard";
 import type { Schedule } from "@/types/scheduleTypes";
 
 export interface ScheduleCardActions {
@@ -21,7 +21,7 @@ export const ListView = ({
     <div className="flex flex-col w-full gap-4">
       {schedules.map((schedule) => {
         return (
-          <ScheduleListCard
+          <ScheduleCard
             key={schedule.scheduleNum}
             isPast={isPast}
             schedule={schedule}
