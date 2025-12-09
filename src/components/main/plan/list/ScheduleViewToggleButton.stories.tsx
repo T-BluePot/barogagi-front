@@ -1,11 +1,13 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { PlanViewToggleButton } from "./PlanViewToggleButton";
-import type { PlanViewType } from "./PlanViewToggleButton";
+import {
+  ScheduleViewToggleButton,
+  type ScheduleViewType,
+} from "./ScheduleViewToggleButton";
 
 const meta = {
-  title: "Components/Main/Plan/PlanViewToggleButton",
-  component: PlanViewToggleButton,
+  title: "Components/Main/Plan/ScheduleViewToggleButton",
+  component: ScheduleViewToggleButton,
   parameters: {
     layout: "centered",
     backgrounds: {
@@ -32,7 +34,7 @@ const meta = {
   args: {
     toggleViewType: () => console.log("toggleViewType"),
   },
-} satisfies Meta<typeof PlanViewToggleButton>;
+} satisfies Meta<typeof ScheduleViewToggleButton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -54,7 +56,9 @@ export const Interactive: Story = {
     viewType: "list",
   },
   render: function InteractiveToggle(args) {
-    const [viewType, setViewType] = React.useState<PlanViewType>(args.viewType);
+    const [viewType, setViewType] = React.useState<ScheduleViewType>(
+      args.viewType
+    );
 
     const handleToggle = () => {
       const newViewType = viewType === "list" ? "calendar" : "list";
@@ -63,7 +67,10 @@ export const Interactive: Story = {
     };
 
     return (
-      <PlanViewToggleButton viewType={viewType} toggleViewType={handleToggle} />
+      <ScheduleViewToggleButton
+        viewType={viewType}
+        toggleViewType={handleToggle}
+      />
     );
   },
 };

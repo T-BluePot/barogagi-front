@@ -1,17 +1,17 @@
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
-export type PlanViewType = "list" | "calendar";
+export type ScheduleViewType = "list" | "calendar";
 
-interface PlanViewToggleButtonProps {
-  viewType: PlanViewType;
+interface ScheduleViewToggleButtonProps {
+  viewType: ScheduleViewType;
   toggleViewType: () => void;
 }
 
-export const PlanViewToggleButton = ({
+export const ScheduleViewToggleButton = ({
   viewType,
   toggleViewType,
-}: PlanViewToggleButtonProps) => {
+}: ScheduleViewToggleButtonProps) => {
   return (
     <button
       onClick={toggleViewType}
