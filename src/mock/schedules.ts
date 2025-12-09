@@ -195,3 +195,6 @@ export const pastMockSchedules: Schedule[] = [
     tags: [mockTags[0], mockTags[6]], // 국내 여행 + 가족
   },
 ];
+
+// 스케줄 데이터 전체
+export const allSchedules = [...mockSchedules, ...pastMockSchedules];
