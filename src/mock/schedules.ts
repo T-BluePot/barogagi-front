@@ -132,3 +132,66 @@ export const mockSchedules: Schedule[] = [
     tags: [], // 태그 없음
   },
 ];
+
+export const pastMockSchedules: Schedule[] = [
+  {
+    scheduleNum: 101,
+    membershipNo: 100,
+    scheduleNm: "겨울 방학 스키 여행",
+    startDate: "2024-12-20",
+    endDate: "2024-12-22",
+    radius: 5,
+    regDate: "2024-12-01 10:00:00",
+    delYn: "N",
+    updDate: "2024-12-01 10:00:00",
+    tags: [mockTags[4]], // 액티비티
+  },
+  {
+    scheduleNum: 102,
+    membershipNo: 100,
+    scheduleNm: "친구들과 연말 모임",
+    startDate: "2024-12-28",
+    endDate: "2024-12-28",
+    radius: 2,
+    regDate: "2024-12-15 14:30:00",
+    delYn: "N",
+    updDate: "2024-12-15 14:30:00",
+    tags: [mockTags[3]], // 맛집
+  },
+  {
+    scheduleNum: 103,
+    membershipNo: 100,
+    scheduleNm: "가을 힐링 캠핑",
+    startDate: "2024-10-05",
+    endDate: "2024-10-06",
+    radius: 6,
+    regDate: "2024-09-20 09:40:00",
+    delYn: "N",
+    updDate: "2024-09-20 09:40:00",
+    tags: [mockTags[2]], // 힐링
+  },
+  {
+    scheduleNum: 104,
+    membershipNo: 100,
+    scheduleNm: "해외 단기 출장",
+    startDate: "2024-09-01",
+    endDate: "2024-09-03",
+    radius: 3,
+    regDate: "2024-08-20 11:00:00",
+    delYn: "N",
+    updDate: "2024-08-20 11:00:00",
+    tags: [mockTags[1], mockTags[5]], // 해외 여행 + 업무
+  },
+  {
+    scheduleNum: 105,
+    membershipNo: 100,
+    scheduleNm: "부모님과 여름 가족 여행",
+    startDate: "2024-07-10",
+    endDate: "2024-07-12",
+    radius: 8,
+    regDate: "2024-07-01 15:20:00",
+    delYn: "N",
+    updDate: "2024-07-01 15:20:00",
+    tags: [mockTags[0], mockTags[6]], // 국내 여행 + 가족
+  },
+];
