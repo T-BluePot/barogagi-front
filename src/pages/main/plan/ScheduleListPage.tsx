@@ -2,13 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/constants/routes";
+import type { ScheduleViewType } from "@/components/main/plan/list/ScheduleViewToggleButton";
 import { SCHEDULE_LIST_TEXT } from "@/constants/texts/main/plan/scheduleList";
 import { mockSchedules } from "@/mock/schedules";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
-import { TitleHeader } from "@/components/common/headers/TitleHeader";
-import { PlanViewToggleButton } from "@/components/main/plan/PlanViewToggleButton";
-import type { PlanViewType } from "@/components/main/plan/PlanViewToggleButton";
+import ScheduleListHeader from "@/components/main/plan/list/ScheduleListHeader";
 import { CalendarView } from "@/components/main/plan/CalendarView";
 import { ListView } from "@/components/main/plan/ListView";
 import { AddScheduleButton } from "@/components/main/plan/AddScheduleButton";
@@ -18,12 +17,12 @@ import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 const ScheduleListPage = () => {
   const navigate = useNavigate();
 
-  const [viewMode, setViewMode] = useState<PlanViewType>("list");
+  const [viewType, setViewType] = useState<ScheduleViewType>("list");
 
   const toggleViewType = () => {
-    if (viewMode === "list") {
-      setViewMode("calendar");
-    } else setViewMode("list");
+    if (viewType === "list") {
+      setViewType("calendar");
+    } else setViewType("list");
   };
 
   // calendar 모드
@@ -64,16 +63,9 @@ const ScheduleListPage = () => {
           handleCloseDeleteModal();
         }}
       />
-      <div className="shrink-0 sticky top-0 z-10 bg-gray-white">
-        <TitleHeader label={SCHEDULE_LIST_TEXT.HEADER}>
-          <PlanViewToggleButton
-            viewType={viewMode}
-            toggleViewType={toggleViewType}
-          />
-        </TitleHeader>
-      </div>
+      <ScheduleListHeader viewType={viewType} toggleViewType={toggleViewType} />
       <div className="flex-1 w-full min-h-0">
-        {viewMode === "calendar" ? (
+        {viewType === "calendar" ? (
           <div className="flex w-full h-full">
             <CalendarView
               selectedDate={selectedDate}
