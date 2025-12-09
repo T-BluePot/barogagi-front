@@ -72,9 +72,9 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isDarkBg: false,
     backPath: ROUTES.PLAN.DATE,
   },
-  [ROUTES.PLAN.TRAVEL_STYLE]: {
+  [ROUTES.PLAN.STYLE]: {
     type: "back",
-    label: "여행 스타일 선택",
+    label: "일정 스타일 선택",
     isDarkBg: false,
   },
   [ROUTES.PLAN.CREATE]: {
