@@ -1,4 +1,4 @@
-export const SHCEDULE_STYLE_TEXT = {
+export const SCHEDULE_STYLE_TEXT = {
   HEADER_TITLE: "일정 스타일 선택",
   TITLE: "일정 스타일 태그",
   SUB_TITLE: "마음에 드는 일정 스타일 태그를 최대 5개까지 선택해주세요",
