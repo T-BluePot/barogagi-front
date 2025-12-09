@@ -13,7 +13,7 @@ import { getMarkedDates } from "@/utils/getMarkedDates";
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
 import { CalendarView } from "@/components/main/plan/CalendarView";
 import ListViewSection from "@/components/main/plan/main/ListViewSection";
-import { AddScheduleButton } from "@/components/main/plan/AddScheduleButton";
+import { AddScheduleButton } from "@/components/main/plan/main/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 
