@@ -7,7 +7,7 @@ import { SELECT_LOCATION_TEXT } from "@/constants/texts/main/plan/selectLocation
 import { mockRegions } from "@/mock/regions";
 
 import { PageTitle } from "@/components/auth/common/PageTitle";
-import { SearchComponent } from "@/components/main/plan/SearchComponent";
+import RegionSearchContainer from "@/components/main/plan/create/RegionSearchContainer";
 import { RegionTagContainer } from "@/components/main/plan/RegionTagContainer";
 import ButtonWithText from "@/components/common/buttons/ButtonWithText";
 
@@ -58,7 +58,7 @@ const SelectLocationPage = () => {
 
           {/* 검색 섹션 래퍼: 남은 세로 공간 모두 차지 + 내부 스크롤만 허용 */}
           <div className="flex-1 min-h-0">
-            <SearchComponent
+            <RegionSearchContainer
               searchInput={{
                 searchPlaceholder: SELECT_LOCATION_TEXT.PLACEHOLDER,
                 value: searchText,
