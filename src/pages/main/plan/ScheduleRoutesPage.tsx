@@ -16,7 +16,7 @@ import { CreateScheduleModal } from "@/components/main/plan/create/CreateSchedul
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 
-import { mockSchedules } from "@/mock/schedules";
+import { allSchedules } from "@/mock/schedules";
 import { mockPlans } from "@/mock/plans"; // 추후 실제 데이터로 변경
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
@@ -58,8 +58,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       return;
     }
 
-    // mockSchedules 에서 현재 schedule 찾기
-    const currentSchedule = findScheduleByNum(mockSchedules, scheduleNum);
+    // allSchedules 에서 현재 schedule 찾기
+    const currentSchedule = findScheduleByNum(allSchedules, scheduleNum);
 
     if (!currentSchedule) {
       // 해당 schedule 이 없으면 기본값 사용
