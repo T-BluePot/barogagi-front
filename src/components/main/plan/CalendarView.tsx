@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import Calendar from "./Calendar";
 import type { CalendarProps } from "./Calendar";
 
-import { SimpleCourseCard } from "./SimpleCourseCard";
+import { ScheduleCardLite } from "./main/ScheduleCardLite";
 import type { Schedule } from "@/types/scheduleTypes";
 
 import { formatDateToKorean } from "@/utils/date";
@@ -50,7 +50,7 @@ export const CalendarView = ({
           <div className="flex flex-1 flex-col w-full gap-4 hide-scrollbar">
             {filteredSchedules.map((schedule) => {
               return (
-                <SimpleCourseCard
+                <ScheduleCardLite
                   key={schedule.scheduleNum}
                   schedule={schedule}
                   onClickCard={() => onClickCard(schedule.scheduleNum)}

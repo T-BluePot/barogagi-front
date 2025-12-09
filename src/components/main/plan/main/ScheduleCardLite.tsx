@@ -3,17 +3,17 @@ import type { Schedule } from "@/types/scheduleTypes";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-interface SimpleCourseCardProps {
+interface ScheduleCardLiteProps {
   onClickCard: () => void; // 일정 카드 선택 콜백
   onDelete: () => void; // 삭제 아이콘 버튼용 삭제 콜백
   schedule: Schedule;
 }
 
-export const SimpleCourseCard = ({
+export const ScheduleCardLite = ({
   onClickCard,
   onDelete,
   schedule,
-}: SimpleCourseCardProps) => {
+}: ScheduleCardLiteProps) => {
   const hasTags = !!schedule.tags?.length;
   return (
     <div
