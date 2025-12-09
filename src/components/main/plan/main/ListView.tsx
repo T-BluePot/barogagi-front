@@ -1,11 +1,14 @@
 import { ScheduleListCard } from "./ScheduleListCard";
 import type { Schedule } from "@/types/scheduleTypes";
 
-interface ListViewProps {
-  isPast?: boolean;
-  schedules: Schedule[];
+export interface ScheduleCardActions {
   onClickCard: (scheduleNum: number) => void;
   onDelete: (scheduleNum: number) => void;
+}
+
+interface ListViewProps extends ScheduleCardActions {
+  isPast?: boolean;
+  schedules: Schedule[];
 }
 
 export const ListView = ({

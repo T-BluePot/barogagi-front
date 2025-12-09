@@ -2,14 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/constants/routes";
-import type { ScheduleViewType } from "@/components/main/plan/list/ScheduleViewToggleButton";
-import { SCHEDULE_LIST_TEXT } from "@/constants/texts/main/plan/scheduleList";
+import type { ScheduleViewType } from "@/components/main/plan/main/ScheduleViewToggleButton";
 import { mockSchedules } from "@/mock/schedules";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
-import ScheduleListHeader from "@/components/main/plan/list/ScheduleListHeader";
+import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
 import { CalendarView } from "@/components/main/plan/CalendarView";
-import { ListView } from "@/components/main/plan/ListView";
+import { ListView } from "@/components/main/plan/main/ListView";
 import { AddScheduleButton } from "@/components/main/plan/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";

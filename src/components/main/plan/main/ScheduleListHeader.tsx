@@ -2,7 +2,7 @@ import { TitleHeader } from "@/components/common/headers/TitleHeader";
 import {
   ScheduleViewToggleButton,
   type ScheduleViewType,
-} from "../list/ScheduleViewToggleButton";
+} from "./ScheduleViewToggleButton";
 
 import { SCHEDULE_LIST_TEXT } from "@/constants/texts/main/plan/scheduleList";
 

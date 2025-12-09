@@ -1,4 +1,4 @@
-import { ScheduleListCard } from "../../plan/list/ScheduleListCard";
+import { ScheduleListCard } from "../../plan/main/ScheduleListCard";
 import { mockSchedules } from "@/mock/schedules";
 import ContentWrapper from "./ContentWrapper";
 
