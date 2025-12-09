@@ -89,7 +89,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 일정 수정하기 bottom modal -----
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const { draft: editDraft, setDraft } = usePlanEditStore();
+  const { draft: editDraft, setDraft, clearDraft } = usePlanEditStore();
 
   const handleRequestEdit = (planNum: number) => {
     const target = findPlanByNum(plansForPage, planNum);
@@ -158,6 +158,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             onClose: () => {
               // 서버 연동 시 변경사항 저장 로직 추가
               setIsEditModalOpen(false);
+              clearDraft();
             },
             onConfirm: () => {},
             onClickEditTitle: () => {},
