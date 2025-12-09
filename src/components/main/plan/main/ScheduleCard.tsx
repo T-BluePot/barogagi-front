@@ -6,7 +6,7 @@ import type { Schedule } from "@/types/scheduleTypes";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-interface ScheduleListCardProps {
+interface ScheduleCardProps {
   schedule: Schedule;
   onClickCard: () => void; // 일정 카드용 수정 콜백
   onDelete?: () => void; // 삭제 아이콘 버튼용 삭제 콜백
@@ -14,13 +14,13 @@ interface ScheduleListCardProps {
   isPast?: boolean; // 지난 일정 여부
 }
 
-export const ScheduleListCard = ({
+export const ScheduleCard = ({
   schedule,
   onClickCard,
   onDelete,
   isDeleteDisabled = false,
   isPast = false,
-}: ScheduleListCardProps) => {
+}: ScheduleCardProps) => {
   const cardClasses = clsx(
     "flex flex-col w-full p-6 items-baseline border rounded-xl gap-4 cursor-pointer bg-gray-white",
     {
