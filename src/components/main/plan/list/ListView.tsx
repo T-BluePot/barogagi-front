@@ -1,14 +1,16 @@
-import { ScheduleListCard } from "./list/ScheduleListCard";
+import { ScheduleListCard } from "./ScheduleListCard";
 import type { Schedule } from "@/types/scheduleTypes";
 
 interface ListViewProps {
   schedules: Schedule[];
+  isPast?: boolean;
   onClickCard: (scheduleNum: number) => void;
   onDelete: (scheduleNum: number) => void;
 }
 
 export const ListView = ({
   schedules,
+  isPast = false,
   onClickCard,
   onDelete,
 }: ListViewProps) => {
@@ -18,6 +20,7 @@ export const ListView = ({
         return (
           <ScheduleListCard
             key={schedule.scheduleNum}
+            isPast={isPast}
             schedule={schedule}
             onClickCard={() => onClickCard(schedule.scheduleNum)}
             onDelete={() => onDelete(schedule.scheduleNum)}
