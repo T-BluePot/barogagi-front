@@ -11,7 +11,7 @@ const ScheduleStyleSectionLayout = ({
   subTitle,
   children,
 }: LayoutProps) => {
-  const sectionClass = "flex flex-col";
+  const sectionClass = "flex flex-col px-6 mb-6";
   return (
     <div className={sectionClass}>
       <PageTitle type="main" title={title} subTitle={subTitle} />
