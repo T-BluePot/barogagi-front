@@ -12,7 +12,7 @@ import { getMarkedDates } from "@/utils/getMarkedDates";
 
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
 import { CalendarView } from "@/components/main/plan/CalendarView";
-import ListViewSection from "@/components/main/plan/main/ListViewSection";
+import ListView from "@/components/main/plan/main/ListView";
 import AddScheduleButton from "@/components/main/plan/main/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
@@ -81,7 +81,7 @@ const ScheduleListPage = () => {
           </div>
         ) : (
           <div className="flex w-full h-full px-6">
-            <ListViewSection
+            <ListView
               schedules={mockSchedules}
               pastSchedules={pastMockSchedules}
               onClickCard={handleOpenDetail}

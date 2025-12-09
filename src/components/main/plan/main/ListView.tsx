@@ -2,17 +2,17 @@ import { ScheduleList, type ScheduleCardActions } from "./ScheduleList";
 import type { Schedule } from "@/types/scheduleTypes";
 import ListViewSectionDivider from "./ListViewSectionDivider";
 
-interface ListViewSectionProps extends ScheduleCardActions {
+interface ListViewProps extends ScheduleCardActions {
   schedules: Schedule[]; // 현재 일정 (필수)
   pastSchedules?: Schedule[]; // 지난 일정 (선택)
 }
 
-const ListViewSection = ({
+const ListView = ({
   schedules, // 필수
   pastSchedules, // 선택
   onClickCard,
   onDelete,
-}: ListViewSectionProps) => {
+}: ListViewProps) => {
   const hasPast = pastSchedules && pastSchedules.length > 0;
   return (
     <div className="flex flex-col w-full h-full pb-6 gap-4 overflow-y-scroll hide-scrollbar">
@@ -37,4 +37,4 @@ const ListViewSection = ({
   );
 };
 
-export default ListViewSection;
+export default ListView;
