@@ -1,4 +1,4 @@
-import { CourseCard } from "./CourseCard";
+import { ScheduleListCard } from "./list/ScheduleListCard";
 import type { Schedule } from "@/types/scheduleTypes";
 
 interface ListViewProps {
@@ -16,7 +16,7 @@ export const ListView = ({
     <div className="flex flex-col w-full h-full gap-4 pb-6 overflow-y-auto hide-scrollbar">
       {schedules.map((schedule) => {
         return (
-          <CourseCard
+          <ScheduleListCard
             key={schedule.scheduleNum}
             schedule={schedule}
             onClickCard={() => onClickCard(schedule.scheduleNum)}

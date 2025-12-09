@@ -1,4 +1,4 @@
-import { CourseCard } from "../../plan/CourseCard";
+import { ScheduleListCard } from "../../plan/list/ScheduleListCard";
 import { mockSchedules } from "@/mock/schedules";
 import ContentWrapper from "./ContentWrapper";
 
@@ -21,7 +21,7 @@ const UpcomingScheduleSection: React.FC = () => {
       onClick={handleTitleClick}
       isArrowVisible={true}
     >
-      <CourseCard
+      <ScheduleListCard
         schedule={mockScheduleData}
         onClickCard={handleEdit}
         isDeleteDisabled
