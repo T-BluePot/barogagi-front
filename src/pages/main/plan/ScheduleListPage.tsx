@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleViewType } from "@/components/main/plan/main/ScheduleViewToggleButton";
-import { mockSchedules } from "@/mock/schedules";
+import {
+  mockSchedules,
+  pastMockSchedules,
+  allSchedules,
+} from "@/mock/schedules";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
 import { CalendarView } from "@/components/main/plan/CalendarView";
-import { ListView } from "@/components/main/plan/main/ListView";
+import ListViewSection from "@/components/main/plan/main/ListViewSection";
 import { AddScheduleButton } from "@/components/main/plan/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
@@ -26,7 +30,7 @@ const ScheduleListPage = () => {
 
   // calendar 모드
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const markedDates = getMarkedDates(mockSchedules);
+  const markedDates = getMarkedDates(allSchedules);
 
   // 카드 클릭 시 상세 페이지로 이동하는 함수
   const handleOpenDetail = (scheduleNum: number) => {
@@ -70,17 +74,18 @@ const ScheduleListPage = () => {
               selectedDate={selectedDate}
               onChangeDate={(date) => setSelectedDate(date)}
               markedDates={markedDates}
-              schedules={mockSchedules}
+              schedules={allSchedules}
               onDelete={handleDeleteSchedule}
               onClickCard={handleOpenDetail}
             />
           </div>
         ) : (
           <div className="flex w-full h-full px-6">
-            <ListView
+            <ListViewSection
               schedules={mockSchedules}
-              onDelete={handleDeleteSchedule}
+              pastSchedules={pastMockSchedules}
               onClickCard={handleOpenDetail}
+              onDelete={handleDeleteSchedule}
             />
           </div>
         )}
