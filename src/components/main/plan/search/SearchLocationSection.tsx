@@ -7,7 +7,7 @@ import type {
 
 import EmptyStateSection from "../common/EmptyStateSection";
 
-interface SearchLocationSectionprops {
+interface SearchLocationSectionProps {
   searchLocations: EditPlanPlace[]; // 검색된 장소 목록
   onClickAddLocation: OnSelectPlace; // 장소 추가
 }
@@ -15,7 +15,7 @@ interface SearchLocationSectionprops {
 const SearchLocationSection = ({
   searchLocations,
   onClickAddLocation,
-}: SearchLocationSectionprops) => {
+}: SearchLocationSectionProps) => {
   const isEmpty = searchLocations.length === 0;
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto hide-scrollbar">
