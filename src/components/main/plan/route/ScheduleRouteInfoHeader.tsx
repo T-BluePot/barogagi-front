@@ -1,7 +1,7 @@
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { formatDate } from "@/utils/date";
 
-import ScheduleTitleInput from "./ScheduleTitleInput";
+import ScheduleTitleInput from "../common/ScheduleTitleInput";
 
 interface InfoHeaderProps {
   // 일정명 수정 모드
