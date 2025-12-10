@@ -5,9 +5,9 @@ import { SCHEDULE_STYLE_TEXT } from "@/constants/texts/main/plan/scheduleStyle";
 
 import type { ActiveMap } from "@/components/main/plan/ScheduleStyleTagContainer";
 
-import StyleTagSection from "@/components/main/plan/create/StyleTagSction";
+import StyleTagSection from "@/components/main/plan/create/StyleTagSection";
 import SectionSpacer from "@/components/layout/SectionSpacer";
-import StyleNoteSction from "@/components/main/plan/create/StyleNoteSction";
+import StyleNoteSection from "@/components/main/plan/create/StyleNoteSection";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { mockStlyes } from "@/mock/styles";
@@ -34,7 +34,7 @@ const ScheduleStylePage = () => {
           setActives={setActives}
         />
         <SectionSpacer />
-        <StyleNoteSction
+        <StyleNoteSection
           schedulelNotes={schedulelNotes}
           setScheduleNotes={setScheduleNotes}
         />

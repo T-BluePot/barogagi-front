@@ -3,7 +3,7 @@ import TextInput from "@/components/common/inputs/TextInput";
 
 import { SCHEDULE_STYLE_TEXT } from "@/constants/texts/main/plan/scheduleStyle";
 
-const StyleNoteSction = ({
+const StyleNoteSection = ({
   schedulelNotes,
   setScheduleNotes,
 }: {
@@ -25,4 +25,4 @@ const StyleNoteSction = ({
   );
 };
 
-export default StyleNoteSction;
+export default StyleNoteSection;
