@@ -19,11 +19,13 @@ export const Default: Story = {
 
   render: (args) => {
     const [scheduleName, setScheduleName] = useState(args.scheduleName);
+    const [editMode, setEditMode] = useState(true);
     return (
       <ScheduleTitleInput
         {...args}
         scheduleName={scheduleName}
         setScheduleName={setScheduleName}
+        setEditMode={setEditMode}
       />
     );
   },
