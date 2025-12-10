@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import SearchBackHeader from "./SearchBackHeader";
 
 const meta = {
-  title: "Components/Main/Plan/Common/SearchBackHeader",
+  title: "Components/Main/Plan/SearchBackHeader",
   component: SearchBackHeader,
   tags: ["autodocs"],
   args: {

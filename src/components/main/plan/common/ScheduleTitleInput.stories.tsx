@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import ScheduleTitleInput from "./ScheduleTitleInput";
 
 const meta = {
-  title: "Components/Main/Plan/Common/ScheduleTitleInput",
+  title: "Components/Main/Plan/ScheduleTitleInput",
   component: ScheduleTitleInput,
   tags: ["autodocs"],
 } satisfies Meta<typeof ScheduleTitleInput>;
