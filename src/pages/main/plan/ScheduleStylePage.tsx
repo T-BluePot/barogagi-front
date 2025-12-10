@@ -23,7 +23,7 @@ const ScheduleStylePage = () => {
   };
 
   // 여행 참고사항 입력값 상태
-  const [schedulelNotes, setScheduleNotes] = useState<string>("");
+  const [scheduleNotes, setScheduleNotes] = useState<string>("");
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-white">
@@ -35,7 +35,7 @@ const ScheduleStylePage = () => {
         />
         <SectionSpacer />
         <StyleNoteSection
-          schedulelNotes={schedulelNotes}
+          scheduleNotes={scheduleNotes}
           setScheduleNotes={setScheduleNotes}
         />
       </div>

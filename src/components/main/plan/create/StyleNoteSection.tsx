@@ -4,10 +4,10 @@ import TextInput from "@/components/common/inputs/TextInput";
 import { SCHEDULE_STYLE_TEXT } from "@/constants/texts/main/plan/scheduleStyle";
 
 const StyleNoteSection = ({
-  schedulelNotes,
+  scheduleNotes,
   setScheduleNotes,
 }: {
-  schedulelNotes: string;
+  scheduleNotes: string;
   setScheduleNotes: (value: string) => void;
 }) => {
   return (
@@ -18,7 +18,7 @@ const StyleNoteSection = ({
       <TextInput
         size="large"
         placeholder={SCHEDULE_STYLE_TEXT.PLACEHOLDER}
-        value={schedulelNotes}
+        value={scheduleNotes}
         onChange={setScheduleNotes}
       />
     </ScheduleStyleSectionLayout>
