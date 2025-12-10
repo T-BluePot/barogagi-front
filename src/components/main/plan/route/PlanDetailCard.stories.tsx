@@ -43,7 +43,7 @@ export const Create: Story = {
   },
 };
 
-export const Detial: Story = {
+export const Detail: Story = {
   args: {
     mode: "detail",
     isOpen: false,
