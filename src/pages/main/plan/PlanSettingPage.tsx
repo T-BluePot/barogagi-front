@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PlanSettingForm } from "@/components/main/plan/PlanSettingForm";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 import type { PlanData } from "@/components/main/plan/PlanCard";
-import PlanCategoryBottomModal from "@/components/common/modal/bottom-modal/PlanCategoryBottomModal";
+import PlanCategoryBottomModal from "@/components/main/plan/common/modal/PlanCategoryBottomModal";
 
 // 임시 mock 데이터
 const mockItems: PlanData[] = [

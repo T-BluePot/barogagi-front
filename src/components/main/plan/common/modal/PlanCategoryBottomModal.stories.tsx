@@ -4,7 +4,7 @@ import { action } from "storybook/actions";
 import { PlanCategoryBottomModal } from "./PlanCategoryBottomModal";
 
 const meta = {
-  title: "Components/Modal/Bottom Modal/PlanCategoryBottomModal",
+  title: "Components/Main/Plan/Modal/PlanCategoryBottomModal",
   component: PlanCategoryBottomModal,
   tags: ["autodocs"],
   parameters: {

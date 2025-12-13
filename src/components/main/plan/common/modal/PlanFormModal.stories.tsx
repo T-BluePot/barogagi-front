@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import PlanFormModal from "./PlanFormModal";
 
 const meta: Meta<typeof PlanFormModal> = {
-  title: "Components/Main/Plan/PlanFormModal",
+  title: "Components/Main/Plan/Modal/PlanFormModal",
   component: PlanFormModal,
   tags: ["autodocs"],
   parameters: {

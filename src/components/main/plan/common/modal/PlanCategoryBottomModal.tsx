@@ -1,11 +1,11 @@
-import { CommonBottomModal } from "./CommonBottomModal";
-import { PlanCategoryBottomModalContent } from "../../../main/plan/common/modal/content/PlanCategoryBottomModalContent";
+import { CommonBottomModal } from "../../../../common/modal/bottom-modal/CommonBottomModal";
+import { PlanCategoryBottomModalContent } from "./content/PlanCategoryBottomModalContent";
 
 // content에서 타입 re-export
 export type {
   CategoryType,
   CategoryOption,
-} from "../../../main/plan/common/modal/content/PlanCategoryBottomModalContent";
+} from "./content/PlanCategoryBottomModalContent";
 
 interface PlanCategoryBottomModalProps {
   isOpen: boolean;
