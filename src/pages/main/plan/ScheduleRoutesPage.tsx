@@ -13,7 +13,7 @@ import { usePlanEditStore } from "@/stores/planEditStore";
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
-import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
+import PlanFormModal from "@/components/main/plan/common/modal/PlanFormBottomModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 
 import { allSchedules } from "@/mock/schedules";
