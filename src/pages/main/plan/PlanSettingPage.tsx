@@ -2,6 +2,7 @@ import { useState } from "react";
 import { PlanSettingForm } from "@/components/main/plan/PlanSettingForm";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 import type { PlanData } from "@/components/main/plan/PlanCard";
+import PlanCategoryBottomModal from "@/components/common/modal/bottom-modal/PlanCategoryBottomModal";
 
 // 임시 mock 데이터
 const mockItems: PlanData[] = [
@@ -63,6 +64,7 @@ export const PlanSettingPage = () => {
   const handleAddPlan = () => {
     // TODO: 일정 추가 로직
     console.log("일정 추가");
+    handleCategoryModalOpen();
   };
 
   const handleTimeClick = (id: string | number) => {
@@ -71,6 +73,16 @@ export const PlanSettingPage = () => {
 
   const handleLocationClick = (id: string | number) => {
     console.log("위치 수정:", id);
+  };
+
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const handleCategoryModalOpen = () => {
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleCategoryModalClose = () => {
+    setIsCategoryModalOpen(false);
   };
 
   return (
@@ -82,6 +94,10 @@ export const PlanSettingPage = () => {
         onDeleteClick={handleDeleteClick}
         onTimeClick={handleTimeClick}
         onLocationClick={handleLocationClick}
+      />
+      <PlanCategoryBottomModal
+        isOpen={isCategoryModalOpen}
+        onClose={handleCategoryModalClose}
       />
       <DeletePlanModal
         isOpen={isDeleteModalOpen}
