@@ -24,6 +24,7 @@ export const TabItem = ({
     <button
       className="flex w-10 h-10 justify-center items-center"
       type="button"
+      aria-current={isActive ? "page" : undefined}
       onClick={onClick}
     >
       {variant === "home" && <HomeOutlinedIcon sx={iconClass} />}
