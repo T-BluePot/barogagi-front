@@ -14,7 +14,7 @@ export const TabItem = ({
   isActive = false,
 }: TabItemProps) => {
   const iconClass = {
-    fontSize: 40,
+    fontSize: 36,
     color: isActive ? "#bafd4f" : "#ffffff",
   };
 
