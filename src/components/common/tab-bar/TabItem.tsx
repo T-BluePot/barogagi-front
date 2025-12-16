@@ -1,4 +1,4 @@
-import type { TabVariant } from "@/types/main/tabBarTypes";
+import type { TabVariant } from "@/constants/tabs";
 
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
