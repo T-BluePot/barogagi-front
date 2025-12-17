@@ -15,11 +15,14 @@ import HomePage from "@/pages/main/HomePage";
 
 export const MainRoutes = () => (
   <Routes>
+    {/* Bottom Tab 페이지 */}
     <Route element={<TabLayout />}>
       {/* Home 페이지 */}
       <Route path="/" element={<HomePage />} />
       <Route path="/home" element={<HomePage />} />
+      {/* Plan 페이지 */}
       <Route path="/plan" element={<ScheduleListPage />} />
+      {/* TODO: My 페이지 */}
     </Route>
     {/* 일정 생성 */}
     <Route path="/plan/date" element={<SelectDatePage />} />
