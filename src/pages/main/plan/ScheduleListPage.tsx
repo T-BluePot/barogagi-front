@@ -90,7 +90,7 @@ const ScheduleListPage = () => {
           </div>
         )}
       </div>
-      <div className="fixed bottom-20 right-6 z-30">
+      <div className="fixed bottom-20 right-6 z-35">
         <AddScheduleButton onAddSchedule={() => navigate(ROUTES.PLAN.DATE)} />
       </div>
     </div>
