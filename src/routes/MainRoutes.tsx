@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import TabLayout from "@/components/layout/TabLayout";
 
 /* 메인 페이지 */
 // 일정 생성 탭
@@ -14,11 +15,16 @@ import HomePage from "@/pages/main/HomePage";
 
 export const MainRoutes = () => (
   <Routes>
-    {/* Home 페이지 */}
-    <Route path="/" element={<HomePage />} />
-    <Route path="/home" element={<HomePage />} />
+    {/* Bottom Tab 페이지 */}
+    <Route element={<TabLayout />}>
+      {/* Home 페이지 */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/home" element={<HomePage />} />
+      {/* Plan 페이지 */}
+      <Route path="/plan" element={<ScheduleListPage />} />
+      {/* TODO: My 페이지 */}
+    </Route>
     {/* 일정 생성 */}
-    <Route path="/plan" element={<ScheduleListPage />} />
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />
     <Route path="/plan/style" element={<ScheduleStylePage />} />

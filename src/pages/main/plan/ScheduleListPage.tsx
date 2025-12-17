@@ -54,8 +54,8 @@ const ScheduleListPage = () => {
 
   return (
     <div
-      className="flex flex-col w-full h-full
-     gap-6 bg-gray-white overflow-hidden"
+      className="flex flex-col
+     gap-6 bg-gray-white"
     >
       <DeleteScheduleModal
         isOpen={isDeleteOpen}
@@ -67,9 +67,9 @@ const ScheduleListPage = () => {
         }}
       />
       <ScheduleListHeader viewType={viewType} toggleViewType={toggleViewType} />
-      <div className="flex-1 w-full min-h-0">
+      <div className="flex-1">
         {viewType === "calendar" ? (
-          <div className="flex w-full h-full">
+          <div className="flex h-full">
             <CalendarView
               selectedDate={selectedDate}
               onChangeDate={(date) => setSelectedDate(date)}
@@ -90,7 +90,7 @@ const ScheduleListPage = () => {
           </div>
         )}
       </div>
-      <div className="fixed bottom-6 right-6">
+      <div className="fixed bottom-20 right-6 z-35">
         <AddScheduleButton onAddSchedule={() => navigate(ROUTES.PLAN.DATE)} />
       </div>
     </div>
