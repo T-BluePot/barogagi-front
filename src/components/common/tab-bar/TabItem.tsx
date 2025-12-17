@@ -15,7 +15,7 @@ export const TabItem = ({
 }: TabItemProps) => {
   const iconClass = {
     fontSize: 36,
-    color: isActive ? "#bafd4f" : "#ffffff",
+    color: isActive ? "var(--color-main)" : "var(--color-gray-white)",
   };
 
   return (
