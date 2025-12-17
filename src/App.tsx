@@ -8,6 +8,7 @@ import { Layout } from "@/components/layout/Layout";
 function App() {
   return (
     <BrowserRouter>
+      <DevNav />
       <Layout>
         <Routes>
           <Route path="/auth/*" element={<AuthRoutes />} />
