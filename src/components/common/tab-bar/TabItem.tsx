@@ -19,14 +19,13 @@ export const TabItem = ({
   };
 
   return (
-    <button
+    <div
       className="flex w-10 h-10 justify-center items-center"
-      type="button"
       aria-current={isActive ? "page" : undefined}
     >
       {variant === "home" && <HomeOutlinedIcon sx={iconClass} />}
       {variant === "plan" && <AddOutlinedIcon sx={iconClass} />}
       {variant === "my" && <PersonOutlineOutlinedIcon sx={iconClass} />}
-    </button>
+    </div>
   );
 };
