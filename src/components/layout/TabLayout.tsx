@@ -3,16 +3,13 @@ import BottomTabBar from "../common/tab-bar/BottomTabBar";
 
 const TabLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen">
       {/* 페이지 콘텐츠 */}
-      <main className="flex-1 pb-[60px]">
+      <main className="min-h-screen pb-[60px]">
         <Outlet />
       </main>
-
-      {/* 푸터(탭바) - 레이아웃 흐름에 포함되어 공간 차지 */}
-      <footer>
-        <BottomTabBar />
-      </footer>
+      {/* 하단 탭 바 */}
+      <BottomTabBar />
     </div>
   );
 };
