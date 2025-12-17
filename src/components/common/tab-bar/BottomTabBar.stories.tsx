@@ -55,9 +55,6 @@ const meta: Meta<typeof BottomTabBar> = {
               }
             />
           </Routes>
-
-          {/* Story 자체는 Route element에서 렌더링되므로 여기서 추가로 렌더링하지 않습니다. */}
-          <Story />
         </MemoryRouter>
       );
     },
