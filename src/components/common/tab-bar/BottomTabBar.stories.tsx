@@ -15,7 +15,9 @@ const meta: Meta<typeof BottomTabBar> = {
     layout: "fullscreen",
   },
   decorators: [
-    (Story, ctx) => {
+    // Storybook decorator 시그니처: (Story, context) => JSX
+    // Story는 사용 안 하므로 _로 표시, context에서 parameters 접근
+    (_, ctx) => {
       // story에서 parameters.initialPath로 활성 탭을 제어합니다.
       const initialPath =
         (ctx.parameters as { initialPath?: string })?.initialPath ?? firstPath;
