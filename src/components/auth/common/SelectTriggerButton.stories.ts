@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { SelectTriggerButton } from "./SelectTriggerButton";
 
@@ -35,7 +34,7 @@ export const Default: Story = {
   args: {
     label: "생일",
     value: "",
-    onClick: action("모달창 열림"),
+    onClick: () => {},
   },
 };
 

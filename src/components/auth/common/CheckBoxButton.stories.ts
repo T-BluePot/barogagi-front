@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { CheckBoxButton } from "./CheckBoxButton";
 
@@ -23,7 +22,7 @@ export const Default: Story = {
   args: {
     size: "large",
     isChecked: false,
-    onCheckedChange: action("isChecked"),
+    onCheckedChange: () => {},
     label: "전체 동의하기",
   },
 };
@@ -32,7 +31,7 @@ export const Skip: Story = {
   args: {
     gap: "tight",
     isChecked: false,
-    onCheckedChange: action("isChecked"),
+    onCheckedChange: () => {},
     label: "다음에 입력할게요.",
     labelColor: "gray",
   },

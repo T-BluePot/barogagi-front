@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { SelectTagConfirmModal } from "./SelectTagConfirmModal";
 
@@ -23,33 +22,46 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
+  argTypes: {
+    onConfirm: { action: "confirm" },
+    onCancel: { action: "cancel" },
+  },
   args: {
     isOpen: true,
     tags: mockTags,
-    onConfirm: action("confirm"),
-    onCancel: action("cancel"),
   },
 } satisfies Meta<typeof SelectTagConfirmModal>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  args: {
+    onConfirm: () => {},
+    onCancel: () => {},
+  },
+};
 
 export const WithInitialSelection: Story = {
   args: {
     initialSelectedIds: ["1", "3"],
+    onConfirm: () => {},
+    onCancel: () => {},
   },
 };
 
 export const WithMaxSelection: Story = {
   args: {
     maxSelection: 3,
+    onConfirm: () => {},
+    onCancel: () => {},
   },
 };
 
 export const Closed: Story = {
   args: {
     isOpen: false,
+    onConfirm: () => {},
+    onCancel: () => {},
   },
 };

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { PlanSettingForm } from "./PlanSettingForm";
 import type { PlanData } from "./PlanCard";
@@ -45,11 +44,11 @@ const meta = {
     },
   },
   args: {
-    onAddPlan: action("add-plan"),
-    onOrderChange: action("order-change"),
-    onDeleteClick: action("delete-click"),
-    onTimeClick: action("time-click"),
-    onLocationClick: action("location-click"),
+    onAddPlan: () => {},
+    onOrderChange: () => {},
+    onDeleteClick: () => {},
+    onTimeClick: () => {},
+    onLocationClick: () => {},
   },
 } satisfies Meta<typeof PlanSettingForm>;
 

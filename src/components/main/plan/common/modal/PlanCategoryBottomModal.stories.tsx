@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { PlanCategoryBottomModal } from "./PlanCategoryBottomModal";
 
@@ -10,20 +9,29 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
+  argTypes: {
+    onClose: { action: "close" },
+    onSelectOption: { action: "select-option" },
+  },
   args: {
     isOpen: true,
-    onClose: action("close"),
-    onSelectOption: action("select-option"),
   },
 } satisfies Meta<typeof PlanCategoryBottomModal>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  args: {
+    onClose: () => {},
+    onSelectOption: () => {},
+  },
+};
 
 export const Closed: Story = {
   args: {
     isOpen: false,
+    onClose: () => {},
+    onSelectOption: () => {},
   },
 };

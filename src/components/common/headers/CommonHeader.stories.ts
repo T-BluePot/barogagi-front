@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { CommonHeader } from "./CommonHeader";
 
@@ -10,7 +9,12 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
-  args: { onClick: action("clicked") },
+  argTypes: {
+    onClick: { action: "clicked" },
+  },
+  args: {
+    onClick: () => {},
+  },
 } satisfies Meta<typeof CommonHeader>;
 
 export default meta;

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { SelectRegionConfirmModal } from "./SelectRegionConfirmModal";
 
@@ -18,27 +17,38 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
+  argTypes: {
+    onConfirm: { action: "confirm" },
+    onCancel: { action: "cancel" },
+  },
   args: {
     isOpen: true,
     regions: mockRegions,
-    onConfirm: action("confirm"),
-    onCancel: action("cancel"),
   },
 } satisfies Meta<typeof SelectRegionConfirmModal>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  args: {
+    onConfirm: () => {},
+    onCancel: () => {},
+  },
+};
 
 export const WithInitialSelection: Story = {
   args: {
     initialSelectedId: "2",
+    onConfirm: () => {},
+    onCancel: () => {},
   },
 };
 
 export const Closed: Story = {
   args: {
     isOpen: false,
+    onConfirm: () => {},
+    onCancel: () => {},
   },
 };

@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { action } from "storybook/actions";
-
 import { CloseHeader } from "./CloseHeader";
 
 const meta = {
@@ -18,7 +16,7 @@ const meta = {
       defaultValue: false,
     },
   },
-  args: { onClick: action("clicked") },
+  args: { onClick: () => {} },
 } satisfies Meta<typeof CloseHeader>;
 
 export default meta;
