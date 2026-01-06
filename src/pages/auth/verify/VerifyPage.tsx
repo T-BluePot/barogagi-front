@@ -60,8 +60,7 @@ const VerifyPage = () => {
     ) {
       navigate("/", { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flow]);
+  }, [flow, navigate]);
 
   const current = flow
     ? FLOW_CONFIG[flow as Flow]

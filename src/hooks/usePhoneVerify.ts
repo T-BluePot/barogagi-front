@@ -28,7 +28,7 @@ export const usePhoneVerify = () => {
       clearTimer(); // 기존 타이머 정리
       setRemainingSeconds(seconds);
 
-      timerRef.current = setInterval(() => {
+      timerRef.current = window.setInterval(() => {
         setRemainingSeconds((prevSeconds) => {
           const newSeconds = prevSeconds - 1;
           // 0 이하가 되면 타이머 정리하고 0으로 설정

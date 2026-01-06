@@ -9,7 +9,7 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    onDelete: { action: "deleted" },
+    onDeleteClick: { action: "deleted" },
     onTimeClick: { action: "time clicked" },
     onLocationClick: { action: "location clicked" },
   },

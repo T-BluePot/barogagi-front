@@ -21,6 +21,7 @@ export const Default: Story = {
   args: {
     label: "삭제",
     isDisabled: false,
+    onClick: () => console.log("Delete clicked"),
   },
 };
 
@@ -29,6 +30,7 @@ export const Disabled: Story = {
   args: {
     label: "삭제",
     isDisabled: true,
+    onClick: () => console.log("Delete clicked"),
   },
 };
 
@@ -37,5 +39,6 @@ export const CustomLabel: Story = {
   args: {
     label: "삭제 모드",
     isDisabled: false,
+    onClick: () => console.log("Delete clicked"),
   },
 };

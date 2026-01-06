@@ -85,6 +85,14 @@ export const PlanSettingPage = () => {
     setIsCategoryModalOpen(false);
   };
 
+  const handleCategorySelect = (
+    category: string,
+    option: { id: string; label: string }
+  ) => {
+    console.log("카테고리 선택:", category, option);
+    handleCategoryModalClose();
+  };
+
   return (
     <div className="p-4">
       <PlanSettingForm
@@ -98,6 +106,7 @@ export const PlanSettingPage = () => {
       <PlanCategoryBottomModal
         isOpen={isCategoryModalOpen}
         onClose={handleCategoryModalClose}
+        onSelectOption={handleCategorySelect}
       />
       <DeletePlanModal
         isOpen={isDeleteModalOpen}

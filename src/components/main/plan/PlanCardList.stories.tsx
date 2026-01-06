@@ -43,7 +43,7 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     onOrderChange: { action: "order changed" },
-    onDelete: { action: "deleted" },
+    onDeleteClick: { action: "deleted" },
     onTimeClick: { action: "time clicked" },
     onLocationClick: { action: "location clicked" },
   },
