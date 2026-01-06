@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { action } from "storybook/actions";
-
 import { SelectTag } from "./SelectTag";
 
 const meta = {
@@ -18,7 +16,7 @@ const meta = {
       defaultValue: true,
     },
   },
-  args: { onClick: action("clicked") },
+  args: { onClick: () => {} },
 } satisfies Meta<typeof SelectTag>;
 
 export default meta;

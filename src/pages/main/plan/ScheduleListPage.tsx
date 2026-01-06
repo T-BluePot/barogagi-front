@@ -39,17 +39,30 @@ const ScheduleListPage = () => {
   };
 
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
-  const [deleteTargetNum, setDeleteTargetNum] = useState<number | null>(null);
+  // 삭제할 스케줄의 ID를 저장하는 상태
+  // - 삭제 버튼 클릭 시 어떤 스케줄인지 저장
+  // - 모달에서 확인 버튼 클릭 시 이 ID로 삭제 요청
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // 삭제 버튼 클릭 액션 함수
+  // scheduleNum을 받아서 삭제 대상을 추적
   const handleDeleteSchedule = (scheduleNum: number) => {
-    setDeleteTargetNum(scheduleNum);
-    setIsDeleteOpen(true);
+    setDeleteTargetId(scheduleNum); // 삭제할 스케줄 ID 저장
+    setIsDeleteOpen(true); // 확인 모달 열기
   };
 
   const handleCloseDeleteModal = () => {
     setIsDeleteOpen(false);
-    setDeleteTargetNum(null);
+    setDeleteTargetId(null); // 모달 닫을 때 삭제 대상 초기화
+  };
+
+  // 삭제 확인 시 실행되는 함수
+  const handleConfirmDelete = () => {
+    if (deleteTargetId !== null) {
+      // TODO: 서버 연동 시 deleteTargetId로 삭제 API 호출
+      console.log(`스케줄 ${deleteTargetId} 삭제 요청`);
+    }
+    handleCloseDeleteModal();
   };
 
   return (
@@ -60,11 +73,7 @@ const ScheduleListPage = () => {
       <DeleteScheduleModal
         isOpen={isDeleteOpen}
         onClickCancel={handleCloseDeleteModal}
-        onClickConfirm={() => {
-          // TODO: deleteTargetNum을 사용해서 서버 삭제 API 호출
-          console.log("삭제할 일정:", deleteTargetNum);
-          handleCloseDeleteModal();
-        }}
+        onClickConfirm={handleConfirmDelete}
       />
       <ScheduleListHeader viewType={viewType} toggleViewType={toggleViewType} />
       <div className="flex-1">

@@ -1,3 +1,27 @@
+/**
+ * 시간 입력값 검증 (1-12 범위)
+ * @param value - 입력된 값
+ * @returns 유효한 경우 value, 아니면 null
+ */
+export const validateHourInput = (value: string): string | null => {
+  const cleaned = value.replace(/\D/g, "").slice(0, 2);
+  if (cleaned === "") return cleaned;
+  const num = parseInt(cleaned, 10);
+  return num >= 1 && num <= 12 ? cleaned : null;
+};
+
+/**
+ * 분 입력값 검증 (0-59 범위)
+ * @param value - 입력된 값
+ * @returns 유효한 경우 value, 아니면 null
+ */
+export const validateMinuteInput = (value: string): string | null => {
+  const cleaned = value.replace(/\D/g, "").slice(0, 2);
+  if (cleaned === "") return cleaned;
+  const num = parseInt(cleaned, 10);
+  return num >= 0 && num <= 59 ? cleaned : null;
+};
+
 export const formatDateToKorean = (date: Date | null): string => {
   if (!date) return "날짜를 선택해주세요";
 

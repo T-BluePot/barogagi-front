@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { action } from "storybook/actions";
 
 import { CommonInput } from "./CommonInput";
 
@@ -68,7 +67,7 @@ export const Default: Story = {
     error: false,
     value: "",
     withButton: false,
-    setValue: action("setValue"),
+    setValue: () => {},
   },
 };
 
@@ -77,7 +76,7 @@ export const WithButton: Story = {
     ...Default.args,
     withButton: true,
     value: "test@example.com",
-    onClickButton: action("중복 확인 버튼 클릭"),
+    onClickButton: () => {},
   },
 };
 

@@ -8,15 +8,16 @@ export const ROUTES = {
   // Auth 관련
 
   AUTH: {
-    SIGNIN: "/login",
+    LANDING: "/auth",
+    SIGNIN: "/auth/login",
     SIGNUP: {
-      TERMS: "/signup",
-      CREDENTIALS: "/signup/credentials",
-      VERIFY: "/verify/signup-verify",
-      PROFILE: "/signup/profile",
-      COMPLETE: "/signup/complete",
+      TERMS: "/auth/signup",
+      CREDENTIALS: "/auth/signup/credentials",
+      VERIFY: "/auth/verify/signup-verify",
+      PROFILE: "/auth/signup/profile",
+      COMPLETE: "/auth/signup/complete",
     },
-    FIND_ACCOUNT: "/find",
+    FIND_ACCOUNT: "/auth/find",
   },
 
   // 메인: 탭 관리
@@ -38,6 +39,7 @@ export const ROUTES = {
     LIST: PLAN_BASE, // 일정 리스트 메인
     DATE: "/plan/date", // 날짜 선택
     LOCATION: "/plan/location", // 지역 선택
+    SETTING: "/plan/setting", // 일정 세팅
     STYLE: "/plan/style", // 일정 스타일 선택
     CREATE: "/plan/create", // 추천 루트 완료
     DETAIL: "/plan/:id/detail", // 루트 상세 페이지

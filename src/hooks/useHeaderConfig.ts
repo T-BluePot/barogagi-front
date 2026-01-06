@@ -17,7 +17,7 @@ interface HeaderConfig {
 */
 
 export type HeaderConfig =
-  | { type: "none" }
+  | { type: "none"; isDarkBg?: boolean }
   | { type: "common"; rightPath?: string; isDarkBg?: boolean }
   | { type: "title"; label: string; isDarkBg?: boolean }
   | { type: "close"; label?: string; isDarkBg?: boolean; closePath?: string }
@@ -28,7 +28,7 @@ export type HeaderConfig =
 // 섹션별 공통 규칙 (예: /signup/*)
 const SECTION_RULES: Array<{ pattern: string; config: HeaderConfig }> = [
   {
-    pattern: "/signup/*", // /signup으로 시작하는 모든 하위 경로
+    pattern: "/auth/signup/*", // /auth/signup으로 시작하는 모든 하위 경로
     config: {
       type: "back",
       label: "회원가입",
@@ -42,11 +42,12 @@ const SECTION_RULES: Array<{ pattern: string; config: HeaderConfig }> = [
 const HEADER_CONFIG: Record<string, HeaderConfig> = {
   // Auth 관련
   [ROUTES.ROOT]: { type: "none" }, // 랜딩 페이지는 헤더 없음
+  [ROUTES.AUTH.LANDING]: { type: "none", isDarkBg: true }, // Auth 랜딩 페이지도 헤더 없음, 다크 배경
   [ROUTES.AUTH.SIGNIN]: {
     type: "back",
     label: "로그인",
     isDarkBg: true,
-    backPath: ROUTES.ROOT, // 홈(랜딩) 페이지로 이동
+    backPath: ROUTES.AUTH.LANDING, // Auth 랜딩 페이지로 이동
   },
   [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none" },
   [ROUTES.AUTH.FIND_ACCOUNT]: {
