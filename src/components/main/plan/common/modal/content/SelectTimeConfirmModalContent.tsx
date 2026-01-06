@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { validateHourInput, validateMinuteInput } from "@/utils/date";
 
 interface TimeValue {
   period: "오전" | "오후";
@@ -67,12 +68,12 @@ export const SelectTimeConfirmModalContent = ({
         <input
           type="text"
           value={startTime.hour}
-          onChange={(e) =>
-            handleStartTimeChange(
-              "hour",
-              e.target.value.replace(/\D/g, "").slice(0, 2)
-            )
-          }
+          onChange={(e) => {
+            const validated = validateHourInput(e.target.value);
+            if (validated !== null) {
+              handleStartTimeChange("hour", validated);
+            }
+          }}
           className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
           maxLength={2}
           placeholder="00"
@@ -81,12 +82,12 @@ export const SelectTimeConfirmModalContent = ({
         <input
           type="text"
           value={startTime.minute}
-          onChange={(e) =>
-            handleStartTimeChange(
-              "minute",
-              e.target.value.replace(/\D/g, "").slice(0, 2)
-            )
-          }
+          onChange={(e) => {
+            const validated = validateMinuteInput(e.target.value);
+            if (validated !== null) {
+              handleStartTimeChange("minute", validated);
+            }
+          }}
           className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
           maxLength={2}
           placeholder="00"
@@ -108,12 +109,12 @@ export const SelectTimeConfirmModalContent = ({
         <input
           type="text"
           value={endTime.hour}
-          onChange={(e) =>
-            handleEndTimeChange(
-              "hour",
-              e.target.value.replace(/\D/g, "").slice(0, 2)
-            )
-          }
+          onChange={(e) => {
+            const validated = validateHourInput(e.target.value);
+            if (validated !== null) {
+              handleEndTimeChange("hour", validated);
+            }
+          }}
           className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
           maxLength={2}
           placeholder="00"
@@ -122,12 +123,12 @@ export const SelectTimeConfirmModalContent = ({
         <input
           type="text"
           value={endTime.minute}
-          onChange={(e) =>
-            handleEndTimeChange(
-              "minute",
-              e.target.value.replace(/\D/g, "").slice(0, 2)
-            )
-          }
+          onChange={(e) => {
+            const validated = validateMinuteInput(e.target.value);
+            if (validated !== null) {
+              handleEndTimeChange("minute", validated);
+            }
+          }}
           className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
           maxLength={2}
           placeholder="00"
