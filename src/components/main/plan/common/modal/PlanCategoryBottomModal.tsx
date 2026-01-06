@@ -1,24 +1,14 @@
 import { CommonBottomModal } from "../../../../common/modal/bottom-modal/CommonBottomModal";
-import { PlanCategoryBottomModalContent } from "./content/PlanCategoryBottomModalContent";
-
-// content에서 타입 re-export
-export type {
-  CategoryType,
-  CategoryOption,
+import {
+  PlanCategoryBottomModalContent,
+  type CategoryType,
+  type CategoryOption,
 } from "./content/PlanCategoryBottomModalContent";
 
 interface PlanCategoryBottomModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectOption: (
-    category: "식사" | "카페" | "체험" | "놀거리" | "탐방" | "레저",
-    option: {
-      id: string;
-      label: string;
-      isRandom?: boolean;
-      isCustom?: boolean;
-    }
-  ) => void;
+  onSelectOption: (category: CategoryType, option: CategoryOption) => void;
 }
 
 export const PlanCategoryBottomModal = ({

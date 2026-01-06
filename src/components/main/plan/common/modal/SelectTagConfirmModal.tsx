@@ -60,5 +60,4 @@ export const SelectTagConfirmModal = ({
   );
 };
 
-export type { TagOption };
 export default SelectTagConfirmModal;

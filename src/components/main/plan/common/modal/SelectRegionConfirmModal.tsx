@@ -59,5 +59,4 @@ export const SelectRegionConfirmModal = ({
   );
 };
 
-export type { RegionOption };
 export default SelectRegionConfirmModal;
