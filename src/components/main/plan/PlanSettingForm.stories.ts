@@ -37,19 +37,19 @@ const meta = {
   parameters: {
     layout: "padded",
   },
+  // 🎯 argTypes에 action 설정 - Storybook이 자동으로 이벤트 추적
   argTypes: {
     initialItems: {
       control: "object",
       description: "초기 일정 데이터 배열",
     },
+    onAddPlan: { action: "onAddPlan" },
+    onOrderChange: { action: "onOrderChange" },
+    onDeleteClick: { action: "onDeleteClick" },
+    onTimeClick: { action: "onTimeClick" },
+    onLocationClick: { action: "onLocationClick" },
   },
-  args: {
-    onAddPlan: () => {},
-    onOrderChange: () => {},
-    onDeleteClick: () => {},
-    onTimeClick: () => {},
-    onLocationClick: () => {},
-  },
+  // 🎯 args에서 빈 함수들 제거 - argTypes에 action이 있으면 자동 연결됨
 } satisfies Meta<typeof PlanSettingForm>;
 
 export default meta;
