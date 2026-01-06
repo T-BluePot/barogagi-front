@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
 import {
   SelectTagConfirmModalContent,
@@ -36,6 +36,14 @@ export const SelectTagConfirmModal = ({
   // 이전 isOpen 값을 저장하는 ref
   // ref는 값이 바뀌어도 리렌더링을 유발하지 않아서 이전 상태 추적에 적합
   const prevIsOpenRef = useRef(false);
+  // requestAnimationFrame ID를 저장하여 cleanup 시 취소할 수 있게 함
+  const rafIdRef = useRef<number | null>(null);
+
+  // 모달 닫힘 애니메이션 완료 후 호출되는 콜백
+  // useCallback으로 메모이징하여 매 렌더링마다 새 함수 생성 방지
+  const handleCloseComplete = useCallback(() => {
+    setShouldRender(false);
+  }, []);
 
   useEffect(() => {
     // 모달이 "방금 열렸는지" 확인 (이전에 닫혀있다가 지금 열린 경우)
@@ -50,11 +58,19 @@ export const SelectTagConfirmModal = ({
       const initial = tags.filter((t) => initialSelectedIds.includes(t.id));
       setSelectedTags(initial);
       // 다음 프레임에서 애니메이션 시작 (부드러운 트랜지션을 위해)
-      requestAnimationFrame(() => setShowAnimation(true));
+      rafIdRef.current = requestAnimationFrame(() => setShowAnimation(true));
     } else if (!isOpen) {
       // 모달이 닫힐 때는 닫힘 애니메이션만 실행
       setShowAnimation(false);
     }
+
+    // cleanup: 컴포넌트 언마운트 시 대기 중인 rAF 취소
+    return () => {
+      if (rafIdRef.current != null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+    };
   }, [isOpen, tags, initialSelectedIds]);
 
   const handleConfirm = () => {
@@ -68,9 +84,11 @@ export const SelectTagConfirmModal = ({
       isVisible={showAnimation}
       confirmButtonInfo={{ label: "확인", onClick: handleConfirm }}
       cancelButtonInfo={{ label: "취소", onClick: onCancel }}
-      onCloseComplete={() => setShouldRender(false)}
+      onCloseComplete={handleCloseComplete}
     >
+      {/* key로 초기값을 포함하여 모달이 다시 열릴 때 Content 컴포넌트를 새로 마운트 */}
       <SelectTagConfirmModalContent
+        key={`${isOpen}-${initialSelectedIds.join(",")}`}
         tags={tags}
         initialSelectedIds={initialSelectedIds}
         maxSelection={maxSelection}
