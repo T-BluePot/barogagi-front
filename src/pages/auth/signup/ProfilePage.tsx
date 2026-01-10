@@ -133,7 +133,7 @@ const ProfilePage = () => {
         title: PROFILE_TEXT.TITLE,
         subTitle: PROFILE_TEXT.SUB_TITLE,
       }}
-      handleGoBack={() => navigate(ROUTES.AUTH.SIGNUP.CREDENTIALS)}
+      handleGoBack={() => navigate(ROUTES.AUTH.SIGNUP.VERIFY)}
       nickname={nickname}
       setNickname={setNickname}
       isNicknameError={!!nickname.length && !!error.length}
