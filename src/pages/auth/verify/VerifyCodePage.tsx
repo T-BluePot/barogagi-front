@@ -44,12 +44,13 @@ const VerifyCodePage = () => {
     if (!code.trim()) return;
 
     // TODO: API 검증 성공 후 플로우에 따라 이동
+    // AuthRoutes가 /auth/* 하위에서 동작하므로 전체 경로 필요
     if (flow === "signup-verify") {
-      navigate("/signup/profile");
+      navigate("/auth/signup/profile");
     } else if (flow === "find-id") {
-      navigate("/find/result?tab=id", { state: { phone: state.phone } });
+      navigate("/auth/find/result?tab=id", { state: { phone: state.phone } });
     } else if (flow === "reset-password") {
-      navigate("/find/reset-password");
+      navigate("/auth/find/reset-password");
     } else {
       navigate("/");
     }
@@ -60,7 +61,7 @@ const VerifyCodePage = () => {
       <BackHeader
         label={getHeaderLabel()}
         isDarkBg={true}
-        onClick={() => safeBack(navigate, `/verify/${flow}`)}
+        onClick={() => safeBack(navigate, `/auth/verify/${flow}`)}
       />
       <div className="flex flex-col w-full px-6">
         <PageTitle title={VERIFY_TEXT.CODE.TITLE} />
@@ -70,7 +71,7 @@ const VerifyCodePage = () => {
             if (state.returnTo) {
               navigate(state.returnTo);
             } else {
-              navigate(`/verify/${flow}`);
+              navigate(`/auth/verify/${flow}`);
             }
           }}
           onConfirm={handleConfirm}

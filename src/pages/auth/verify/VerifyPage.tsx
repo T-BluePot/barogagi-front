@@ -12,6 +12,11 @@ type Flow = "signup-verify" | "find-id" | "reset-password";
 
 type LocationState = { phone?: string };
 
+/**
+ * flow별 인증 페이지 설정
+ * - nextPath: 인증번호 입력 페이지 경로 (/auth prefix 포함해야 함)
+ * - AuthRoutes가 /auth/* 하위에서 동작하므로 전체 경로 필요
+ */
 const FLOW_CONFIG: Record<
   Flow,
   {
@@ -23,21 +28,21 @@ const FLOW_CONFIG: Record<
   }
 > = {
   "signup-verify": {
-    nextPath: "/verify/signup-verify/code",
+    nextPath: "/auth/verify/signup-verify/code",
     title: VERIFY_TEXT.PHONE.TITLE,
     subTitle: VERIFY_TEXT.PHONE.SUB_TITLE,
     label: VERIFY_TEXT.PHONE.LABEL,
     buttonLabel: VERIFY_TEXT.PHONE.NEXT_BUTTON,
   },
   "find-id": {
-    nextPath: "/verify/find-id/code",
+    nextPath: "/auth/verify/find-id/code",
     title: "아이디 확인을 위해\n휴대폰 번호를 입력해주세요",
     subTitle: "가입 시 등록한 번호로 인증번호를 보내드려요",
     label: "휴대전화 번호",
     buttonLabel: "본인 인증하기",
   },
   "reset-password": {
-    nextPath: "/verify/reset-password/code",
+    nextPath: "/auth/verify/reset-password/code",
     title: "비밀번호 재설정을 위해\n휴대폰 번호를 입력해주세요",
     subTitle: "가입 시 등록한 번호로 인증번호를 보내드려요",
     label: "휴대전화 번호",

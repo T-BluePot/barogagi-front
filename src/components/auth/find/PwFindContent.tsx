@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/buttons/CommonButton";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
+import { ROUTES } from "@/constants/routes";
 
 import { FIND_PW_TEXTS } from "@/constants/texts/auth/find/findAuth";
 
@@ -17,7 +18,7 @@ const PwFindContent = () => {
     }
 
     // 비밀번호 재설정 인증 코드 페이지로 이동
-    navigate("/verify/reset-password/code", {
+    navigate(ROUTES.AUTH.VERIFY.RESET_PASSWORD, {
       state: { phone: phoneNumber, flow: "reset-password" },
     });
   };

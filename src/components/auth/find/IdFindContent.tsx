@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/buttons/CommonButton";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 import { PageTitle } from "@/components/auth/common/PageTitle";
+import { ROUTES } from "@/constants/routes";
 
 import { FIND_ID_TEXTS } from "@/constants/texts/auth/find/findAuth";
 
@@ -17,7 +18,7 @@ const IdFindContent = () => {
     }
 
     // 아이디 찾기 인증 코드 페이지로 이동
-    navigate("/verify/find-id/code", {
+    navigate(ROUTES.AUTH.VERIFY.FIND_ID, {
       state: { phone: phoneNumber, flow: "find-id" },
     });
   };
