@@ -1,3 +1,18 @@
+/**
+ * 라우팅 시스템 구조
+ *
+ * 관련 파일
+ * routes.ts (현재) → 경로 문자열 정의
+ * headerConfig.ts  → 경로별 헤더 설정
+ * useHeaderConfig  → 현재 경로 매칭 → Layout.tsx에서 헤더 렌더링
+ *
+ * 새 페이지 추가 순서
+ * 1. routes.ts → 경로 추가
+ * 2. headerConfig.ts → 헤더 설정
+ * 3. routes/*.tsx → Route 추가
+ * 4. pages/*.tsx → 페이지 생성
+ */
+
 // 라우트 경로 상수
 const MAIN_BASE = "/home" as const;
 const PLAN_BASE = "/plan" as const;
