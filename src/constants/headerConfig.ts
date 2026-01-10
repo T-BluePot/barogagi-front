@@ -75,6 +75,12 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     label: "일정 스타일 선택",
     isDarkBg: false,
   },
+  [ROUTES.PLAN.SETTING]: {
+    type: "back",
+    label: "일정 구성",
+    isDarkBg: false,
+    backPath: ROUTES.PLAN.STYLE,
+  },
   [ROUTES.PLAN.CREATE]: {
     type: "title",
     label: "추천 루트",
