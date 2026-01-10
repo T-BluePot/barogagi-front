@@ -82,7 +82,7 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     type: "back",
     label: "비밀번호 재설정",
     isDarkBg: true,
-    backPath: ROUTES.AUTH.FIND_ACCOUNT, // 비밀번호 재설정 페이지로 이동
+    backPath: ROUTES.AUTH.FIND_ACCOUNT, // 계정 찾기 페이지로 이동
   },
 
   // Plan 관련
