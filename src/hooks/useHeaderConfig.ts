@@ -41,7 +41,7 @@ const SECTION_RULES: Array<{ pattern: string; config: HeaderConfig }> = [
 // 경로에 따른 헤더 설정
 const HEADER_CONFIG: Record<string, HeaderConfig> = {
   // Auth 관련
-  [ROUTES.ROOT]: { type: "none" }, // 랜딩 페이지는 헤더 없음
+  [ROUTES.ROOT]: { type: "common", isDarkBg: true }, // 홈 페이지는 공통 헤더와 다크 배경
   [ROUTES.AUTH.LANDING]: { type: "none", isDarkBg: true }, // Auth 랜딩 페이지도 헤더 없음, 다크 배경
   [ROUTES.AUTH.SIGNIN]: {
     type: "back",
