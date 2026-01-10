@@ -47,6 +47,31 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     backPath: ROUTES.AUTH.LANDING, // Auth 랜딩 페이지로 이동
   },
   [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none" },
+  // 인증 페이지들 (VERIFY는 객체이므로 개별 경로 사용)
+  [ROUTES.AUTH.VERIFY.SIGNUP]: {
+    type: "back",
+    label: "회원가입",
+    isDarkBg: true,
+    backPath: ROUTES.AUTH.SIGNUP.CREDENTIALS,
+  },
+  [ROUTES.AUTH.SIGNUP.VERIFY]: {
+    type: "back",
+    label: "회원가입",
+    isDarkBg: true,
+    backPath: ROUTES.AUTH.SIGNUP.CREDENTIALS,
+  },
+  [ROUTES.AUTH.VERIFY.FIND_ID]: {
+    type: "back",
+    label: "아이디 찾기",
+    isDarkBg: true,
+    backPath: ROUTES.AUTH.FIND_ACCOUNT,
+  },
+  [ROUTES.AUTH.VERIFY.RESET_PASSWORD]: {
+    type: "back",
+    label: "비밀번호 재설정",
+    isDarkBg: true,
+    backPath: ROUTES.AUTH.FIND_ACCOUNT,
+  },
   [ROUTES.AUTH.FIND_ACCOUNT]: {
     type: "back",
     label: "계정 찾기",

@@ -1,9 +1,7 @@
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 
-import { safeBack } from "@/utils/safeBack";
 import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 
-import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyCodeForm } from "@/components/auth/verify/VerifyCodeForm";
 import {
@@ -26,19 +24,20 @@ const VerifyCodePage = () => {
 
   const flow = paramFlow ?? state.flow ?? "signup";
 
+  // NOTE: 인증 시 헤더 라벨 설정 주석 처리
   // flow에 따른 헤더 라벨 설정
-  const getHeaderLabel = () => {
-    if (state.label) return state.label;
+  // const getHeaderLabel = () => {
+  //   if (state.label) return state.label;
 
-    switch (flow) {
-      case "find-id":
-        return FIND_ID_TEXTS.PAGE_TITLE;
-      case "reset-password":
-        return FIND_PW_TEXTS.PAGE_TITLE;
-      default:
-        return "인증하기";
-    }
-  };
+  //   switch (flow) {
+  //     case "find-id":
+  //       return FIND_ID_TEXTS.PAGE_TITLE;
+  //     case "reset-password":
+  //       return FIND_PW_TEXTS.PAGE_TITLE;
+  //     default:
+  //       return "인증하기";
+  //   }
+  // };
 
   const handleConfirm = (code: string) => {
     if (!code.trim()) return;
@@ -57,26 +56,19 @@ const VerifyCodePage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-black">
-      <BackHeader
-        label={getHeaderLabel()}
-        isDarkBg={true}
-        onClick={() => safeBack(navigate, `/auth/verify/${flow}`)}
+    <div className="flex flex-col w-full px-6">
+      <PageTitle title={VERIFY_TEXT.CODE.TITLE} />
+      <VerifyCodeForm
+        initialSeconds={180}
+        onExpired={() => {
+          if (state.returnTo) {
+            navigate(state.returnTo);
+          } else {
+            navigate(`/auth/verify/${flow}`);
+          }
+        }}
+        onConfirm={handleConfirm}
       />
-      <div className="flex flex-col w-full px-6">
-        <PageTitle title={VERIFY_TEXT.CODE.TITLE} />
-        <VerifyCodeForm
-          initialSeconds={180}
-          onExpired={() => {
-            if (state.returnTo) {
-              navigate(state.returnTo);
-            } else {
-              navigate(`/auth/verify/${flow}`);
-            }
-          }}
-          onConfirm={handleConfirm}
-        />
-      </div>
     </div>
   );
 };

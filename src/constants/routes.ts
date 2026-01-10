@@ -36,6 +36,7 @@ export const ROUTES = {
     // 아이디/비밀번호 찾기 → 바로 인증번호 입력 페이지로 이동
     // (IdFindContent, PwFindContent에서 이미 휴대폰 번호를 입력받음)
     VERIFY: {
+      SIGNUP: "/auth/verify/signup-verify/code",
       FIND_ID: "/auth/verify/find-id/code",
       RESET_PASSWORD: "/auth/verify/reset-password/code",
     },
