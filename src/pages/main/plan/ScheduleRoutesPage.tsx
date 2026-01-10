@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
 
+import { ROUTES } from "@/constants/routes";
 import type { ScheduleRoutesPageProps } from "@/types/main/plan/scheduleRoutes";
 import type { PlanNoteMap } from "@/types/main/plan/bottom-modal/planFromTypes";
 import {
@@ -150,7 +151,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         onConfirmConfirm={() => {
           // 일정 생성 API 호출
           handleCloseCreateModal();
-          navigate("/plan");
+          navigate(ROUTES.PLAN.LIST);
         }}
       />
       {/* 팝메뉴- 일정 수정 및 삭제 모달 */}

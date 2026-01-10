@@ -1,12 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
-import { safeBack } from "@/utils/safeBack";
 import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 
-import { BackHeader } from "@/components/common/headers/BackHeader";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyForm } from "@/components/auth/verify/VerifyForm";
+import { ROUTES } from "@/constants/routes";
 
 type Flow = "signup-verify" | "find-id" | "reset-password";
 
@@ -23,21 +22,21 @@ const FLOW_CONFIG: Record<
   }
 > = {
   "signup-verify": {
-    nextPath: "/verify/signup-verify/code",
+    nextPath: ROUTES.AUTH.VERIFY.SIGNUP,
     title: VERIFY_TEXT.PHONE.TITLE,
     subTitle: VERIFY_TEXT.PHONE.SUB_TITLE,
     label: VERIFY_TEXT.PHONE.LABEL,
     buttonLabel: VERIFY_TEXT.PHONE.NEXT_BUTTON,
   },
   "find-id": {
-    nextPath: "/verify/find-id/code",
+    nextPath: ROUTES.AUTH.VERIFY.FIND_ID,
     title: "아이디 확인을 위해\n휴대폰 번호를 입력해주세요",
     subTitle: "가입 시 등록한 번호로 인증번호를 보내드려요",
     label: "휴대전화 번호",
     buttonLabel: "본인 인증하기",
   },
   "reset-password": {
-    nextPath: "/verify/reset-password/code",
+    nextPath: ROUTES.AUTH.VERIFY.RESET_PASSWORD,
     title: "비밀번호 재설정을 위해\n휴대폰 번호를 입력해주세요",
     subTitle: "가입 시 등록한 번호로 인증번호를 보내드려요",
     label: "휴대전화 번호",
@@ -58,7 +57,7 @@ const VerifyPage = () => {
       !flow ||
       !["signup-verify", "find-id", "reset-password"].includes(flow)
     ) {
-      navigate("/", { replace: true });
+      navigate(ROUTES.ROOT, { replace: true });
     }
   }, [flow, navigate]);
 
@@ -72,22 +71,15 @@ const VerifyPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-black">
-      <BackHeader
-        isDarkBg={true}
-        onClick={() => safeBack(navigate, "/")}
-        label={"인증하기"}
+    <div className="flex flex-col w-full px-6">
+      <PageTitle title={current.title} subTitle={current.subTitle} />
+      <VerifyForm
+        label={current.label}
+        placeholder={"phone number"}
+        initialPhone={state.phone}
+        buttonLabel={current.buttonLabel}
+        onNext={handleNext}
       />
-      <div className="flex flex-col w-full px-6">
-        <PageTitle title={current.title} subTitle={current.subTitle} />
-        <VerifyForm
-          label={current.label}
-          placeholder={"phone number"}
-          initialPhone={state.phone}
-          buttonLabel={current.buttonLabel}
-          onNext={handleNext}
-        />
-      </div>
     </div>
   );
 };

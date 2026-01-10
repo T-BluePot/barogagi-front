@@ -10,12 +10,13 @@ import type { GenderType } from "@/types/auth/gender";
 import { useBlockBackNavigation } from "@/utils/useBlockBackNavigation";
 import { nicknameSchema } from "@/utils/authSchema";
 import { getGenderLabel } from "@/types/auth/gender";
+import { ROUTES } from "@/constants/routes";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
 
   useBlockBackNavigation(() => {
-    navigate("/signup/verify", { replace: true }); // 뒤로가면 로그인 페이지로 강제 이동
+    navigate(ROUTES.AUTH.SIGNUP.VERIFY, { replace: true }); // 뒤로가면 인증 페이지로 강제 이동
 
     // 약간의 시간 뒤 현재 페이지 다시 push (앞으로가기 방지용)
     setTimeout(() => {
@@ -81,7 +82,7 @@ const ProfilePage = () => {
   const handleCloseSkipModal = () => setIsSkipModalOpen(false);
   const handleSkipProfile = () => {
     handleCloseSkipModal(); // 모달 닫기
-    navigate("/signup/complete"); // 화면 이동
+    navigate(ROUTES.AUTH.SIGNUP.COMPLETE); // 화면 이동
   };
 
   useEffect(() => {
@@ -132,7 +133,7 @@ const ProfilePage = () => {
         title: PROFILE_TEXT.TITLE,
         subTitle: PROFILE_TEXT.SUB_TITLE,
       }}
-      handleGoBack={() => navigate("/signup/verify")}
+      handleGoBack={() => navigate(ROUTES.AUTH.SIGNUP.VERIFY)}
       nickname={nickname}
       setNickname={setNickname}
       isNicknameError={!!nickname.length && !!error.length}
@@ -144,7 +145,7 @@ const ProfilePage = () => {
       birthValue={formattedBirth}
       isSkipProfile={isSkipProfile}
       isDisabled={isInvalid()}
-      handleSubmitProfile={() => navigate("/signup/complete")}
+      handleSubmitProfile={() => navigate(ROUTES.AUTH.SIGNUP.COMPLETE)}
     />
   );
 };

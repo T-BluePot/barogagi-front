@@ -8,6 +8,7 @@ import Button from "@/components/common/buttons/CommonButton";
 import { SelectAllConsentButton } from "@/components/auth/signup/SelectAllConsentButton";
 import { TermsListSection } from "@/components/auth/signup/TermsListSection";
 import { TERMS } from "@/types/termsTypes";
+import { ROUTES } from "@/constants/routes";
 
 const TermsPage = () => {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ const TermsPage = () => {
         <Button
           label={TERMS_TEXT.NEXT_BUTTON}
           isDisabled={hasUncheckedRequiredTerms()}
-          onClick={() => navigate("/signup/credentials")}
+          onClick={() => navigate(ROUTES.AUTH.SIGNUP.CREDENTIALS)}
         />
       </div>
     </div>

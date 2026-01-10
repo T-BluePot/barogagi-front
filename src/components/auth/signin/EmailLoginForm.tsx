@@ -107,14 +107,14 @@ export const EmailLoginForm = () => {
             label="아이디 찾기"
             variant="main"
             className="typo-tag"
-            onClick={() => navigate("/find?tab=id")}
+            onClick={() => navigate(`${ROUTES.AUTH.FIND_ACCOUNT}?tab=id`)}
           />
           <span className="text-white">|</span>
           <TextButton
             label="비밀번호 재설정"
             variant="main"
             className="typo-tag"
-            onClick={() => navigate("/find?tab=password")}
+            onClick={() => navigate(`${ROUTES.AUTH.FIND_ACCOUNT}?tab=password`)}
           />
           <span className="text-white">|</span>
           <TextButton

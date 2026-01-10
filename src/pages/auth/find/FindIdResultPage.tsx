@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+
+import { ROUTES } from "@/constants/routes";
 import { FIND_ID_TEXTS } from "@/constants/texts/auth/find/findAuth";
 import { FullScreenModal } from "@/components/common/modal/full-screen-modal/FullScreenModal";
 
@@ -31,15 +33,15 @@ const FindIdResultPage = () => {
   }, [state.phone]);
 
   const handleClose = () => {
-    navigate("/");
+    navigate(ROUTES.ROOT);
   };
 
   const handleRetry = () => {
-    navigate("/find");
+    navigate(ROUTES.AUTH.FIND_ACCOUNT);
   };
 
   const handleLogin = () => {
-    navigate("/login");
+    navigate(ROUTES.AUTH.SIGNIN);
   };
 
   if (!result) {

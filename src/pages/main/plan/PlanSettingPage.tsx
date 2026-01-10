@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { PlanSettingForm } from "@/components/main/plan/PlanSettingForm";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 import type { PlanData } from "@/components/main/plan/PlanCard";
 import PlanCategoryBottomModal from "@/components/main/plan/common/modal/PlanCategoryBottomModal";
+import Button from "@/components/common/buttons/CommonButton";
+import { ROUTES } from "@/constants/routes";
 
 // 임시 mock 데이터
 const mockItems: PlanData[] = [
@@ -33,6 +36,7 @@ const mockItems: PlanData[] = [
 ];
 
 export const PlanSettingPage = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState<PlanData[]>(mockItems);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | number | null>(
@@ -94,15 +98,27 @@ export const PlanSettingPage = () => {
   };
 
   return (
-    <div className="p-4">
-      <PlanSettingForm
-        initialItems={items}
-        onAddPlan={handleAddPlan}
-        onOrderChange={handleOrderChange}
-        onDeleteClick={handleDeleteClick}
-        onTimeClick={handleTimeClick}
-        onLocationClick={handleLocationClick}
-      />
+    <div className="flex flex-col w-full h-full bg-gray-white">
+      <div className="flex-1 overflow-auto p-4">
+        <PlanSettingForm
+          initialItems={items}
+          onAddPlan={handleAddPlan}
+          onOrderChange={handleOrderChange}
+          onDeleteClick={handleDeleteClick}
+          onTimeClick={handleTimeClick}
+          onLocationClick={handleLocationClick}
+        />
+      </div>
+
+      {/* 다음 버튼 */}
+      <div className="mt-auto w-full p-6">
+        <Button
+          label="다음"
+          isDisabled={items.length === 0}
+          onClick={() => navigate(ROUTES.PLAN.STYLE)}
+        />
+      </div>
+
       <PlanCategoryBottomModal
         isOpen={isCategoryModalOpen}
         onClose={handleCategoryModalClose}

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
+import { ROUTES } from "@/constants/routes";
 import { useBlockBackNavigation } from "@/utils/useBlockBackNavigation";
 import { COMPLETE_TEXT } from "@/constants/texts/auth/signup/complete";
 
@@ -9,7 +10,10 @@ const SignupCompletePage = () => {
   const navigate = useNavigate();
 
   useBlockBackNavigation(() => {
-    navigate("/login", { replace: true, state: { preventBack: true } });
+    navigate(ROUTES.AUTH.SIGNIN, {
+      replace: true,
+      state: { preventBack: true },
+    });
   });
 
   return (
@@ -25,7 +29,7 @@ const SignupCompletePage = () => {
       <div className="flex flex-col items-center justify-center w-full mt-auto  gap-4 p-6">
         <Button
           label={COMPLETE_TEXT.BUTTON}
-          onClick={() => navigate("/login")}
+          onClick={() => navigate(ROUTES.AUTH.SIGNIN)}
         />
       </div>
     </div>
