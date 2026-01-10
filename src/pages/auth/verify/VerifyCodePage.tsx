@@ -36,6 +36,24 @@ const VerifyCodePage = () => {
   //   }
   // };
 
+  /**
+   * flow에 따라 인증번호 재입력을 위한 VerifyPage 경로 반환
+   * - 인증번호 만료 시 휴대폰 번호 입력 페이지로 돌아감
+   */
+  const getVerifyPagePath = () => {
+    switch (flow) {
+      case "signup-verify":
+        return ROUTES.AUTH.SIGNUP.VERIFY;
+      case "find-id":
+      case "reset-password":
+        // find-id, reset-password는 IdFindContent/PwFindContent에서 시작하므로
+        // 계정 찾기 페이지로 돌아감
+        return ROUTES.AUTH.FIND_ACCOUNT;
+      default:
+        return ROUTES.ROOT;
+    }
+  };
+
   const handleConfirm = (code: string) => {
     if (!code.trim()) return;
 
@@ -62,8 +80,8 @@ const VerifyCodePage = () => {
           if (state.returnTo) {
             navigate(state.returnTo);
           } else {
-            // flow에 따라 해당 verify 페이지로 이동
-            navigate(`${ROUTES.AUTH.LANDING}/verify/${flow}`);
+            // 인증번호 만료 시 휴대폰 번호 입력 페이지로 이동
+            navigate(getVerifyPagePath());
           }
         }}
         onConfirm={handleConfirm}
