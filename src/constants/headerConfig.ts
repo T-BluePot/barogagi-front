@@ -78,6 +78,12 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isDarkBg: true,
     backPath: ROUTES.AUTH.SIGNIN, // 로그인 페이지로 이동
   },
+  [ROUTES.AUTH.FIND_RESET_PASSWORD]: {
+    type: "back",
+    label: "비밀번호 재설정",
+    isDarkBg: true,
+    backPath: ROUTES.AUTH.FIND_ACCOUNT, // 비밀번호 재설정 페이지로 이동
+  },
 
   // Plan 관련
   [ROUTES.PLAN.LIST]: {
