@@ -46,15 +46,15 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isDarkBg: true,
     backPath: ROUTES.AUTH.LANDING, // Auth 랜딩 페이지로 이동
   },
-  [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none" },
-  // 인증 페이지들 (VERIFY는 객체이므로 개별 경로 사용)
-  [ROUTES.AUTH.VERIFY.SIGNUP]: {
+  [ROUTES.AUTH.SIGNUP.VERIFY]: {
     type: "back",
     label: "회원가입",
     isDarkBg: true,
     backPath: ROUTES.AUTH.SIGNUP.CREDENTIALS,
   },
-  [ROUTES.AUTH.SIGNUP.VERIFY]: {
+  [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none", isDarkBg: true },
+  // 인증 페이지들 (VERIFY는 객체이므로 개별 경로 사용)
+  [ROUTES.AUTH.VERIFY.SIGNUP]: {
     type: "back",
     label: "회원가입",
     isDarkBg: true,

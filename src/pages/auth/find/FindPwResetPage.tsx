@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ValidationError } from "yup";
 import { useNavigate } from "react-router-dom";
+
+import { ROUTES } from "@/constants/routes";
 import { safeBack } from "@/utils/safeBack";
 import { passwordSchema, passwordConfirmSchema } from "@/utils/authSchema";
 import { FIND_PW_TEXTS } from "@/constants/texts/auth/find/findAuth";
@@ -62,7 +64,7 @@ const FindPwResetPage = () => {
     console.log("비밀번호 변경:", { password, passwordConfirm });
 
     // 성공 시 로그인 페이지로 이동
-    navigate("/login");
+    navigate(ROUTES.AUTH.SIGNIN);
   };
 
   const isFormValid =
@@ -72,7 +74,7 @@ const FindPwResetPage = () => {
     <div className="flex flex-col w-full min-h-screen bg-gray-black">
       <BackHeader
         isDarkBg={true}
-        onClick={() => safeBack(navigate, "/")}
+        onClick={() => safeBack(navigate, ROUTES.ROOT)}
         label={FIND_PW_TEXTS.PAGE_TITLE}
       />
       <div className="flex flex-col w-full px-6 flex-1">

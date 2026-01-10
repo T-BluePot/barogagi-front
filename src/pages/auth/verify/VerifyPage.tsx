@@ -57,7 +57,7 @@ const VerifyPage = () => {
       !flow ||
       !["signup-verify", "find-id", "reset-password"].includes(flow)
     ) {
-      navigate("/", { replace: true });
+      navigate(ROUTES.ROOT, { replace: true });
     }
   }, [flow, navigate]);
 

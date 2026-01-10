@@ -1,13 +1,10 @@
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 
+import { ROUTES } from "@/constants/routes";
 import { VERIFY_TEXT } from "@/constants/texts/auth/verify";
 
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyCodeForm } from "@/components/auth/verify/VerifyCodeForm";
-import {
-  FIND_ID_TEXTS,
-  FIND_PW_TEXTS,
-} from "@/constants/texts/auth/find/findAuth";
 
 type LocationState = {
   phone?: string;
@@ -43,15 +40,16 @@ const VerifyCodePage = () => {
     if (!code.trim()) return;
 
     // TODO: API 검증 성공 후 플로우에 따라 이동
-    // AuthRoutes가 /auth/* 하위에서 동작하므로 전체 경로 필요
     if (flow === "signup-verify") {
-      navigate("/auth/signup/profile");
+      navigate(ROUTES.AUTH.SIGNUP.PROFILE);
     } else if (flow === "find-id") {
-      navigate("/auth/find/result?tab=id", { state: { phone: state.phone } });
+      navigate(`${ROUTES.AUTH.FIND_RESULT}?tab=id`, {
+        state: { phone: state.phone },
+      });
     } else if (flow === "reset-password") {
-      navigate("/auth/find/reset-password");
+      navigate(ROUTES.AUTH.FIND_RESET_PASSWORD);
     } else {
-      navigate("/");
+      navigate(ROUTES.ROOT);
     }
   };
 
@@ -64,7 +62,8 @@ const VerifyCodePage = () => {
           if (state.returnTo) {
             navigate(state.returnTo);
           } else {
-            navigate(`/auth/verify/${flow}`);
+            // flow에 따라 해당 verify 페이지로 이동
+            navigate(`${ROUTES.AUTH.LANDING}/verify/${flow}`);
           }
         }}
         onConfirm={handleConfirm}
