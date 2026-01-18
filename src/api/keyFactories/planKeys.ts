@@ -1,13 +1,13 @@
 /**
- * 일정(Plan) 관련 Query Key Factory
- * TanStack Query의 Query Key를 체계적으로 관리합니다.
+ * 일정(Schedule) 관련 Query Key Factory
  */
 
-export const planKeys = {
-  all: ["plans"] as const,
-  lists: () => [...planKeys.all, "list"] as const,
+export const scheduleKeys = {
+  all: ["schedules"] as const,
+  lists: () => [...scheduleKeys.all, "list"] as const,
   list: (filters?: Record<string, unknown>) =>
-    [...planKeys.lists(), { ...filters }] as const,
-  details: () => [...planKeys.all, "detail"] as const,
-  detail: (id: number | string) => [...planKeys.details(), id] as const,
+    [...scheduleKeys.lists(), { ...filters }] as const,
+  details: () => [...scheduleKeys.all, "detail"] as const,
+  detail: (scheduleNum: number) =>
+    [...scheduleKeys.details(), scheduleNum] as const,
 } as const;

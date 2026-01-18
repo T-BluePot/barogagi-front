@@ -6,7 +6,7 @@
 export interface BaseResponse<T = unknown> {
   code: string;
   message: string;
-  result: T;
+  data: T;
 }
 
 /** 에러 응답 타입 */

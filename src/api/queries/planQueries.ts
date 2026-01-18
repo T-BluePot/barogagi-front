@@ -1,56 +1,68 @@
 /**
- * 일정(Plan) 관련 API 요청 함수
- * http.ts의 axios 인스턴스와 endpoints.ts의 URL 상수를 사용합니다.
+ * 일정(Schedule) 관련 API 요청 함수
  */
 
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
 import type {
   BaseResponse,
-  Plan,
-  PlanListParams,
-  CreatePlanRequest,
-  UpdatePlanRequest,
+  ScheduleRegistReqDTO,
+  ScheduleRegistResDTO,
 } from "../types";
 
-/** 일정 목록 조회 */
-export const getPlans = async (params?: PlanListParams): Promise<Plan[]> => {
-  const response = await http.get<BaseResponse<Plan[]>>(ENDPOINTS.PLAN.LIST, {
-    params,
-  });
-  return response.data.result;
+/** 내 일정 목록 조회 */
+export const getScheduleList = async () => {
+  const response = await http.get<BaseResponse<ScheduleRegistResDTO[]>>(
+    ENDPOINTS.SCHEDULE.LIST
+  );
+  return response.data;
 };
 
 /** 일정 상세 조회 */
-export const getPlanDetail = async (id: number | string): Promise<Plan> => {
-  const response = await http.get<BaseResponse<Plan>>(
-    ENDPOINTS.PLAN.DETAIL(id)
+export const getScheduleDetail = async (scheduleNum: number) => {
+  const response = await http.get<BaseResponse<ScheduleRegistResDTO>>(
+    ENDPOINTS.SCHEDULE.DETAIL,
+    {
+      params: { scheduleNum },
+    }
   );
-  return response.data.result;
+  return response.data;
 };
 
-/** 일정 생성 */
-export const createPlan = async (data: CreatePlanRequest): Promise<Plan> => {
-  const response = await http.post<BaseResponse<Plan>>(
-    ENDPOINTS.PLAN.CREATE,
+/** 일정 생성 (AI 생성 등 초기 생성) */
+export const createSchedule = async (data: ScheduleRegistReqDTO) => {
+  const response = await http.post<BaseResponse<ScheduleRegistResDTO>>(
+    ENDPOINTS.SCHEDULE.CREATE,
     data
   );
-  return response.data.result;
+  return response.data;
+};
+
+/** 일정 저장 (최종 저장) */
+export const saveSchedule = async (data: ScheduleRegistResDTO) => {
+  const response = await http.post<BaseResponse<unknown>>(
+    ENDPOINTS.SCHEDULE.SAVE,
+    data
+  );
+  return response.data;
 };
 
 /** 일정 수정 */
-export const updatePlan = async (
-  id: number | string,
-  data: UpdatePlanRequest
-): Promise<Plan> => {
-  const response = await http.put<BaseResponse<Plan>>(
-    ENDPOINTS.PLAN.UPDATE(id),
+export const updateSchedule = async (data: ScheduleRegistResDTO) => {
+  const response = await http.put<BaseResponse<unknown>>(
+    ENDPOINTS.SCHEDULE.UPDATE,
     data
   );
-  return response.data.result;
+  return response.data;
 };
 
 /** 일정 삭제 */
-export const deletePlan = async (id: number | string): Promise<void> => {
-  await http.delete(ENDPOINTS.PLAN.DELETE(id));
+export const deleteSchedule = async (scheduleNum: number) => {
+  const response = await http.delete<BaseResponse<unknown>>(
+    ENDPOINTS.SCHEDULE.DELETE,
+    {
+      params: { scheduleNum },
+    }
+  );
+  return response.data;
 };
