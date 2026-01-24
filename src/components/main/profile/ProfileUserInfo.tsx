@@ -1,14 +1,20 @@
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import type { ProfileUserInfoProps } from "@/types/profileTypes";
+import { PROFILE_PAGE_TEXT } from "@/constants/texts/main/profile";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 
 const ProfileUserInfo = ({ nickname, userId }: ProfileUserInfoProps) => {
+  const { openAlertModal } = useAlertModalStore();
+
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation(); // prevent triggering parent click (navigation)
     if (!userId) return;
 
     window.navigator.clipboard.writeText(userId).then(() => {
-      // TODO: Toast message or alert
-      alert("아이디가 복사되었습니다.");
+      openAlertModal({
+        title: PROFILE_PAGE_TEXT.COPY_SUCCESS,
+        buttonLabel: PROFILE_PAGE_TEXT.ALERT_BUTTON_LABEL,
+      });
     });
   };
 
