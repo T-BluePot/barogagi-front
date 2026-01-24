@@ -109,14 +109,12 @@ const ProfilePage = () => {
     <ProfileLayout
       genderProps={{
         isGenderModalOpen: isGenderModalOpen,
-        handleOpenGenderModal: handleOpenGenderModal,
         handleCloseGenderModal: handleCloseGenderModal,
         gender: gender,
         setGender: setGender,
       }}
       birthProps={{
         isBirthModalOpen: isBirthModalOpen,
-        handleOpenBirthModal: handleOpenBirthModal,
         handleCloseBirthModal: handleCloseBirthModal,
         userBirthYear: userBirthYear,
         userBirthMonth: userBirthMonth,
@@ -134,6 +132,8 @@ const ProfilePage = () => {
         subTitle: PROFILE_TEXT.SUB_TITLE,
       }}
       handleGoBack={() => navigate(ROUTES.AUTH.SIGNUP.VERIFY)}
+      handleOpenGenderModal={handleOpenGenderModal}
+      handleOpenBirthModal={handleOpenBirthModal}
       nickname={nickname}
       setNickname={setNickname}
       isNicknameError={!!nickname.length && !!error.length}
