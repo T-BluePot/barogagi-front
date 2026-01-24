@@ -1,4 +1,5 @@
 import { CommonTag } from "@/components/common/tags/commonTag";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 import type { ScheduleStyle } from "@/types/main/plan/scheduleStyles";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -16,6 +17,7 @@ export const ScheduleStyleTagContainer = ({
   actives,
   setActives,
 }: ScheduleStyleTagContainerProps) => {
+  const { openAlertModal } = useAlertModalStore();
   // 일정 태그는 최대 10개까지 출력
   const styleTags = styles.slice(0, 10);
 
@@ -31,7 +33,10 @@ export const ScheduleStyleTagContainer = ({
 
       // 새로 켜려는 경우에만 최대 5개 제한 적용
       if (selectedCount >= 5) {
-        alert("태그는 최대 5개까지 선택할 수 있습니다.");
+        openAlertModal({
+          title: "알림",
+          content: "태그는 최대 5개까지 선택할 수 있습니다.",
+        });
         return prev; // 변경 없이 그대로 반환
       }
 

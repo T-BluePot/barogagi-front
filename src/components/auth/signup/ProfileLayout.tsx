@@ -4,7 +4,7 @@ import type {
   SelectGenderProps,
   SelectBirthProps,
   SkipProfileProps,
-  ProfilePageTitlePros,
+  ProfilePageTitleProps,
 } from "@/types/profileTypes";
 
 import { SelectGenderBottomModal } from "@/components/auth/signup/SelectGenderBottomModal";
@@ -21,7 +21,7 @@ type ProfileLayoutProps = {
   genderProps: SelectGenderProps;
   birthProps: SelectBirthProps;
   skipProfileProps: SkipProfileProps;
-  pageTitle: ProfilePageTitlePros;
+  pageTitle: ProfilePageTitleProps;
   handleGoBack: () => void;
 
   nickname: string;

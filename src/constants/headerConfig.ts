@@ -133,6 +133,13 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   [ROUTES.MAIN.PROFILE]: {
     type: "back",
     label: "프로필",
+    isDarkBg: true,
+  },
+  [ROUTES.MAIN.PROFILE_EDIT]: {
+    type: "back",
+    label: "프로필 수정",
+    isDarkBg: true,
+    backPath: ROUTES.MAIN.PROFILE,
   },
   [ROUTES.MAIN.SETTINGS]: {
     type: "back",
