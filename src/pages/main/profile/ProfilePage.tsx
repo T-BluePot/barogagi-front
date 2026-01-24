@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "@/api/queries/authQueries";
 import { ROUTES } from "@/constants/routes";
@@ -12,6 +12,7 @@ import type { UserData } from "@/types/profileTypes";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { openConfirmModal } = useConfirmModalStore();
 
   // 사용자 정보 조회
@@ -27,6 +28,7 @@ const ProfilePage = () => {
   const handleLogout = () => {
     // TODO: API 로그아웃 호출 (서버 쿠키 등 정리 필요 시)
     localStorage.removeItem("accessToken");
+    queryClient.clear(); // 모든 캐시 정리
     navigate(ROUTES.AUTH.SIGNIN, { replace: true });
   };
 
@@ -34,6 +36,7 @@ const ProfilePage = () => {
   const handleWithdraw = () => {
     // TODO: 회원 탈퇴 API 호출 구현
     localStorage.removeItem("accessToken");
+    queryClient.clear(); // 모든 캐시 정리
     navigate(ROUTES.AUTH.SIGNIN, { replace: true });
   };
 
