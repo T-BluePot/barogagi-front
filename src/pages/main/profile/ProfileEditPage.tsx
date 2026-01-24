@@ -7,7 +7,11 @@ import { ROUTES } from "@/constants/routes";
 import { PROFILE_EDIT_TEXT } from "@/constants/texts/main/profile";
 import type { BaseResponse } from "@/api/types";
 import type { GenderType } from "@/types/auth/gender";
-import { getGenderLabel } from "@/types/auth/gender";
+import {
+  getGenderLabel,
+  mapApiGenderToGenderType,
+  mapGenderTypeToApiValue,
+} from "@/types/auth/gender";
 
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
@@ -72,17 +76,8 @@ const ProfileEditPage = () => {
     if (userData) {
       setNickname(userData.nickName || "");
 
-      // 성별 변환: API에서 "M"/"F" 형태로 올 수 있음
-      if (userData.gender) {
-        const genderMap: Record<string, GenderType> = {
-          M: "male",
-          F: "female",
-          male: "male",
-          female: "female",
-          other: "other",
-        };
-        setGender(genderMap[userData.gender] || null);
-      }
+      // 성별 변환: API에서 "M"/"F"/"O" 형태로 올 수 있음
+      setGender(mapApiGenderToGenderType(userData.gender));
 
       // 생년월일 파싱: "YYYYMMDD" 형식
       if (userData.birth && userData.birth.length === 8) {
@@ -126,13 +121,6 @@ const ProfileEditPage = () => {
 
   // 프로필 수정 제출
   const handleSubmitProfile = () => {
-    // 성별 변환: API 규격에 맞춤
-    const genderMap: Record<GenderType, string> = {
-      male: "M",
-      female: "F",
-      other: "O",
-    };
-
     const birth =
       userBirthYear && userBirthMonth && userBirthDay
         ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
@@ -140,7 +128,7 @@ const ProfileEditPage = () => {
 
     updateMutation.mutate({
       nickName: nickname.trim(),
-      gender: gender ? genderMap[gender] : undefined,
+      gender: mapGenderTypeToApiValue(gender),
       birth,
     });
   };
