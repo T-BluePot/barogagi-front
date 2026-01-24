@@ -10,12 +10,20 @@ const ProfileUserInfo = ({ nickname, userId }: ProfileUserInfoProps) => {
     e.stopPropagation(); // prevent triggering parent click (navigation)
     if (!userId) return;
 
-    window.navigator.clipboard.writeText(userId).then(() => {
-      openAlertModal({
-        title: PROFILE_PAGE_TEXT.COPY_SUCCESS,
-        buttonLabel: PROFILE_PAGE_TEXT.ALERT_BUTTON_LABEL,
+    window.navigator.clipboard
+      .writeText(userId)
+      .then(() => {
+        openAlertModal({
+          title: PROFILE_PAGE_TEXT.COPY_SUCCESS,
+          buttonLabel: PROFILE_PAGE_TEXT.ALERT_BUTTON_LABEL,
+        });
+      })
+      .catch(() => {
+        openAlertModal({
+          title: PROFILE_PAGE_TEXT.COPY_FAILURE,
+          buttonLabel: PROFILE_PAGE_TEXT.ALERT_BUTTON_LABEL,
+        });
       });
-    });
   };
 
   return (
