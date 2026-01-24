@@ -14,6 +14,9 @@ import { PlanSettingPage } from "@/pages/main/plan/PlanSettingPage";
 // 메인 페이지
 import HomePage from "@/pages/main/HomePage";
 
+import ProfilePage from "@/pages/main/profile/ProfilePage";
+import ProfileEditPage from "@/pages/main/profile/ProfileEditPage";
+
 export const MainRoutes = () => (
   <Routes>
     {/* Bottom Tab 페이지 */}
@@ -23,8 +26,11 @@ export const MainRoutes = () => (
       <Route path="/home" element={<HomePage />} />
       {/* Plan 페이지 */}
       <Route path="/plan" element={<ScheduleListPage />} />
-      {/* TODO: My 페이지 */}
+      {/* Profile 페이지 */}
+      <Route path="/profile" element={<ProfilePage />} />
     </Route>
+    {/* Profile Edit */}
+    <Route path="/profile/edit" element={<ProfileEditPage />} />
     {/* 일정 생성 */}
     <Route path="/plan/date" element={<SelectDatePage />} />
     <Route path="/plan/location" element={<SelectLocationPage />} />

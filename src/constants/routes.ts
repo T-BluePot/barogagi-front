@@ -16,7 +16,7 @@
 // 라우트 경로 상수
 const MAIN_BASE = "/home" as const;
 const PLAN_BASE = "/plan" as const;
-const USER_BASE = "/user" as const;
+const USER_BASE = "/profile" as const;
 
 export const ROUTES = {
   ROOT: "/", // Landing page (전역 홈)
@@ -54,6 +54,7 @@ export const ROUTES = {
   MAIN: {
     HOME: MAIN_BASE,
     PROFILE: "/profile",
+    PROFILE_EDIT: "/profile/edit",
     SETTINGS: "/settings",
     CHAT: "/chat",
     NOTIFICATION: "/notification",
@@ -73,7 +74,7 @@ export const ROUTES = {
   // 추가 기능들
   USER: {
     BASE: USER_BASE,
-    DETAIL: "/user/:id", // 동적 라우트
+    DETAIL: "/profile/:id", // 동적 라우트
   },
 } as const;
 
