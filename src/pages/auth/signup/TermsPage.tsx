@@ -34,7 +34,6 @@ const TermsPage = () => {
       title: "약관 상세",
       content: `약관 전문 보기: ${id}`,
     });
-    alert(`약관 전문 보기: ${id}`); // 데모용
   };
 
   // 전체 동의 상태 제어
