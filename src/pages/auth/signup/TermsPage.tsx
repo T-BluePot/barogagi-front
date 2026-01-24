@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 import { TERMS_TEXT } from "@/constants/texts/auth/signup/terms";
 
 import { PageTitle } from "@/components/auth/common/PageTitle";
@@ -12,6 +13,7 @@ import { ROUTES } from "@/constants/routes";
 
 const TermsPage = () => {
   const navigate = useNavigate();
+  const { openAlertModal } = useAlertModalStore();
 
   // 전체 동의
   const [isAgreeAll, setIsAgreeAll] = useState(false);
@@ -28,7 +30,10 @@ const TermsPage = () => {
 
   // 상세 보기 핸들러
   const handleOpenDetail = (id: string) => {
-    // 실제 서비스에서는 모달을 띄우거나 페이지 네비게이션
+    openAlertModal({
+      title: "약관 상세",
+      content: `약관 전문 보기: ${id}`,
+    });
     alert(`약관 전문 보기: ${id}`); // 데모용
   };
 

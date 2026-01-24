@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useAlertModalStore } from "@/stores/alertModalStore";
+
 import { ROUTES } from "@/constants/routes";
 import { SELECT_LOCATION_TEXT } from "@/constants/texts/main/plan/selectLocation";
 
@@ -13,6 +15,7 @@ import ButtonWithText from "@/components/common/buttons/ButtonWithText";
 
 const SelectLocationPage = () => {
   const navigate = useNavigate();
+  const { openAlertModal } = useAlertModalStore();
 
   const [searchText, setSearchText] = useState<string>("");
   const [selectedRegionNums, setSelectedRegionNums] = useState<number[]>([]);
@@ -22,7 +25,10 @@ const SelectLocationPage = () => {
   const handleSelectRegion = (regionNum: number) => {
     setSelectedRegionNums((prev) => {
       if (prev.length >= 3) {
-        alert(SELECT_LOCATION_TEXT.ALERT_TAG); // TODO: 토스트로 교체
+        openAlertModal({
+          title: "알림",
+          content: SELECT_LOCATION_TEXT.ALERT_TAG,
+        });
         return prev;
       }
       if (prev.includes(regionNum)) return prev;

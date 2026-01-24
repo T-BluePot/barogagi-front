@@ -15,7 +15,7 @@ import { SelectTriggerButton } from "@/components/auth/common/SelectTriggerButto
 import { SelectGenderBottomModal } from "@/components/auth/signup/SelectGenderBottomModal";
 import { SelectBirthBottomModal } from "@/components/auth/signup/SelectBirthBottomModal";
 import Button from "@/components/common/buttons/CommonButton";
-import CommonAlertModal from "@/components/common/modal/common-modal/CommonAlertModal";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 
 // TODO: 공통 타입으로 분리 (현재 ProfilePage에서도 사용)
 interface UserDataResponse {
@@ -27,6 +27,7 @@ interface UserDataResponse {
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
+  const { openAlertModal } = useAlertModalStore();
 
   // 사용자 정보 조회
   const { data: userResponse, isLoading } = useQuery({
@@ -45,7 +46,11 @@ const ProfileEditPage = () => {
       navigate(ROUTES.MAIN.PROFILE, { replace: true });
     },
     onError: () => {
-      setErrorModalOpen(true);
+      openAlertModal({
+        title: PROFILE_EDIT_TEXT.ERROR_MODAL.TITLE,
+        content: PROFILE_EDIT_TEXT.ERROR_MODAL.CONTENT,
+        buttonLabel: PROFILE_EDIT_TEXT.ERROR_MODAL.BUTTON_LABEL,
+      });
     },
   });
 
@@ -59,7 +64,6 @@ const ProfileEditPage = () => {
   // Modal State
   const [isGenderModalOpen, setGenderModalOpen] = useState(false);
   const [isBirthModalOpen, setBirthModalOpen] = useState(false);
-  const [isErrorModalOpen, setErrorModalOpen] = useState(false);
 
   // 초기 데이터 세팅
   useEffect(() => {
@@ -203,19 +207,6 @@ const ProfileEditPage = () => {
           onClick={handleSubmitProfile}
         />
       </div>
-
-      {/* 에러 알림 모달 */}
-      <CommonAlertModal
-        isOpen={isErrorModalOpen}
-        modalContent={{
-          title: PROFILE_EDIT_TEXT.ERROR_MODAL.TITLE,
-          content: PROFILE_EDIT_TEXT.ERROR_MODAL.CONTENT,
-        }}
-        buttonInfo={{
-          label: PROFILE_EDIT_TEXT.ERROR_MODAL.BUTTON_LABEL,
-          onClick: () => setErrorModalOpen(false),
-        }}
-      />
     </div>
   );
 };
