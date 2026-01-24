@@ -24,6 +24,10 @@ type ProfileLayoutProps = {
   pageTitle: ProfilePageTitleProps;
   handleGoBack: () => void;
 
+  // Handler functions for trigger buttons
+  handleOpenGenderModal: () => void;
+  handleOpenBirthModal: () => void;
+
   nickname: string;
   setNickname: (next: string) => void;
   isNicknameError: boolean;
@@ -44,6 +48,8 @@ const ProfileLayout = ({
   birthProps,
   skipProfileProps,
   pageTitle,
+  handleOpenGenderModal,
+  handleOpenBirthModal,
   // 프로필 설정
   nickname,
   setNickname,
@@ -84,12 +90,12 @@ const ProfileLayout = ({
           />
           <SelectTriggerButton
             label={PROFILE_TEXT.SELECT.GENDER_LABEL}
-            onClick={genderProps.handleOpenGenderModal}
+            onClick={handleOpenGenderModal}
             value={genderValue}
           />
           <SelectTriggerButton
             label={PROFILE_TEXT.SELECT.BIRTH_LABEL}
-            onClick={birthProps.handleOpenBirthModal}
+            onClick={handleOpenBirthModal}
             value={birthValue}
           />
         </div>
