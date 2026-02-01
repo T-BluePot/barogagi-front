@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { getMe, updateMe } from "@/api/queries/authQueries";
+import { authKeys } from "@/api/keyFactories";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_EDIT_TEXT } from "@/constants/texts/main/profile";
 import type { BaseResponse } from "@/api/types";
@@ -27,11 +28,12 @@ interface UserDataResponse {
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { openAlertModal } = useAlertModalStore();
 
   // 사용자 정보 조회
   const { data: userResponse, isLoading } = useQuery({
-    queryKey: ["me"],
+    queryKey: authKeys.me(),
     queryFn: getMe,
     retry: false,
   });
@@ -43,6 +45,7 @@ const ProfileEditPage = () => {
   const updateMutation = useMutation({
     mutationFn: updateMe,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
       navigate(ROUTES.MAIN.PROFILE, { replace: true });
     },
     onError: () => {

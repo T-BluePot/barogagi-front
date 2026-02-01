@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "@/api/queries/authQueries";
+import { authKeys } from "@/api/keyFactories";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_PAGE_TEXT } from "@/constants/texts/main/profile";
 import ProfileInfoSection from "@/components/main/profile/ProfileInfoSection";
@@ -16,7 +17,7 @@ const ProfilePage = () => {
 
   // 사용자 정보 조회
   const { data: userResponse } = useQuery({
-    queryKey: ["me"],
+    queryKey: authKeys.me(),
     queryFn: getMe,
     retry: false,
   });
