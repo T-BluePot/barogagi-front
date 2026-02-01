@@ -4,7 +4,7 @@ import type {
   SelectGenderProps,
   SelectBirthProps,
   SkipProfileProps,
-  ProfilePageTitlePros,
+  ProfilePageTitleProps,
 } from "@/types/profileTypes";
 
 import { SelectGenderBottomModal } from "@/components/auth/signup/SelectGenderBottomModal";
@@ -21,7 +21,7 @@ type ProfileLayoutProps = {
   genderProps: SelectGenderProps;
   birthProps: SelectBirthProps;
   skipProfileProps: SkipProfileProps;
-  pageTitle: ProfilePageTitlePros;
+  pageTitle: ProfilePageTitleProps;
   handleGoBack: () => void;
 
   nickname: string;
@@ -32,6 +32,8 @@ type ProfileLayoutProps = {
 
   genderValue: string | undefined;
   birthValue: string | undefined;
+  handleOpenGenderModal: () => void;
+  handleOpenBirthModal: () => void;
 
   isSkipProfile: boolean;
 
@@ -53,6 +55,8 @@ const ProfileLayout = ({
 
   genderValue,
   birthValue,
+  handleOpenGenderModal,
+  handleOpenBirthModal,
   // 프로필 설정 스킵
   isSkipProfile,
   // 프로필 설정
@@ -84,12 +88,12 @@ const ProfileLayout = ({
           />
           <SelectTriggerButton
             label={PROFILE_TEXT.SELECT.GENDER_LABEL}
-            onClick={genderProps.handleOpenGenderModal}
+            onClick={handleOpenGenderModal}
             value={genderValue}
           />
           <SelectTriggerButton
             label={PROFILE_TEXT.SELECT.BIRTH_LABEL}
-            onClick={birthProps.handleOpenBirthModal}
+            onClick={handleOpenBirthModal}
             value={birthValue}
           />
         </div>
