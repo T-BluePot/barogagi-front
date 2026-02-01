@@ -142,7 +142,6 @@ const ProfileEditPage = () => {
       {/* 성별 선택 모달 */}
       <SelectGenderBottomModal
         isGenderModalOpen={isGenderModalOpen}
-        handleOpenGenderModal={handleOpenGenderModal}
         handleCloseGenderModal={handleCloseGenderModal}
         gender={gender}
         setGender={setGender}
@@ -151,7 +150,6 @@ const ProfileEditPage = () => {
       {/* 생년월일 선택 모달 */}
       <SelectBirthBottomModal
         isBirthModalOpen={isBirthModalOpen}
-        handleOpenBirthModal={handleOpenBirthModal}
         handleCloseBirthModal={handleCloseBirthModal}
         userBirthYear={userBirthYear}
         userBirthMonth={userBirthMonth}

@@ -4,7 +4,6 @@ import type { GenderType } from "@/constants/userInfo";
 /** 성별 선택 모달 타입 */
 export interface SelectGenderProps {
   isGenderModalOpen: boolean;
-  handleOpenGenderModal: () => void;
   handleCloseGenderModal: () => void;
   gender: GenderType | null;
   setGender: (gender: GenderType) => void;
@@ -13,7 +12,6 @@ export interface SelectGenderProps {
 /** 생년월일 선택 모달 타입 */
 export interface SelectBirthProps {
   isBirthModalOpen: boolean;
-  handleOpenBirthModal: () => void;
   handleCloseBirthModal: () => void;
   userBirthYear: string;
   userBirthMonth: string;

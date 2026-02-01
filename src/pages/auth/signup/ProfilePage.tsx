@@ -107,26 +107,24 @@ const ProfilePage = () => {
   return (
     <ProfileLayout
       genderProps={{
-        isGenderModalOpen: isGenderModalOpen,
-        handleOpenGenderModal: handleOpenGenderModal,
-        handleCloseGenderModal: handleCloseGenderModal,
-        gender: gender,
-        setGender: setGender,
+        isGenderModalOpen,
+        handleCloseGenderModal,
+        gender,
+        setGender,
       }}
       birthProps={{
-        isBirthModalOpen: isBirthModalOpen,
-        handleOpenBirthModal: handleOpenBirthModal,
-        handleCloseBirthModal: handleCloseBirthModal,
-        userBirthYear: userBirthYear,
-        userBirthMonth: userBirthMonth,
-        userBirthDay: userBirthDay,
-        handleChangeBirth: handleChangeBirth,
+        isBirthModalOpen,
+        handleCloseBirthModal,
+        userBirthYear,
+        userBirthMonth,
+        userBirthDay,
+        handleChangeBirth,
       }}
       skipProfileProps={{
-        isSkipModalOpen: isSkipModalOpen,
-        handleOpenSkipModal: handleOpenSkipModal,
-        handleCloseSkipModal: handleCloseSkipModal,
-        handleSkipProfile: handleSkipProfile,
+        isSkipModalOpen,
+        handleOpenSkipModal,
+        handleCloseSkipModal,
+        handleSkipProfile,
       }}
       pageTitle={{
         title: PROFILE_TEXT.TITLE,
@@ -142,6 +140,8 @@ const ProfilePage = () => {
       }}
       genderValue={getGenderLabel(gender)}
       birthValue={formattedBirth}
+      handleOpenGenderModal={handleOpenGenderModal}
+      handleOpenBirthModal={handleOpenBirthModal}
       isSkipProfile={isSkipProfile}
       isDisabled={isInvalid()}
       handleSubmitProfile={() => navigate(ROUTES.AUTH.SIGNUP.COMPLETE)}
