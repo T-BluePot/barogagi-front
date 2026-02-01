@@ -6,16 +6,22 @@ import { useAlertModalStore } from "@/stores/alertModalStore";
 const ProfileUserInfo = ({ nickname, userId }: ProfileUserInfoProps) => {
   const { openAlertModal } = useAlertModalStore();
 
-  const handleCopy = (e: React.MouseEvent) => {
+  const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation(); // prevent triggering parent click (navigation)
     if (!userId) return;
 
-    window.navigator.clipboard.writeText(userId).then(() => {
+    try {
+      await window.navigator.clipboard.writeText(userId);
       openAlertModal({
         title: PROFILE_PAGE_TEXT.COPY_SUCCESS,
         buttonLabel: PROFILE_PAGE_TEXT.ALERT_BUTTON_LABEL,
       });
-    });
+    } catch {
+      openAlertModal({
+        title: PROFILE_PAGE_TEXT.COPY_FAIL,
+        buttonLabel: PROFILE_PAGE_TEXT.ALERT_BUTTON_LABEL,
+      });
+    }
   };
 
   return (

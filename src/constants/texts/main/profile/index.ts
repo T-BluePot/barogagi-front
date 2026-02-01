@@ -2,6 +2,7 @@
 export const PROFILE_PAGE_TEXT = {
   FALLBACK_NICKNAME: "알 수 없는 사용자",
   COPY_SUCCESS: "아이디가 복사되었습니다.",
+  COPY_FAIL: "클립보드 복사에 실패했습니다.",
   ALERT_BUTTON_LABEL: "확인",
   MENU_SECTION: {
     TITLE: "계정 관리",
