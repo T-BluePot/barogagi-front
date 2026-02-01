@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { GenderType } from "./auth/gender";
+import type { GenderType } from "@/constants/userInfo";
 
 /** 성별 선택 모달 타입 */
 export interface SelectGenderProps {

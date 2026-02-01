@@ -1,4 +1,4 @@
-import { GENDER_LIST } from "@/types/auth/gender";
+import { GENDER_LIST } from "@/constants/userInfo";
 import type { SelectGenderProps } from "@/types/profileTypes";
 
 import { CommonBottomModal } from "@/components/common/modal/bottom-modal/CommonBottomModal";

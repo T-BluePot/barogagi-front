@@ -5,11 +5,10 @@ import { ValidationError } from "yup";
 import ProfileLayout from "@/components/auth/signup/ProfileLayout";
 
 import { PROFILE_TEXT } from "@/constants/texts/auth/signup/profile";
-import type { GenderType } from "@/types/auth/gender";
+import { getGenderLabel, type GenderType } from "@/constants/userInfo";
 
 import { useBlockBackNavigation } from "@/utils/useBlockBackNavigation";
 import { nicknameSchema } from "@/utils/authSchema";
-import { getGenderLabel } from "@/types/auth/gender";
 import { ROUTES } from "@/constants/routes";
 
 const ProfilePage = () => {
