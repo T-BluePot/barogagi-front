@@ -10,8 +10,10 @@ import type {
   JoinRequestDTO,
   MemberRequestDTO,
   RefreshTokenRequestDTO,
-  ApprovalCompleteVO,
+  ApprovalSendRequestType,
+  ApprovalCompleteRequestType,
 } from "../types";
+import type { VerifyCodeType } from "@/types/signupTypes";
 import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /** 로그인 */
@@ -80,24 +82,36 @@ export const sendVerification = async (
   tel: string,
   type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
 ) => {
+  const payload: ApprovalSendRequestType = {
+    apiSecretKey: import.meta.env.VITE_API_KEY,
+    tel,
+    ...(type ? { type } : {}), // type이 있을 때만 전송
+  };
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.SEND,
-    {
-      apiSecretKey: import.meta.env.VITE_API_KEY,
-      tel,
-      ...(type ? { type } : {}), // type이 있을 때만 전송
-    }
+    payload
   );
 
   return response.data;
 };
 
 /** 인증번호 확인 */
-export const verifyVerification = async (data: ApprovalCompleteVO) => {
+export const verifyVerification = async (
+  input: VerifyCodeType,
+  type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
+) => {
+  const payload: ApprovalCompleteRequestType = {
+    tel: input.tel,
+    authCode: input.authCode,
+    apiSecretKey: import.meta.env.VITE_API_KEY,
+    ...(type ? { type } : {}),
+  };
+
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.VERIFY,
-    data
+    payload
   );
+
   return response.data;
 };
 
