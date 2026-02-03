@@ -16,6 +16,7 @@ import { ROUTES } from "@/constants/routes";
 
 // === server ===
 import type { TermsAgreeList } from "@/api/types";
+import { authKeys } from "@/api/keyFactories";
 import { getTermsList } from "@/api/queries";
 import { saveTermsAgreeList } from "@/utils/sessionStorage/termsAgree";
 
@@ -25,7 +26,7 @@ const TermsPage = () => {
 
   // === 약관 조회 관련 ===
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["terms", "JOIN-MEMBERSHIP"],
+    queryKey: authKeys.terms(),
     queryFn: () => getTermsList("JOIN-MEMBERSHIP"),
   });
 
