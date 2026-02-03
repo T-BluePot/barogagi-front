@@ -4,7 +4,7 @@
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
 import type { BaseResponse, TermsProcessDTO } from "../types";
-import type { TermsResponseDTO } from "../types/authResponseTypes";
+import type { TermsResponseType } from "../types";
 
 // === Tag ===
 export const searchTags = async (data: unknown) => {
@@ -51,7 +51,7 @@ export const verifyVerificationCode = async (data: unknown) => {
 
 // === Terms ===
 export const getTermsList = async (type?: string) => {
-  const response = await http.get<BaseResponse<TermsResponseDTO>>(
+  const response = await http.get<BaseResponse<TermsResponseType>>(
     ENDPOINTS.TERMS.LIST,
     {
       params: { termsType: type },

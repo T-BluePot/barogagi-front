@@ -1,3 +1,5 @@
+import type { Yn, TermsItem, TermsAgreeList } from "@/types/termsTypes";
+
 /**
  * 회원(Auth) 및 사용자 관련 요청 API 타입 정의
  */
@@ -52,10 +54,11 @@ export interface ApprovalCompleteVO {
 // 약관별 동의 내역
 export interface TermsProcessDTO {
   termsNum: number;
-  agreeYn: "Y" | "N";
+  agreeYn: Yn;
 }
 
-export type TermsAgreeList = TermsProcessDTO[];
+/** 약관 조회 응답 DTO */
+export type TermsResponseType = TermsItem[];
 
 /** 약관 동의 요청 DTO */
 export interface TermsDTO {

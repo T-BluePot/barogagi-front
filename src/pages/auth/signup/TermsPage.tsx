@@ -15,7 +15,7 @@ import { TermsListSection } from "@/components/auth/signup/TermsListSection";
 import { ROUTES } from "@/constants/routes";
 
 // === server ===
-import type { TermsAgreeList } from "@/api/types";
+import type { TermsAgreeList } from "@/types/termsTypes";
 import { authKeys } from "@/api/keyFactories";
 import { getTermsList } from "@/api/queries";
 import { saveTermsAgreeList } from "@/utils/sessionStorage/termsAgree";

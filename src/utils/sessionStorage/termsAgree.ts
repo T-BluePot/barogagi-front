@@ -1,4 +1,4 @@
-import type { TermsAgreeList } from "@/api/types";
+import type { TermsAgreeList } from "@/types/termsTypes";
 
 const TERMS_KEY = "signup_termsAgreeList";
 
