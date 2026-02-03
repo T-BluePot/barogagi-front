@@ -26,6 +26,9 @@ import { ROUTES } from "@/constants/routes";
 // === server ===
 import { checkId } from "@/api/queries";
 
+// === store ===
+import { useSignupStore } from "@/stores/signupStore";
+
 const CredentialsPage = () => {
   const navigate = useNavigate();
 
@@ -140,6 +143,29 @@ const CredentialsPage = () => {
 
   const idCheckButtonLabel = isIdCheckCompleted ? "확인 완료" : "중복 확인";
 
+  // === 로그인 정보 저장 ===
+  const setDraft = useSignupStore((s) => s.setDraft);
+
+  const onNext = () => {
+    const trimmedUserId = id.trim();
+    const trimmedPassword = password.trim();
+
+    // 최소 검증 (이 단계에서 필요한 것만)
+    if (!trimmedUserId || !trimmedPassword) {
+      return;
+    }
+
+    // 버튼 클릭 시점에 store에 저장
+    setDraft({
+      userId: trimmedUserId,
+      password: trimmedPassword,
+    });
+
+    // 다음 단계로 이동
+    navigate(ROUTES.AUTH.SIGNUP.VERIFY);
+  };
+
+  // === 다음 화면 이동 버튼 검증 ===
   const isNextDisabled = useMemo(() => {
     if ([id, password, passwordConfirm].some((v) => v.trim() === ""))
       return true;
@@ -196,7 +222,7 @@ const CredentialsPage = () => {
         <Button
           label={CREDENTIALS_TEXT.NEXT_BUTTON}
           isDisabled={isNextDisabled}
-          onClick={() => navigate(ROUTES.AUTH.SIGNUP.VERIFY)}
+          onClick={onNext}
         />
       </div>
     </div>
