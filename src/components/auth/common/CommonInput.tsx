@@ -16,7 +16,7 @@ interface CommonInputProps {
   setValue: (next: string) => void; // 값 변경 함수
   withButton?: boolean;
   buttonProps?: {
-    buttonLabel?: string;
+    label?: string;
     onClick?: () => void;
     disabled?: boolean;
   };
@@ -84,7 +84,7 @@ export const CommonInput = ({
           endAdornment: withButton ? (
             <InputAdornment position="end">
               <SmallButton
-                label={buttonProps?.buttonLabel ?? "중복 확인"}
+                label={buttonProps?.label ?? "중복 확인"}
                 isDisabled={buttonProps?.disabled || !value || error}
                 onClick={buttonProps?.onClick ?? (() => {})}
               />
