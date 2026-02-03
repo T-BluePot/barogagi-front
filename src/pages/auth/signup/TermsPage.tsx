@@ -13,6 +13,7 @@ import { TermsListSection } from "@/components/auth/signup/TermsListSection";
 
 // === constant ===
 import { ROUTES } from "@/constants/routes";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 // === server ===
 import type { TermsAgreeList } from "@/types/termsTypes";
@@ -27,7 +28,7 @@ const TermsPage = () => {
   // === 약관 조회 관련 ===
   const { data, isLoading, isError } = useQuery({
     queryKey: authKeys.terms(),
-    queryFn: () => getTermsList("JOIN-MEMBERSHIP"),
+    queryFn: () => getTermsList(VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP),
   });
 
   // 약관 저장

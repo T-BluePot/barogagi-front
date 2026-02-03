@@ -1,16 +1,16 @@
 import type { TermsProcessDTO } from "@/api/types";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /** 약관 조회 응답 타입 */
 
 export type Yn = "Y" | "N";
-export type JoinTermsType = "JOIN-MEMBERSHIP";
 
 /** 약관 단일 항목 (응답 구성 요소) */
 export interface TermsItem {
   termsNum: number;
   title: string;
   contents: string;
-  termsType: JoinTermsType;
+  termsType: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP;
   useYn: Yn;
   regDate: string;
   essentialYn: Yn;
