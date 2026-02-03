@@ -10,8 +10,8 @@ interface CommonInputProps {
   label: string;
   placeholder: string;
   type?: InputType;
-  helperText?: string;
-  error?: boolean;
+  helperText?: string; // 하단 보조 문구
+  error?: boolean; // input 값 유효 여부
   value: string; // 현재 값
   setValue: (next: string) => void; // 값 변경 함수
   withButton?: boolean;
@@ -81,7 +81,7 @@ export const CommonInput = ({
             <InputAdornment position="end">
               <SmallButton
                 label="중복 확인"
-                isDisabled={!value}
+                isDisabled={!value || error}
                 onClick={onClickButton}
               />
             </InputAdornment>
