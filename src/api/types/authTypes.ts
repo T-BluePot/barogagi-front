@@ -36,8 +36,8 @@ export interface RefreshTokenRequestDTO {
   refreshToken: string;
 }
 
-/** 인증번호 발송 VO */
-export interface ApprovalSendVO {
+/** 인증번호 발송 */
+export interface ApprovalSendRequestType {
   tel: string;
   type: string; // 'JOIN-MEMBERSHIP', etc.
   apiSecretKey?: string;
