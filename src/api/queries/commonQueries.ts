@@ -3,7 +3,7 @@
  */
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
-import type { BaseResponse } from "../types";
+import type { BaseResponse, TermsProcessDTO } from "../types";
 import type { TermsResponseDTO } from "../types/authResponseTypes";
 
 // === Tag ===
@@ -65,10 +65,17 @@ export const getTermsList = async (type?: string) => {
   return response.data;
 };
 
-export const agreeTerms = async (data: unknown) => {
+export const agreeTerms = async (
+  userId: string,
+  termsAgreeList: TermsProcessDTO[]
+) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.TERMS.AGREE,
-    data
+    {
+      apiSecretKey: import.meta.env.VITE_API_KEY,
+      userId: userId,
+      termsAgreeList: termsAgreeList,
+    }
   );
   return response.data;
 };
