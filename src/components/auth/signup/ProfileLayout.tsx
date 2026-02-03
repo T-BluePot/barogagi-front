@@ -84,7 +84,9 @@ const ProfileLayout = ({
             withButton={true}
             error={isNicknameError}
             helperText={nicknameHelperText}
-            onClickButton={checkNicknameDuplicate}
+            buttonProps={{
+              onClick: checkNicknameDuplicate,
+            }}
           />
           <SelectTriggerButton
             label={PROFILE_TEXT.SELECT.GENDER_LABEL}
