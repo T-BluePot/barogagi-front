@@ -3,7 +3,7 @@ import type {
   SignupPayloadType,
   RequiredFieldKey,
   OptionalFieldKey,
-} from "@/types/signInTypes";
+} from "@/types/signupTypes";
 import { SignupFlowError } from "@/utils/auth/SignupFlowError";
 
 // 중간 단계 저장용 타입

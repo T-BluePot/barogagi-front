@@ -1,4 +1,4 @@
-import type { SignupErrorCode } from "@/types/signInTypes";
+import type { SignupErrorCode } from "@/types/signupTypes";
 
 export class SignupFlowError extends Error {
   public readonly code: SignupErrorCode;

@@ -29,3 +29,9 @@ export type OptionalFieldKey = keyof OptionalFields;
 export type SignupErrorCode =
   | "MISSING_REQUIRED_FIELDS" // 필수 필드가 존재 x
   | "INVALID_REQUIRED_FIELDS"; // 필수 필드 값 오류
+
+/** 인증번호 확인 - 입력값 (UI → Query) */
+export interface VerifyCodeType {
+  tel: string;
+  authCode: string;
+}
