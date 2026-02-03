@@ -10,9 +10,9 @@ import type {
   JoinRequestDTO,
   MemberRequestDTO,
   RefreshTokenRequestDTO,
-  ApprovalSendVO,
   ApprovalCompleteVO,
 } from "../types";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /** 로그인 */
 export const login = async (data: LoginDTO) => {
@@ -76,11 +76,19 @@ export const checkNickname = async (nickname: string) => {
 };
 
 /** 인증번호 발송 */
-export const sendVerification = async (data: ApprovalSendVO) => {
+export const sendVerification = async (
+  tel: string,
+  type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
+) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.SEND,
-    data
+    {
+      apiSecretKey: import.meta.env.VITE_API_KEY,
+      tel,
+      ...(type ? { type } : {}), // type이 있을 때만 전송
+    }
   );
+
   return response.data;
 };
 
