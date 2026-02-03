@@ -166,7 +166,7 @@ const TermsPage = () => {
           />
         </div>
       </div>
-      <div className="mt-auto w-full p-6">
+      <div className="mt-auto w-full p-6 flex justify-center">
         <Button
           label={TERMS_TEXT.NEXT_BUTTON}
           isDisabled={hasUncheckedRequiredTerms}
