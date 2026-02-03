@@ -7,9 +7,9 @@ interface TermsListSectionProps {
   /** 약관별 동의 여부 상태 */
   consents: Record<string, boolean>;
   /** 체크박스 토글 콜백 */
-  onToggle: (id: string) => void;
+  onToggle: (num: number) => void;
   /** 상세 보기 콜백 */
-  onOpenDetail: (id: string) => void;
+  onOpenDetail: (num: number) => void;
 }
 
 export const TermsListSection = ({
@@ -22,10 +22,10 @@ export const TermsListSection = ({
     <div className="flex flex-col gap-4">
       {terms.map((term) => (
         <TermsConsentItem
-          key={term.id}
-          id={term.id}
-          label={term.label}
-          isConsented={!!consents[term.id]}
+          key={term.termsNum}
+          termsNum={term.termsNum}
+          title={term.title}
+          isConsented={!!consents[term.termsNum]}
           onToggle={onToggle}
           onOpenDetail={onOpenDetail}
         />

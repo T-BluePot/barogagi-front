@@ -1,41 +1,39 @@
 import { CheckBoxButton } from "../common/CheckBoxButton";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 interface TermsConsentItemProps {
-  /** 약관 식별자 (예: 'privacy') */
-  id: string;
+  /** 약관 구분 num */
+  termsNum: number;
+  /** 약관 라벨 텍스트 */
+  title: string;
   /** 현재 항목의 동의 여부 */
   isConsented: boolean;
   /** 체크박스 클릭 시 호출 */
-  onToggle: (id: string) => void;
+  onToggle: (termsNum: number) => void;
   /** 라벨 클릭 시 약관 전문 보기 */
-  onOpenDetail: (id: string) => void;
-  /** 약관 라벨 텍스트 */
-  label: string;
+  onOpenDetail: (termsNum: number) => void;
 }
 
 export const TermsConsentItem = ({
-  id,
+  termsNum,
   isConsented,
   onToggle,
   onOpenDetail,
-  label,
+  title,
 }: TermsConsentItemProps) => {
   return (
-    <div className="flex w-full h-12 items-center gap-4">
+    <div className="flex w-full h-12 items-center gap-4 active:bg-gray-90 transition-all duration-300 ease-in-out">
       <CheckBoxButton
         isChecked={isConsented}
-        onCheckedChange={() => onToggle(id)}
+        onCheckedChange={() => onToggle(termsNum)}
       />
       <button
         type="button"
-        onClick={() => onOpenDetail(id)}
+        onClick={() => onOpenDetail(termsNum)}
         className="flex flex-1 items-center justify-between gap-4 cursor-pointer"
       >
         <span className="typo-body text-gray-20 underline text-left">
-          {label}
+          {title}
         </span>
-        <ArrowForwardIosIcon className="size-6 text-gray-40" />
       </button>
     </div>
   );
