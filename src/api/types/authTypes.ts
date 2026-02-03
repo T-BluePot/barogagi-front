@@ -39,15 +39,15 @@ export interface RefreshTokenRequestDTO {
 /** 인증번호 발송 */
 export interface ApprovalSendRequestType {
   tel: string;
-  type: string; // 'JOIN-MEMBERSHIP', etc.
+  type?: string; // 'JOIN-MEMBERSHIP', etc.
   apiSecretKey?: string;
 }
 
-/** 인증번호 확인 VO */
-export interface ApprovalCompleteVO {
+/** 인증번호 확인 */
+export interface ApprovalCompleteRequestType {
   tel: string;
   authCode: string;
-  type: string;
+  type?: string;
   apiSecretKey?: string;
 }
 
