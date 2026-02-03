@@ -7,6 +7,9 @@ import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyForm } from "@/components/auth/verify/VerifyForm";
 import { ROUTES } from "@/constants/routes";
 
+import { sendVerification } from "@/api/queries";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
+
 type Flow = "signup-verify" | "find-id" | "reset-password";
 
 type LocationState = { phone?: string };
@@ -65,9 +68,17 @@ const VerifyPage = () => {
     ? FLOW_CONFIG[flow as Flow]
     : FLOW_CONFIG["signup-verify"];
 
-  const handleNext = (phone: string) => {
-    // TODO: 인증코드 전송 API 호출 후 페이지 이동
-    navigate(current.nextPath, { state: { phone } });
+  const handleNext = async (phone: string) => {
+    const tel = phone.trim();
+    if (!tel) return;
+
+    if (flow === "signup-verify") {
+      await sendVerification(tel, VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP);
+    } else {
+      await sendVerification(tel); // signup 로직이 아닌 경우 type 미전달
+    }
+
+    navigate(current.nextPath, { state: { phone: tel } });
   };
 
   return (
