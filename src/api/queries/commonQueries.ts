@@ -4,6 +4,7 @@
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
 import type { BaseResponse } from "../types";
+import type { TermsResponseDTO } from "../types/authResponseTypes";
 
 // === Tag ===
 export const searchTags = async (data: unknown) => {
@@ -50,9 +51,17 @@ export const verifyVerificationCode = async (data: unknown) => {
 
 // === Terms ===
 export const getTermsList = async (type?: string) => {
-  const response = await http.get<BaseResponse<unknown>>(ENDPOINTS.TERMS.LIST, {
-    params: { termsType: type },
-  });
+  const response = await http.get<BaseResponse<TermsResponseDTO>>(
+    ENDPOINTS.TERMS.LIST,
+    {
+      params: { termsType: type },
+      headers: {
+        // Swagger에서 요구하는 헤더 이름 그대로
+        "API-KEY": import.meta.env.VITE_API_KEY,
+      },
+    }
+  );
+
   return response.data;
 };
 
