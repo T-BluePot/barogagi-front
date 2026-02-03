@@ -1,4 +1,4 @@
-import type { TermsProcessDTO } from "@/api/types";
+import type { TermsProcessRequestType } from "@/api/types";
 import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /** 약관 조회 응답 타입 */
@@ -10,15 +10,15 @@ export interface TermsItem {
   termsNum: number;
   title: string;
   contents: string;
-  termsType: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP;
   useYn: Yn;
   regDate: string;
   essentialYn: Yn;
   sort: number;
+  termsType?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP; // auth 로직에서만 필요
 }
 
 /** Terms 동의 항목 List 타입 */
-export type TermsAgreeList = TermsProcessDTO[];
+export type TermsAgreeList = TermsProcessRequestType[];
 
 /** 약관 메타데이터 구조 정의 */
 export type Term = Pick<

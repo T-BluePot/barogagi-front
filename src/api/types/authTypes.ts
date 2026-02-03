@@ -51,13 +51,13 @@ export interface ApprovalCompleteRequestType {
   apiSecretKey?: string;
 }
 
-// 약관별 동의 내역
-export interface TermsProcessDTO {
+/** 약관별 동의 내역 */
+export interface TermsProcessRequestType {
   termsNum: number;
   agreeYn: Yn;
 }
 
-/** 약관 조회 응답 DTO */
+/** 약관 조회 응답 */
 export type TermsResponseType = TermsItem[];
 
 /** 약관 동의 요청 DTO */

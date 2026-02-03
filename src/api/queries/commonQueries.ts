@@ -3,7 +3,7 @@
  */
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
-import type { BaseResponse, TermsProcessDTO } from "../types";
+import type { BaseResponse, TermsProcessRequestType } from "../types";
 import type { TermsResponseType } from "../types";
 
 // === Tag ===
@@ -67,7 +67,7 @@ export const getTermsList = async (type?: string) => {
 
 export const agreeTerms = async (
   userId: string,
-  termsAgreeList: TermsProcessDTO[]
+  termsAgreeList: TermsProcessRequestType[]
 ) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.TERMS.AGREE,
