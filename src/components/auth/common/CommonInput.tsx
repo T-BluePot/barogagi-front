@@ -15,7 +15,11 @@ interface CommonInputProps {
   value: string; // 현재 값
   setValue: (next: string) => void; // 값 변경 함수
   withButton?: boolean;
-  onClickButton?: () => void;
+  buttonProps?: {
+    buttonLabel?: string;
+    onClick?: () => void;
+    disabled?: boolean;
+  };
 }
 
 export const CommonInput = ({
@@ -27,7 +31,7 @@ export const CommonInput = ({
   value,
   setValue,
   withButton = false,
-  onClickButton,
+  buttonProps,
 }: CommonInputProps) => {
   // 비밀번호 보이기/숨기기 상태 관리
   const [showPassword, setShowPassword] = useState(false);
@@ -80,9 +84,9 @@ export const CommonInput = ({
           endAdornment: withButton ? (
             <InputAdornment position="end">
               <SmallButton
-                label="중복 확인"
-                isDisabled={!value || error}
-                onClick={onClickButton}
+                label={buttonProps?.buttonLabel ?? "중복 확인"}
+                isDisabled={buttonProps?.disabled || !value || error}
+                onClick={buttonProps?.onClick ?? (() => {})}
               />
             </InputAdornment>
           ) : type === "password" ? (
