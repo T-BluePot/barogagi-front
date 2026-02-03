@@ -1,5 +1,5 @@
 /**
- * 회원(Auth) 및 사용자 관련 API 타입 정의
+ * 회원(Auth) 및 사용자 관련 요청 API 타입 정의
  */
 
 /** 로그인 요청 DTO */
@@ -11,6 +11,7 @@ export interface LoginDTO {
 
 /** 회원가입 요청 DTO */
 export interface JoinRequestDTO {
+  apiSecretKey?: string;
   userId: string;
   password: string;
   email: string;
@@ -18,8 +19,7 @@ export interface JoinRequestDTO {
   tel: string;
   gender: string; // 'M' | 'F'
   nickName: string;
-  joinType?: string;
-  apiSecretKey?: string;
+  joinType?: string; // JOIN_TYPE 값은 넘겨주지 않아도 됨
 }
 
 /** 회원 정보 수정 요청 DTO */
@@ -49,14 +49,15 @@ export interface ApprovalCompleteVO {
   apiSecretKey?: string;
 }
 
-/** 약관 동의 요청 DTO */
-export interface TermsProcessDTO {
-  termsNum: number;
-  agreeYn: "Y" | "N";
-}
-
+/** 약관 조회 요청 DTO */
 export interface TermsDTO {
   userId: string;
   apiSecretKey?: string;
   termsAgreeList: TermsProcessDTO[];
+}
+
+/** 약관 동의 요청 DTO */
+export interface TermsProcessDTO {
+  termsNum: number;
+  agreeYn: "Y" | "N";
 }
