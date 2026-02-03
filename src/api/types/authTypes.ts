@@ -49,15 +49,17 @@ export interface ApprovalCompleteVO {
   apiSecretKey?: string;
 }
 
-/** 약관 조회 요청 DTO */
-export interface TermsDTO {
-  userId: string;
-  apiSecretKey?: string;
-  termsAgreeList: TermsProcessDTO[];
-}
-
-/** 약관 동의 요청 DTO */
+// 약관별 동의 내역
 export interface TermsProcessDTO {
   termsNum: number;
   agreeYn: "Y" | "N";
+}
+
+export type TermsAgreeList = TermsProcessDTO[];
+
+/** 약관 동의 요청 DTO */
+export interface TermsDTO {
+  userId: string;
+  apiSecretKey?: string;
+  termsAgreeList: TermsAgreeList;
 }
