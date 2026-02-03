@@ -56,6 +56,9 @@ export const checkId = async (userId: string) => {
     ENDPOINTS.USERS.CHECK_ID,
     {
       params: { userId },
+      headers: {
+        "API-KEY": import.meta.env.VITE_API_KEY,
+      },
     }
   );
   return response.data;
