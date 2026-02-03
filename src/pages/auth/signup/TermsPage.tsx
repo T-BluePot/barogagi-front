@@ -11,7 +11,7 @@ import { useAlertModalStore } from "@/stores/alertModalStore";
 import { SelectAllConsentButton } from "@/components/auth/signup/SelectAllConsentButton";
 import { TermsListSection } from "@/components/auth/signup/TermsListSection";
 
-// === Routes ===
+// === constant ===
 import { ROUTES } from "@/constants/routes";
 
 // === server ===
