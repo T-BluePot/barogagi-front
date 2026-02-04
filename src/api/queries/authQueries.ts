@@ -51,8 +51,7 @@ export const refresh = async (data: RefreshTokenRequestDTO) => {
 /** 회원가입 */
 export const signup = async (data: SignupPayloadType) => {
   const payload: JoinRequestType = {
-    apiSecretKey: import.meta.env.VITE_API_SECRET_KEY,
-
+    apiSecretKey: import.meta.env.VITE_API_KEY,
     userId: data.userId,
     password: data.password,
     tel: data.tel,
