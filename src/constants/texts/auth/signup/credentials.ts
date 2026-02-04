@@ -23,7 +23,7 @@ export const ID_MESSAGES = {
 };
 
 export const PASSWORD_MESSAGES = {
-  INVALID_FORMAT: "비밀번호는 영문과 숫자를 포함한 8~20자여야 합니다.",
+  INVALID_FORMAT: "비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다.",
   NO_WHITESPACE: "공백은 포함할 수 없습니다.",
   ALLOWED_SPECIALS: "사용할 수 없는 특수 문자가 포함되어 있습니다.",
 };

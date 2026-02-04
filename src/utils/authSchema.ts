@@ -63,11 +63,14 @@ export const passwordSchema = Yup.string()
   )
 
   // 전체 형식 검사:
-  // - 영문 + 숫자 포함
+  // - 영문 1자 이상
+  // - 숫자 1자 이상
+  // - 특수문자 1자 이상 (허용된 것만)
   // - 총 8~20자
-  // - 허용 문자만 포함되어야 함
   .test("valid-format", PASSWORD_MESSAGES.INVALID_FORMAT, (v = "") =>
-    /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@#$%^&*()]{8,20}$/.test(v)
+    /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()])[a-zA-Z0-9!@#$%^&*()]{8,20}$/.test(
+      v
+    )
   );
 
 /**
