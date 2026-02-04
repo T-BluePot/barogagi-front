@@ -1,16 +1,16 @@
 import CommonAlertModal from "@/components/common/modal/common-modal/CommonAlertModal";
 
-interface IdCheckResultModalProps {
+interface CheckResultModalProps {
   isOpen: boolean;
   onClick?: () => void; // 버튼 클릭 핸들러
   message: string;
 }
 
-const IdCheckResultModal = ({
+const CheckResultModal = ({
   isOpen,
   onClick,
   message,
-}: IdCheckResultModalProps) => {
+}: CheckResultModalProps) => {
   return (
     <CommonAlertModal
       isOpen={isOpen}
@@ -19,11 +19,11 @@ const IdCheckResultModal = ({
         onClick: onClick,
       }}
       modalContent={{
-        title: "아이디 중복 확인",
+        title: "확인 결과",
         content: message,
       }}
     />
   );
 };
 
-export default IdCheckResultModal;
+export default CheckResultModal;
