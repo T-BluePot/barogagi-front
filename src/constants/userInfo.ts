@@ -7,5 +7,6 @@ export const GENDER_LIST = [
 export type GenderType = (typeof GENDER_LIST)[number]["id"];
 
 /** 성별 라벨 조회 */
-export const getGenderLabel = (id: string | null): string | undefined =>
-  GENDER_LIST.find((g) => g.id === id)?.label;
+export const getGenderLabel = (
+  id: GenderType | undefined
+): string | undefined => GENDER_LIST.find((g) => g.id === id)?.label;
