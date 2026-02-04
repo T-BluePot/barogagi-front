@@ -1,8 +1,7 @@
 /** 성별 옵션 목록 */
 export const GENDER_LIST = [
-  { id: "female", label: "여성" },
-  { id: "male", label: "남성" },
-  { id: "other", label: "기타" },
+  { id: "W", label: "여성" },
+  { id: "M", label: "남성" },
 ] as const;
 
 export type GenderType = (typeof GENDER_LIST)[number]["id"];
