@@ -35,3 +35,6 @@ export interface VerifyCodeType {
   tel: string;
   authCode: string;
 }
+
+/** 닉네임 중복확인 상태 */
+export type NicknameCheckStatus = "idle" | "valid" | "duplicate";
