@@ -1,16 +1,16 @@
 import CommonAlertModal from "@/components/common/modal/common-modal/CommonAlertModal";
 
-interface VerifyResultModalProps {
+interface VerifyErrorModalProps {
   isOpen: boolean;
   onClick?: () => void; // 버튼 클릭 핸들러
   message: string;
 }
 
-const VerifyResultModal = ({
+const VerifyErrorModal = ({
   isOpen,
   onClick,
   message,
-}: VerifyResultModalProps) => {
+}: VerifyErrorModalProps) => {
   return (
     <CommonAlertModal
       isOpen={isOpen}
@@ -26,4 +26,4 @@ const VerifyResultModal = ({
   );
 };
 
-export default VerifyResultModal;
+export default VerifyErrorModal;
