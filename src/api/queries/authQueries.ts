@@ -4,16 +4,21 @@
 
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
+
+// === request body type ===
 import type {
   BaseResponse,
   LoginDTO,
-  JoinRequestDTO,
+  JoinRequestType,
   MemberRequestDTO,
   RefreshTokenRequestDTO,
   ApprovalSendRequestType,
   ApprovalCompleteRequestType,
 } from "../types";
+
+// === data type ===
 import type { VerifyCodeType } from "@/types/signupTypes";
+import type { SignupPayloadType } from "@/types/signupTypes";
 import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /** 로그인 */
@@ -44,10 +49,23 @@ export const refresh = async (data: RefreshTokenRequestDTO) => {
 };
 
 /** 회원가입 */
-export const signup = async (data: JoinRequestDTO) => {
+export const signup = async (data: SignupPayloadType) => {
+  const payload: JoinRequestType = {
+    apiSecretKey: import.meta.env.VITE_API_SECRET_KEY,
+
+    userId: data.userId,
+    password: data.password,
+    tel: data.tel,
+    nickName: data.nickName,
+
+    ...(data.email ? { email: data.email } : {}),
+    ...(data.birth ? { birth: data.birth } : {}),
+    ...(data.gender ? { gender: data.gender } : {}),
+  };
+
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.USERS.SIGNUP,
-    data
+    payload
   );
   return response.data;
 };
@@ -72,6 +90,9 @@ export const checkNickname = async (nickname: string) => {
     ENDPOINTS.USERS.CHECK_NICKNAME,
     {
       params: { nickname },
+      headers: {
+        "API-KEY": import.meta.env.VITE_API_KEY,
+      },
     }
   );
   return response.data;
