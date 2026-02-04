@@ -28,7 +28,11 @@ type ProfileLayoutProps = {
   setNickname: (next: string) => void;
   isNicknameError: boolean;
   nicknameHelperText: string | undefined;
-  checkNicknameDuplicate: () => void; // 닉네임 중복 확인 여부
+  buttonProps?: {
+    label?: string;
+    onClick?: () => void;
+    disabled?: boolean;
+  };
 
   genderValue: string | undefined;
   birthValue: string | undefined;
@@ -51,7 +55,7 @@ const ProfileLayout = ({
   setNickname,
   isNicknameError,
   nicknameHelperText,
-  checkNicknameDuplicate,
+  buttonProps,
 
   genderValue,
   birthValue,
@@ -84,9 +88,7 @@ const ProfileLayout = ({
             withButton={true}
             error={isNicknameError}
             helperText={nicknameHelperText}
-            buttonProps={{
-              onClick: checkNicknameDuplicate,
-            }}
+            buttonProps={buttonProps}
           />
           <SelectTriggerButton
             label={PROFILE_TEXT.SELECT.GENDER_LABEL}
