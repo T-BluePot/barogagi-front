@@ -1,3 +1,5 @@
+import type { GenderType } from "@/constants/userInfo";
+
 /** 서버 전송 용 회원가입 정보 저장 타입  */
 export type SignupPayloadType = {
   userId: string; // required
@@ -6,7 +8,7 @@ export type SignupPayloadType = {
   nickName: string; // required
   email?: string; // optional
   birth?: string; // optional
-  gender?: string; // optional
+  gender?: GenderType; // optional
 };
 
 /** 필수 필드 타입 */

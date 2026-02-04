@@ -36,7 +36,7 @@ const initialDraft: SignupDraft = {
   nickName: "",
   email: "",
   birth: "",
-  gender: "",
+  gender: undefined,
 };
 
 export const useSignupStore = create<SignupState>((set, get) => ({
@@ -97,7 +97,7 @@ export const useSignupStore = create<SignupState>((set, get) => ({
     // 선택값은 값이 비어있으면 제외
     const email = (draft.email ?? "").trim();
     const birth = (draft.birth ?? "").trim();
-    const gender = (draft.gender ?? "").trim();
+    const gender = draft.gender;
 
     const payload: SignupPayloadType = {
       userId,
