@@ -9,8 +9,12 @@ import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyCodeForm } from "@/components/auth/verify/VerifyCodeForm";
 import VerifyErrorModal from "@/components/auth/verify/VerifyErrorModal";
 
+// === server ===
 import { verifyVerification } from "@/api/queries";
 import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
+
+// === store ===
+import { useSignupStore } from "@/stores/signupStore";
 
 type LocationState = {
   phone?: string;
@@ -24,6 +28,9 @@ const VerifyCodePage = () => {
   const location = useLocation();
   const { flow: paramFlow } = useParams<{ flow?: string }>();
   const state = (location.state as LocationState) ?? {};
+
+  //  스토어에서 setDraft 가져오기
+  const setDraft = useSignupStore((s) => s.setDraft);
 
   // === 전화번호 인증 ===
   const [isLoading, setIsLoading] = useState(false);
@@ -98,6 +105,8 @@ const VerifyCodePage = () => {
 
       // 성공 시 flow에 따라 다음 단계로 이동
       if (flow === "signup-verify") {
+        // signup flow 시 draft.tel 업데이트
+        setDraft({ tel });
         navigate(ROUTES.AUTH.SIGNUP.PROFILE, { replace: true });
       } else if (flow === "find-id") {
         navigate(`${ROUTES.AUTH.FIND_RESULT}?tab=id`, {
