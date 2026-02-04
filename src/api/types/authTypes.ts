@@ -1,4 +1,5 @@
 import type { Yn, TermsItem, TermsAgreeList } from "@/types/termsTypes";
+import type { GenderType } from "@/constants/userInfo";
 
 /**
  * 회원(Auth) 및 사용자 관련 요청 API 타입 정의
@@ -11,18 +12,18 @@ export interface LoginDTO {
   apiSecretKey?: string;
 }
 
-/** 회원가입 요청 DTO */
-export interface JoinRequestDTO {
-  apiSecretKey?: string;
+/** 회원가입 Request Body */
+export type JoinRequestType = {
+  apiSecretKey: string;
   userId: string;
   password: string;
-  email: string;
-  birth: string;
   tel: string;
-  gender: string; // 'M' | 'F'
   nickName: string;
-  joinType?: string; // JOIN_TYPE 값은 넘겨주지 않아도 됨
-}
+
+  email?: string; // optional
+  birth?: string; // optional (YYYYMMDD)
+  gender?: GenderType; // optional
+};
 
 /** 회원 정보 수정 요청 DTO */
 export interface MemberRequestDTO {
