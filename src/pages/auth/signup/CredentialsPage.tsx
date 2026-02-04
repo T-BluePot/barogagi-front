@@ -17,7 +17,7 @@ import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 import Button from "@/components/common/buttons/CommonButton";
 
-import IdCheckResultModal from "@/components/auth/signup/IdCheckResultModal";
+import CheckResultModal from "@/components/auth/signup/CheckResultModal";
 
 // === constant ===
 import { CREDENTIALS_TEXT } from "@/constants/texts/auth/signup/credentials";
@@ -176,7 +176,7 @@ const CredentialsPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-between h-full">
-      <IdCheckResultModal
+      <CheckResultModal
         isOpen={isIdCheckModalOpen}
         message={checkIdMessage}
         onClick={() => setIsIdCheckModalOpen(false)}
