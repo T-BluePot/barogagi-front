@@ -5,8 +5,8 @@ import type { GenderType } from "@/constants/userInfo";
  * 회원(Auth) 및 사용자 관련 요청 API 타입 정의
  */
 
-/** 로그인 요청 DTO */
-export interface LoginDTO {
+/** 로그인 요청 Request Body */
+export interface LoginRequestType {
   userId: string;
   password: string;
   apiSecretKey?: string;
