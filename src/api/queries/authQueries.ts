@@ -4,6 +4,7 @@
 
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
+import { getApiKey } from "../apiKey";
 
 // === request body type ===
 import type {
@@ -51,7 +52,7 @@ export const refresh = async (data: RefreshTokenRequestDTO) => {
 /** 회원가입 */
 export const signup = async (data: SignupPayloadType) => {
   const payload: JoinRequestType = {
-    apiSecretKey: import.meta.env.VITE_API_KEY,
+    apiSecretKey: getApiKey(),
     userId: data.userId,
     password: data.password,
     tel: data.tel,
@@ -76,7 +77,7 @@ export const checkId = async (userId: string) => {
     {
       params: { userId },
       headers: {
-        "API-KEY": import.meta.env.VITE_API_KEY,
+        "API-KEY": getApiKey(),
       },
     }
   );
@@ -90,7 +91,7 @@ export const checkNickname = async (nickname: string) => {
     {
       params: { nickname },
       headers: {
-        "API-KEY": import.meta.env.VITE_API_KEY,
+        "API-KEY": getApiKey(),
       },
     }
   );
@@ -103,7 +104,7 @@ export const sendVerification = async (
   type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
 ) => {
   const payload: ApprovalSendRequestType = {
-    apiSecretKey: import.meta.env.VITE_API_KEY,
+    apiSecretKey: getApiKey(),
     tel,
     ...(type ? { type } : {}), // type이 있을 때만 전송
   };
@@ -123,7 +124,7 @@ export const verifyVerification = async (
   const payload: ApprovalCompleteRequestType = {
     tel: input.tel,
     authCode: input.authCode,
-    apiSecretKey: import.meta.env.VITE_API_KEY,
+    apiSecretKey: getApiKey(),
     ...(type ? { type } : {}),
   };
 

@@ -3,6 +3,8 @@
  */
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
+import { getApiKey } from "../apiKey";
+
 import type { BaseResponse, TermsProcessRequestType } from "../types";
 import type { TermsResponseType } from "../types";
 
@@ -57,7 +59,7 @@ export const getTermsList = async (type?: string) => {
       params: { termsType: type },
       headers: {
         // Swagger에서 요구하는 헤더 이름 그대로
-        "API-KEY": import.meta.env.VITE_API_KEY,
+        "API-KEY": getApiKey(),
       },
     }
   );
@@ -72,7 +74,7 @@ export const agreeTerms = async (
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.TERMS.AGREE,
     {
-      apiSecretKey: import.meta.env.VITE_API_KEY,
+      apiSecretKey: getApiKey(),
       userId: userId,
       termsAgreeList: termsAgreeList,
     }
