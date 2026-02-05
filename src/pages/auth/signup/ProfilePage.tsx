@@ -192,7 +192,6 @@ const ProfilePage = () => {
     setUserBirthYear(value.userBirthYear);
     setUserBirthMonth(value.userBirthMonth);
     setUserBirthDay(value.userBirthDay);
-    console.log(userBirthYear, userBirthMonth, userBirthDay);
   };
 
   const formattedBirth =
