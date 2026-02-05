@@ -9,7 +9,7 @@ import { getApiKey } from "../apiKey";
 // === request body type ===
 import type {
   BaseResponse,
-  LoginDTO,
+  LoginRequestType,
   JoinRequestType,
   MemberRequestDTO,
   RefreshTokenRequestDTO,
@@ -23,10 +23,15 @@ import type { SignupPayloadType } from "@/types/signupTypes";
 import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /** 로그인 */
-export const login = async (data: LoginDTO) => {
+export const login = async (userId: string, password: string) => {
+  const payload: LoginRequestType = {
+    apiSecretKey: getApiKey(),
+    userId,
+    password,
+  };
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.AUTH.LOGIN,
-    data
+    payload
   );
   return response.data;
 };
