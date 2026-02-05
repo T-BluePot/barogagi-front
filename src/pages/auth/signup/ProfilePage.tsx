@@ -173,10 +173,6 @@ const ProfilePage = () => {
   const handleOpenGenderModal = () => setIsGenderModalOpen(true);
   const handleCloseGenderModal = () => setIsGenderModalOpen(false);
 
-  useEffect(() => {
-    console.log(gender);
-  }, [gender]);
-
   // === 생년월일 선택 모달 ===
   const [userBirthYear, setUserBirthYear] = useState("");
   const [userBirthMonth, setUserBirthMonth] = useState("");
