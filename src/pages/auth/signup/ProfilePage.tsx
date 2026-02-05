@@ -266,8 +266,8 @@ const ProfilePage = () => {
       nickName: nickName,
     };
 
-    if (birth) payload.birth = birth;
-    if (gender) payload.gender = gender;
+    if (optional?.birth) payload.birth = birth;
+    if (optional?.gender) payload.gender = gender;
 
     return payload;
   };
