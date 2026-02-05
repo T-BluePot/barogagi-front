@@ -54,7 +54,7 @@ export const useSignupStore = create<SignupState>((set, get) => ({
   // 특정 필드 삭제
   clearField: (key) =>
     set((state) => ({
-      draft: { ...state.draft, [key]: "" },
+      draft: { ...state.draft, [key]: key === "gender" ? undefined : "" },
     })),
 
   // 최소 가입 조건 검증용 함수
