@@ -85,8 +85,13 @@ export const CommonInput = ({
             <InputAdornment position="end">
               <SmallButton
                 label={buttonProps?.label ?? "중복 확인"}
-                isDisabled={buttonProps?.disabled || !value || error}
-                onClick={buttonProps?.onClick ?? (() => {})}
+                isDisabled={
+                  buttonProps?.disabled ||
+                  !buttonProps?.onClick ||
+                  !value ||
+                  error
+                }
+                onClick={buttonProps?.onClick}
               />
             </InputAdornment>
           ) : type === "password" ? (
