@@ -39,10 +39,9 @@ import { signup } from "@/api/queries";
 // 3. 약관 동의
 import type { TermsProcessRequestType } from "@/api/types";
 import { agreeTerms } from "@/api/queries";
-import {
-  loadTermsAgreeList,
-  clearTermsAgreeList,
-} from "@/utils/sessionStorage/termsAgree";
+
+// 4. 가입 최종 로직
+import { completeSignupFlow } from "@/utils/auth/completeSignupFlow";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -297,7 +296,7 @@ const ProfilePage = () => {
   const handleCloseSkipModal = () => setIsSkipModalOpen(false);
 
   // 스킵 로직
-  const onSubmitSignupSkipProfile = () => {
+  const onSubmitSignupSkipProfile = async () => {
     // 랜덤 닉네임 생성
     const randomNickName = generateRandomNickname();
 
@@ -305,18 +304,26 @@ const ProfilePage = () => {
     const payload = buildSignupPayload(draft, { nickName: randomNickName });
     if (!payload) return;
 
-    // 회원가입 호출
-    signupMutation.mutate(payload, {
-      onSuccess: () => {
-        navigate(ROUTES.AUTH.SIGNUP.COMPLETE, { replace: true });
-      },
-      onError: handleSignupError({ openErrorModal }),
-    });
+    try {
+      // 회원가입 + 약관동의 + 완료이동까지 공통 플로우 실행
+      await completeSignupFlow(payload, {
+        // react-query mutation의 Promise 기반 API 주입
+        signup: signupMutation.mutateAsync,
+        agreeTerms: agreeTermsMutation.mutateAsync,
+
+        // UI 의존성은 외부에서 주입
+        navigate,
+        openErrorModal,
+      });
+    } catch (e) {
+      // signup / agreeTerms 에러 공통 처리
+      handleSignupError({ openErrorModal })(e);
+    }
   };
 
-  const handleSkipProfile = () => {
+  const handleSkipProfile = async () => {
     handleCloseSkipModal(); // 모달 닫기
-    onSubmitSignupSkipProfile(); // 랜덤 닉네임으로 회원가입 진행
+    await onSubmitSignupSkipProfile(); // 랜덤 닉네임으로 회원가입 진행
   };
 
   useEffect(() => {
@@ -332,7 +339,9 @@ const ProfilePage = () => {
     return (
       !trimmed || // 닉네임이 비어있거나
       !!error || // 유효성 검사 에러가 존재하거나
-      !isNicknameVerified // 닉네임 중복 확인을 통과하지 못했거나
+      !isNicknameVerified || // 닉네임 중복 확인을 통과하지 못했거나
+      signupMutation.isPending || // 회원 가입 진행중이거나
+      agreeTermsMutation.isPending // 약관 동의 검증중 일 때
     );
   };
 
@@ -341,51 +350,30 @@ const ProfilePage = () => {
   });
 
   const onSubmitSignupWithProfile = async () => {
-    // 닉네임 검증
+    // 1) 닉네임 검증
     if (!isNicknameVerified) {
       openErrorModal({
         message: "닉네임 중복 확인을 완료해주세요.",
-        // 현재 페이지 유지
       });
       return;
     }
 
-    // payload 조립
-    const payload = buildSignupPayload(
-      draft,
-      { nickName: nickName },
-      { birth, gender }
-    );
+    // 2) payload 조립
+    const payload = buildSignupPayload(draft, { nickName }, { birth, gender });
 
     // 검증 실패 시(모달 오픈 + null 반환) 제출 중단
     if (!payload) return;
 
     try {
-      // 회원가입 먼저
-      await signupMutation.mutateAsync(payload);
-
-      // 세션에서 약관 동의 내역 로드
-      const termsAgreeList = loadTermsAgreeList();
-      if (!termsAgreeList) {
-        openErrorModal({
-          message: "약관 동의 정보가 없습니다. 약관 동의 화면으로 이동합니다.",
-          redirectTo: ROUTES.AUTH.SIGNUP.TERMS,
-          replace: true,
-        });
-        return;
-      }
-
-      // 약관 동의 서버 전송 (그대로 사용 가능)
-      await agreeTermsMutation.mutateAsync({
-        userId: payload.userId,
-        termsAgreeList,
+      // 3) 회원가입 + 약관동의 + 완료이동까지 공통 플로우 실행
+      await completeSignupFlow(payload, {
+        signup: signupMutation.mutateAsync,
+        agreeTerms: agreeTermsMutation.mutateAsync,
+        navigate,
+        openErrorModal,
       });
-
-      // 성공 처리
-      clearTermsAgreeList();
-      navigate(ROUTES.AUTH.SIGNUP.COMPLETE, { replace: true });
     } catch (e) {
-      // signup / agreeTerms 에러 모두 여기서 처리
+      // signup / agreeTerms 에러 공통 처리
       handleSignupError({ openErrorModal })(e);
     }
   };
