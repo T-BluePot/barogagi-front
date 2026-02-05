@@ -16,6 +16,9 @@ export const authKeys = {
   /** auth 관련 모든 쿼리의 기본 키 */
   all: ["auth"] as const,
 
+  /** 회원가입/약관 관련 정보 조회 키 (예: ["auth", "terms"]) */
+  terms: () => [...authKeys.all, "terms"] as const,
+
   /** 현재 로그인한 사용자 정보 조회 키 (예: ["auth", "me"]) */
   me: () => [...authKeys.all, "me"] as const,
 } as const;

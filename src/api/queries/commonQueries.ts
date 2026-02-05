@@ -3,7 +3,10 @@
  */
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
-import type { BaseResponse } from "../types";
+import { getApiKey } from "../apiKey";
+
+import type { BaseResponse, TermsProcessRequestType } from "../types";
+import type { TermsResponseType } from "../types";
 
 // === Tag ===
 export const searchTags = async (data: unknown) => {
@@ -50,16 +53,31 @@ export const verifyVerificationCode = async (data: unknown) => {
 
 // === Terms ===
 export const getTermsList = async (type?: string) => {
-  const response = await http.get<BaseResponse<unknown>>(ENDPOINTS.TERMS.LIST, {
-    params: { termsType: type },
-  });
+  const response = await http.get<BaseResponse<TermsResponseType>>(
+    ENDPOINTS.TERMS.LIST,
+    {
+      params: { termsType: type },
+      headers: {
+        // Swagger에서 요구하는 헤더 이름 그대로
+        "API-KEY": getApiKey(),
+      },
+    }
+  );
+
   return response.data;
 };
 
-export const agreeTerms = async (data: unknown) => {
+export const agreeTerms = async (
+  userId: string,
+  termsAgreeList: TermsProcessRequestType[]
+) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.TERMS.AGREE,
-    data
+    {
+      apiSecretKey: getApiKey(),
+      userId: userId,
+      termsAgreeList: termsAgreeList,
+    }
   );
   return response.data;
 };

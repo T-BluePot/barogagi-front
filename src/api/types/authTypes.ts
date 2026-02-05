@@ -1,5 +1,8 @@
+import type { Yn, TermsItem, TermsAgreeList } from "@/types/termsTypes";
+import type { GenderType } from "@/constants/userInfo";
+
 /**
- * 회원(Auth) 및 사용자 관련 API 타입 정의
+ * 회원(Auth) 및 사용자 관련 요청 API 타입 정의
  */
 
 /** 로그인 요청 DTO */
@@ -9,18 +12,18 @@ export interface LoginDTO {
   apiSecretKey?: string;
 }
 
-/** 회원가입 요청 DTO */
-export interface JoinRequestDTO {
+/** 회원가입 Request Body */
+export type JoinRequestType = {
+  apiSecretKey: string;
   userId: string;
   password: string;
-  email: string;
-  birth: string;
   tel: string;
-  gender: string; // 'M' | 'F'
   nickName: string;
-  joinType?: string;
-  apiSecretKey?: string;
-}
+
+  email?: string; // optional
+  birth?: string; // optional (YYYYMMDD)
+  gender?: GenderType; // optional
+};
 
 /** 회원 정보 수정 요청 DTO */
 export interface MemberRequestDTO {
@@ -34,29 +37,33 @@ export interface RefreshTokenRequestDTO {
   refreshToken: string;
 }
 
-/** 인증번호 발송 VO */
-export interface ApprovalSendVO {
+/** 인증번호 발송 */
+export interface ApprovalSendRequestType {
   tel: string;
-  type: string; // 'JOIN-MEMBERSHIP', etc.
+  type?: string; // 'JOIN-MEMBERSHIP', etc.
   apiSecretKey?: string;
 }
 
-/** 인증번호 확인 VO */
-export interface ApprovalCompleteVO {
+/** 인증번호 확인 */
+export interface ApprovalCompleteRequestType {
   tel: string;
   authCode: string;
-  type: string;
+  type?: string;
   apiSecretKey?: string;
 }
 
-/** 약관 동의 요청 DTO */
-export interface TermsProcessDTO {
+/** 약관별 동의 내역 */
+export interface TermsProcessRequestType {
   termsNum: number;
-  agreeYn: "Y" | "N";
+  agreeYn: Yn;
 }
 
+/** 약관 조회 응답 */
+export type TermsResponseType = TermsItem[];
+
+/** 약관 동의 요청 DTO */
 export interface TermsDTO {
   userId: string;
   apiSecretKey?: string;
-  termsAgreeList: TermsProcessDTO[];
+  termsAgreeList: TermsAgreeList;
 }

@@ -4,15 +4,23 @@
 
 import { http } from "../http";
 import { ENDPOINTS } from "../endpoints";
+import { getApiKey } from "../apiKey";
+
+// === request body type ===
 import type {
   BaseResponse,
   LoginDTO,
-  JoinRequestDTO,
+  JoinRequestType,
   MemberRequestDTO,
   RefreshTokenRequestDTO,
-  ApprovalSendVO,
-  ApprovalCompleteVO,
+  ApprovalSendRequestType,
+  ApprovalCompleteRequestType,
 } from "../types";
+
+// === data type ===
+import type { VerifyCodeType } from "@/types/signupTypes";
+import type { SignupPayloadType } from "@/types/signupTypes";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /** 로그인 */
 export const login = async (data: LoginDTO) => {
@@ -42,10 +50,22 @@ export const refresh = async (data: RefreshTokenRequestDTO) => {
 };
 
 /** 회원가입 */
-export const signup = async (data: JoinRequestDTO) => {
+export const signup = async (data: SignupPayloadType) => {
+  const payload: JoinRequestType = {
+    apiSecretKey: getApiKey(),
+    userId: data.userId,
+    password: data.password,
+    tel: data.tel,
+    nickName: data.nickName,
+
+    ...(data.email ? { email: data.email } : {}),
+    ...(data.birth ? { birth: data.birth } : {}),
+    ...(data.gender ? { gender: data.gender } : {}),
+  };
+
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.USERS.SIGNUP,
-    data
+    payload
   );
   return response.data;
 };
@@ -56,6 +76,9 @@ export const checkId = async (userId: string) => {
     ENDPOINTS.USERS.CHECK_ID,
     {
       params: { userId },
+      headers: {
+        "API-KEY": getApiKey(),
+      },
     }
   );
   return response.data;
@@ -67,26 +90,49 @@ export const checkNickname = async (nickname: string) => {
     ENDPOINTS.USERS.CHECK_NICKNAME,
     {
       params: { nickname },
+      headers: {
+        "API-KEY": getApiKey(),
+      },
     }
   );
   return response.data;
 };
 
 /** 인증번호 발송 */
-export const sendVerification = async (data: ApprovalSendVO) => {
+export const sendVerification = async (
+  tel: string,
+  type?: (typeof VERIFICATION_REQUEST_TYPE)[keyof typeof VERIFICATION_REQUEST_TYPE]
+) => {
+  const payload: ApprovalSendRequestType = {
+    apiSecretKey: getApiKey(),
+    tel,
+    ...(type ? { type } : {}), // type이 있을 때만 전송
+  };
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.SEND,
-    data
+    payload
   );
+
   return response.data;
 };
 
 /** 인증번호 확인 */
-export const verifyVerification = async (data: ApprovalCompleteVO) => {
+export const verifyVerification = async (
+  input: VerifyCodeType,
+  type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
+) => {
+  const payload: ApprovalCompleteRequestType = {
+    tel: input.tel,
+    authCode: input.authCode,
+    apiSecretKey: getApiKey(),
+    ...(type ? { type } : {}),
+  };
+
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.VERIFY,
-    data
+    payload
   );
+
   return response.data;
 };
 

@@ -5,7 +5,7 @@ import type { GenderType } from "@/constants/userInfo";
 export interface SelectGenderProps {
   isGenderModalOpen: boolean;
   handleCloseGenderModal: () => void;
-  gender: GenderType | null;
+  gender: GenderType | undefined;
   setGender: (gender: GenderType) => void;
 }
 
