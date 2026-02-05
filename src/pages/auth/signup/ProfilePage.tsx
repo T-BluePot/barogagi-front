@@ -199,7 +199,10 @@ const ProfilePage = () => {
       : undefined;
 
   // server 전송용 birth 변수
-  const birth = `${userBirthYear}${userBirthMonth}${userBirthDay}`;
+  const birth =
+    userBirthYear && userBirthMonth && userBirthDay
+      ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
+      : undefined;
 
   // === 회원 가입 로직 ===
 
