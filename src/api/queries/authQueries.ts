@@ -101,7 +101,7 @@ export const checkNickname = async (nickname: string) => {
 /** 인증번호 발송 */
 export const sendVerification = async (
   tel: string,
-  type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
+  type?: (typeof VERIFICATION_REQUEST_TYPE)[keyof typeof VERIFICATION_REQUEST_TYPE]
 ) => {
   const payload: ApprovalSendRequestType = {
     apiSecretKey: getApiKey(),
