@@ -5,12 +5,22 @@ import type { GenderType } from "@/constants/userInfo";
  * 회원(Auth) 및 사용자 관련 요청 API 타입 정의
  */
 
-/** 로그인 요청 Request Body */
+/** 로그인 요청 Request Body 타입 */
 export interface LoginRequestType {
   userId: string;
   password: string;
   apiSecretKey?: string;
 }
+
+/** 로그인 응답 data 타입 */
+export type LoginResponseDataType = {
+  refreshTokenExpiresIn: number; // 초 단위- ex: 2592000 = 30일
+  userId: string;
+  accessToken: string;
+  accessTokenExpiresIn: number; // 초 단위- 예: 1800 = 30분
+  membershipNo: string;
+  refreshToken: string;
+};
 
 /** 회원가입 Request Body */
 export type JoinRequestType = {
@@ -32,15 +42,23 @@ export interface MemberRequestDTO {
   nickName?: string;
 }
 
-/** 토큰 재발급/로그아웃/탈퇴 요청 DTO */
-export interface RefreshTokenRequestDTO {
+/** refresh(토큰 재발급/로그아웃/탈퇴) 요청 타입 */
+export interface RefreshTokenRequestType {
   refreshToken: string;
 }
+
+/** refresh 응답 data 타입 */
+export type RefreshResponseDataType = {
+  refreshTokenExpiresIn: number; // 초 단위
+  accessTokenExpiresIn: number; // 초 단위
+  accessToken: string;
+  refreshToken: string;
+};
 
 /** 인증번호 발송 */
 export interface ApprovalSendRequestType {
   tel: string;
-  type?: string; // 'JOIN-MEMBERSHIP', etc.
+  type?: string; // signup: 'JOIN-MEMBERSHIP'
   apiSecretKey?: string;
 }
 
@@ -58,7 +76,7 @@ export interface TermsProcessRequestType {
   agreeYn: Yn;
 }
 
-/** 약관 조회 응답 */
+/** 약관 조회 응답 타입 */
 export type TermsResponseType = TermsItem[];
 
 /** 약관 동의 요청 DTO */
