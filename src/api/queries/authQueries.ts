@@ -12,7 +12,7 @@ import type {
   LoginRequestType,
   JoinRequestType,
   MemberRequestDTO,
-  RefreshTokenRequestDTO,
+  RefreshTokenRequestType,
   ApprovalSendRequestType,
   ApprovalCompleteRequestType,
 } from "../types";
@@ -37,7 +37,7 @@ export const login = async (userId: string, password: string) => {
 };
 
 /** 로그아웃 */
-export const logout = async (data: RefreshTokenRequestDTO) => {
+export const logout = async (data: RefreshTokenRequestType) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.AUTH.LOGOUT,
     data
@@ -46,7 +46,7 @@ export const logout = async (data: RefreshTokenRequestDTO) => {
 };
 
 /** 토큰 재발급 */
-export const refresh = async (data: RefreshTokenRequestDTO) => {
+export const refresh = async (data: RefreshTokenRequestType) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.AUTH.REFRESH,
     data
