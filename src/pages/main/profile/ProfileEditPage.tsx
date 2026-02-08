@@ -58,7 +58,7 @@ const ProfileEditPage = () => {
 
   // Form State
   const [nickname, setNickname] = useState("");
-  const [gender, setGender] = useState<GenderType | null>(null);
+  const [gender, setGender] = useState<GenderType | undefined>(undefined);
   const [userBirthYear, setUserBirthYear] = useState("");
   const [userBirthMonth, setUserBirthMonth] = useState("");
   const [userBirthDay, setUserBirthDay] = useState("");
