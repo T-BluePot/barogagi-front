@@ -137,6 +137,21 @@ export const verifyVerification = async (
   return response.data;
 };
 
+/** 아이디 찾기 */
+export const findUser = async (tel: string) => {
+  const response = await http.post<BaseResponse<FindUserResponseType>>(
+    ENDPOINTS.AUTH.FIND_ID,
+    null,
+    {
+      params: { tel },
+      headers: {
+        "API-KEY": getApiKey(),
+      },
+    }
+  );
+  return response.data;
+};
+
 /** 내 정보 조회 */
 export const getMe = async () => {
   const response = await http.get<BaseResponse<unknown>>(
