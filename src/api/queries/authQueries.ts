@@ -10,6 +10,7 @@ import { getApiKey } from "../apiKey";
 import type {
   BaseResponse,
   LoginRequestType,
+  LoginResponseDataType,
   JoinRequestType,
   MemberRequestDTO,
   RefreshTokenRequestType,
@@ -32,7 +33,7 @@ export const login = async (userId: string, password: string) => {
     userId,
     password,
   };
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await http.post<BaseResponse<LoginResponseDataType>>(
     ENDPOINTS.AUTH.LOGIN,
     payload
   );
