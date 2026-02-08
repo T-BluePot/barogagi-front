@@ -13,6 +13,7 @@ import type {
   JoinRequestType,
   MemberRequestDTO,
   RefreshTokenRequestType,
+  RefreshResponseDataType,
   ApprovalSendRequestType,
   ApprovalCompleteRequestType,
 } from "../types";
@@ -47,7 +48,7 @@ export const logout = async (data: RefreshTokenRequestType) => {
 
 /** 토큰 재발급 */
 export const refresh = async (data: RefreshTokenRequestType) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await http.post<BaseResponse<RefreshResponseDataType>>(
     ENDPOINTS.AUTH.REFRESH,
     data
   );
