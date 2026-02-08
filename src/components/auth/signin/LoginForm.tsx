@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ValidationError } from "yup";
 
 // === component ===
 import { CommonInput } from "@/components/auth/common/CommonInput";
@@ -13,16 +14,17 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
 // === server ===
-import { useMutation } from "@tanstack/react-query";
-import { login } from "@/api/queries";
 import { useLoginMutation } from "@/hooks/mutations/useLoginMutation";
+import { handleLoginError } from "@/utils/auth/handleLoginError";
 
 export const LoginForm = () => {
+  const navigate = useNavigate();
+  const { mutateAsync, isPending } = useLoginMutation();
+
   const [userId, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const handleLogin = async () => {
     // 에러 초기화
@@ -30,53 +32,36 @@ export const LoginForm = () => {
 
     // 입력값 검증
     if (!userId || !password) {
-      setError("이메일과 비밀번호를 모두 입력해주세요.");
+      setError("아이디과 비밀번호를 모두 입력해주세요.");
       return;
     }
 
-    // 이메일 형식 검증
-    const userIdRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!userIdRegex.test(userId)) {
-      setError("올바른 이메일 형식이 아닙니다.");
-      return;
+    // 아이디 유효성 검증
+    try {
+      await idSchema.validate(userId);
+    } catch (err: unknown) {
+      if (err instanceof ValidationError) {
+        setError(err.message);
+        return;
+      }
     }
 
-    // 비밀번호 최소 길이 검증
-    if (password.length < 6) {
-      setError("비밀번호는 최소 6자 이상이어야 합니다.");
-      return;
+    // 비밀번호 유효성 검증
+    try {
+      await passwordSchema.validate(password);
+    } catch (err: unknown) {
+      if (err instanceof ValidationError) {
+        setError(err.message);
+        return;
+      }
     }
+
+    const onLoginError = handleLoginError({ setError });
 
     try {
-      setIsLoading(true);
-      console.log("로그인 시도:", { userId, password: "***" }); // 보안: 비밀번호 로깅 방지
-
-      // TODO: API 통합 시 실제 인증 로직으로 교체
-      // const response = await loginAPI({ userId, password });
-      // if (!response.success) {
-      //   throw new Error(response.message);
-      // }
-
-      // Mock: 임시 인증 시뮬레이션 (개발 중)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock: 임시 실패 케이스 시뮬레이션 (테스트용)
-      // 실제 배포 시에는 제거 필요
-      if (userId === "fail@test.com") {
-        throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
-      }
-
-      // 로그인 성공 시에만 홈으로 이동
-      console.log("로그인 성공");
-      navigate(ROUTES.MAIN.HOME);
+      await mutateAsync({ userId, password });
     } catch (err) {
-      // 에러 처리
-      const errorMessage =
-        err instanceof Error ? err.message : "로그인에 실패했습니다.";
-      setError(errorMessage);
-      console.error("로그인 실패:", errorMessage);
-    } finally {
-      setIsLoading(false);
+      onLoginError(err);
     }
   };
 
@@ -95,9 +80,9 @@ export const LoginForm = () => {
       )}
 
       <CommonInput
-        label="이메일"
-        placeholder="이메일을 입력하세요"
-        type="email"
+        label="아이디"
+        placeholder="아이디를 입력하세요"
+        type="text"
         value={userId}
         setValue={setEmail}
       />
@@ -110,9 +95,9 @@ export const LoginForm = () => {
       />
       <div className="mt-16">
         <CommonButton
-          label={isLoading ? "로그인 중..." : "로그인 하기"}
-          onClick={handleLogin}
-          isDisabled={isLoading || !userId || !password}
+          type="submit"
+          label={isPending ? "로그인 중..." : "로그인 하기"}
+          isDisabled={isPending || !userId || !password}
         />
         <div className="flex justify-center items-center mt-4 text-main text-sm">
           <TextButton
