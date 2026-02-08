@@ -15,12 +15,13 @@ import type {
   RefreshTokenRequestDTO,
   ApprovalSendRequestType,
   ApprovalCompleteRequestType,
+  FindUserResponseType,
 } from "../types";
 
 // === data type ===
 import type { VerifyCodeType } from "@/types/signupTypes";
 import type { SignupPayloadType } from "@/types/signupTypes";
-import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
+import type { VerificationType } from "@/constants/verificationTypes";
 
 /** 로그인 */
 export const login = async (data: LoginDTO) => {
@@ -101,7 +102,7 @@ export const checkNickname = async (nickname: string) => {
 /** 인증번호 발송 */
 export const sendVerification = async (
   tel: string,
-  type?: (typeof VERIFICATION_REQUEST_TYPE)[keyof typeof VERIFICATION_REQUEST_TYPE]
+  type?: VerificationType
 ) => {
   const payload: ApprovalSendRequestType = {
     apiSecretKey: getApiKey(),
@@ -119,7 +120,7 @@ export const sendVerification = async (
 /** 인증번호 확인 */
 export const verifyVerification = async (
   input: VerifyCodeType,
-  type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
+  type?: VerificationType
 ) => {
   const payload: ApprovalCompleteRequestType = {
     tel: input.tel,
@@ -133,6 +134,21 @@ export const verifyVerification = async (
     payload
   );
 
+  return response.data;
+};
+
+/** 아이디 찾기 */
+export const findUser = async (tel: string) => {
+  const response = await http.post<BaseResponse<FindUserResponseType>>(
+    ENDPOINTS.AUTH.FIND_ID,
+    null,
+    {
+      params: { tel },
+      headers: {
+        "API-KEY": getApiKey(),
+      },
+    }
+  );
   return response.data;
 };
 
