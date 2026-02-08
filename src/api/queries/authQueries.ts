@@ -2,7 +2,7 @@
  * 회원(Auth) 관련 API 요청 함수
  */
 
-import { http } from "../http";
+import { http, refreshHttp } from "../http";
 import { ENDPOINTS } from "../endpoints";
 import { getApiKey } from "../apiKey";
 
@@ -48,10 +48,9 @@ export const logout = async (data: RefreshTokenRequestType) => {
 
 /** 토큰 재발급 */
 export const refresh = async (data: RefreshTokenRequestType) => {
-  const response = await http.post<BaseResponse<RefreshResponseDataType>>(
-    ENDPOINTS.AUTH.REFRESH,
-    data
-  );
+  const response = await refreshHttp.post<
+    BaseResponse<RefreshResponseDataType>
+  >(ENDPOINTS.AUTH.REFRESH, data);
   return response.data;
 };
 
