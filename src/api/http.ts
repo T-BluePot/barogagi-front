@@ -9,7 +9,10 @@ import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
 import { API_BASE_URL, ENDPOINTS } from "./endpoints";
 
+// === token ===
 import { refresh } from "./queries";
+import { saveAuthTokens } from "@/lib/auth/tokenStorage";
+import { handleLogout } from "@/utils/auth/handleLogout";
 
 const axiosConfig: AxiosRequestConfig = {
   baseURL: API_BASE_URL,
@@ -41,22 +44,22 @@ http.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const status = error.response?.status;
-
-    // 원래 실패했던 요청 설정(axios가 들고 있음)
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;
     };
 
-    // 401이 아니면 그대로 반환
+    // 401이 아니거나 originalRequest가 없으면 그대로 반환
     if (status !== 401 || !originalRequest) {
       return Promise.reject(error);
     }
 
-    // refresh 요청 자체가 401이면 더 시도하지 말고 로그인 처리
-    // (실수로 http로 refresh를 보냈을 때도 안전장치가 됨)
-    if (originalRequest.url?.includes(ENDPOINTS.AUTH.REFRESH)) {
-      localStorage.removeItem("accessToken");
-      window.location.href = "/auth/login";
+    // auth 내 요청 시 제외
+    const authEndpoints = Object.values(ENDPOINTS.AUTH);
+    const isAuthRequest = authEndpoints.some((endpoint) =>
+      originalRequest.url?.includes(endpoint)
+    );
+
+    if (isAuthRequest) {
       return Promise.reject(error);
     }
 
@@ -69,34 +72,33 @@ http.interceptors.response.use(
     originalRequest._retry = true;
 
     try {
-      // refresh 요청에 필요한 데이터 구성 (프로젝트 스펙에 맞게 조립)
-      // 예: refreshToken을 로컬스토리지에 저장했다면 여기서 꺼내기
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (!refreshToken) {
+      // refreshToken 확인
+      const storedRefreshToken = localStorage.getItem("refreshToken");
+      if (!storedRefreshToken) {
         throw new Error("refreshToken이 없습니다.");
       }
 
       // 1) 토큰 재발급
-      const refreshRes = await refresh({ refreshToken });
+      const refreshData = await refresh({
+        refreshToken: storedRefreshToken,
+      });
 
-      // 2) 새 accessToken 저장 (응답 구조에 맞게 키 수정)
-      const newAccessToken = refreshRes.data.accessToken;
-      if (!newAccessToken) {
+      const tokenBundle = refreshData.data;
+      if (!tokenBundle.accessToken) {
         throw new Error("refresh 응답에 accessToken이 없습니다.");
       }
-      localStorage.setItem("accessToken", newAccessToken);
+
+      saveAuthTokens(tokenBundle);
 
       // 3) 원요청 헤더에 새 토큰을 넣고 재요청
-      originalRequest.headers = {
-        ...(originalRequest.headers || {}),
-        Authorization: `Bearer ${newAccessToken}`,
-      };
+      if (originalRequest.headers) {
+        originalRequest.headers.Authorization = `Bearer ${tokenBundle.accessToken}`;
+      }
 
       return http(originalRequest);
     } catch (e) {
-      // refresh 실패 → 로그인 이동
-      localStorage.removeItem("accessToken");
-      window.location.href = "/auth/login";
+      // refresh 실패 → 로그아웃 처리
+      handleLogout();
       return Promise.reject(e);
     }
   }
