@@ -37,45 +37,41 @@ const RootRedirect = () => {
 export const MainRoutes = () => (
   <Routes>
     {/* 루트 경로: 인증 상태에 따라 분기 */}
-    <Route path="/" element={<RootRedirect />} />
+    <Route path={ROUTES.ROOT} element={<RootRedirect />} />
 
     {/* 인증 필요 라우트 (PrivateRoute 가드) */}
     <Route element={<PrivateRoute />}>
       {/* Bottom Tab 페이지 */}
       <Route element={<TabLayout />}>
-        {/* Home 페이지 */}
-        <Route path="/home" element={<HomePage />} />
-        {/* Plan 페이지 */}
-        <Route path="/plan" element={<ScheduleListPage />} />
-        {/* Profile 페이지 */}
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path={ROUTES.MAIN.HOME} element={<HomePage />} />
+        <Route path={ROUTES.PLAN.LIST} element={<ScheduleListPage />} />
+        <Route path={ROUTES.MAIN.PROFILE} element={<ProfilePage />} />
       </Route>
-      {/* Profile Edit */}
-      <Route path="/profile/edit" element={<ProfileEditPage />} />
-      {/* 일정 생성 */}
-      <Route path="/plan/date" element={<SelectDatePage />} />
-      <Route path="/plan/location" element={<SelectLocationPage />} />
-      <Route path="/plan/setting" element={<PlanSettingPage />} />
-      <Route path="/plan/style" element={<ScheduleStylePage />} />
+
+      <Route path={ROUTES.MAIN.PROFILE_EDIT} element={<ProfileEditPage />} />
+      <Route path={ROUTES.PLAN.DATE} element={<SelectDatePage />} />
+      <Route path={ROUTES.PLAN.LOCATION} element={<SelectLocationPage />} />
+      <Route path={ROUTES.PLAN.SETTING} element={<PlanSettingPage />} />
+      <Route path={ROUTES.PLAN.STYLE} element={<ScheduleStylePage />} />
       <Route
-        path="/plan/create"
+        path={ROUTES.PLAN.CREATE}
         element={<ScheduleRoutesPage variant="create" />}
       />
-
-      {/* 일정 상세 화면: /plan/:id/detail */}
       <Route
-        path="/plan/:id/detail"
+        path={ROUTES.PLAN.DETAIL}
         element={<ScheduleRoutesPage variant="detail" />}
       >
-        {/* 자식 검색 페이지 */}
         <Route path="search" element={<LocationSearchPage />} />
       </Route>
+      <Route path={ROUTES.PLAN.SEARCH} element={<LocationSearchPage />} />
 
-      {/* 공통 장소 검색 페이지 */}
-      <Route path="/plan/search" element={<LocationSearchPage />} />
+      {/* TODO: 페이지 구현 후 Route 등록 예정 */}
+      {/* <Route path={ROUTES.MAIN.SETTINGS} element={<SettingsPage />} /> */}
+      {/* <Route path={ROUTES.MAIN.CHAT} element={<ChatPage />} /> */}
+      {/* <Route path={ROUTES.MAIN.NOTIFICATION} element={<NotificationPage />} /> */}
     </Route>
 
-    {/* 정의되지 않은 경로: 인증 상태에 따라 분기 */}
+    {/* 인증 불필요: 미정의 경로 → 인증 상태에 따라 분기 */}
     <Route path="*" element={<RootRedirect />} />
   </Routes>
 );
