@@ -170,21 +170,6 @@ export const updateMe = async (data: MemberRequestDTO) => {
   return response.data;
 };
 
-/** 아이디 찾기 */
-export const findUser = async (tel: string) => {
-  const response = await http.post<BaseResponse<FindUserResponseType>>(
-    ENDPOINTS.AUTH.FIND_ID,
-    null,
-    {
-      params: { tel },
-      headers: {
-        "API-KEY": getApiKey(),
-      },
-    }
-  );
-  return response.data;
-};
-
 /** 비밀번호 재설정 */
 export const resetPassword = async (userId: string, password: string) => {
   const payload: PasswordResetConfirmDTO = {

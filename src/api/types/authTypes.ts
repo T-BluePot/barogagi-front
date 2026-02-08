@@ -71,9 +71,6 @@ export interface TermsDTO {
   termsAgreeList: TermsAgreeList;
 }
 
-/** 아이디 찾기 응답 (배열로 반환) */
-export type FindUserResponseType = { userId: string }[];
-
 /** 비밀번호 재설정 요청 DTO */
 export interface PasswordResetConfirmDTO {
   apiSecretKey: string;
