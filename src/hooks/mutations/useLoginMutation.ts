@@ -1,8 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import type { LoginRequestType } from "@/api/types";
-import { login } from "@/api/queries";
+
+// === route ===
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+
+import { login } from "@/api/queries";
+import type { LoginRequestType } from "@/api/types";
+import { saveAuthTokens } from "@/lib/auth/tokenStorage";
 
 export type LoginInputType = Pick<LoginRequestType, "userId" | "password">;
 
@@ -13,13 +17,15 @@ export const useLoginMutation = () => {
     mutationFn: async ({ userId, password }: LoginInputType) => {
       return await login(userId, password);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      const tokenBundle = response.data;
+      saveAuthTokens(tokenBundle);
+
       navigate(ROUTES.MAIN.HOME);
     },
 
-    onError: (error: unknown) => {
-      // 에러 메시지는 UI에서 처리하도록 throw
-      throw error;
+    onError: () => {
+      // 에러 메시지는 UI에서 처리하도록 비움
     },
   });
 };
