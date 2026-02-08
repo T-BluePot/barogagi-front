@@ -70,3 +70,10 @@ export interface TermsDTO {
   apiSecretKey?: string;
   termsAgreeList: TermsAgreeList;
 }
+
+/** 비밀번호 재설정 요청 DTO */
+export interface PasswordResetConfirmDTO {
+  apiSecretKey: string;
+  userId: string;
+  password: string;
+}

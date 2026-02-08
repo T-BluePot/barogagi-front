@@ -16,6 +16,7 @@ import type {
   ApprovalSendRequestType,
   ApprovalCompleteRequestType,
   FindUserResponseType,
+  PasswordResetConfirmDTO,
 } from "../types";
 
 // === data type ===
@@ -165,6 +166,20 @@ export const updateMe = async (data: MemberRequestDTO) => {
   const response = await http.patch<BaseResponse<unknown>>(
     ENDPOINTS.MEMBERS.UPDATE_ME,
     data
+  );
+  return response.data;
+};
+
+/** 비밀번호 재설정 */
+export const resetPassword = async (userId: string, password: string) => {
+  const payload: PasswordResetConfirmDTO = {
+    apiSecretKey: getApiKey(),
+    userId,
+    password,
+  };
+  const response = await http.post<BaseResponse<unknown>>(
+    ENDPOINTS.AUTH.RESET_PW_CONFIRM,
+    payload
   );
   return response.data;
 };
