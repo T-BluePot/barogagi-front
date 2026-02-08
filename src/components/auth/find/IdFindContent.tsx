@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ValidationError } from "yup";
 
@@ -19,7 +19,7 @@ const IdFindContent = () => {
   const navigate = useNavigate();
 
   // === 유효성 검사 ===
-  const handleValidate = async (): Promise<boolean> => {
+  const handleValidate = useCallback(async (): Promise<boolean> => {
     const newErrors: { [key: string]: string } = {};
 
     try {
@@ -32,7 +32,7 @@ const IdFindContent = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [phoneNumber]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,7 +40,7 @@ const IdFindContent = () => {
     }, 150);
 
     return () => clearTimeout(timer);
-  }, [phoneNumber]);
+  }, [handleValidate]);
 
   // === 제출 ===
   const handleSubmit = async () => {
