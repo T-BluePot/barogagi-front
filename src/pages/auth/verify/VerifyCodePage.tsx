@@ -94,11 +94,20 @@ const VerifyCodePage = () => {
     setErrorText("");
 
     try {
-      // 회원가입 플로우만 type을 포함
-      const type =
-        flow === "signup-verify"
-          ? VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
-          : undefined;
+      // flow에 따라 인증 타입 설정
+      const getVerificationType = () => {
+        switch (flow) {
+          case "signup-verify":
+            return VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP;
+          case "find-id":
+            return VERIFICATION_REQUEST_TYPE.FIND_ID;
+          case "reset-password":
+            return VERIFICATION_REQUEST_TYPE.RESET_PASSWORD;
+          default:
+            return undefined;
+        }
+      };
+      const type = getVerificationType();
 
       // tel + authCode로 인증번호 확인 API 호출
       await verifyVerification({ tel, authCode }, type);

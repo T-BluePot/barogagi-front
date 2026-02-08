@@ -80,8 +80,12 @@ const VerifyPage = () => {
     try {
       if (flow === "signup-verify") {
         await sendVerification(tel, VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP);
+      } else if (flow === "find-id") {
+        await sendVerification(tel, VERIFICATION_REQUEST_TYPE.FIND_ID);
+      } else if (flow === "reset-password") {
+        await sendVerification(tel, VERIFICATION_REQUEST_TYPE.RESET_PASSWORD);
       } else {
-        await sendVerification(tel); // signup 로직이 아닌 경우 type 미전달
+        await sendVerification(tel);
       }
 
       navigate(current.nextPath, { state: { phone: tel } });

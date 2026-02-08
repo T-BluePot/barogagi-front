@@ -6,21 +6,33 @@ import { PageTitle } from "@/components/auth/common/PageTitle";
 import { ROUTES } from "@/constants/routes";
 
 import { FIND_ID_TEXTS } from "@/constants/texts/auth/find/findAuth";
+import { sendVerification } from "@/api/queries";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 const IdFindContent = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    if (!phoneNumber.trim()) {
+  const handleSubmit = async () => {
+    const tel = phoneNumber.trim();
+    if (!tel) {
       alert("휴대전화 번호를 입력해주세요.");
       return;
     }
 
-    // 아이디 찾기 인증 코드 페이지로 이동
-    navigate(ROUTES.AUTH.VERIFY.FIND_ID, {
-      state: { phone: phoneNumber, flow: "find-id" },
-    });
+    setIsLoading(true);
+    try {
+      // 인증번호 발송 후 코드 입력 페이지로 이동
+      await sendVerification(tel, VERIFICATION_REQUEST_TYPE.FIND_ID);
+      navigate(ROUTES.AUTH.VERIFY.FIND_ID, {
+        state: { phone: tel, flow: "find-id" },
+      });
+    } catch {
+      alert("인증번호 전송에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,8 +52,8 @@ const IdFindContent = () => {
       </div>
       <div className="mb-6">
         <Button
-          label={FIND_ID_TEXTS.BUTTON}
-          isDisabled={!/^\d{10,11}$/.test(phoneNumber)}
+          label={isLoading ? "전송 중..." : FIND_ID_TEXTS.BUTTON}
+          isDisabled={!/^\d{10,11}$/.test(phoneNumber) || isLoading}
           onClick={handleSubmit}
         />
       </div>
