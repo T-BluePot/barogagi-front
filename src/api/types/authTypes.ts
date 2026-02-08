@@ -14,12 +14,12 @@ export interface LoginRequestType {
 
 /** 로그인 응답 data 타입 */
 export type LoginResponseDataType = {
-  refreshTokenExpiresIn: number; // 초 단위- ex: 2592000 = 30일
   userId: string;
+  membershipNo: string;
   accessToken: string;
   accessTokenExpiresIn: number; // 초 단위- 예: 1800 = 30분
-  membershipNo: string;
   refreshToken: string;
+  refreshTokenExpiresIn: number; // 초 단위- ex: 2592000 = 30일
 };
 
 /** 회원가입 Request Body */
