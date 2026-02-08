@@ -37,6 +37,8 @@ export const MainRoutes = () => (
   <Routes>
     {/* 루트 경로: 인증 상태에 따라 분기 */}
     <Route path="/" element={<RootRedirect />} />
+    {/* 정의되지 않은 경로: 인증 상태에 따라 분기 */}
+    <Route path="*" element={<RootRedirect />} />
 
     {/* Bottom Tab 페이지 */}
     <Route element={<TabLayout />}>
