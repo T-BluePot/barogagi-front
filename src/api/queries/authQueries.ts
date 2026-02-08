@@ -120,7 +120,7 @@ export const sendVerification = async (
 /** 인증번호 확인 */
 export const verifyVerification = async (
   input: VerifyCodeType,
-  type?: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP
+  type?: (typeof VERIFICATION_REQUEST_TYPE)[keyof typeof VERIFICATION_REQUEST_TYPE]
 ) => {
   const payload: ApprovalCompleteRequestType = {
     tel: input.tel,
