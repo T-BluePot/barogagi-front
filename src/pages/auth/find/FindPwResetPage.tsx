@@ -12,6 +12,7 @@ import { CommonInput } from "@/components/auth/common/CommonInput";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { findUser, resetPassword } from "@/api/queries";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 
 type LocationState = { phone?: string };
 
@@ -19,6 +20,7 @@ const FindPwResetPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state as LocationState) ?? {};
+  const openAlertModal = useAlertModalStore((s) => s.openAlertModal);
 
   const [userId, setUserId] = useState<string | null>(null);
   const [password, setPassword] = useState("");
@@ -95,8 +97,13 @@ const FindPwResetPage = () => {
     setIsLoading(true);
     try {
       await resetPassword(userId, password);
-      // 성공 시 로그인 페이지로 이동
-      navigate(ROUTES.AUTH.SIGNIN, { replace: true });
+      openAlertModal(
+        {
+          title: FIND_PW_TEXTS.COMPLETE.TITLE,
+          buttonLabel: FIND_PW_TEXTS.COMPLETE.BUTTON,
+        },
+        () => navigate(ROUTES.AUTH.SIGNIN, { replace: true })
+      );
     } catch (error) {
       if (error instanceof AxiosError) {
         const code = error.response?.data?.code;
