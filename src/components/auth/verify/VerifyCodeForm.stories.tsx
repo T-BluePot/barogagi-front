@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj, Decorator } from "@storybook/react-vite";
 import { VerifyCodeForm } from "./VerifyCodeForm";
 
 const meta = {
@@ -23,7 +23,12 @@ const meta = {
     },
   },
   args: {
-    onConfirm: () => console.log("onConfirm"),
+    // VerifyCodeFormProps 에 맞게 buttonProps로 전달
+    buttonProps: {
+      label: "다음",
+      disabled: false,
+      onConfirm: (code: string) => console.log("onConfirm", code),
+    },
     onExpired: () => console.log("onExpired"),
   },
 } satisfies Meta<typeof VerifyCodeForm>;
@@ -31,67 +36,67 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const AuthDecorator: Decorator = (Story) => (
+  <div className="min-h-screen bg-gray-900 p-6">
+    <div className="mx-auto max-w-md">
+      <Story />
+    </div>
+  </div>
+);
+
 export const Default: Story = {
   args: {
     initialSeconds: 180,
-    onConfirm: () => console.log("onConfirm"),
+    buttonProps: {
+      label: "다음",
+      disabled: false,
+      onConfirm: (code: string) => console.log("onConfirm", code),
+    },
     onExpired: () => console.log("onExpired"),
   },
-  decorators: [
-    (Story) => (
-      <div className="min-h-screen bg-gray-900 p-6">
-        <div className="max-w-md mx-auto">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  decorators: [AuthDecorator],
 };
 
 export const ShortTimer: Story = {
   args: {
     initialSeconds: 30,
-    onConfirm: () => console.log("onConfirm"),
+    buttonProps: {
+      label: "다음",
+      disabled: false,
+      onConfirm: (code: string) => console.log("onConfirm", code),
+    },
     onExpired: () => console.log("onExpired"),
   },
-  decorators: [
-    (Story) => (
-      <div className="min-h-screen bg-gray-900 p-6">
-        <div className="max-w-md mx-auto">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  decorators: [AuthDecorator],
 };
 
 export const LongTimer: Story = {
   args: {
     initialSeconds: 600,
-    onConfirm: () => console.log("onConfirm"),
+    buttonProps: {
+      label: "다음",
+      disabled: false,
+      onConfirm: (code: string) => console.log("onConfirm", code),
+    },
     onExpired: () => console.log("onExpired"),
   },
-  decorators: [
-    (Story) => (
-      <div className="min-h-screen bg-gray-900 p-6">
-        <div className="max-w-md mx-auto">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  decorators: [AuthDecorator],
 };
 
 export const WithTitle: Story = {
   args: {
     initialSeconds: 180,
-    onConfirm: () => console.log("onConfirm"),
+    buttonProps: {
+      label: "다음",
+      disabled: false,
+      onConfirm: (code: string) => console.log("onConfirm", code),
+    },
     onExpired: () => console.log("onExpired"),
   },
   decorators: [
     (Story) => (
       <div className="min-h-screen bg-gray-900 p-6">
-        <div className="max-w-md mx-auto space-y-12">
+        <div className="mx-auto max-w-md space-y-12">
           <div className="space-y-3">
             <h1 className="typo-title-01 text-white">인증번호 입력</h1>
             <p className="typo-body text-gray-20">
