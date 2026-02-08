@@ -80,10 +80,6 @@ const CredentialsPage = () => {
     return () => clearTimeout(timer);
   }, [id, password, passwordConfirm]);
 
-  useEffect(() => {
-    void handleValidate();
-  }, [id, password, passwordConfirm]);
-
   // === 아이디 중복 확인 ===
   const [isIdCheckModalOpen, setIsIdCheckModalOpen] = useState(false);
   const [checkIdMessage, setCheckIdMessage] = useState("");
