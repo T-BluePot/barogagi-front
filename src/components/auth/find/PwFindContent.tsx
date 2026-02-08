@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { ValidationError } from "yup";
+
 import Button from "@/components/common/buttons/CommonButton";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
@@ -8,18 +10,45 @@ import { ROUTES } from "@/constants/routes";
 import { FIND_PW_TEXTS } from "@/constants/texts/auth/find/findAuth";
 import { sendVerification } from "@/api/queries";
 import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
+import { phoneSchema } from "@/utils/authSchema";
 
 const PwFindContent = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
 
+  // === 유효성 검사 ===
+  const handleValidate = async (): Promise<boolean> => {
+    const newErrors: { [key: string]: string } = {};
+
+    try {
+      await phoneSchema.validate(phoneNumber);
+    } catch (err: unknown) {
+      if (err instanceof ValidationError) {
+        newErrors.phone = err.message;
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void handleValidate();
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [phoneNumber]);
+
+  // === 제출 ===
   const handleSubmit = async () => {
     const tel = phoneNumber.trim();
-    if (!tel) {
-      alert("휴대전화 번호를 입력해주세요.");
-      return;
-    }
+    if (!tel) return;
+
+    const isValid = await handleValidate();
+    if (!isValid) return;
 
     setIsLoading(true);
     try {
@@ -35,6 +64,14 @@ const PwFindContent = () => {
     }
   };
 
+  // === 버튼 비활성화 검증 ===
+  const isSubmitDisabled = useMemo(() => {
+    if (phoneNumber.trim() === "") return true;
+    if (Object.keys(errors).length !== 0) return true;
+    if (isLoading) return true;
+    return false;
+  }, [phoneNumber, errors, isLoading]);
+
   return (
     <div className="space-y-6">
       <PageTitle
@@ -49,12 +86,14 @@ const PwFindContent = () => {
           value={phoneNumber}
           setValue={setPhoneNumber}
           type="tel"
+          error={phoneNumber !== "" && !!errors.phone}
+          helperText={phoneNumber !== "" ? errors.phone : ""}
         />
       </div>
       <div className="mb-6">
         <Button
           label={isLoading ? "전송 중..." : FIND_PW_TEXTS.BUTTON}
-          isDisabled={!/^\d{10,11}$/.test(phoneNumber) || isLoading}
+          isDisabled={isSubmitDisabled}
           onClick={handleSubmit}
         />
       </div>

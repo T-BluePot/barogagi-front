@@ -5,6 +5,7 @@ import {
   PASSWORD_MESSAGES,
   PW_CONFIRM_MESSAGES,
   NICKNAME_MESSAGES,
+  PHONE_MESSAGES,
 } from "@/constants/texts/auth/signup/credentials";
 
 /**
@@ -101,4 +102,21 @@ export const nicknameSchema = Yup.string()
   // 2. 길이: 공백 포함 기준 2자 이상 12자 이하
   .test("valid-length", NICKNAME_MESSAGES.INVALID_LENGTH, (v = "") =>
     v === "" ? true : v.length >= 2 && v.length <= 12
+  );
+
+/**
+ * 휴대전화 번호 유효성 검사 스키마
+ * 조건:
+ * - 숫자만 허용
+ * - 길이는 10~11자리
+ */
+export const phoneSchema = Yup.string()
+  // 1. 숫자만 허용
+  .test("only-digits", PHONE_MESSAGES.ONLY_DIGITS, (v = "") =>
+    v === "" ? true : /^\d+$/.test(v)
+  )
+
+  // 2. 길이: 10~11자리
+  .test("valid-format", PHONE_MESSAGES.INVALID_FORMAT, (v = "") =>
+    v === "" ? true : /^\d{10,11}$/.test(v)
   );
