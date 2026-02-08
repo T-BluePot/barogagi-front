@@ -1,5 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import TabLayout from "@/components/layout/TabLayout";
+import { ROUTES } from "@/constants/routes";
 
 /* 메인 페이지 */
 // 일정 생성 탭
@@ -17,12 +18,29 @@ import HomePage from "@/pages/main/HomePage";
 import ProfilePage from "@/pages/main/profile/ProfilePage";
 import ProfileEditPage from "@/pages/main/profile/ProfileEditPage";
 
+/**
+ * 루트 경로(/) 진입 시 로그인 여부에 따라 리다이렉트
+ * - accessToken 존재 → /home
+ * - accessToken 없음 → /auth (로그인 랜딩)
+ */
+const RootRedirect = () => {
+  const isLoggedIn = !!localStorage.getItem("accessToken");
+  return (
+    <Navigate
+      to={isLoggedIn ? ROUTES.MAIN.HOME : ROUTES.AUTH.LANDING}
+      replace
+    />
+  );
+};
+
 export const MainRoutes = () => (
   <Routes>
+    {/* 루트 경로: 인증 상태에 따라 분기 */}
+    <Route path="/" element={<RootRedirect />} />
+
     {/* Bottom Tab 페이지 */}
     <Route element={<TabLayout />}>
       {/* Home 페이지 */}
-      <Route path="/" element={<HomePage />} />
       <Route path="/home" element={<HomePage />} />
       {/* Plan 페이지 */}
       <Route path="/plan" element={<ScheduleListPage />} />
