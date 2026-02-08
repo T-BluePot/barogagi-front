@@ -46,6 +46,12 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isDarkBg: true,
     backPath: ROUTES.AUTH.LANDING, // Auth 랜딩 페이지로 이동
   },
+  [ROUTES.AUTH.SIGNUP.TERMS]: {
+    type: "back",
+    label: "회원가입",
+    isDarkBg: true,
+    backPath: ROUTES.AUTH.SIGNIN,
+  },
   [ROUTES.AUTH.SIGNUP.VERIFY]: {
     type: "back",
     label: "회원가입",
