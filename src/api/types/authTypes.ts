@@ -52,6 +52,11 @@ export interface ApprovalCompleteRequestType {
   apiSecretKey?: string;
 }
 
+/** 아이디 찾기 응답 */
+export interface FindUserResponseType {
+  userId: string;
+}
+
 /** 약관별 동의 내역 */
 export interface TermsProcessRequestType {
   termsNum: number;

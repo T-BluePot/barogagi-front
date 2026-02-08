@@ -15,6 +15,7 @@ import type {
   RefreshTokenRequestDTO,
   ApprovalSendRequestType,
   ApprovalCompleteRequestType,
+  FindUserResponseType,
 } from "../types";
 
 // === data type ===
