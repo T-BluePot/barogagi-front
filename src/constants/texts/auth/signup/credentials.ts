@@ -36,3 +36,8 @@ export const NICKNAME_MESSAGES = {
   ALLOWED_CHARS: "한글, 영문, 숫자만 입력할 수 있습니다.",
   INVALID_LENGTH: "닉네임은 2자 이상 12자 이하여야 합니다.",
 };
+
+export const PHONE_MESSAGES = {
+  ONLY_DIGITS: "숫자만 입력할 수 있습니다.",
+  INVALID_FORMAT: "휴대전화 번호는 10~11자리 숫자여야 합니다.",
+};

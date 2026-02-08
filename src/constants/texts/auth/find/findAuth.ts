@@ -39,4 +39,8 @@ export const FIND_PW_TEXTS = {
     CONFIRM_PASSWORD_PLACEHOLDER: "새 비밀번호를 다시 입력해주세요",
     BUTTON: "로그인 하러 가기",
   },
+  COMPLETE: {
+    TITLE: "비밀번호가 성공적으로\n변경되었어요!",
+    BUTTON: "로그인 하러 가기",
+  },
 };

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ValidationError } from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AxiosError } from "axios";
 
 import { ROUTES } from "@/constants/routes";
 import { passwordSchema, passwordConfirmSchema } from "@/utils/authSchema";
@@ -10,63 +11,126 @@ import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
 import Button from "@/components/common/buttons/CommonButton";
 
+import { findUser, resetPassword } from "@/api/queries";
+import { useAlertModalStore } from "@/stores/alertModalStore";
+
+type LocationState = { phone?: string };
+
 const FindPwResetPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = (location.state as LocationState) ?? {};
+  const openAlertModal = useAlertModalStore((s) => s.openAlertModal);
 
+  const [userId, setUserId] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [errors, setErrors] = useState<{
-    password?: string;
-    passwordConfirm?: string;
-  }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // 비밀번호 유효성 검사
-  const validatePassword = (value: string) => {
-    try {
-      passwordSchema.validateSync(value);
-      setErrors((prev) => ({ ...prev, password: undefined }));
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        setErrors((prev) => ({ ...prev, password: error.message }));
+  // 전화번호로 userId 조회
+  useEffect(() => {
+    const fetchUserId = async () => {
+      if (!state.phone) {
+        navigate(ROUTES.AUTH.FIND_ACCOUNT, { replace: true });
+        return;
       }
+
+      try {
+        const response = await findUser(state.phone);
+        const users = response.data as { userId: string }[];
+        if (users.length > 0) {
+          setUserId(users[0].userId);
+        } else {
+          alert("해당 전화번호로 가입된 계정이 존재하지 않습니다.");
+          navigate(ROUTES.AUTH.FIND_ACCOUNT, { replace: true });
+        }
+      } catch {
+        alert("사용자 정보 조회에 실패했습니다.");
+        navigate(ROUTES.AUTH.FIND_ACCOUNT, { replace: true });
+      }
+    };
+
+    fetchUserId();
+  }, [state.phone, navigate]);
+
+  // === 유효성 검사 (회원가입과 동일한 패턴) ===
+  const handleValidate = async (): Promise<boolean> => {
+    const newErrors: { [key: string]: string } = {};
+
+    try {
+      await passwordSchema.validate(password);
+    } catch (err: unknown) {
+      if (err instanceof ValidationError) {
+        newErrors.password = err.message;
+      }
+    }
+
+    try {
+      const confirmSchema = passwordConfirmSchema(password);
+      await confirmSchema.validate(passwordConfirm);
+    } catch (err: unknown) {
+      if (err instanceof ValidationError) {
+        newErrors.passwordConfirm = err.message;
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void handleValidate();
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [password, passwordConfirm]);
+
+  // === 제출 ===
+  const handleSubmit = async () => {
+    if (!password || !passwordConfirm || !userId) return;
+
+    const isValid = await handleValidate();
+    if (!isValid) return;
+
+    setIsLoading(true);
+    try {
+      await resetPassword(userId, password);
+      openAlertModal(
+        {
+          title: FIND_PW_TEXTS.COMPLETE.TITLE,
+          buttonLabel: FIND_PW_TEXTS.COMPLETE.BUTTON,
+        },
+        () => navigate(ROUTES.AUTH.SIGNIN, { replace: true })
+      );
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const code = error.response?.data?.code;
+        if (code === "U400") {
+          alert("해당 아이디의 정보가 존재하지 않습니다.");
+        } else {
+          alert(
+            error.response?.data?.message ??
+              "비밀번호 재설정에 실패했습니다. 잠시 후 다시 시도해주세요."
+          );
+        }
+      } else {
+        alert("비밀번호 재설정에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // 비밀번호 확인 유효성 검사
-  const validatePasswordConfirm = (value: string) => {
-    try {
-      passwordConfirmSchema(password).validateSync(value);
-      setErrors((prev) => ({ ...prev, passwordConfirm: undefined }));
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        setErrors((prev) => ({ ...prev, passwordConfirm: error.message }));
-      }
-    }
-  };
-
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
-    if (value) validatePassword(value);
-  };
-
-  const handlePasswordConfirmChange = (value: string) => {
-    setPasswordConfirm(value);
-    if (value) validatePasswordConfirm(value);
-  };
-
-  const handleSubmit = () => {
-    if (!password || !passwordConfirm) return;
-    if (errors.password || errors.passwordConfirm) return;
-
-    // TODO: API 호출하여 비밀번호 변경
-    console.log("비밀번호 변경:", { password, passwordConfirm });
-
-    // 성공 시 로그인 페이지로 이동
-    navigate(ROUTES.AUTH.SIGNIN);
-  };
-
-  const isFormValid =
-    password && passwordConfirm && !errors.password && !errors.passwordConfirm;
+  // === 버튼 비활성화 검증 ===
+  const isFormValid = useMemo(() => {
+    if (!userId) return false;
+    if ([password, passwordConfirm].some((v) => v.trim() === "")) return false;
+    if (Object.keys(errors).length !== 0) return false;
+    if (isLoading) return false;
+    return true;
+  }, [userId, password, passwordConfirm, errors, isLoading]);
 
   return (
     <div className="flex flex-col w-full px-6 flex-1">
@@ -77,7 +141,7 @@ const FindPwResetPage = () => {
             label={FIND_PW_TEXTS.RESET.PASSWORD_LABEL}
             placeholder={FIND_PW_TEXTS.RESET.PASSWORD_PLACEHOLDER}
             value={password}
-            setValue={handlePasswordChange}
+            setValue={setPassword}
             type="password"
             error={password !== "" && !!errors.password}
             helperText={password !== "" ? errors.password : ""}
@@ -86,7 +150,7 @@ const FindPwResetPage = () => {
             label={FIND_PW_TEXTS.RESET.CONFIRM_PASSWORD_LABEL}
             placeholder={FIND_PW_TEXTS.RESET.CONFIRM_PASSWORD_PLACEHOLDER}
             value={passwordConfirm}
-            setValue={handlePasswordConfirmChange}
+            setValue={setPasswordConfirm}
             type="password"
             error={passwordConfirm !== "" && !!errors.passwordConfirm}
             helperText={passwordConfirm !== "" ? errors.passwordConfirm : ""}
@@ -94,7 +158,7 @@ const FindPwResetPage = () => {
         </div>
         <div className="mb-6">
           <Button
-            label={FIND_PW_TEXTS.RESET.BUTTON}
+            label={isLoading ? "처리 중..." : FIND_PW_TEXTS.RESET.BUTTON}
             isDisabled={!isFormValid}
             onClick={handleSubmit}
           />

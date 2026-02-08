@@ -1,9 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { AxiosError } from "axios";
 
 import { ROUTES } from "@/constants/routes";
 import { FIND_ID_TEXTS } from "@/constants/texts/auth/find/findAuth";
 import { FullScreenModal } from "@/components/common/modal/full-screen-modal/FullScreenModal";
+import { findUser } from "@/api/queries";
 
 type FindIdResult = {
   success: boolean;
@@ -15,21 +17,38 @@ const FindIdResultPage = () => {
   const location = useLocation();
   const state = (location.state as { phone?: string } | null) ?? {};
 
-  // 모의 API 결과 (실제로는 API 호출 결과를 사용)
   const [result, setResult] = useState<FindIdResult | null>(null);
 
   useEffect(() => {
-    // TODO: 실제 API 호출
-    // 현재는 모의 데이터로 처리
-    const mockResult: FindIdResult = {
-      success: false, // 디자인 확인용 - 실패 케이스로 변경
-      userId: "barogagi1234",
+    const fetchUserId = async () => {
+      if (!state.phone) {
+        setResult({ success: false });
+        return;
+      }
+
+      try {
+        const response = await findUser(state.phone);
+        const users = response.data as { userId: string }[];
+        setResult({
+          success: users.length > 0,
+          userId: users[0]?.userId,
+        });
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          const code = error.response?.data?.code;
+          // F201: 해당 전화번호로 가입된 계정이 존재하지 않습니다.
+          if (code === "F201") {
+            setResult({ success: false });
+          } else {
+            setResult({ success: false });
+          }
+        } else {
+          setResult({ success: false });
+        }
+      }
     };
 
-    console.log("FindIdResultPage - mockResult:", mockResult);
-    console.log("FindIdResultPage - phone state:", state.phone);
-
-    setResult(mockResult);
+    fetchUserId();
   }, [state.phone]);
 
   const handleClose = () => {
@@ -55,11 +74,11 @@ const FindIdResultPage = () => {
   // 성공/실패에 따른 props 설정
   const getModalProps = () => {
     if (result.success) {
-      // 아이디 찾기 성공
+      // 아이디 찾기 성공 — "등록된 아이디는 {userId}입니다." 한 줄 표시
       return {
-        title: `${FIND_ID_TEXTS.RESULT.FOUND.TITLE}\n${FIND_ID_TEXTS.RESULT.FOUND.SUFFIX}`,
+        title: `${FIND_ID_TEXTS.RESULT.FOUND.TITLE}\n${result.userId}${FIND_ID_TEXTS.RESULT.FOUND.SUFFIX}`,
         content: undefined,
-        highlightText: result.userId,
+        highlightText: undefined,
         buttonLabel: FIND_ID_TEXTS.RESULT.FOUND.BUTTON,
         onButtonClick: handleLogin,
       };
@@ -76,9 +95,6 @@ const FindIdResultPage = () => {
   };
 
   const modalProps = getModalProps();
-
-  console.log("FindIdResultPage - modalProps:", modalProps);
-  console.log("FindIdResultPage - result:", result);
 
   return (
     <FullScreenModal
