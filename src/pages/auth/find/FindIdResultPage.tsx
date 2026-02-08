@@ -74,11 +74,11 @@ const FindIdResultPage = () => {
   // 성공/실패에 따른 props 설정
   const getModalProps = () => {
     if (result.success) {
-      // 아이디 찾기 성공
+      // 아이디 찾기 성공 — "등록된 아이디는 {userId}입니다." 한 줄 표시
       return {
-        title: `${FIND_ID_TEXTS.RESULT.FOUND.TITLE}\n${FIND_ID_TEXTS.RESULT.FOUND.SUFFIX}`,
+        title: `${FIND_ID_TEXTS.RESULT.FOUND.TITLE}\n${result.userId}${FIND_ID_TEXTS.RESULT.FOUND.SUFFIX}`,
         content: undefined,
-        highlightText: result.userId,
+        highlightText: undefined,
         buttonLabel: FIND_ID_TEXTS.RESULT.FOUND.BUTTON,
         onButtonClick: handleLogin,
       };
