@@ -28,9 +28,10 @@ const FindIdResultPage = () => {
 
       try {
         const response = await findUser(state.phone);
+        const users = response.data as { userId: string }[];
         setResult({
-          success: true,
-          userId: (response.data as { userId?: string })?.userId,
+          success: users.length > 0,
+          userId: users[0]?.userId,
         });
       } catch (error) {
         if (error instanceof AxiosError) {

@@ -52,10 +52,8 @@ export interface ApprovalCompleteRequestType {
   apiSecretKey?: string;
 }
 
-/** 아이디 찾기 응답 */
-export interface FindUserResponseType {
-  userId: string;
-}
+/** 아이디 찾기 응답 (배열로 반환) */
+export type FindUserResponseType = { userId: string }[];
 
 /** 약관별 동의 내역 */
 export interface TermsProcessRequestType {
