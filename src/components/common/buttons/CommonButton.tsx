@@ -1,11 +1,19 @@
+import type { ButtonHTMLAttributes } from "react";
+
 export type ButtonProps = {
   label: string;
   onClick?: () => void;
   icon?: React.ReactNode; // 아이콘 slot 추가
   isDisabled?: boolean;
-};
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 
-const Button = ({ label, onClick, icon, isDisabled = false }: ButtonProps) => {
+const Button = ({
+  label,
+  type = "button",
+  onClick,
+  icon,
+  isDisabled = false,
+}: ButtonProps) => {
   const baseStyle = `px-4 py-3 rounded-full w-full max-w-xl flex items-center justify-center typo-body focus:outline-none cursor-pointer transition-colors duration-200 ${
     isDisabled
       ? "bg-main-disable text-gray-50 cursor-not-allowed"
@@ -14,6 +22,7 @@ const Button = ({ label, onClick, icon, isDisabled = false }: ButtonProps) => {
 
   return (
     <button
+      type={type}
       onClick={isDisabled ? undefined : onClick}
       className={baseStyle}
       disabled={isDisabled}
