@@ -9,6 +9,8 @@ import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
 import { API_BASE_URL } from "./endpoints";
 
+import { refresh } from "./queries";
+
 const axiosConfig: AxiosRequestConfig = {
   baseURL: API_BASE_URL,
   timeout: 10000,
@@ -18,6 +20,7 @@ const axiosConfig: AxiosRequestConfig = {
 };
 
 export const http: AxiosInstance = axios.create(axiosConfig);
+export const refreshHttp: AxiosInstance = axios.create(axiosConfig);
 
 // 요청 인터셉터: Authorization 헤더에 토큰 자동 삽입
 http.interceptors.request.use(
