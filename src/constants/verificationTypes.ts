@@ -4,3 +4,7 @@ export const VERIFICATION_REQUEST_TYPE = {
   FIND_ID: "FIND-ID",
   RESET_PASSWORD: "RESET-PASSWORD",
 } as const;
+
+/** VERIFICATION_REQUEST_TYPE 값 유니온 타입 */
+export type VerificationType =
+  (typeof VERIFICATION_REQUEST_TYPE)[keyof typeof VERIFICATION_REQUEST_TYPE];
