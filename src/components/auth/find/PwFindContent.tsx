@@ -6,21 +6,33 @@ import { CommonInput } from "@/components/auth/common/CommonInput";
 import { ROUTES } from "@/constants/routes";
 
 import { FIND_PW_TEXTS } from "@/constants/texts/auth/find/findAuth";
+import { sendVerification } from "@/api/queries";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 const PwFindContent = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    if (!phoneNumber.trim()) {
+  const handleSubmit = async () => {
+    const tel = phoneNumber.trim();
+    if (!tel) {
       alert("휴대전화 번호를 입력해주세요.");
       return;
     }
 
-    // 비밀번호 재설정 인증 코드 페이지로 이동
-    navigate(ROUTES.AUTH.VERIFY.RESET_PASSWORD, {
-      state: { phone: phoneNumber, flow: "reset-password" },
-    });
+    setIsLoading(true);
+    try {
+      // 인증번호 발송 후 코드 입력 페이지로 이동
+      await sendVerification(tel, VERIFICATION_REQUEST_TYPE.RESET_PASSWORD);
+      navigate(ROUTES.AUTH.VERIFY.RESET_PASSWORD, {
+        state: { phone: tel, flow: "reset-password" },
+      });
+    } catch {
+      alert("인증번호 전송에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -41,8 +53,8 @@ const PwFindContent = () => {
       </div>
       <div className="mb-6">
         <Button
-          label={FIND_PW_TEXTS.BUTTON}
-          isDisabled={!/^\d{10,11}$/.test(phoneNumber)}
+          label={isLoading ? "전송 중..." : FIND_PW_TEXTS.BUTTON}
+          isDisabled={!/^\d{10,11}$/.test(phoneNumber) || isLoading}
           onClick={handleSubmit}
         />
       </div>
