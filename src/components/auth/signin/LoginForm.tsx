@@ -32,7 +32,7 @@ export const LoginForm = () => {
 
     // 입력값 검증
     if (!userId || !password) {
-      setError("아이디과 비밀번호를 모두 입력해주세요.");
+      setError("아이디와 비밀번호를 모두 입력해주세요.");
       return;
     }
 
