@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
 /**
@@ -8,16 +8,9 @@ import { ROUTES } from "@/constants/routes";
  */
 
 export function RootRedirect() {
-  const location = useLocation();
-
   // localStorage 기반 로그인 여부 판단
   const accessToken = localStorage.getItem("accessToken");
-
-  //
   const isLoggedIn = Boolean(accessToken);
-  if (location.pathname.startsWith("/auth")) {
-    return null;
-  }
 
   return isLoggedIn ? (
     <Navigate to={ROUTES.MAIN.HOME} replace />
