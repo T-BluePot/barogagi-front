@@ -4,7 +4,7 @@ import { ROUTES } from "@/constants/routes";
 /**
  * 루트 진입 시 토큰 유무로 랜딩 분기
  * - accessToken 존재: /home
- * - accessToken 없음: /auth/login
+ * - accessToken 없음: /auth (랜딩 페이지)
  */
 
 export function RootRedirect() {
