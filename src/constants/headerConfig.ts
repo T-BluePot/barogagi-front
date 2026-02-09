@@ -13,7 +13,14 @@ export type HeaderConfig =
   | { type: "common"; rightPath?: string; isDarkBg?: boolean }
   | { type: "title"; label: string; isDarkBg?: boolean }
   | { type: "close"; label?: string; isDarkBg?: boolean; closePath?: string }
-  | { type: "back"; label?: string; isDarkBg?: boolean; backPath?: string };
+  | {
+      type: "back";
+      label?: string;
+      isDarkBg?: boolean;
+      backPath?: string;
+      showBackConfirm?: boolean; // 뒤로가기 확인 모달 표시 여부
+      confirmMessage?: string; // 커스텀 메시지 (선택사항)
+    };
 
 /**
  * 섹션별 공통 규칙 (예: /signup/*)
@@ -52,11 +59,28 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isDarkBg: true,
     backPath: ROUTES.AUTH.SIGNIN,
   },
+  [ROUTES.AUTH.SIGNUP.CREDENTIALS]: {
+    type: "back",
+    label: "회원가입",
+    isDarkBg: true,
+    showBackConfirm: true,
+    backPath: ROUTES.AUTH.SIGNIN,
+  },
   [ROUTES.AUTH.SIGNUP.VERIFY]: {
     type: "back",
     label: "회원가입",
     isDarkBg: true,
-    backPath: ROUTES.AUTH.SIGNUP.CREDENTIALS,
+
+    showBackConfirm: true,
+    backPath: ROUTES.AUTH.SIGNIN,
+  },
+  [ROUTES.AUTH.SIGNUP.PROFILE]: {
+    type: "back",
+    label: "회원가입",
+    isDarkBg: true,
+
+    showBackConfirm: true,
+    backPath: ROUTES.AUTH.SIGNIN,
   },
   [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none", isDarkBg: true },
   // 인증 페이지들 (VERIFY는 객체이므로 개별 경로 사용)
@@ -64,6 +88,8 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     type: "back",
     label: "회원가입",
     isDarkBg: true,
+
+    showBackConfirm: true,
     backPath: ROUTES.AUTH.SIGNUP.CREDENTIALS,
   },
   [ROUTES.AUTH.VERIFY.FIND_ID]: {

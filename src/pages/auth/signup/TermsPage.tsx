@@ -4,12 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { TERMS_TEXT } from "@/constants/texts/auth/signup/terms";
 
 // === component ===
+import PageLoading from "@/components/layout/PageLoading";
+
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { useAlertModalStore } from "@/stores/alertModalStore";
 import { SelectAllConsentButton } from "@/components/auth/signup/SelectAllConsentButton";
 import { TermsListSection } from "@/components/auth/signup/TermsListSection";
+
+import ErrorModal from "@/components/auth/signup/ErrorModal";
 
 // === constant ===
 import { ROUTES } from "@/constants/routes";
@@ -26,6 +30,7 @@ const TermsPage = () => {
   const { openAlertModal } = useAlertModalStore();
 
   // === 약관 조회 관련 ===
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const { data, isLoading, isError } = useQuery({
     queryKey: authKeys.terms(),
     queryFn: () => getTermsList(VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP),
@@ -46,6 +51,13 @@ const TermsPage = () => {
         boolean
       >
   );
+
+  // 에러 발생 시: 페이지 return 하지 말고 모달만 띄우기
+  useEffect(() => {
+    if (!isError) return;
+
+    setIsErrorModalOpen(true);
+  }, [isError]);
 
   // consents 변수 서버 동기화
   useEffect(() => {
@@ -135,22 +147,19 @@ const TermsPage = () => {
     /**
      * TODO: 추후 스켈레톤 컴포넌트로 수정
      */
-    return (
-      <div className="flex flex-col h-full">약관을 불러오는 중입니다...</div>
-    );
-  }
-
-  if (isError) {
-    /**
-     * TODO: Error 전용 페이지 추가
-     */
-    return (
-      <div className="flex flex-col h-full">약관을 불러오지 못했습니다.</div>
-    );
+    return <PageLoading message="약관을 불러오는 중입니다..." />;
   }
 
   return (
     <div className="flex flex-col h-full">
+      <ErrorModal
+        isOpen={isErrorModalOpen}
+        message="문제가 발생하여 메인 페이지로 이동합니다."
+        onClick={() => {
+          setIsErrorModalOpen(false);
+          navigate(ROUTES.AUTH.LANDING, { replace: true });
+        }}
+      />
       <div className="flex flex-1 flex-col w-full px-6 items-baseline">
         <PageTitle title={TERMS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">

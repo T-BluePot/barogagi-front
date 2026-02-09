@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router-dom";
-import { EmailLoginForm } from "./EmailLoginForm";
+import { LoginForm } from "./LoginForm";
 
 const meta = {
-  title: "Components/Auth/Signin/EmailLoginForm",
-  component: EmailLoginForm,
+  title: "Components/Auth/Signin/LoginForm",
+  component: LoginForm,
   parameters: {
     layout: "fullscreen",
     backgrounds: {
@@ -29,7 +29,7 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof EmailLoginForm>;
+} satisfies Meta<typeof LoginForm>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

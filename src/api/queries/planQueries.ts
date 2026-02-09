@@ -2,7 +2,7 @@
  * 일정(Schedule) 관련 API 요청 함수
  */
 
-import { http } from "../http";
+import { http } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import type {
   BaseResponse,

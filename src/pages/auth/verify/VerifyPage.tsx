@@ -93,11 +93,11 @@ const VerifyPage = () => {
       if (error instanceof AxiosError) {
         setErrorText(
           error.response?.data?.message ??
-            "인증 번호 전송을 실패했습니다. \n잠시 후 다시 시도해주새요."
+            "인증 번호 전송을 실패했습니다. \n잠시 후 다시 시도해주세요."
         );
       } else {
         setErrorText(
-          "인증 번호 전송을 실패했습니다. \n잠시 후 다시 시도해주새요."
+          "인증 번호 전송을 실패했습니다. \n잠시 후 다시 시도해주세요."
         );
       }
 

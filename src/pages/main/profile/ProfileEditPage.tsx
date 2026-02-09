@@ -58,7 +58,7 @@ const ProfileEditPage = () => {
 
   // Form State
   const [nickname, setNickname] = useState("");
-  const [gender, setGender] = useState<GenderType | null>(null);
+  const [gender, setGender] = useState<GenderType | undefined>(undefined);
   const [userBirthYear, setUserBirthYear] = useState("");
   const [userBirthMonth, setUserBirthMonth] = useState("");
   const [userBirthDay, setUserBirthDay] = useState("");
@@ -71,7 +71,7 @@ const ProfileEditPage = () => {
   useEffect(() => {
     if (userData) {
       setNickname(userData.nickName || "");
-      setGender((userData.gender as GenderType) || null);
+      setGender((userData.gender as GenderType) || undefined);
 
       // 생년월일 파싱: "YYYYMMDD" 형식
       if (userData.birth && userData.birth.length === 8) {
@@ -122,7 +122,7 @@ const ProfileEditPage = () => {
 
     updateMutation.mutate({
       nickName: nickname.trim(),
-      gender: gender ?? undefined,
+      gender,
       birth,
     });
   };

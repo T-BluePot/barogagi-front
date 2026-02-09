@@ -1,7 +1,7 @@
 /**
  * 기타(Common) 관련 API 요청 함수 (태그, 지역, 인증, 약관, 장소)
  */
-import { http } from "../http";
+import { http } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import { getApiKey } from "../apiKey";
 

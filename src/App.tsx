@@ -1,4 +1,5 @@
 import "./App.css";
+import { RootRedirect } from "./routes/RootRedirect";
 import { AuthRoutes } from "@/routes/AuthRoutes";
 import { MainRoutes } from "@/routes/MainRoutes";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -11,6 +12,7 @@ function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
+          <Route path="/" element={<RootRedirect />} />
           <Route path="/auth/*" element={<AuthRoutes />} />
           <Route path="/*" element={<MainRoutes />} />
         </Routes>

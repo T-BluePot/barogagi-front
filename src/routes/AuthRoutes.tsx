@@ -10,7 +10,7 @@ import ProfilePage from "@/pages/auth/signup/ProfilePage";
 import SignupCompletePage from "@/pages/auth/signup/SignupCompletePage";
 
 /* auth/signin 로직 */
-import EmailLoginPage from "@/pages/auth/signin/EmailLoginPage";
+import LoginPage from "@/pages/auth/signin/LoginPage";
 
 /* auth/find 로직 */
 import AccountFindPage from "@/pages/auth/find/AccountFindPage";
@@ -23,7 +23,7 @@ import VerifyPage from "@/pages/auth/verify/VerifyPage";
 export const AuthRoutes = () => (
   <Routes>
     <Route path="/" element={<AuthLandingPage />} />
-    <Route path="/login" element={<EmailLoginPage />} />
+    <Route path="/login" element={<LoginPage />} />
     {/* 회원가입 로직 페이지 */}
     <Route path="/signup" element={<TermsPage />} />
     <Route path="/signup/credentials" element={<CredentialsPage />} />

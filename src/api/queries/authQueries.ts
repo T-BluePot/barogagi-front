@@ -2,17 +2,19 @@
  * 회원(Auth) 관련 API 요청 함수
  */
 
-import { http } from "../http";
+import { http, refreshHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import { getApiKey } from "../apiKey";
 
 // === request body type ===
 import type {
   BaseResponse,
-  LoginDTO,
+  LoginRequestType,
+  LoginResponseDataType,
   JoinRequestType,
   MemberRequestDTO,
-  RefreshTokenRequestDTO,
+  RefreshTokenRequestType,
+  RefreshResponseDataType,
   ApprovalSendRequestType,
   ApprovalCompleteRequestType,
   FindUserResponseType,
@@ -25,16 +27,21 @@ import type { SignupPayloadType } from "@/types/signupTypes";
 import type { VerificationType } from "@/constants/verificationTypes";
 
 /** 로그인 */
-export const login = async (data: LoginDTO) => {
-  const response = await http.post<BaseResponse<unknown>>(
+export const login = async (userId: string, password: string) => {
+  const payload: LoginRequestType = {
+    apiSecretKey: getApiKey(),
+    userId,
+    password,
+  };
+  const response = await http.post<BaseResponse<LoginResponseDataType>>(
     ENDPOINTS.AUTH.LOGIN,
-    data
+    payload
   );
   return response.data;
 };
 
 /** 로그아웃 */
-export const logout = async (data: RefreshTokenRequestDTO) => {
+export const logout = async (data: RefreshTokenRequestType) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.AUTH.LOGOUT,
     data
@@ -43,11 +50,10 @@ export const logout = async (data: RefreshTokenRequestDTO) => {
 };
 
 /** 토큰 재발급 */
-export const refresh = async (data: RefreshTokenRequestDTO) => {
-  const response = await http.post<BaseResponse<unknown>>(
-    ENDPOINTS.AUTH.REFRESH,
-    data
-  );
+export const refresh = async (data: RefreshTokenRequestType) => {
+  const response = await refreshHttp.post<
+    BaseResponse<RefreshResponseDataType>
+  >(ENDPOINTS.AUTH.REFRESH, data);
   return response.data;
 };
 
