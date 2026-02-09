@@ -39,65 +39,73 @@ http.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터: 401이면 refresh → 원요청 재시도(1회), 실패 시 로그인 이동
+let refreshInFlight: Promise<string> | null = null;
+
 http.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const status = error.response?.status;
-    const originalRequest = error.config as AxiosRequestConfig & {
-      _retry?: boolean;
-    };
+    const originalRequest = error.config as
+      | (AxiosRequestConfig & { _retry?: boolean })
+      | undefined;
 
-    // 401이 아니거나 originalRequest가 없으면 그대로 반환
     if (status !== 401 || !originalRequest) {
       return Promise.reject(error);
     }
 
-    // auth 내 요청 시 제외
+    // auth 요청 제외: 무한루프 방지
     const authEndpoints = Object.values(ENDPOINTS.AUTH);
     const isAuthRequest = authEndpoints.some((endpoint) =>
       originalRequest.url?.includes(endpoint)
     );
-
     if (isAuthRequest) {
       return Promise.reject(error);
     }
 
-    // 무한 재시도 방지: 같은 요청은 refresh를 1번만 시도
+    // 같은 요청은 1번만 재시도
     if (originalRequest._retry) {
-      localStorage.removeItem("accessToken");
-      window.location.href = "/auth/login";
+      handleLogout();
       return Promise.reject(error);
     }
     originalRequest._retry = true;
 
     try {
-      // refreshToken 확인
+      // refreshToken은 refresh 실행 전에 확인
       const storedRefreshToken = localStorage.getItem("refreshToken");
       if (!storedRefreshToken) {
         throw new Error("refreshToken이 없습니다.");
       }
 
-      // 1) 토큰 재발급
-      const refreshData = await refresh({
-        refreshToken: storedRefreshToken,
-      });
+      // 동시에 여러 401이 와도 refresh는 단 1번만 실행
+      if (!refreshInFlight) {
+        refreshInFlight = (async () => {
+          const refreshData = await refresh({
+            refreshToken: storedRefreshToken,
+          });
+          const tokenBundle = refreshData.data;
 
-      const tokenBundle = refreshData.data;
-      if (!tokenBundle.accessToken) {
-        throw new Error("refresh 응답에 accessToken이 없습니다.");
+          if (!tokenBundle?.accessToken) {
+            throw new Error("refresh 응답에 accessToken이 없습니다.");
+          }
+
+          saveAuthTokens(tokenBundle);
+          return tokenBundle.accessToken;
+        })().finally(() => {
+          // 성공/실패와 관계없이 잠금 해제
+          refreshInFlight = null;
+        });
       }
 
-      saveAuthTokens(tokenBundle);
+      // 이미 실행 중인 refresh가 있으면 그 결과를 기다렸다가 동일 토큰 사용
+      const newAccessToken = await refreshInFlight;
 
-      // 3) 원요청 헤더에 새 토큰을 넣고 재요청
-      if (originalRequest.headers) {
-        originalRequest.headers.Authorization = `Bearer ${tokenBundle.accessToken}`;
-      }
+      // 원요청에 새 토큰 주입 후 재시도
+      originalRequest.headers = originalRequest.headers ?? {};
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
       return http(originalRequest);
     } catch (e) {
-      // refresh 실패 → 로그아웃 처리
+      // refresh 실패 시에도 항상 동일한 로그아웃 정리
       handleLogout();
       return Promise.reject(e);
     }
