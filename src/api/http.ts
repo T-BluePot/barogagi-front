@@ -5,25 +5,15 @@
  * - Response 인터셉터: 401 에러 시 로그인 페이지 리다이렉트
  */
 
-import axios from "axios";
-import type { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
-import { API_BASE_URL, ENDPOINTS } from "./endpoints";
+import type { AxiosRequestConfig, AxiosError } from "axios";
+import { ENDPOINTS } from "./endpoints";
+
+import { http } from "./client";
 
 // === token ===
 import { refresh } from "./queries";
 import { saveAuthTokens } from "@/lib/auth/tokenStorage";
 import { handleLogout } from "@/utils/auth/handleLogout";
-
-const axiosConfig: AxiosRequestConfig = {
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
-
-export const http: AxiosInstance = axios.create(axiosConfig);
-export const refreshHttp: AxiosInstance = axios.create(axiosConfig);
 
 // 요청 인터셉터: Authorization 헤더에 토큰 자동 삽입
 http.interceptors.request.use(

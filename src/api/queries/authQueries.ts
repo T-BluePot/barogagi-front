@@ -2,7 +2,7 @@
  * 회원(Auth) 관련 API 요청 함수
  */
 
-import { http, refreshHttp } from "../http";
+import { http, refreshHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import { getApiKey } from "../apiKey";
 
