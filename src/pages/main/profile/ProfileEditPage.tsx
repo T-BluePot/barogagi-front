@@ -71,7 +71,7 @@ const ProfileEditPage = () => {
   useEffect(() => {
     if (userData) {
       setNickname(userData.nickName || "");
-      setGender((userData.gender as GenderType) || null);
+      setGender((userData.gender as GenderType) || undefined);
 
       // 생년월일 파싱: "YYYYMMDD" 형식
       if (userData.birth && userData.birth.length === 8) {
