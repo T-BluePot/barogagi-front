@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { TERMS_TEXT } from "@/constants/texts/auth/signup/terms";
 
 // === component ===
+import PageLoading from "@/components/layout/PageLoading";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import Button from "@/components/common/buttons/CommonButton";
 
@@ -135,9 +136,7 @@ const TermsPage = () => {
     /**
      * TODO: 추후 스켈레톤 컴포넌트로 수정
      */
-    return (
-      <div className="flex flex-col h-full">약관을 불러오는 중입니다...</div>
-    );
+    return <PageLoading message="약관을 불러오는 중입니다..." />;
   }
 
   if (isError) {
