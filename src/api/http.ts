@@ -45,8 +45,10 @@ http.interceptors.response.use(
 
     // auth 요청 제외: 무한루프 방지
     const authEndpoints = Object.values(ENDPOINTS.AUTH);
-    const isAuthRequest = authEndpoints.some((endpoint) =>
-      originalRequest.url?.includes(endpoint)
+    const isAuthRequest = authEndpoints.some(
+      (endpoint) =>
+        originalRequest.url === endpoint ||
+        originalRequest.url?.startsWith(endpoint + "?")
     );
     if (isAuthRequest) {
       return Promise.reject(error);
