@@ -21,7 +21,7 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const { mutateAsync, isPending } = useLoginMutation();
 
-  const [userId, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +84,7 @@ export const LoginForm = () => {
         placeholder="아이디를 입력하세요"
         type="text"
         value={userId}
-        setValue={setEmail}
+        setValue={setUserId}
       />
       <CommonInput
         label="비밀번호"
