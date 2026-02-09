@@ -122,7 +122,7 @@ const ProfileEditPage = () => {
 
     updateMutation.mutate({
       nickName: nickname.trim(),
-      gender: gender ?? undefined,
+      gender,
       birth,
     });
   };
