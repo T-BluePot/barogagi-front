@@ -2,7 +2,7 @@
  * Axios 인스턴스 설정
  * - baseURL, timeout 등 기본 설정
  * - Request 인터셉터: Authorization 헤더에 토큰 자동 삽입
- * - Response 인터셉터: 401 에러 시 로그인 페이지 리다이렉트
+ * - Response 인터셉터: 401 에러 시 토큰 갱신(refresh) 후 재시도, 실패 시 로그아웃
  */
 
 import type { AxiosRequestConfig, AxiosError } from "axios";
