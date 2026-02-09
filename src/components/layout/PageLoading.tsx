@@ -21,7 +21,9 @@ export default function PageLoading({
         <CircularProgress
           size={16}
           sx={{
-            color: `var(--color-gray-black)`,
+            color: isDarkBg
+              ? `var(--color-gray-black)`
+              : `var(--color-gray-white)`,
           }}
         />
         <p
