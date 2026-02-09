@@ -56,11 +56,8 @@ const TermsPage = () => {
   useEffect(() => {
     if (!isError) return;
 
-    // 이미 열려 있으면 중복 오픈 방지
-    if (isErrorModalOpen) return;
-
     setIsErrorModalOpen(true);
-  }, [isError, isErrorModalOpen]);
+  }, [isError]);
 
   // consents 변수 서버 동기화
   useEffect(() => {
