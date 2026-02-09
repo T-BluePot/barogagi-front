@@ -43,6 +43,10 @@ export const LoginForm = () => {
       if (err instanceof ValidationError) {
         setError(err.message);
         return;
+      } else {
+        setError(
+          "일시적인 오류로 아이디를 확인하지 못했어요. \n잠시 후 다시 시도해 주세요."
+        );
       }
     }
 
@@ -53,6 +57,10 @@ export const LoginForm = () => {
       if (err instanceof ValidationError) {
         setError(err.message);
         return;
+      } else {
+        setError(
+          "일시적인 오류로 비밀번호를 확인하지 못했어요. \n잠시 후 다시 시도해 주세요."
+        );
       }
     }
 
