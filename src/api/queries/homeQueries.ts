@@ -1,13 +1,13 @@
 /**
  * 메인 홈(Home) 관련 API 요청 함수
  */
-import { http } from "../client";
+import { http, apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
-import type { BaseResponse, HomeScheduleResponseDTO } from "../types";
+import type { BaseResponse, HomeScheduleResponseDTO, PopularTagResponseDTO } from "../types";
 
 /** 인기 태그 조회 */
 export const getPopularTags = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<PopularTagResponseDTO>(
     ENDPOINTS.HOME.POPULAR_TAGS
   );
   return response.data;
@@ -15,7 +15,7 @@ export const getPopularTags = async () => {
 
 /** 인기 지역 조회 */
 export const getPopularRegions = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.HOME.POPULAR_REGIONS
   );
   return response.data;

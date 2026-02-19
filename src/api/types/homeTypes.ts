@@ -34,3 +34,10 @@ export interface HomeScheduleResponseDTO {
   tagInfoList: TagInfoDTO[];
   regionInfoDTO: RegionInfoDTO | null;
 }
+
+/** GET /api/v1/home/tags/popular 응답 타입 */
+export interface PopularTagResponseDTO {
+  resultCode: string;
+  message: string;
+  tagInfoList: TagInfoDTO[];
+}

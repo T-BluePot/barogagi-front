@@ -1,4 +1,4 @@
-interface TrendingItem {
+export interface TrendingItem {
   id: number;
   title: string;
   subtitle: string;
