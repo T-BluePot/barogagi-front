@@ -28,10 +28,15 @@ const toSchedule = (dto: ScheduleRegistResDTO): Schedule => ({
 });
 
 const UpcomingScheduleSection: React.FC<Props> = ({ schedules, isLoading }) => {
-  // 오늘 이후 가장 가까운 일정 찾기
-  const today = new Date().toISOString().slice(0, 10);
+  // 오늘 ~ 7일 이내 가장 가까운 일정 찾기
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const weekLater = new Date(today);
+  weekLater.setDate(weekLater.getDate() + 7);
+  const weekLaterStr = weekLater.toISOString().slice(0, 10);
+
   const upcoming = schedules
-    .filter((s) => s.startDate >= today)
+    .filter((s) => s.startDate >= todayStr && s.startDate <= weekLaterStr)
     .sort((a, b) => a.startDate.localeCompare(b.startDate))[0];
 
   const handleEdit = () => {
