@@ -1,4 +1,4 @@
-interface TrendingItem {
+export interface TrendingItem {
   id: number;
   title: string;
   subtitle: string;
@@ -36,4 +36,3 @@ const TrendingCarouselItem = ({ item, className = "" }: Props) => {
 };
 
 export default TrendingCarouselItem;
-export type { TrendingItem };
