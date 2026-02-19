@@ -1,5 +1,6 @@
 import { ScheduleCard } from "../../plan/main/ScheduleCard";
 import ContentWrapper from "./ContentWrapper";
+import EmptyContent from "@/components/common/EmptyContent";
 import type { ScheduleRegistResDTO } from "@/api/types";
 import type { Schedule } from "@/types/scheduleTypes";
 
@@ -55,7 +56,7 @@ const UpcomingScheduleSection: React.FC<Props> = ({ schedules, isLoading }) => {
         onClick={handleTitleClick}
         isArrowVisible={true}
       >
-        <div className="text-gray-40 typo-body-02 py-4">불러오는 중...</div>
+        <EmptyContent message="불러오는 중..." />
       </ContentWrapper>
     );
   }
@@ -68,9 +69,7 @@ const UpcomingScheduleSection: React.FC<Props> = ({ schedules, isLoading }) => {
         onClick={handleTitleClick}
         isArrowVisible={true}
       >
-        <div className="text-gray-40 typo-body-02 py-4">
-          다가오는 일정이 없습니다.
-        </div>
+        <EmptyContent message="다가오는 일정이 없습니다." />
       </ContentWrapper>
     );
   }
