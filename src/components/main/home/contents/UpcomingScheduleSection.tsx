@@ -1,9 +1,11 @@
 import type React from "react";
+import { useNavigate } from "react-router-dom";
 import { ScheduleCard } from "../../plan/main/ScheduleCard";
 import ContentWrapper from "./ContentWrapper";
 import EmptyContent from "@/components/common/EmptyContent";
 import type { HomeScheduleResponseDTO } from "@/api/types";
 import type { Schedule } from "@/types/scheduleTypes";
+import { getRoutePath } from "@/constants/routes";
 
 interface Props {
   scheduleData: HomeScheduleResponseDTO | null;
@@ -33,14 +35,17 @@ const UpcomingScheduleSection: React.FC<Props> = ({
   scheduleData,
   isLoading,
 }) => {
+  const navigate = useNavigate();
   const hasSchedule = scheduleData?.userInfoResponseDTO != null;
 
   const handleEdit = () => {
-    // TODO: 일정 수정 페이지로 이동 또는 수정 모달 표시
+    if (!scheduleData?.userInfoResponseDTO) return;
+    const scheduleNum = scheduleData.userInfoResponseDTO.scheduleNum;
+    navigate(getRoutePath.plan.detail(String(scheduleNum)));
   };
 
   const handleTitleClick = () => {
-    // TODO: 전체 일정 목록 페이지로 이동
+    navigate(getRoutePath.plan.list());
   };
 
   const renderContent = () => {
