@@ -8,7 +8,8 @@
 import type { AxiosRequestConfig, AxiosError } from "axios";
 import { ENDPOINTS } from "./endpoints";
 
-import { http } from "./client";
+import { http, apiKeyHttp } from "./client";
+import { getApiKey } from "./apiKey";
 
 // === token ===
 import { refresh } from "./queries";
@@ -27,6 +28,25 @@ http.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   }
+);
+
+// API-KEY 전용 인스턴트: 모든 요청에 API-KEY 헤더 자동 삽입
+apiKeyHttp.interceptors.request.use(
+  (config) => {
+    config.headers = config.headers ?? {};
+
+    // API 키
+    config.headers["API-KEY"] = getApiKey();
+
+    // 토큰(있으면)도 같이
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 let refreshInFlight: Promise<string> | null = null;
