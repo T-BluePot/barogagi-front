@@ -4,9 +4,9 @@
 import { http, apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import type {
-  BaseResponse,
   HomeScheduleResponseDTO,
   PopularTagResponseDTO,
+  PopularRegionResponseDTO,
 } from "../types";
 
 /** 인기 태그 조회 */
@@ -19,7 +19,7 @@ export const getPopularTags = async () => {
 
 /** 인기 지역 조회 */
 export const getPopularRegions = async () => {
-  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<PopularRegionResponseDTO>(
     ENDPOINTS.HOME.POPULAR_REGIONS
   );
   return response.data;

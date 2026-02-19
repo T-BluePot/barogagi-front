@@ -1,9 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import HomeContentsSection from "@/components/main/home/HomeContentsSection";
 import HomeGreetingSection from "@/components/main/home/HomeGreetingSection";
-import { getMySchedulesSummary, getPopularTags } from "@/api/queries";
+import {
+  getMySchedulesSummary,
+  getPopularTags,
+  getPopularRegions,
+} from "@/api/queries";
 import { homeKeys } from "@/api/keyFactories";
-import type { TagInfoDTO } from "@/api/types";
+import type { TagInfoDTO, PopularRegionDTO } from "@/api/types";
 
 const HomePage = () => {
   const { data: scheduleData, isLoading: isScheduleLoading } = useQuery({
@@ -16,7 +20,15 @@ const HomePage = () => {
     queryFn: getPopularTags,
   });
 
+  const { data: regionsData, isLoading: isRegionsLoading } = useQuery({
+    queryKey: homeKeys.popularRegions(),
+    queryFn: getPopularRegions,
+  });
+
   const popularTags: TagInfoDTO[] = tagsData?.tagInfoList ?? [];
+  const popularRegions: PopularRegionDTO[] = Array.isArray(regionsData?.data)
+    ? regionsData.data
+    : [];
 
   return (
     <div className="flex flex-col h-full">
@@ -26,6 +38,8 @@ const HomePage = () => {
         isScheduleLoading={isScheduleLoading}
         popularTags={popularTags}
         isTagsLoading={isTagsLoading}
+        popularRegions={popularRegions}
+        isRegionsLoading={isRegionsLoading}
       />
     </div>
   );
