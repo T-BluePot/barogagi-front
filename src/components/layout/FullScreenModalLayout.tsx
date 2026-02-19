@@ -19,9 +19,7 @@ const FullScreenModalLayout = ({
       {/* 닫기 버튼 */}
       <CloseHeader onClick={onClose} isHeaderDark={true} />
       {/* 컨텐츠 영역 - 스크롤 가능 */}
-      <div className="flex flex-col flex-1 overflow-y-auto">
-        {children}
-      </div>
+      <div className="flex flex-col flex-1 overflow-y-auto">{children}</div>
     </div>
   );
 };
