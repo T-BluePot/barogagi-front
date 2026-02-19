@@ -64,13 +64,15 @@ export const getTermsList = async (type?: string) => {
 
 export const agreeTerms = async (
   userId: string,
-  termsAgreeList: TermsProcessRequestType[]
+  termsAgreeList: TermsProcessRequestType[],
+  type?: string
 ) => {
   const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.TERMS.AGREE,
     {
       userId: userId,
       termsAgreeList: termsAgreeList,
+      termsType: type,
     }
   );
   return response.data;
