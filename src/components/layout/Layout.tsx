@@ -78,7 +78,7 @@ export const Layout = ({ children }: LayoutProps) => {
           <BackHeader
             label={headerConfig.label}
             onClick={handleBack}
-            isDarkBg={headerConfig.isDarkBg}
+            isHeaderDark={headerConfig.isHeaderDark}
           />
         );
 
@@ -86,7 +86,7 @@ export const Layout = ({ children }: LayoutProps) => {
         return (
           <TitleHeader
             label={headerConfig.label || ""}
-            isDarkBg={headerConfig.isDarkBg}
+            isHeaderDark={headerConfig.isHeaderDark}
           />
         );
 
@@ -95,7 +95,7 @@ export const Layout = ({ children }: LayoutProps) => {
           <CloseHeader
             label={headerConfig.label}
             onClick={handleClose}
-            isDarkBg={headerConfig.isDarkBg}
+            isHeaderDark={headerConfig.isHeaderDark}
           />
         );
 
@@ -107,16 +107,30 @@ export const Layout = ({ children }: LayoutProps) => {
     }
   };
 
+  // 헤더/콘텐츠 배경색 결정
+  const isHeaderDark =
+    headerConfig && "isHeaderDark" in headerConfig && headerConfig.isHeaderDark;
+  const isContentDark =
+    headerConfig && "isContentDark" in headerConfig
+      ? headerConfig.isContentDark
+      : isHeaderDark; // isContentDark 미지정 시 isHeaderDark 따라감
+
   return (
     <div
       className={`h-screen flex flex-col ${
-        headerConfig && "isDarkBg" in headerConfig && headerConfig.isDarkBg
-          ? "bg-gray-black"
-          : "bg-white"
+        isHeaderDark ? "bg-gray-black" : "bg-white"
       }`}
     >
       {renderHeader()}
-      <main className="flex-1 h-0 overflow-auto">{children}</main>
+      <main
+        className={`flex-1 h-0 overflow-auto ${
+          isContentDark === false && isHeaderDark
+            ? "bg-white rounded-t-2xl"
+            : ""
+        }`}
+      >
+        {children}
+      </main>
       {/* 뒤로가기 확인 모달 */}
       {showBackConfirmModal && (
         <CommonConfirmModal

@@ -15,7 +15,7 @@ const meta = {
       description: "헤더 좌측 텍스트",
       defaultValue: "기본 텍스트 헤더",
     },
-    isDarkBg: {
+    isHeaderDark: {
       control: "boolean",
       description: "배경이 어두운지 여부",
       defaultValue: false,
@@ -29,14 +29,14 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     label: "기본 텍스트 헤더",
-    isDarkBg: false,
+    isHeaderDark: false,
   },
 };
 
 export const WithChildren: Story = {
   args: {
     label: "추가 텍스트 헤더",
-    isDarkBg: false,
+    isHeaderDark: false,
     children: "해당 위치에 JSX 요소 추기",
   },
 };

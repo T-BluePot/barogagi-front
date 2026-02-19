@@ -3,25 +3,25 @@ import clsx from "clsx";
 
 interface PageLoadingPropsType {
   message: string;
-  isDarkBg?: boolean;
+  isHeaderDark?: boolean;
 }
 
 export default function PageLoading({
   message,
-  isDarkBg = true,
+  isHeaderDark = true,
 }: PageLoadingPropsType) {
   return (
     <div className="flex flex-col h-full justify-center items-center">
       <div
         className={clsx(
           "flex flex-row gap-2 px-4 py-3 rounded-lg items-center",
-          isDarkBg ? "bg-gray-white" : "bg-gray-black"
+          isHeaderDark ? "bg-gray-white" : "bg-gray-black"
         )}
       >
         <CircularProgress
           size={16}
           sx={{
-            color: isDarkBg
+            color: isHeaderDark
               ? `var(--color-gray-black)`
               : `var(--color-gray-white)`,
           }}
@@ -29,7 +29,7 @@ export default function PageLoading({
         <p
           className={clsx(
             "typo-body",
-            isDarkBg ? "text-gray-black" : "text-gray-white"
+            isHeaderDark ? "text-gray-black" : "text-gray-white"
           )}
         >
           {message}

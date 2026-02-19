@@ -9,17 +9,34 @@ import { ROUTES } from "@/constants/routes";
  * - back: 뒤로가기 버튼이 있는 헤더
  */
 export type HeaderConfig =
-  | { type: "none"; isDarkBg?: boolean }
-  | { type: "common"; rightPath?: string; isDarkBg?: boolean }
-  | { type: "title"; label: string; isDarkBg?: boolean }
-  | { type: "close"; label?: string; isDarkBg?: boolean; closePath?: string }
+  | { type: "none"; isHeaderDark?: boolean; isContentDark?: boolean }
+  | {
+      type: "common";
+      rightPath?: string;
+      isHeaderDark?: boolean;
+      isContentDark?: boolean;
+    }
+  | {
+      type: "title";
+      label: string;
+      isHeaderDark?: boolean;
+      isContentDark?: boolean;
+    }
+  | {
+      type: "close";
+      label?: string;
+      isHeaderDark?: boolean;
+      isContentDark?: boolean;
+      closePath?: string;
+    }
   | {
       type: "back";
       label?: string;
-      isDarkBg?: boolean;
+      isHeaderDark?: boolean;
+      isContentDark?: boolean;
       backPath?: string;
-      showBackConfirm?: boolean; // 뒤로가기 확인 모달 표시 여부
-      confirmMessage?: string; // 커스텀 메시지 (선택사항)
+      showBackConfirm?: boolean;
+      confirmMessage?: string;
     };
 
 /**
@@ -33,7 +50,7 @@ export const SECTION_RULES: Array<{ pattern: string; config: HeaderConfig }> = [
     config: {
       type: "back",
       label: "회원가입",
-      isDarkBg: true,
+      isHeaderDark: true,
       backPath: ROUTES.AUTH.SIGNIN,
     },
   },
@@ -46,30 +63,30 @@ export const SECTION_RULES: Array<{ pattern: string; config: HeaderConfig }> = [
 export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   // Auth 관련
   [ROUTES.ROOT]: { type: "none" }, // 랜딩 페이지는 헤더 없음
-  [ROUTES.AUTH.LANDING]: { type: "none", isDarkBg: true }, // Auth 랜딩 페이지도 헤더 없음, 다크 배경
+  [ROUTES.AUTH.LANDING]: { type: "none", isHeaderDark: true }, // Auth 랜딩 페이지도 헤더 없음, 다크 배경
   [ROUTES.AUTH.SIGNIN]: {
     type: "back",
     label: "로그인",
-    isDarkBg: true,
+    isHeaderDark: true,
     backPath: ROUTES.AUTH.LANDING, // Auth 랜딩 페이지로 이동
   },
   [ROUTES.AUTH.SIGNUP.TERMS]: {
     type: "back",
     label: "회원가입",
-    isDarkBg: true,
+    isHeaderDark: true,
     backPath: ROUTES.AUTH.SIGNIN,
   },
   [ROUTES.AUTH.SIGNUP.CREDENTIALS]: {
     type: "back",
     label: "회원가입",
-    isDarkBg: true,
+    isHeaderDark: true,
     showBackConfirm: true,
     backPath: ROUTES.AUTH.SIGNIN,
   },
   [ROUTES.AUTH.SIGNUP.VERIFY]: {
     type: "back",
     label: "회원가입",
-    isDarkBg: true,
+    isHeaderDark: true,
 
     showBackConfirm: true,
     backPath: ROUTES.AUTH.SIGNIN,
@@ -77,17 +94,17 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   [ROUTES.AUTH.SIGNUP.PROFILE]: {
     type: "back",
     label: "회원가입",
-    isDarkBg: true,
+    isHeaderDark: true,
 
     showBackConfirm: true,
     backPath: ROUTES.AUTH.SIGNIN,
   },
-  [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none", isDarkBg: true },
+  [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none", isHeaderDark: true },
   // 인증 페이지들 (VERIFY는 객체이므로 개별 경로 사용)
   [ROUTES.AUTH.VERIFY.SIGNUP]: {
     type: "back",
     label: "회원가입",
-    isDarkBg: true,
+    isHeaderDark: true,
 
     showBackConfirm: true,
     backPath: ROUTES.AUTH.SIGNUP.CREDENTIALS,
@@ -95,25 +112,25 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   [ROUTES.AUTH.VERIFY.FIND_ID]: {
     type: "back",
     label: "아이디 찾기",
-    isDarkBg: true,
+    isHeaderDark: true,
     backPath: ROUTES.AUTH.FIND_ACCOUNT,
   },
   [ROUTES.AUTH.VERIFY.RESET_PASSWORD]: {
     type: "back",
     label: "비밀번호 재설정",
-    isDarkBg: true,
+    isHeaderDark: true,
     backPath: ROUTES.AUTH.FIND_ACCOUNT,
   },
   [ROUTES.AUTH.FIND_ACCOUNT]: {
     type: "back",
     label: "계정 찾기",
-    isDarkBg: true,
+    isHeaderDark: true,
     backPath: ROUTES.AUTH.SIGNIN, // 로그인 페이지로 이동
   },
   [ROUTES.AUTH.FIND_RESET_PASSWORD]: {
     type: "back",
     label: "비밀번호 재설정",
-    isDarkBg: true,
+    isHeaderDark: true,
     backPath: ROUTES.AUTH.FIND_ACCOUNT, // 계정 찾기 페이지로 이동
   },
 
@@ -124,34 +141,34 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   [ROUTES.PLAN.DATE]: {
     type: "back",
     label: "날짜 선택",
-    isDarkBg: false,
+    isHeaderDark: false,
     backPath: ROUTES.PLAN.LIST,
   },
   [ROUTES.PLAN.LOCATION]: {
     type: "back",
     label: "지역 선택",
-    isDarkBg: false,
+    isHeaderDark: false,
     backPath: ROUTES.PLAN.DATE,
   },
   [ROUTES.PLAN.STYLE]: {
     type: "back",
     label: "일정 스타일 선택",
-    isDarkBg: false,
+    isHeaderDark: false,
   },
   [ROUTES.PLAN.SETTING]: {
     type: "back",
     label: "일정 구성",
-    isDarkBg: false,
+    isHeaderDark: false,
     backPath: ROUTES.PLAN.STYLE,
   },
   [ROUTES.PLAN.CREATE]: {
     type: "title",
     label: "추천 루트",
-    isDarkBg: false,
+    isHeaderDark: false,
   },
   [ROUTES.PLAN.DETAIL]: {
     type: "back",
-    isDarkBg: false,
+    isHeaderDark: false,
   },
   [ROUTES.PLAN.SEARCH]: {
     type: "none",
@@ -160,17 +177,18 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {
     type: "common",
-    isDarkBg: true,
+    isHeaderDark: true,
+    isContentDark: false,
   },
   [ROUTES.MAIN.PROFILE]: {
     type: "back",
     label: "프로필",
-    isDarkBg: true,
+    isHeaderDark: true,
   },
   [ROUTES.MAIN.PROFILE_EDIT]: {
     type: "back",
     label: "프로필 수정",
-    isDarkBg: true,
+    isHeaderDark: true,
     backPath: ROUTES.MAIN.PROFILE,
   },
   [ROUTES.MAIN.SETTINGS]: {
@@ -180,19 +198,19 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   [ROUTES.MAIN.CHAT]: {
     type: "title",
     label: "채팅",
-    isDarkBg: false,
+    isHeaderDark: false,
   },
   [ROUTES.MAIN.NOTIFICATION]: {
     type: "back",
     label: "알림",
-    isDarkBg: false,
+    isHeaderDark: false,
   },
 
   // 동적 라우트
   [ROUTES.USER.DETAIL]: {
     type: "back",
     label: "사용자 프로필",
-    isDarkBg: false,
+    isHeaderDark: false,
   },
 } as const;
 

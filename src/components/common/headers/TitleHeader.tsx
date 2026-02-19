@@ -3,12 +3,12 @@ import type { ReactNode } from "react";
 
 interface TitleHeaderProps {
   label: string;
-  isDarkBg?: boolean;
+  isHeaderDark?: boolean;
   children?: ReactNode;
 }
 
 export const TitleHeader = ({
-  isDarkBg = false,
+  isHeaderDark = false,
   label,
   children,
 }: TitleHeaderProps) => {
@@ -17,7 +17,7 @@ export const TitleHeader = ({
       <span
         className={clsx(
           "typo-title-02",
-          isDarkBg ? "text-gray-white" : "text-gray-black"
+          isHeaderDark ? "text-gray-white" : "text-gray-black"
         )}
       >
         {label}
