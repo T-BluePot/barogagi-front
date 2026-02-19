@@ -28,7 +28,10 @@ const toSchedule = (data: HomeScheduleResponseDTO): Schedule => ({
   })),
 });
 
-const UpcomingScheduleSection: React.FC<Props> = ({ scheduleData, isLoading }) => {
+const UpcomingScheduleSection: React.FC<Props> = ({
+  scheduleData,
+  isLoading,
+}) => {
   const hasSchedule = scheduleData?.userInfoResponseDTO != null;
 
   const handleEdit = () => {
@@ -39,31 +42,18 @@ const UpcomingScheduleSection: React.FC<Props> = ({ scheduleData, isLoading }) =
     // TODO: 전체 일정 목록 페이지로 이동
   };
 
-  if (isLoading) {
-    return (
-      <ContentWrapper
-        title="곧 다가오는"
-        highlightText="일정"
-        onClick={handleTitleClick}
-        isArrowVisible={true}
-      >
-        <EmptyContent message="불러오는 중..." />
-      </ContentWrapper>
-    );
-  }
+  const renderContent = () => {
+    if (isLoading) return <EmptyContent message="불러오는 중..." />;
+    if (!hasSchedule) return <EmptyContent message="다가오는 일정이 없습니다." />;
 
-  if (!hasSchedule) {
     return (
-      <ContentWrapper
-        title="곧 다가오는"
-        highlightText="일정"
-        onClick={handleTitleClick}
-        isArrowVisible={true}
-      >
-        <EmptyContent message="다가오는 일정이 없습니다." />
-      </ContentWrapper>
+      <ScheduleCard
+        schedule={toSchedule(scheduleData!)}
+        onClickCard={handleEdit}
+        isDeleteDisabled
+      />
     );
-  }
+  };
 
   return (
     <ContentWrapper
@@ -72,11 +62,7 @@ const UpcomingScheduleSection: React.FC<Props> = ({ scheduleData, isLoading }) =
       onClick={handleTitleClick}
       isArrowVisible={true}
     >
-      <ScheduleCard
-        schedule={toSchedule(scheduleData!)}
-        onClickCard={handleEdit}
-        isDeleteDisabled
-      />
+      {renderContent()}
     </ContentWrapper>
   );
 };

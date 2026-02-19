@@ -18,25 +18,16 @@ const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
     imageUrl: "",
   }));
 
-  if (isLoading) {
-    return (
-      <ContentWrapper title="지금 인기 있는" highlightText="일정">
-        <EmptyContent message="불러오는 중..." />
-      </ContentWrapper>
-    );
-  }
+  const renderContent = () => {
+    if (isLoading) return <EmptyContent message="불러오는 중..." />;
+    if (items.length === 0) return <EmptyContent message="인기 있는 일정이 없습니다." />;
 
-  if (items.length === 0) {
-    return (
-      <ContentWrapper title="지금 인기 있는" highlightText="일정">
-        <EmptyContent message="인기 있는 일정이 없습니다." />
-      </ContentWrapper>
-    );
-  }
+    return <TrendingCarousel items={items} />;
+  };
 
   return (
     <ContentWrapper title="지금 인기 있는" highlightText="일정">
-      <TrendingCarousel items={items} />
+      {renderContent()}
     </ContentWrapper>
   );
 };
