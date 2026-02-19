@@ -28,9 +28,12 @@ export const idSchema = Yup.string()
   .test("no-whitespace", ID_MESSAGES.NO_WHITESPACE, (value = "") =>
     value === "" ? true : !/\s/.test(value)
   )
-  // 3. 특수문자 포함 불가
-  .test("no-special-char", ID_MESSAGES.NO_SPECIAL_CHAR, (value = "") =>
-    value === "" ? true : /^[a-z0-9]*$/.test(value)
+
+  // 3. 영문 소문자와 숫자만 허용
+  .test(
+    "allowed-characters",
+    ID_MESSAGES.ONLY_LOWERCASE_AND_NUMBER,
+    (value = "") => (value === "" ? true : /^[a-z0-9]*$/.test(value))
   )
   // 4. 숫자 반드시 포함
   .test("must-include-number", ID_MESSAGES.INVALID_FORMAT, (v = "") =>

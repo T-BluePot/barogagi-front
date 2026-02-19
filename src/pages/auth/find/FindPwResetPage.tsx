@@ -38,9 +38,11 @@ const FindPwResetPage = () => {
 
       try {
         const response = await findUser(state.phone);
-        const users = response.data as { userId: string }[];
-        if (users.length > 0) {
-          setUserId(users[0].userId);
+
+        const user = response.data as { userId?: string };
+
+        if (user?.userId) {
+          setUserId(user.userId);
         } else {
           alert("해당 전화번호로 가입된 계정이 존재하지 않습니다.");
           navigate(ROUTES.AUTH.FIND_ACCOUNT, { replace: true });
