@@ -44,7 +44,8 @@ const UpcomingScheduleSection: React.FC<Props> = ({
 
   const renderContent = () => {
     if (isLoading) return <EmptyContent message="불러오는 중..." />;
-    if (!hasSchedule) return <EmptyContent message="다가오는 일정이 없습니다." />;
+    if (!hasSchedule)
+      return <EmptyContent message="다가오는 일정이 없습니다." />;
 
     return (
       <ScheduleCard

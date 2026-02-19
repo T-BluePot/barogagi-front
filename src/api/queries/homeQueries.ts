@@ -3,7 +3,11 @@
  */
 import { http, apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
-import type { BaseResponse, HomeScheduleResponseDTO, PopularTagResponseDTO } from "../types";
+import type {
+  BaseResponse,
+  HomeScheduleResponseDTO,
+  PopularTagResponseDTO,
+} from "../types";
 
 /** 인기 태그 조회 */
 export const getPopularTags = async () => {

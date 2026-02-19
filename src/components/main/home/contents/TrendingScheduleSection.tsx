@@ -20,7 +20,8 @@ const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
 
   const renderContent = () => {
     if (isLoading) return <EmptyContent message="불러오는 중..." />;
-    if (items.length === 0) return <EmptyContent message="인기 있는 일정이 없습니다." />;
+    if (items.length === 0)
+      return <EmptyContent message="인기 있는 일정이 없습니다." />;
 
     return <TrendingCarousel items={items} />;
   };
