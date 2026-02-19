@@ -3,7 +3,7 @@
  */
 import { http } from "../client";
 import { ENDPOINTS } from "../endpoints";
-import type { BaseResponse } from "../types";
+import type { BaseResponse, HomeScheduleResponseDTO } from "../types";
 
 /** 인기 태그 조회 */
 export const getPopularTags = async () => {
@@ -23,7 +23,7 @@ export const getPopularRegions = async () => {
 
 /** 내 일정 정보 (메인화면용) */
 export const getMySchedulesSummary = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await http.get<HomeScheduleResponseDTO>(
     ENDPOINTS.HOME.MY_SCHEDULES
   );
   return response.data;
