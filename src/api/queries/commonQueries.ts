@@ -1,9 +1,8 @@
 /**
  * 기타(Common) 관련 API 요청 함수 (태그, 지역, 인증, 약관, 장소)
  */
-import { http } from "../client";
+import { http, apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
-import { getApiKey } from "../apiKey";
 
 import type { BaseResponse, TermsProcessRequestType } from "../types";
 import type { TermsResponseType } from "../types";
@@ -53,14 +52,10 @@ export const verifyVerificationCode = async (data: unknown) => {
 
 // === Terms ===
 export const getTermsList = async (type?: string) => {
-  const response = await http.get<BaseResponse<TermsResponseType>>(
+  const response = await apiKeyHttp.get<BaseResponse<TermsResponseType>>(
     ENDPOINTS.TERMS.LIST,
     {
       params: { termsType: type },
-      headers: {
-        // Swagger에서 요구하는 헤더 이름 그대로
-        "API-KEY": getApiKey(),
-      },
     }
   );
 
@@ -71,10 +66,9 @@ export const agreeTerms = async (
   userId: string,
   termsAgreeList: TermsProcessRequestType[]
 ) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.TERMS.AGREE,
     {
-      apiSecretKey: getApiKey(),
       userId: userId,
       termsAgreeList: termsAgreeList,
     }
