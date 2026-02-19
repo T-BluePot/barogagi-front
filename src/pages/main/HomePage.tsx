@@ -6,8 +6,11 @@ import {
   getPopularTags,
   getPopularRegions,
 } from "@/api/queries";
+import { getMe } from "@/api/queries/authQueries";
 import { homeKeys } from "@/api/keyFactories";
-import type { TagInfoDTO, PopularRegionDTO } from "@/api/types";
+import { authKeys } from "@/api/keyFactories";
+import type { TagInfoDTO, PopularRegionDTO, BaseResponse } from "@/api/types";
+import type { UserData } from "@/types/profileTypes";
 
 const HomePage = () => {
   const { data: scheduleData, isLoading: isScheduleLoading } = useQuery({
@@ -25,6 +28,13 @@ const HomePage = () => {
     queryFn: getPopularRegions,
   });
 
+  const { data: userResponse } = useQuery({
+    queryKey: authKeys.me(),
+    queryFn: getMe,
+    retry: false,
+  });
+
+  const userData = (userResponse as unknown as BaseResponse<UserData>)?.data;
   const popularTags: TagInfoDTO[] = tagsData?.tagInfoList ?? [];
   const popularRegions: PopularRegionDTO[] = Array.isArray(regionsData?.data)
     ? regionsData.data
@@ -32,7 +42,7 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <HomeGreetingSection />
+      <HomeGreetingSection userName={userData?.nickName} />
       <HomeContentsSection
         scheduleData={scheduleData ?? null}
         isScheduleLoading={isScheduleLoading}
