@@ -16,5 +16,9 @@ const axiosConfig: AxiosRequestConfig = {
   },
 };
 
+// 일반 API 요청 인스턴스: 인증이 필요 없는 요청에서 사용
 export const http: AxiosInstance = axios.create(axiosConfig);
+// API-KEY 전용 인스턴스: 인증이 필요한 요청에서 사용
+export const apiKeyHttp: AxiosInstance = axios.create(axiosConfig);
+// 토큰 갱신(refresh) 전용 인스턴스: 인터셉터에서 토큰 갱신 요청 시 사용
 export const refreshHttp: AxiosInstance = axios.create(axiosConfig);

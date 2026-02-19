@@ -9,7 +9,6 @@ import type { GenderType } from "@/constants/userInfo";
 export interface LoginRequestType {
   userId: string;
   password: string;
-  apiSecretKey?: string;
 }
 
 /** 로그인 응답 data 타입 */
@@ -24,7 +23,6 @@ export type LoginResponseDataType = {
 
 /** 회원가입 Request Body */
 export type JoinRequestType = {
-  apiSecretKey: string;
   userId: string;
   password: string;
   tel: string;
@@ -58,8 +56,7 @@ export type RefreshResponseDataType = {
 /** 인증번호 발송 */
 export interface ApprovalSendRequestType {
   tel: string;
-  type?: string; // signup: 'JOIN-MEMBERSHIP'
-  apiSecretKey?: string;
+  type?: string; // signup: 'JOIN-MEMBERSHIP';
 }
 
 /** 인증번호 확인 */
@@ -67,7 +64,6 @@ export interface ApprovalCompleteRequestType {
   tel: string;
   authCode: string;
   type?: string;
-  apiSecretKey?: string;
 }
 
 /** 아이디 찾기 응답 (배열로 반환) */
@@ -85,13 +81,11 @@ export type TermsResponseType = TermsItem[];
 /** 약관 동의 요청 DTO */
 export interface TermsDTO {
   userId: string;
-  apiSecretKey?: string;
   termsAgreeList: TermsAgreeList;
 }
 
 /** 비밀번호 재설정 요청 DTO */
 export interface PasswordResetConfirmDTO {
-  apiSecretKey: string;
   userId: string;
   password: string;
 }

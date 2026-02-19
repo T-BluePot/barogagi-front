@@ -2,9 +2,8 @@
  * 회원(Auth) 관련 API 요청 함수
  */
 
-import { http, refreshHttp } from "../client";
+import { http, apiKeyHttp, refreshHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
-import { getApiKey } from "../apiKey";
 
 // === request body type ===
 import type {
@@ -29,11 +28,10 @@ import type { VerificationType } from "@/constants/verificationTypes";
 /** 로그인 */
 export const login = async (userId: string, password: string) => {
   const payload: LoginRequestType = {
-    apiSecretKey: getApiKey(),
     userId,
     password,
   };
-  const response = await http.post<BaseResponse<LoginResponseDataType>>(
+  const response = await apiKeyHttp.post<BaseResponse<LoginResponseDataType>>(
     ENDPOINTS.AUTH.LOGIN,
     payload
   );
@@ -60,7 +58,6 @@ export const refresh = async (data: RefreshTokenRequestType) => {
 /** 회원가입 */
 export const signup = async (data: SignupPayloadType) => {
   const payload: JoinRequestType = {
-    apiSecretKey: getApiKey(),
     userId: data.userId,
     password: data.password,
     tel: data.tel,
@@ -71,7 +68,7 @@ export const signup = async (data: SignupPayloadType) => {
     ...(data.gender ? { gender: data.gender } : {}),
   };
 
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.USERS.SIGNUP,
     payload
   );
@@ -80,13 +77,10 @@ export const signup = async (data: SignupPayloadType) => {
 
 /** 아이디 중복 체크 */
 export const checkId = async (userId: string) => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.USERS.CHECK_ID,
     {
       params: { userId },
-      headers: {
-        "API-KEY": getApiKey(),
-      },
     }
   );
   return response.data;
@@ -94,13 +88,10 @@ export const checkId = async (userId: string) => {
 
 /** 닉네임 중복 체크 */
 export const checkNickname = async (nickname: string) => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.USERS.CHECK_NICKNAME,
     {
       params: { nickname },
-      headers: {
-        "API-KEY": getApiKey(),
-      },
     }
   );
   return response.data;
@@ -112,11 +103,10 @@ export const sendVerification = async (
   type?: VerificationType
 ) => {
   const payload: ApprovalSendRequestType = {
-    apiSecretKey: getApiKey(),
     tel,
     ...(type ? { type } : {}), // type이 있을 때만 전송
   };
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.SEND,
     payload
   );
@@ -132,11 +122,10 @@ export const verifyVerification = async (
   const payload: ApprovalCompleteRequestType = {
     tel: input.tel,
     authCode: input.authCode,
-    apiSecretKey: getApiKey(),
     ...(type ? { type } : {}),
   };
 
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.VERIFY,
     payload
   );
@@ -146,14 +135,11 @@ export const verifyVerification = async (
 
 /** 아이디 찾기 */
 export const findUser = async (tel: string) => {
-  const response = await http.post<BaseResponse<FindUserResponseType>>(
+  const response = await apiKeyHttp.post<BaseResponse<FindUserResponseType>>(
     ENDPOINTS.AUTH.FIND_ID,
     null,
     {
       params: { tel },
-      headers: {
-        "API-KEY": getApiKey(),
-      },
     }
   );
   return response.data;
@@ -179,11 +165,10 @@ export const updateMe = async (data: MemberRequestDTO) => {
 /** 비밀번호 재설정 */
 export const resetPassword = async (userId: string, password: string) => {
   const payload: PasswordResetConfirmDTO = {
-    apiSecretKey: getApiKey(),
     userId,
     password,
   };
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.AUTH.RESET_PW_CONFIRM,
     payload
   );
