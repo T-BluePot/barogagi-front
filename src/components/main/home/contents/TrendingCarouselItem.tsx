@@ -36,4 +36,3 @@ const TrendingCarouselItem = ({ item, className = "" }: Props) => {
 };
 
 export default TrendingCarouselItem;
-export type { TrendingItem };

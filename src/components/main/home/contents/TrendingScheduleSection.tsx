@@ -1,3 +1,4 @@
+import type React from "react";
 import ContentWrapper from "./ContentWrapper";
 import TrendingCarousel from "./TrendingCarousel";
 import EmptyContent from "@/components/common/EmptyContent";

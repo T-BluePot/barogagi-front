@@ -46,12 +46,12 @@ export interface PopularTagResponseDTO {
 export interface PopularRegionDTO {
   rank: number;
   regionName: string;
-  rankChange: "up" | "down" | "same";
+  rankChange?: "up" | "down" | "same";
 }
 
 /** GET /api/v1/home/regions/popular 응답 타입 */
 export interface PopularRegionResponseDTO {
-  code: string;
+  resultCode: string;
   message: string;
   data: PopularRegionDTO[];
 }

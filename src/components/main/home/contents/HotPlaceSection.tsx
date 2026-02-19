@@ -1,3 +1,4 @@
+import type React from "react";
 import ContentWrapper from "./ContentWrapper";
 import RankingList from "./RankingList";
 import EmptyContent from "@/components/common/EmptyContent";

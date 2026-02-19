@@ -1,3 +1,4 @@
+import type React from "react";
 import { ScheduleCard } from "../../plan/main/ScheduleCard";
 import ContentWrapper from "./ContentWrapper";
 import EmptyContent from "@/components/common/EmptyContent";
@@ -15,7 +16,7 @@ const toSchedule = (data: HomeScheduleResponseDTO): Schedule => ({
   membershipNo: 0,
   scheduleNm: data.userInfoResponseDTO?.scheduleNm ?? "",
   startDate: data.userInfoResponseDTO?.startDate ?? "",
-  endDate: data.userInfoResponseDTO?.startDate ?? "",
+  endDate: "", // 홈 API에서 endDate를 제공하지 않음
   radius: 0,
   regDate: "",
   delYn: "N",

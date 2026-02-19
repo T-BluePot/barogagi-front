@@ -1,3 +1,4 @@
+import type React from "react";
 import HotPlaceSection from "./contents/HotPlaceSection";
 import TrendingScheduleSection from "./contents/TrendingScheduleSection";
 import UpcomingScheduleSection from "./contents/UpcomingScheduleSection";

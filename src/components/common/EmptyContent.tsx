@@ -4,7 +4,10 @@ interface EmptyContentProps {
 
 const EmptyContent = ({ message }: EmptyContentProps) => {
   return (
-    <div className="flex justify-center py-4 bg-gray-10 rounded-lg">
+    <div
+      className="flex justify-center py-4 bg-gray-10 rounded-lg"
+      role="status"
+    >
       <p className="typo-body-02 text-gray-50 text-center">{message}</p>
     </div>
   );
