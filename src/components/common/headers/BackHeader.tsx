@@ -4,17 +4,17 @@ import clsx from "clsx";
 interface BackHeaderProps {
   label?: string;
   onClick: () => void;
-  isDarkBg?: boolean;
+  isHeaderDark?: boolean;
   children?: React.ReactNode;
 }
 
 export const BackHeader = ({
-  isDarkBg = false,
+  isHeaderDark = false,
   label,
   onClick,
   children,
 }: BackHeaderProps) => {
-  const colorClass = clsx(isDarkBg ? "text-gray-white" : "text-gray-black");
+  const colorClass = clsx(isHeaderDark ? "text-gray-white" : "text-gray-black");
   return (
     <header className="flex flex-row px-6 w-full h-16 justify-between items-center gap-4 select-none">
       <div className="flex flex-row gap-6 items-center">
