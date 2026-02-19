@@ -2,7 +2,7 @@
  * 회원(Auth) 관련 API 요청 함수
  */
 
-import { http, refreshHttp } from "../client";
+import { http, apiKeyHttp, refreshHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import { getApiKey } from "../apiKey";
 
@@ -29,11 +29,10 @@ import type { VerificationType } from "@/constants/verificationTypes";
 /** 로그인 */
 export const login = async (userId: string, password: string) => {
   const payload: LoginRequestType = {
-    apiSecretKey: getApiKey(),
     userId,
     password,
   };
-  const response = await http.post<BaseResponse<LoginResponseDataType>>(
+  const response = await apiKeyHttp.post<BaseResponse<LoginResponseDataType>>(
     ENDPOINTS.AUTH.LOGIN,
     payload
   );

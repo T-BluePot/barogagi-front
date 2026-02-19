@@ -9,7 +9,6 @@ import type { GenderType } from "@/constants/userInfo";
 export interface LoginRequestType {
   userId: string;
   password: string;
-  apiSecretKey?: string;
 }
 
 /** 로그인 응답 data 타입 */
