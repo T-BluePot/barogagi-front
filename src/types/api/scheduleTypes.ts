@@ -3,6 +3,10 @@ import type {
   RegionRegistReqDTO,
   UserAddedPlaceDTO,
 } from "@/api/types";
+import type {
+  ScheduleCategoryResponseType,
+  ScheduleCategoryItemResponseType,
+} from "@/api/types";
 
 export type PlanSource = "AI" | "USER_PLACE" | "USER_CUSTOM"; // 서버 응답
 
@@ -70,4 +74,10 @@ export type ScheduleDraftType = {
 
   scheduleTagRegistReqDTOList: TagRegistReqDTO[];
   planRegistReqDTOList: PlanDraftType[];
+};
+
+// 선택 결과로 상위에 올릴 payload
+export type SelectedCategoryItemType = {
+  category: ScheduleCategoryResponseType; // 카테고리(탭)
+  option: ScheduleCategoryItemResponseType; // 아이템(상세 옵션)
 };
