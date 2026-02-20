@@ -47,10 +47,19 @@ export type UserCustomPlanDraftType = PlanDraftBaseType & {
   planTagRegistReqDTOList?: never;
 };
 
+/**
+ * 프론트 용 개별 일정
+ */
 export type PlanDraftType =
   | AIPlanDraftType
   | UserPlacePlanDraftType
   | UserCustomPlanDraftType;
+
+// 지역 검색 응답 타입
+export type RegionSearchItemType = {
+  regionNm: string;
+  regionNum: number;
+};
 
 // 일정 드래프트 타입
 export type ScheduleDraftType = {

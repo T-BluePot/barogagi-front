@@ -7,6 +7,9 @@ import { ENDPOINTS } from "../endpoints";
 import type { BaseResponse, TermsProcessRequestType } from "../types";
 import type { TermsResponseType } from "../types";
 
+// === type ===
+import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
+
 // === Tag ===
 export const searchTags = async (data: unknown) => {
   const response = await http.post<BaseResponse<unknown>>(
@@ -18,7 +21,7 @@ export const searchTags = async (data: unknown) => {
 
 // === Region ===
 export const searchRegions = async (query: string) => {
-  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<RegionSearchItemType[]>>(
     ENDPOINTS.REGION.SEARCH,
     { params: { regionQuery: query } }
   );
