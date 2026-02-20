@@ -45,7 +45,7 @@ export default function Calendar({
           const year = date.getFullYear();
           const month = date.getMonth() + 1;
           return (
-            <div className="flex h-16 justify-center items-center gap-6">
+            <div className="flex py-3 justify-center items-center gap-6">
               <button
                 aria-label="이전 달로 이동"
                 type="button"
