@@ -71,6 +71,6 @@ export const ENDPOINTS = {
 
   /** 아이템 (Item) - 카테고리 상세 */
   ITEM: {
-    LIST: "/api/v1/item",
+    LIST: "/api/v1/item/",
   },
 } as const;
