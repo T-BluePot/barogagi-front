@@ -18,7 +18,7 @@ export const searchTags = async (data: unknown) => {
 
 // === Region ===
 export const searchRegions = async (query: string) => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.REGION.SEARCH,
     { params: { regionQuery: query } }
   );
