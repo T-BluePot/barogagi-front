@@ -1,14 +1,11 @@
 import { CommonBottomModal } from "../../../../common/modal/bottom-modal/CommonBottomModal";
-import {
-  PlanCategoryBottomModalContent,
-  type CategoryType,
-  type CategoryOption,
-} from "./content/PlanCategoryBottomModalContent";
+import { PlanCategoryBottomModalContent } from "./content/PlanCategoryBottomModalContent";
+import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 
 interface PlanCategoryBottomModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectOption: (category: CategoryType, option: CategoryOption) => void;
+  onSelectOption: (selected: SelectedCategoryItemType) => void;
 }
 
 export const PlanCategoryBottomModal = ({
