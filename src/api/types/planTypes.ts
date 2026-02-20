@@ -1,3 +1,5 @@
+import type { PlanSource } from "@/types/api/scheduleTypes";
+
 /**
  * 일정(Schedule) 관련 API 타입 정의
  */
@@ -55,7 +57,7 @@ export interface ScheduleRegistReqDTO {
 
 /** 세부 일정(Plan) 응답 DTO */
 export interface PlanRegistResDTO {
-  planSource: "AI" | "USER_PLACE" | "USER_CUSTOM";
+  planSource: PlanSource;
   startTime: string;
   endTime: string;
   itemNum: number;
