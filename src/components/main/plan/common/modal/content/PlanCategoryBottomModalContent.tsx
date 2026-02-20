@@ -1,100 +1,37 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import IconBox from "@/components/common/IconBox";
 
+// === types ===
+import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
+
 // === server ===
-import { getScheduleCategories } from "@/api/queries";
-import type { ScheduleCategoryResponseType } from "@/types/api/scheduleTypes";
+import {
+  getScheduleCategories,
+  getScheduleCategoryDetail,
+} from "@/api/queries";
+import type {
+  ScheduleCategoryResponseType,
+  ScheduleCategoryItemResponseType,
+} from "@/api/types";
 
-// 카테고리 타입 정의
-export type CategoryType =
-  | "식사"
-  | "카페"
-  | "체험"
-  | "놀거리"
-  | "탐방"
-  | "레저";
-
-export interface CategoryOption {
-  id: string;
-  label: string;
-  isRandom?: boolean;
-  isCustom?: boolean;
-}
-
-interface CategoryData {
-  type: CategoryType;
-  options: CategoryOption[];
-}
-
-// 카테고리별 옵션 데이터
-const CATEGORY_DATA: CategoryData[] = [
-  {
-    type: "식사",
-    options: [
-      { id: "random", label: "랜덤", isRandom: true },
-      { id: "custom", label: "직접 등록하기", isCustom: true },
-      { id: "western", label: "양식" },
-      { id: "japanese", label: "일식" },
-      { id: "chinese", label: "중식" },
-      { id: "korean", label: "한식" },
-      { id: "asian", label: "아시안" },
-    ],
-  },
-  {
-    type: "카페",
-    options: [
-      { id: "random", label: "랜덤", isRandom: true },
-      { id: "custom", label: "직접 등록하기", isCustom: true },
-      { id: "dessert", label: "디저트" },
-      { id: "brunch", label: "브런치" },
-      { id: "bakery", label: "베이커리" },
-    ],
-  },
-  {
-    type: "체험",
-    options: [
-      { id: "random", label: "랜덤", isRandom: true },
-      { id: "custom", label: "직접 등록하기", isCustom: true },
-      { id: "craft", label: "공방" },
-      { id: "cooking", label: "쿠킹클래스" },
-    ],
-  },
-  {
-    type: "놀거리",
-    options: [
-      { id: "random", label: "랜덤", isRandom: true },
-      { id: "custom", label: "직접 등록하기", isCustom: true },
-      { id: "game", label: "오락" },
-      { id: "karaoke", label: "노래방" },
-    ],
-  },
-  {
-    type: "탐방",
-    options: [
-      { id: "random", label: "랜덤", isRandom: true },
-      { id: "custom", label: "직접 등록하기", isCustom: true },
-      { id: "museum", label: "박물관" },
-      { id: "gallery", label: "전시" },
-    ],
-  },
-  {
-    type: "레저",
-    options: [
-      { id: "random", label: "랜덤", isRandom: true },
-      { id: "custom", label: "직접 등록하기", isCustom: true },
-      { id: "sports", label: "스포츠" },
-      { id: "outdoor", label: "아웃도어" },
-    ],
-  },
-];
-
-interface PlanCategoryBottomModalContentProps {
-  onSelectOption: (category: CategoryType, option: CategoryOption) => void;
+export interface PlanCategoryBottomModalContentProps {
+  onSelectOption: (selected: SelectedCategoryItemType) => void;
 }
 
 export const PlanCategoryBottomModalContent = ({
   onSelectOption,
 }: PlanCategoryBottomModalContentProps) => {
+  // === 스크롤 컨테이너 ref ===
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollOptionsToTop = (behavior: ScrollBehavior = "auto") => {
+    // 스크롤 컨테이너가 존재할 때만 상단으로 이동
+    if (!listRef.current) return;
+
+    // 부드럽게 올리고 싶으면 behavior: "smooth"
+    listRef.current.scrollTo({ top: 0, behavior });
+  };
+
   // === 카테고리 연결 ===
   const [categories, setCategories] = useState<ScheduleCategoryResponseType[]>(
     []
@@ -102,8 +39,9 @@ export const PlanCategoryBottomModalContent = ({
   const [selectedCategory, setSelectedCategory] =
     useState<ScheduleCategoryResponseType | null>(null);
 
+  // 카테고리 탭 데이터 불러오기
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategories = async () => {
       try {
         const res = await getScheduleCategories();
         const list = res.data as ScheduleCategoryResponseType[];
@@ -112,31 +50,51 @@ export const PlanCategoryBottomModalContent = ({
 
         if (list.length > 0) {
           setSelectedCategory(list[0]);
+          scrollOptionsToTop("auto");
         }
       } catch (error) {
         console.error("카테고리 불러오기 실패:", error);
       }
     };
 
-    fetchData();
+    fetchCategories();
   }, []);
 
+  const selectedCategoryType = selectedCategory?.categoryNm;
+
+  // === 선택된 카테고리 상세 아이템(서버 데이터) ===
+  const [categoryItems, setCategoryItems] = useState<
+    ScheduleCategoryItemResponseType[]
+  >([]);
+
+  // 카테고리 선택 시 상세 아이템 불러오기
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategoryDetail = async () => {
+      if (!selectedCategoryType) return;
       try {
-        const data = await getScheduleCategories();
-        console.log("카테고리 API 응답:", data);
+        const res = await getScheduleCategoryDetail(
+          selectedCategory.categoryNum
+        );
+        const items = res.data as ScheduleCategoryItemResponseType[];
+        setCategoryItems(items);
       } catch (error) {
-        console.error("에러:", error);
+        console.error("카테고리 상세 불러오기 실패:", error);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchCategoryDetail();
+  }, [selectedCategory, selectedCategoryType]);
 
-  const currentOptions =
-    CATEGORY_DATA.find((c) => c.type === selectedCategory?.categoryNm)
-      ?.options ?? [];
+  // 상세 아이템이 새로 로드될 때(리스트 갱신) 스크롤을 상단으로 고정
+  useEffect(() => {
+    scrollOptionsToTop("auto");
+  }, [categoryItems]);
+
+  const handleClickCategoryTab = (category: ScheduleCategoryResponseType) => {
+    setSelectedCategory(category);
+    // 탭 클릭 즉시 상단으로(UX 체감 좋아짐)
+    scrollOptionsToTop("auto");
+  };
 
   return (
     <div className="flex flex-col">
@@ -146,7 +104,7 @@ export const PlanCategoryBottomModalContent = ({
           <button
             key={category.categoryNum}
             type="button"
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => handleClickCategoryTab(category)}
             className={`flex-shrink-0 px-4 py-2 rounded-full typo-body transition-colors ${
               selectedCategory?.categoryNum === category.categoryNum
                 ? "bg-main text-gray-black"
@@ -160,28 +118,46 @@ export const PlanCategoryBottomModalContent = ({
 
       {/* 옵션 리스트 */}
       <div className="flex flex-col">
-        {currentOptions.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onSelectOption("놀거리", option)}
-            className="flex items-center justify-between h-14 px-6 hover:bg-gray-5 transition-colors"
-          >
-            <span
-              className={`typo-body text-gray-black ${
-                option.isRandom || option.isCustom ? "font-semibold" : ""
-              }`}
+        <div
+          ref={listRef}
+          className="flex flex-col h-52 overflow-y-auto scrollbar-hide"
+        >
+          {categoryItems.map((option) => (
+            <button
+              key={option.itemNum}
+              type="button"
+              onClick={() => {
+                if (!selectedCategory) return;
+
+                onSelectOption({
+                  category: {
+                    categoryNum: selectedCategory.categoryNum,
+                    categoryNm: selectedCategory.categoryNm,
+                  },
+                  option: {
+                    itemNum: option.itemNum,
+                    itemNm: option.itemNm,
+                  },
+                });
+              }}
+              className="flex flex-shrink-0 items-center justify-between h-14 px-6 hover:bg-gray-5 transition-colors"
             >
-              {option.label}
-            </span>
-            <IconBox
-              name="add"
-              className="text-gray-40"
-              width={24}
-              height={24}
-            />
-          </button>
-        ))}
+              <span
+                className={`typo-body text-gray-black ${
+                  option.itemNm === "랜덤" && "font-semibold"
+                }`}
+              >
+                {option.itemNm}
+              </span>
+              <IconBox
+                name="add"
+                className="text-gray-40"
+                width={24}
+                height={24}
+              />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
