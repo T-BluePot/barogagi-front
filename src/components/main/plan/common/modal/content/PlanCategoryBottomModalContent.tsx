@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import IconBox from "@/components/common/IconBox";
+
+// === server ===
+import { getScheduleCategories } from "@/api/queries";
+import type { ScheduleCategoryResponseType } from "@/types/api/scheduleTypes";
 
 // 카테고리 타입 정의
 export type CategoryType =
@@ -91,28 +95,65 @@ interface PlanCategoryBottomModalContentProps {
 export const PlanCategoryBottomModalContent = ({
   onSelectOption,
 }: PlanCategoryBottomModalContentProps) => {
+  // === 카테고리 연결 ===
+  const [categories, setCategories] = useState<ScheduleCategoryResponseType[]>(
+    []
+  );
   const [selectedCategory, setSelectedCategory] =
-    useState<CategoryType>("식사");
+    useState<ScheduleCategoryResponseType | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getScheduleCategories();
+        const list = res.data as ScheduleCategoryResponseType[];
+
+        setCategories(list);
+
+        if (list.length > 0) {
+          setSelectedCategory(list[0]);
+        }
+      } catch (error) {
+        console.error("카테고리 불러오기 실패:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getScheduleCategories();
+        console.log("카테고리 API 응답:", data);
+      } catch (error) {
+        console.error("에러:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const currentOptions =
-    CATEGORY_DATA.find((c) => c.type === selectedCategory)?.options ?? [];
+    CATEGORY_DATA.find((c) => c.type === selectedCategory?.categoryNm)
+      ?.options ?? [];
 
   return (
     <div className="flex flex-col">
       {/* 카테고리 탭 */}
       <div className="flex gap-2 px-6 py-4 overflow-x-auto scrollbar-hide">
-        {CATEGORY_DATA.map(({ type }) => (
+        {categories.map((category) => (
           <button
-            key={type}
+            key={category.categoryNum}
             type="button"
-            onClick={() => setSelectedCategory(type)}
+            onClick={() => setSelectedCategory(category)}
             className={`flex-shrink-0 px-4 py-2 rounded-full typo-body transition-colors ${
-              selectedCategory === type
+              selectedCategory?.categoryNum === category.categoryNum
                 ? "bg-main text-gray-black"
                 : "bg-gray-10 text-gray-60"
             }`}
           >
-            {type}
+            {category.categoryNm}
           </button>
         ))}
       </div>
@@ -123,7 +164,7 @@ export const PlanCategoryBottomModalContent = ({
           <button
             key={option.id}
             type="button"
-            onClick={() => onSelectOption(selectedCategory, option)}
+            onClick={() => onSelectOption("놀거리", option)}
             className="flex items-center justify-between h-14 px-6 hover:bg-gray-5 transition-colors"
           >
             <span
