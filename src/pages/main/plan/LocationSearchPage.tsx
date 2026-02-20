@@ -16,7 +16,7 @@ const LocationSearchPage = () => {
 
   const [value, setValue] = useState<string>("");
 
-  const debouncedValue = useDebouncedKeyword({ value });
+  const debouncedValue = useDebouncedKeyword(value);
   const hasValue = debouncedValue.length > 0;
 
   const updatePlace = usePlanEditStore((state) => state.updatePlace);
