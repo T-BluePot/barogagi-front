@@ -15,7 +15,7 @@ import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
 
 // === Tag ===
 export const searchTags = async (data: unknown) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.TAG.SEARCH,
     data
   );
