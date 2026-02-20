@@ -150,17 +150,19 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isHeaderDark: false,
     backPath: ROUTES.PLAN.DATE,
   },
-  [ROUTES.PLAN.STYLE]: {
-    type: "back",
-    label: "일정 스타일 선택",
-    isHeaderDark: false,
-  },
   [ROUTES.PLAN.SETTING]: {
     type: "back",
     label: "일정 구성",
     isHeaderDark: false,
-    backPath: ROUTES.PLAN.STYLE,
+    backPath: ROUTES.PLAN.LOCATION,
   },
+  [ROUTES.PLAN.STYLE]: {
+    type: "back",
+    label: "일정 스타일 선택",
+    isHeaderDark: false,
+    backPath: ROUTES.PLAN.SETTING,
+  },
+
   [ROUTES.PLAN.CREATE]: {
     type: "title",
     label: "추천 루트",
