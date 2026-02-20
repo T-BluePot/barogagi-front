@@ -1,21 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+// === constants ===
 import { SCHEDULE_STYLE_TEXT } from "@/constants/texts/main/plan/scheduleStyle";
+import { ROUTES } from "@/constants/routes";
 
+// === component ===
 import type { ActiveMap } from "@/components/main/plan/ScheduleStyleTagContainer";
-
 import StyleTagSection from "@/components/main/plan/create/StyleTagSection";
 import SectionSpacer from "@/components/layout/SectionSpacer";
 import StyleNoteSection from "@/components/main/plan/create/StyleNoteSection";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { mockStlyes } from "@/mock/styles";
-import { ROUTES } from "@/constants/routes";
+
+// === server ===
+import { searchTags } from "@/api/queries";
 
 const ScheduleStylePage = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchTags = async () => {
+      const res = await searchTags({
+        categoryNum: 11, // 여행 스타일 태그
+      });
+
+      console.log("태그 응답값:", res);
+    };
+
+    fetchTags();
+  }, []);
   const [actives, setActives] = useState<ActiveMap>({});
 
   const isAllInactive = (actives: ActiveMap): boolean => {
