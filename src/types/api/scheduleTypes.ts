@@ -71,9 +71,3 @@ export type ScheduleDraftType = {
   scheduleTagRegistReqDTOList: TagRegistReqDTO[];
   planRegistReqDTOList: PlanDraftType[];
 };
-
-// 일정 카테고리 응답 타입
-export interface ScheduleCategoryResponseType {
-  categoryNum: number;
-  categoryNm: string;
-}

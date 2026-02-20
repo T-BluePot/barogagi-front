@@ -83,3 +83,15 @@ export interface ScheduleRegistResDTO {
   scheduleTagRegistResDTOList: TagRegistResDTO[];
   planRegistResDTOList: PlanRegistResDTO[];
 }
+
+/** 일정 카테고리 응답 타입 */
+export interface ScheduleCategoryResponseType {
+  categoryNum: number;
+  categoryNm: string;
+}
+
+/** 일정 카테고리 상세 응답 타입 */
+export interface ScheduleCategoryItemResponseType {
+  itemNum: number;
+  itemNm: string;
+}
