@@ -6,6 +6,7 @@ import { ENDPOINTS } from "../endpoints";
 
 import type { BaseResponse, TermsProcessRequestType } from "../types";
 import type { TermsResponseType } from "../types";
+import type { ScheduleCategoryResponseType } from "@/types/api/scheduleTypes";
 
 // === type ===
 import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
@@ -87,5 +88,13 @@ export const searchPlaces = async (keyword: string) => {
     ENDPOINTS.PLACE.SEARCH,
     { params: { searchKeyword: keyword } }
   );
+  return response.data;
+};
+
+/** 일정 카테고리 */
+export const getScheduleCategories = async () => {
+  const response = await apiKeyHttp.get<
+    BaseResponse<ScheduleCategoryResponseType[]>
+  >(ENDPOINTS.CATEGORY.LIST);
   return response.data;
 };
