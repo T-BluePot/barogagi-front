@@ -3,15 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 import { useAlertModalStore } from "@/stores/alertModalStore";
 
+// === constants ===
 import { ROUTES } from "@/constants/routes";
 import { SELECT_LOCATION_TEXT } from "@/constants/texts/main/plan/selectLocation";
 
 import { mockRegions } from "@/mock/regions";
 
+// === components ===
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import RegionSearchContainer from "@/components/main/plan/create/RegionSearchContainer";
 import { RegionTagContainer } from "@/components/main/plan/RegionTagContainer";
-import ButtonWithText from "@/components/common/buttons/ButtonWithText";
+import Button from "@/components/common/buttons/CommonButton";
 
 const SelectLocationPage = () => {
   const navigate = useNavigate();
@@ -81,26 +83,18 @@ const SelectLocationPage = () => {
         </div>
       </div>
 
-      {/* 하단 푸터: fixed 제거, 문서 흐름 내 마지막 행으로 배치 */}
-
+      {/* 하단 푸터 */}
       <div className="mt-auto w-full p-6">
-        <ButtonWithText
-          textLabel={
-            SELECT_LOCATION_TEXT.NEXT_BUTTON.ADD_CURRENT_LOCATION_LABEL
-          }
-          onClickText={() => {
-            // TODO: 서버 연동 시 현재 위치 추가하기 로직 작성
-          }}
-          button={{
-            label: !hasSelection
+        <Button
+          type="button"
+          label={
+            !hasSelection
               ? SELECT_LOCATION_TEXT.NEXT_BUTTON.DISABLED
-              : SELECT_LOCATION_TEXT.NEXT_BUTTON.ENABLED,
-
-            isDisabled: !hasSelection,
-            onClick: () => {
-              // 추후 선택된 일정 넘기기 로직 추가
-              navigate(ROUTES.PLAN.SETTING);
-            },
+              : SELECT_LOCATION_TEXT.NEXT_BUTTON.ENABLED
+          }
+          onClick={() => {
+            // 추후 선택된 일정 넘기기 로직 추가
+            navigate(ROUTES.PLAN.SETTING);
           }}
         />
       </div>
