@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import IconBox from "@/components/common/IconBox";
 
 // === types ===
@@ -25,10 +25,13 @@ export const PlanCategoryBottomModalContent = ({
   // === 스크롤 컨테이너 ref ===
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollOptionsToTop = (behavior: ScrollBehavior = "auto") => {
-    if (!listRef.current) return;
-    listRef.current.scrollTo({ top: 0, behavior });
-  };
+  const scrollOptionsToTop = useCallback(
+    (behavior: ScrollBehavior = "auto") => {
+      if (!listRef.current) return;
+      listRef.current.scrollTo({ top: 0, behavior });
+    },
+    []
+  );
 
   // === 카테고리 / 아이템 state ===
   const [categories, setCategories] = useState<ScheduleCategoryResponseType[]>(
