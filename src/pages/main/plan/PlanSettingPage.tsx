@@ -15,7 +15,9 @@ import type { TimeValue } from "@/utils/date";
 import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 
 // === type ===
 import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
@@ -23,8 +25,10 @@ import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
   const { openConfirmModal } = useConfirmModalStore();
+  const { openAlertModal } = useAlertModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const [items, setItems] = useState<PlanData[]>([]);
+  const { validatePlanTime } = usePlanTimeValidation(items);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | number | null>(
     null
@@ -230,6 +234,30 @@ export const PlanSettingPage = () => {
         }
       );
       return;
+    }
+
+    // 시간 유효성 검증
+    if (planFormDraft?.startTime && planFormDraft?.endTime) {
+      const insertIndex =
+        editTargetId !== null
+          ? items.findIndex((item) => item.id === editTargetId)
+          : items.length;
+
+      const validation = validatePlanTime(
+        planFormDraft.startTime,
+        planFormDraft.endTime,
+        insertIndex,
+        editTargetId ?? undefined
+      );
+
+      if (!validation.isValid) {
+        openAlertModal({
+          title: validation.errorTitle ?? "시간 오류",
+          content: validation.errorContent,
+          buttonLabel: "확인",
+        });
+        return;
+      }
     }
 
     if (planFormDraft && editTargetId !== null) {
