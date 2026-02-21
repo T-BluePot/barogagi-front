@@ -18,8 +18,9 @@ const WithdrawalModal = ({
   onClose,
   onConfirm,
 }: WithdrawalModalProps) => {
-  const [selectedReason, setSelectedReason] =
-    useState<WithdrawalReason | null>(null);
+  const [selectedReason, setSelectedReason] = useState<WithdrawalReason | null>(
+    null
+  );
   const [detail, setDetail] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
