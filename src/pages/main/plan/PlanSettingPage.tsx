@@ -165,9 +165,7 @@ export const PlanSettingPage = () => {
 
     if (regionEditTargetId === DRAFT_ID) {
       setPlanFormDraft((prev) =>
-        prev
-          ? { ...prev, address: region?.label ?? undefined }
-          : null
+        prev ? { ...prev, address: region?.label ?? undefined } : null
       );
     } else {
       setItems((prev) =>
@@ -229,11 +227,15 @@ export const PlanSettingPage = () => {
   };
 
   const handlePlanFormTimeClick = () => {
+    setIsRegionModalOpen(false);
+    setRegionEditTargetId(null);
     setTimeEditTargetId(DRAFT_ID);
     setIsTimeModalOpen(true);
   };
 
   const handlePlanFormAddressClick = () => {
+    setIsTimeModalOpen(false);
+    setTimeEditTargetId(null);
     setRegionEditTargetId(DRAFT_ID);
     setIsRegionModalOpen(true);
   };
