@@ -7,7 +7,9 @@ import PlanCategoryBottomModal from "@/components/main/plan/common/modal/PlanCat
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/SelectRegionConfirmModal";
+import { SelectTagConfirmModal } from "@/components/main/plan/common/modal/SelectTagConfirmModal";
 import type { RegionOption } from "@/components/main/plan/common/modal/content/SelectRegionConfirmModalContent";
+import type { TagOption } from "@/components/main/plan/common/modal/content/SelectTagConfirmModalContent";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
 import Button from "@/components/common/buttons/CommonButton";
@@ -222,6 +224,37 @@ export const PlanSettingPage = () => {
     setIsRegionModalOpen(true);
   };
 
+  // === 태그 선택 모달 ===
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+
+  // TODO: 추후 백엔드 API에서 태그 목록을 가져와서 교체
+  const tagOptions: TagOption[] = [
+    { id: "1", label: "분위기 좋은" },
+    { id: "2", label: "자리가 편한" },
+    { id: "3", label: "뷰가 좋은" },
+    { id: "4", label: "저렴한" },
+    { id: "5", label: "핫플" },
+  ];
+
+  const handlePlanFormTagsClick = () => {
+    setIsTimeModalOpen(false);
+    setTimeEditTargetId(null);
+    setIsRegionModalOpen(false);
+    setRegionEditTargetId(null);
+    setIsTagModalOpen(true);
+  };
+
+  const handleTagConfirm = (tags: TagOption[]) => {
+    setPlanFormDraft((prev) =>
+      prev ? { ...prev, tags: tags.map((t) => t.label) } : null
+    );
+    setIsTagModalOpen(false);
+  };
+
+  const handleTagCancel = () => {
+    setIsTagModalOpen(false);
+  };
+
   return (
     <div className="flex flex-col w-full h-full">
       <div className="flex-1 overflow-auto p-4">
@@ -264,9 +297,7 @@ export const PlanSettingPage = () => {
           tags: planFormDraft?.tags,
           onClickTime: handlePlanFormTimeClick,
           onClickAddress: handlePlanFormAddressClick,
-          onClickTags: () => {
-            // TODO: 태그 선택 기능
-          },
+          onClickTags: handlePlanFormTagsClick,
         }}
       />
       <DeletePlanModal
@@ -295,6 +326,19 @@ export const PlanSettingPage = () => {
         initialSelectedId={initialRegionId}
         onConfirm={handleRegionConfirm}
         onCancel={handleRegionCancel}
+      />
+      <SelectTagConfirmModal
+        isOpen={isTagModalOpen}
+        tags={tagOptions}
+        initialSelectedIds={
+          planFormDraft?.tags
+            ? tagOptions
+                .filter((t) => planFormDraft.tags!.includes(t.label))
+                .map((t) => t.id)
+            : []
+        }
+        onConfirm={handleTagConfirm}
+        onCancel={handleTagCancel}
       />
     </div>
   );
