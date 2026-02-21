@@ -67,6 +67,12 @@ export const PlanSettingPage = () => {
     tags?: string[];
   } | null>(null);
 
+  // === Edit 모드 상태 ===
+  const [editTargetId, setEditTargetId] = useState<string | number | null>(
+    null
+  );
+  const [editNote, setEditNote] = useState("");
+
   // === 시간 선택 모달 ===
   const [isTimeModalOpen, setIsTimeModalOpen] = useState(false);
   const [timeEditTargetId, setTimeEditTargetId] = useState<
@@ -186,6 +192,22 @@ export const PlanSettingPage = () => {
     setIsPlanFormModalOpen(true);
   };
 
+  // === PlanCard 클릭 → Edit 모드 ===
+  const handleCardClick = (id: string | number) => {
+    const target = items.find((item) => item.id === id);
+    if (!target) return;
+
+    setEditTargetId(id);
+    setPlanFormDraft({
+      planNm: target.title,
+      startTime: target.startTime,
+      endTime: target.endTime,
+      address: target.location,
+    });
+    setEditNote("");
+    setIsPlanFormModalOpen(true);
+  };
+
   const handlePlanFormClose = () => {
     if (planFormDraft && (!planFormDraft.startTime || !planFormDraft.endTime)) {
       openAlertModal({
@@ -196,7 +218,23 @@ export const PlanSettingPage = () => {
       return;
     }
 
-    if (planFormDraft) {
+    if (planFormDraft && editTargetId !== null) {
+      // Edit 모드: 기존 아이템 업데이트
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === editTargetId
+            ? {
+                ...item,
+                title: planFormDraft.planNm,
+                startTime: planFormDraft.startTime,
+                endTime: planFormDraft.endTime,
+                location: planFormDraft.address,
+              }
+            : item
+        )
+      );
+    } else if (planFormDraft) {
+      // Create 모드: 새 아이템 추가
       const newPlan: PlanData = {
         id: String(Date.now()),
         title: planFormDraft.planNm,
@@ -206,8 +244,11 @@ export const PlanSettingPage = () => {
       };
       setItems((prev) => [...prev, newPlan]);
     }
+
     setIsPlanFormModalOpen(false);
     setPlanFormDraft(null);
+    setEditTargetId(null);
+    setEditNote("");
   };
 
   const handlePlanFormTimeClick = () => {
@@ -262,6 +303,7 @@ export const PlanSettingPage = () => {
           initialItems={items}
           onAddPlan={handleAddPlan}
           onOrderChange={handleOrderChange}
+          onCardClick={handleCardClick}
           onDeleteClick={handleDeleteClick}
           onTimeClick={handleTimeClick}
           onLocationClick={handleLocationClick}
@@ -288,17 +330,32 @@ export const PlanSettingPage = () => {
           onClose: handlePlanFormClose,
           onConfirm: handlePlanFormClose,
         }}
-        info={{
-          mode: "Create",
-          planNm: planFormDraft?.planNm,
-          startTime: planFormDraft?.startTime,
-          endTime: planFormDraft?.endTime,
-          address: planFormDraft?.address,
-          tags: planFormDraft?.tags,
-          onClickTime: handlePlanFormTimeClick,
-          onClickAddress: handlePlanFormAddressClick,
-          onClickTags: handlePlanFormTagsClick,
-        }}
+        info={
+          editTargetId !== null
+            ? {
+                mode: "Edit",
+                planNm: planFormDraft?.planNm,
+                startTime: planFormDraft?.startTime,
+                endTime: planFormDraft?.endTime,
+                address: planFormDraft?.address,
+                note: "메모",
+                noteValue: editNote,
+                onChangeNote: setEditNote,
+                onClickTime: handlePlanFormTimeClick,
+                onClickAddress: handlePlanFormAddressClick,
+              }
+            : {
+                mode: "Create",
+                planNm: planFormDraft?.planNm,
+                startTime: planFormDraft?.startTime,
+                endTime: planFormDraft?.endTime,
+                address: planFormDraft?.address,
+                tags: planFormDraft?.tags,
+                onClickTime: handlePlanFormTimeClick,
+                onClickAddress: handlePlanFormAddressClick,
+                onClickTags: handlePlanFormTagsClick,
+              }
+        }
       />
       <DeletePlanModal
         isOpen={isDeleteModalOpen}

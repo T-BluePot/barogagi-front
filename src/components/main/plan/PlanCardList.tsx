@@ -20,6 +20,7 @@ import PlanCard, { type PlanData } from "./PlanCard";
 
 interface SortableCardProps {
   data: PlanData;
+  onCardClick?: (id: string | number) => void;
   onDeleteClick?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
   onLocationClick?: (id: string | number) => void;
@@ -28,6 +29,7 @@ interface SortableCardProps {
 /** 드래그 가능한 개별 카드 래퍼 */
 const SortableCard = ({
   data,
+  onCardClick,
   onDeleteClick,
   onTimeClick,
   onLocationClick,
@@ -52,6 +54,7 @@ const SortableCard = ({
     <div ref={setNodeRef} style={style}>
       <PlanCard
         data={data}
+        onCardClick={onCardClick}
         onDeleteClick={onDeleteClick}
         onTimeClick={onTimeClick}
         onLocationClick={onLocationClick}
@@ -64,6 +67,7 @@ const SortableCard = ({
 interface PlanCardListProps {
   items: PlanData[];
   onOrderChange?: (items: PlanData[]) => void;
+  onCardClick?: (id: string | number) => void;
   onDeleteClick?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
   onLocationClick?: (id: string | number) => void;
@@ -71,12 +75,12 @@ interface PlanCardListProps {
 
 /**
  * 플랜 카드 목록 컴포넌트 (제어 컴포넌트 패턴)
- * 
+ *
  * 🎯 제어 컴포넌트란?
  * - 부모가 상태(items)를 소유하고, 자식은 그것을 "읽기만" 함
  * - 변경이 필요하면 부모에게 알려서(onOrderChange) 부모가 상태를 업데이트
  * - 부모 → 자식으로 데이터가 흐르고, 자식 → 부모로 이벤트가 흐름 (단방향 데이터 흐름)
- * 
+ *
  * 왜 이 패턴을 사용하나요?
  * - 이전 코드: items를 내부 useState로 복사 → 부모가 items를 바꿔도 내부 상태는 안 바뀜 (데이터 불일치)
  * - 지금 코드: items를 직접 사용 → 부모가 items를 바꾸면 바로 반영됨 (항상 동기화)
@@ -84,6 +88,7 @@ interface PlanCardListProps {
 const PlanCardList = ({
   items,
   onOrderChange,
+  onCardClick,
   onDeleteClick,
   onTimeClick,
   onLocationClick,
@@ -136,6 +141,7 @@ const PlanCardList = ({
             <SortableCard
               key={item.id}
               data={item}
+              onCardClick={onCardClick}
               onDeleteClick={onDeleteClick}
               onTimeClick={onTimeClick}
               onLocationClick={onLocationClick}

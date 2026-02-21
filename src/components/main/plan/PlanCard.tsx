@@ -16,6 +16,7 @@ export interface PlanData {
 
 interface PlanCardProps {
   data: PlanData;
+  onCardClick?: (id: string | number) => void;
   onDeleteClick?: (id: string | number) => void;
   onTimeClick?: (id: string | number) => void;
   onLocationClick?: (id: string | number) => void;
@@ -27,6 +28,7 @@ const DELETE_BUTTON_WIDTH = 72; // 삭제 버튼 너비
 
 const PlanCard = ({
   data,
+  onCardClick,
   onDeleteClick,
   onTimeClick,
   onLocationClick,
@@ -71,9 +73,10 @@ const PlanCard = ({
   };
 
   const handleCardClick = () => {
-    // 열려있으면 닫기
     if (isOpen) {
       resetSwipeState();
+    } else {
+      onCardClick?.(id);
     }
   };
 
