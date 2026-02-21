@@ -26,8 +26,8 @@ const CommonSelectBox = <T extends string>({
   };
 
   const borderClass =
-    isFocused || isOpen ? "border-main-default" : "border-gray-30";
-  const labelClass = isFocused || isOpen ? "text-main-default" : "text-gray-50";
+    isFocused || isOpen ? "border-main" : "border-gray-30";
+  const labelClass = isFocused || isOpen ? "text-main" : "text-gray-60";
 
   return (
     <div className="relative flex flex-col gap-1 text-left">
@@ -77,7 +77,7 @@ const CommonSelectBox = <T extends string>({
                 className={clsx(
                   "w-full text-left px-4 py-3 typo-body cursor-pointer transition-colors",
                   value === option
-                    ? "bg-main-light text-main-default"
+                    ? "bg-main-disable text-gray-black"
                     : "text-gray-black hover:bg-gray-20"
                 )}
               >

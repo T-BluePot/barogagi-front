@@ -7,7 +7,6 @@ export const WITHDRAWAL_REASONS = [
   "서비스 이용이 불편해요",
   "원하는 기능이 없어요",
   "다른 서비스를 이용할 거예요",
-  "개인정보가 걱정돼요",
   "기타",
 ] as const;
 
