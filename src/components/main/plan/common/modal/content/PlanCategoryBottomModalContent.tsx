@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import IconBox from "@/components/common/IconBox";
 
 // === types ===
@@ -13,6 +13,7 @@ import type {
   ScheduleCategoryResponseType,
   ScheduleCategoryItemResponseType,
 } from "@/api/types";
+import toast from "react-hot-toast";
 
 export interface PlanCategoryBottomModalContentProps {
   onSelectOption: (selected: SelectedCategoryItemType) => void;
@@ -25,21 +26,29 @@ export const PlanCategoryBottomModalContent = ({
   const listRef = useRef<HTMLDivElement | null>(null);
 
   const scrollOptionsToTop = (behavior: ScrollBehavior = "auto") => {
-    // 스크롤 컨테이너가 존재할 때만 상단으로 이동
     if (!listRef.current) return;
-
-    // 부드럽게 올리고 싶으면 behavior: "smooth"
     listRef.current.scrollTo({ top: 0, behavior });
   };
 
-  // === 카테고리 연결 ===
+  // === 카테고리 / 아이템 state ===
   const [categories, setCategories] = useState<ScheduleCategoryResponseType[]>(
     []
   );
   const [selectedCategory, setSelectedCategory] =
     useState<ScheduleCategoryResponseType | null>(null);
 
-  // 카테고리 탭 데이터 불러오기
+  const [categoryItems, setCategoryItems] = useState<
+    ScheduleCategoryItemResponseType[]
+  >([]);
+
+  // selectedCategory의 "최신 값"을 항상 가리키는 ref (race condition 방지용)
+  const selectedCategoryRef = useRef<ScheduleCategoryResponseType | null>(null);
+
+  useEffect(() => {
+    selectedCategoryRef.current = selectedCategory;
+  }, [selectedCategory]);
+
+  // === 카테고리 목록 불러오기 ===
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -48,51 +57,55 @@ export const PlanCategoryBottomModalContent = ({
 
         setCategories(list);
 
+        // 최초 진입 시 첫 카테고리 자동 선택 (원치 않으면 삭제)
         if (list.length > 0) {
           setSelectedCategory(list[0]);
-          scrollOptionsToTop("auto");
         }
       } catch (error) {
-        console.error("카테고리 불러오기 실패:", error);
+        console.error("카테고리 목록 불러오기 실패:", error);
+        toast("카테고리 목록을 불러오지 못했어요.");
       }
     };
 
     fetchCategories();
   }, []);
 
-  const selectedCategoryType = selectedCategory?.categoryNm;
-
-  // === 선택된 카테고리 상세 아이템(서버 데이터) ===
-  const [categoryItems, setCategoryItems] = useState<
-    ScheduleCategoryItemResponseType[]
-  >([]);
-
-  // 카테고리 선택 시 상세 아이템 불러오기
+  // === 선택된 카테고리 상세 아이템 불러오기 (race condition 방지) ===
   useEffect(() => {
     const fetchCategoryDetail = async () => {
-      if (!selectedCategory) return;
+      if (!selectedCategory) {
+        setCategoryItems([]);
+        return;
+      }
+
+      const requestedCategoryNum = selectedCategory.categoryNum;
+
       try {
-        const res = await getScheduleCategoryDetail(
-          selectedCategory.categoryNum
-        );
+        const res = await getScheduleCategoryDetail(requestedCategoryNum);
         const items = res.data as ScheduleCategoryItemResponseType[];
+
+        // 응답 도착 시점의 "현재 선택"과 요청 시점이 다르면 무시
+        if (selectedCategoryRef.current?.categoryNum !== requestedCategoryNum) {
+          return;
+        }
+
         setCategoryItems(items);
       } catch (error) {
         console.error("카테고리 상세 불러오기 실패:", error);
+        toast("카테고리 상세를 불러오지 못했어요.");
       }
     };
 
     fetchCategoryDetail();
-  }, [selectedCategory, selectedCategoryType]);
+  }, [selectedCategory]);
 
-  // 상세 아이템이 새로 로드될 때(리스트 갱신) 스크롤을 상단으로 고정
+  // 상세 아이템이 새로 로드될 때 스크롤 상단 고정
   useEffect(() => {
     scrollOptionsToTop("auto");
   }, [categoryItems]);
 
   const handleClickCategoryTab = (category: ScheduleCategoryResponseType) => {
     setSelectedCategory(category);
-    // 탭 클릭 즉시 상단으로(UX 체감 좋아짐)
     scrollOptionsToTop("auto");
   };
 
