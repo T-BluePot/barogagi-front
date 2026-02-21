@@ -4,6 +4,7 @@ import { PlanSettingForm } from "@/components/main/plan/PlanSettingForm";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 import type { PlanData } from "@/components/main/plan/PlanCard";
 import PlanCategoryBottomModal from "@/components/main/plan/common/modal/PlanCategoryBottomModal";
+import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/SelectRegionConfirmModal";
 import type { RegionOption } from "@/components/main/plan/common/modal/content/SelectRegionConfirmModalContent";
@@ -75,6 +76,17 @@ export const PlanSettingPage = () => {
     handleCategoryModalOpen();
   };
 
+  // === PlanForm 모달 (일정 추가 폼) ===
+  const DRAFT_ID = "__draft__";
+  const [isPlanFormModalOpen, setIsPlanFormModalOpen] = useState(false);
+  const [planFormDraft, setPlanFormDraft] = useState<{
+    planNm: string;
+    startTime?: string;
+    endTime?: string;
+    address?: string;
+    tags?: string[];
+  } | null>(null);
+
   // === 시간 선택 모달 ===
   const [isTimeModalOpen, setIsTimeModalOpen] = useState(false);
   const [timeEditTargetId, setTimeEditTargetId] = useState<
@@ -89,13 +101,29 @@ export const PlanSettingPage = () => {
   const handleTimeConfirm = (startTime: TimeValue, endTime: TimeValue) => {
     if (timeEditTargetId === null) return;
 
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === timeEditTargetId
-          ? { ...item, startTime: timeValueToHHmm(startTime), endTime: timeValueToHHmm(endTime) }
-          : item
-      )
-    );
+    if (timeEditTargetId === DRAFT_ID) {
+      setPlanFormDraft((prev) =>
+        prev
+          ? {
+              ...prev,
+              startTime: timeValueToHHmm(startTime),
+              endTime: timeValueToHHmm(endTime),
+            }
+          : null
+      );
+    } else {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === timeEditTargetId
+            ? {
+                ...item,
+                startTime: timeValueToHHmm(startTime),
+                endTime: timeValueToHHmm(endTime),
+              }
+            : item
+        )
+      );
+    }
     setIsTimeModalOpen(false);
     setTimeEditTargetId(null);
   };
@@ -105,7 +133,10 @@ export const PlanSettingPage = () => {
     setTimeEditTargetId(null);
   };
 
-  const timeEditTarget = items.find((item) => item.id === timeEditTargetId);
+  const timeEditTarget =
+    timeEditTargetId === DRAFT_ID
+      ? { startTime: planFormDraft?.startTime, endTime: planFormDraft?.endTime }
+      : items.find((item) => item.id === timeEditTargetId);
 
   // === 지역 선택 모달 ===
   const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
@@ -132,13 +163,21 @@ export const PlanSettingPage = () => {
   const handleRegionConfirm = (region: RegionOption | null) => {
     if (regionEditTargetId === null) return;
 
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === regionEditTargetId
-          ? { ...item, location: region?.label ?? undefined }
-          : item
-      )
-    );
+    if (regionEditTargetId === DRAFT_ID) {
+      setPlanFormDraft((prev) =>
+        prev
+          ? { ...prev, address: region?.label ?? undefined }
+          : null
+      );
+    } else {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === regionEditTargetId
+            ? { ...item, location: region?.label ?? undefined }
+            : item
+        )
+      );
+    }
     setIsRegionModalOpen(false);
     setRegionEditTargetId(null);
   };
@@ -148,7 +187,10 @@ export const PlanSettingPage = () => {
     setRegionEditTargetId(null);
   };
 
-  const regionEditTarget = items.find((item) => item.id === regionEditTargetId);
+  const regionEditTarget =
+    regionEditTargetId === DRAFT_ID
+      ? { location: planFormDraft?.address }
+      : items.find((item) => item.id === regionEditTargetId);
   const initialRegionId = regionOptions.find(
     (r) => r.label === regionEditTarget?.location
   )?.id;
@@ -164,12 +206,36 @@ export const PlanSettingPage = () => {
   };
 
   const handleCategorySelect = (selected: SelectedCategoryItemType) => {
-    const newPlan: PlanData = {
-      id: String(Date.now()),
-      title: selected.option.itemNm,
-    };
-    setItems((prev) => [...prev, newPlan]);
+    setPlanFormDraft({
+      planNm: selected.option.itemNm,
+    });
     handleCategoryModalClose();
+    setIsPlanFormModalOpen(true);
+  };
+
+  const handlePlanFormClose = () => {
+    if (planFormDraft) {
+      const newPlan: PlanData = {
+        id: String(Date.now()),
+        title: planFormDraft.planNm,
+        startTime: planFormDraft.startTime,
+        endTime: planFormDraft.endTime,
+        location: planFormDraft.address,
+      };
+      setItems((prev) => [...prev, newPlan]);
+    }
+    setIsPlanFormModalOpen(false);
+    setPlanFormDraft(null);
+  };
+
+  const handlePlanFormTimeClick = () => {
+    setTimeEditTargetId(DRAFT_ID);
+    setIsTimeModalOpen(true);
+  };
+
+  const handlePlanFormAddressClick = () => {
+    setRegionEditTargetId(DRAFT_ID);
+    setIsRegionModalOpen(true);
   };
 
   return (
@@ -199,6 +265,29 @@ export const PlanSettingPage = () => {
         onClose={handleCategoryModalClose}
         onSelectOption={handleCategorySelect}
       />
+      <PlanFormModal
+        action={{
+          isOpen: isPlanFormModalOpen,
+          onClickEditTitle: () => {
+            // TODO: 제목 수정 기능
+          },
+          onClose: handlePlanFormClose,
+          onConfirm: handlePlanFormClose,
+        }}
+        info={{
+          mode: "Create",
+          planNm: planFormDraft?.planNm,
+          startTime: planFormDraft?.startTime,
+          endTime: planFormDraft?.endTime,
+          address: planFormDraft?.address,
+          tags: planFormDraft?.tags,
+          onClickTime: handlePlanFormTimeClick,
+          onClickAddress: handlePlanFormAddressClick,
+          onClickTags: () => {
+            // TODO: 태그 선택 기능
+          },
+        }}
+      />
       <DeletePlanModal
         isOpen={isDeleteModalOpen}
         onClickConfirm={handleConfirmDelete}
@@ -206,8 +295,16 @@ export const PlanSettingPage = () => {
       />
       <SelectTimeConfirmModal
         isOpen={isTimeModalOpen}
-        initialStartTime={timeEditTarget?.startTime ? hhmmToTimeValue(timeEditTarget.startTime) : undefined}
-        initialEndTime={timeEditTarget?.endTime ? hhmmToTimeValue(timeEditTarget.endTime) : undefined}
+        initialStartTime={
+          timeEditTarget?.startTime
+            ? hhmmToTimeValue(timeEditTarget.startTime)
+            : undefined
+        }
+        initialEndTime={
+          timeEditTarget?.endTime
+            ? hhmmToTimeValue(timeEditTarget.endTime)
+            : undefined
+        }
         onConfirm={handleTimeConfirm}
         onCancel={handleTimeCancel}
       />
