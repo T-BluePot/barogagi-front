@@ -16,35 +16,9 @@ import { ROUTES } from "@/constants/routes";
 // === type ===
 import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 
-// 임시 mock 데이터
-const mockItems: PlanData[] = [
-  {
-    id: "1",
-    title: "한강 라면",
-    startTime: "11:30",
-    endTime: "12:30",
-    location: "서울시 종로구",
-  },
-  {
-    id: "2",
-    title: "카페 방문",
-    startTime: "13:00",
-    endTime: "14:00",
-    location: "서울시 강남구",
-  },
-  {
-    id: "3",
-    emoji: "🎬",
-    title: "영화 관람",
-    startTime: "15:00",
-    endTime: "17:30",
-    location: "서울시 마포구",
-  },
-];
-
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
-  const [items, setItems] = useState<PlanData[]>(mockItems);
+  const [items, setItems] = useState<PlanData[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | number | null>(
     null
