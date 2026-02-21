@@ -14,7 +14,7 @@ import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
 import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
-import { useAlertModalStore } from "@/stores/alertModalStore";
+import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 
 // === type ===
@@ -22,7 +22,7 @@ import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
-  const { openAlertModal } = useAlertModalStore();
+  const { openConfirmModal } = useConfirmModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const [items, setItems] = useState<PlanData[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -208,13 +208,27 @@ export const PlanSettingPage = () => {
     setIsPlanFormModalOpen(true);
   };
 
+  const closePlanForm = () => {
+    setIsPlanFormModalOpen(false);
+    setPlanFormDraft(null);
+    setEditTargetId(null);
+    setEditNote("");
+  };
+
   const handlePlanFormClose = () => {
     if (planFormDraft && (!planFormDraft.startTime || !planFormDraft.endTime)) {
-      openAlertModal({
-        title: "시간을 선택해주세요",
-        content: "일정에 시간을 추가해야 저장할 수 있습니다.",
-        buttonLabel: "확인",
-      });
+      openConfirmModal(
+        {
+          title: "일정 추가를 취소하시겠습니까?",
+          content: "시간을 선택하지 않으면 일정이 저장되지 않습니다.",
+          confirmLabel: "취소하기",
+          cancelLabel: "돌아가기",
+        },
+        () => {
+          // 확인: 일정 추가 취소
+          closePlanForm();
+        }
+      );
       return;
     }
 
@@ -245,10 +259,7 @@ export const PlanSettingPage = () => {
       setItems((prev) => [...prev, newPlan]);
     }
 
-    setIsPlanFormModalOpen(false);
-    setPlanFormDraft(null);
-    setEditTargetId(null);
-    setEditNote("");
+    closePlanForm();
   };
 
   const handlePlanFormTimeClick = () => {
