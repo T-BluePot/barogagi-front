@@ -20,10 +20,10 @@ export interface TagInfoDTO {
 
 /** 지역 정보 */
 export interface RegionInfoDTO {
-  regionLevel1: string;
-  regionLevel2: string;
-  regionLevel3: string;
-  regionLevel4: string;
+  regionLevel1?: string;
+  regionLevel2?: string;
+  regionLevel3?: string;
+  regionLevel4?: string;
 }
 
 /** GET /api/v1/home/me/schedules 응답 타입 */
