@@ -186,6 +186,9 @@ export const PlanSettingPage = () => {
   };
 
   const handlePlanFormClose = () => {
+    // TODO: validation 로직 추가 (예: 필수값 미입력 시 alert 등)
+    // if (!validate(planFormDraft)) return;
+
     if (planFormDraft) {
       const newPlan: PlanData = {
         id: String(Date.now()),
@@ -244,9 +247,6 @@ export const PlanSettingPage = () => {
       <PlanFormModal
         action={{
           isOpen: isPlanFormModalOpen,
-          onClickEditTitle: () => {
-            // TODO: 제목 수정 기능
-          },
           onClose: handlePlanFormClose,
           onConfirm: handlePlanFormClose,
         }}

@@ -12,7 +12,7 @@
  */
 interface ModalAction {
   isOpen: boolean;
-  onClickEditTitle: () => void;
+  onClickEditTitle?: () => void;
   onClose: () => void;
   onConfirm: () => void;
 }
