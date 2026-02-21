@@ -39,17 +39,17 @@ export const useRegionSelectionStore = create<RegionSelectionStore>()(
       addRegion: (item) => {
         const { selectedRegions } = get();
 
-        // 최대 3개 제한
-        if (selectedRegions.length >= 3) {
-          return { ok: false, reason: "MAX" };
-        }
-
         // 중복 방지
         const already = selectedRegions.some(
           (r) => r.regionNum === item.regionNum
         );
         if (already) {
           return { ok: false, reason: "DUPLICATE" };
+        }
+
+        // 최대 3개 제한
+        if (selectedRegions.length >= 3) {
+          return { ok: false, reason: "MAX" };
         }
 
         set({ selectedRegions: [...selectedRegions, item] });
