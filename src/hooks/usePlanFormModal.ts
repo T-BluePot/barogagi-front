@@ -139,12 +139,19 @@ export const usePlanFormModal = (
     // --- (1) 시간 미선택: 사용자에게 취소할지 물어보기 ---
     if (draft && (!draft.startTime || !draft.endTime)) {
       openConfirmModal(
-        {
-          title: "일정 추가를 취소하시겠습니까?",
-          content: "시간을 선택하지 않으면 일정이 저장되지 않습니다.",
-          confirmLabel: "취소하기",
-          cancelLabel: "돌아가기",
-        },
+        editTargetId !== null
+          ? {
+              title: "일정 수정을 취소하시겠습니까?",
+              content: "시간을 선택하지 않으면 수정 내용이 저장되지 않습니다.",
+              confirmLabel: "취소하기",
+              cancelLabel: "돌아가기",
+            }
+          : {
+              title: "일정 추가를 취소하시겠습니까?",
+              content: "시간을 선택하지 않으면 일정이 저장되지 않습니다.",
+              confirmLabel: "취소하기",
+              cancelLabel: "돌아가기",
+            },
         () => closePlanForm()
       );
       return;
