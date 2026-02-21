@@ -107,7 +107,9 @@ const PlanCard = ({
         {/* 컨텐츠 영역 */}
         <div className="flex-1 min-w-0 flex flex-col gap-1 ml-3 text-left">
           {/* 제목 */}
-          <span className="typo-subtitle text-gray-black truncate">{title}</span>
+          <span className="typo-subtitle text-gray-black truncate">
+            {title}
+          </span>
 
           {/* 시간 & 장소 정보 */}
           <div className="flex items-center gap-3 min-w-0">
