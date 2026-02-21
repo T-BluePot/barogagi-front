@@ -99,14 +99,13 @@ export const usePlanTimeValidation = (items: PlanData[]) => {
         ? items.filter((item) => item.id !== excludeId)
         : [...items];
 
-      // 시간이 설정되지 않은 일정은 검증 대상에서 제외
-      const withTime = others.filter((item) => item.startTime && item.endTime);
-
       const startMin = hhmmToMinutes(startTime);
       const endMin = hhmmToMinutes(endTime);
 
-      // 앞순서 일정과 비교: insertIndex 앞에 있는 일정들
-      const before = withTime.slice(0, insertIndex);
+      // insertIndex는 others 기준 인덱스이므로 먼저 슬라이스 후 시간 없는 항목 제외
+      const before = others
+        .slice(0, insertIndex)
+        .filter((item) => item.startTime && item.endTime);
       for (const prev of before) {
         const prevEndMin = hhmmToMinutes(prev.endTime!);
         if (startMin < prevEndMin) {
@@ -119,7 +118,9 @@ export const usePlanTimeValidation = (items: PlanData[]) => {
       }
 
       // 뒷순서 일정과 비교: insertIndex 뒤에 있는 일정들
-      const after = withTime.slice(insertIndex);
+      const after = others
+        .slice(insertIndex)
+        .filter((item) => item.startTime && item.endTime);
       for (const next of after) {
         const nextStartMin = hhmmToMinutes(next.startTime!);
         if (endMin > nextStartMin) {
