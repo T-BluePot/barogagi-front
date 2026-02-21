@@ -115,7 +115,7 @@ export const PlanCategoryBottomModalContent = ({
   return (
     <div className="flex flex-col">
       {/* 카테고리 탭 */}
-      <div className="flex gap-2 px-6 py-4 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-2 px-6 overflow-x-auto scrollbar-hide">
         {categories.map((category) => (
           <button
             key={category.categoryNum}
