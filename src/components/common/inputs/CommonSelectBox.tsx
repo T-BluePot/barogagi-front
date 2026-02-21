@@ -25,11 +25,12 @@ const CommonSelectBox = <T extends string>({
     setIsOpen(false);
   };
 
-  const borderClass = isFocused || isOpen ? "border-main-default" : "border-gray-30";
+  const borderClass =
+    isFocused || isOpen ? "border-main-default" : "border-gray-30";
   const labelClass = isFocused || isOpen ? "text-main-default" : "text-gray-50";
 
   return (
-    <div className="flex flex-col gap-1 text-left">
+    <div className="relative flex flex-col gap-1 text-left">
       {/* 트리거 버튼 */}
       <button
         type="button"
@@ -67,7 +68,7 @@ const CommonSelectBox = <T extends string>({
 
       {/* 드롭다운 목록 */}
       {isOpen && (
-        <ul className="flex flex-col bg-gray-10 rounded-lg overflow-hidden">
+        <ul className="absolute top-full left-0 right-0 z-10 flex flex-col bg-gray-10 rounded-lg overflow-hidden shadow-lg">
           {options.map((option) => (
             <li key={option}>
               <button

@@ -28,9 +28,7 @@ const WithdrawalModal = ({
   const [shouldRenderLayout, setShouldRenderLayout] = useState(isOpen);
   const [showAnimation, setShowAnimation] = useState(false);
 
-  const isOtherReason = selectedReason === "기타";
-  const isConfirmDisabled =
-    !selectedReason || (isOtherReason && detail.trim() === "");
+  const isConfirmDisabled = !selectedReason;
 
   useEffect(() => {
     if (isOpen) {
@@ -55,9 +53,6 @@ const WithdrawalModal = ({
 
   const handleSelectReason = (reason: WithdrawalReason) => {
     setSelectedReason(reason);
-    if (reason !== "기타") {
-      setDetail("");
-    }
   };
 
   const resetState = () => {
@@ -104,16 +99,14 @@ const WithdrawalModal = ({
         onChange={handleSelectReason}
       />
 
-      {/* 기타 사유 입력 (기타 선택 시에만 노출) */}
-      {isOtherReason && (
-        <CommonTextarea
-          value={detail}
-          onChange={setDetail}
-          placeholder={WITHDRAWAL_MODAL_TEXT.DETAIL_PLACEHOLDER}
-          maxLength={500}
-          className="mt-4"
-        />
-      )}
+      {/* 사유 상세 입력 */}
+      <CommonTextarea
+        value={detail}
+        onChange={setDetail}
+        placeholder={WITHDRAWAL_MODAL_TEXT.DETAIL_PLACEHOLDER}
+        maxLength={500}
+        className="mt-4"
+      />
     </CommonConfirmModalLayout>
   );
 };
