@@ -34,7 +34,7 @@ const CommonSelectBox = <T extends string>({
   };
 
   const optionStyles = {
-    selected: "bg-main-disable text-gray-black",
+    selected: "bg-main text-gray-black",
     default: "text-gray-black hover:bg-gray-20",
   };
 
@@ -73,8 +73,15 @@ const CommonSelectBox = <T extends string>({
       </button>
 
       {/* 드롭다운 목록 */}
-      {isOpen && (
-        <ul className="absolute top-full left-0 right-0 z-10 flex flex-col bg-gray-10 rounded-lg overflow-hidden shadow-lg">
+      <div
+        className={clsx(
+          "absolute top-full left-0 right-0 z-10 transition-all duration-200 origin-top",
+          isOpen
+            ? "opacity-100 scale-y-100 pointer-events-auto"
+            : "opacity-0 scale-y-0 pointer-events-none"
+        )}
+      >
+        <ul className="flex flex-col bg-gray-10 rounded-lg overflow-hidden shadow-lg">
           {options.map((option) => (
             <li key={option}>
               <button
@@ -92,7 +99,7 @@ const CommonSelectBox = <T extends string>({
             </li>
           ))}
         </ul>
-      )}
+      </div>
     </div>
   );
 };
