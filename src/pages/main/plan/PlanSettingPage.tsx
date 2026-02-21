@@ -6,8 +6,9 @@ import type { PlanData } from "@/components/main/plan/PlanCard";
 import PlanCategoryBottomModal from "@/components/main/plan/common/modal/PlanCategoryBottomModal";
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/SelectRegionConfirmModal";
-import type { TimeValue } from "@/components/main/plan/common/modal/content/SelectTimeConfirmModalContent";
 import type { RegionOption } from "@/components/main/plan/common/modal/content/SelectRegionConfirmModalContent";
+import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
+import type { TimeValue } from "@/utils/date";
 import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
 
@@ -88,17 +89,10 @@ export const PlanSettingPage = () => {
   const handleTimeConfirm = (startTime: TimeValue, endTime: TimeValue) => {
     if (timeEditTargetId === null) return;
 
-    const formatTime = (t: TimeValue) => {
-      let hour = Number(t.hour);
-      if (t.period === "오후" && hour < 12) hour += 12;
-      if (t.period === "오전" && hour === 12) hour = 0;
-      return `${String(hour).padStart(2, "0")}:${t.minute}`;
-    };
-
     setItems((prev) =>
       prev.map((item) =>
         item.id === timeEditTargetId
-          ? { ...item, startTime: formatTime(startTime), endTime: formatTime(endTime) }
+          ? { ...item, startTime: timeValueToHHmm(startTime), endTime: timeValueToHHmm(endTime) }
           : item
       )
     );
@@ -109,19 +103,6 @@ export const PlanSettingPage = () => {
   const handleTimeCancel = () => {
     setIsTimeModalOpen(false);
     setTimeEditTargetId(null);
-  };
-
-  // 현재 편집 대상의 기존 시간을 TimeValue로 변환
-  const getInitialTimeValue = (
-    timeStr?: string
-  ): TimeValue | undefined => {
-    if (!timeStr) return undefined;
-    const [hourStr, minute] = timeStr.split(":");
-    let hour = Number(hourStr);
-    const period: "오전" | "오후" = hour >= 12 ? "오후" : "오전";
-    if (hour > 12) hour -= 12;
-    if (hour === 0) hour = 12;
-    return { period, hour: String(hour).padStart(2, "0"), minute };
   };
 
   const timeEditTarget = items.find((item) => item.id === timeEditTargetId);
@@ -225,8 +206,8 @@ export const PlanSettingPage = () => {
       />
       <SelectTimeConfirmModal
         isOpen={isTimeModalOpen}
-        initialStartTime={getInitialTimeValue(timeEditTarget?.startTime)}
-        initialEndTime={getInitialTimeValue(timeEditTarget?.endTime)}
+        initialStartTime={timeEditTarget?.startTime ? hhmmToTimeValue(timeEditTarget.startTime) : undefined}
+        initialEndTime={timeEditTarget?.endTime ? hhmmToTimeValue(timeEditTarget.endTime) : undefined}
         onConfirm={handleTimeConfirm}
         onCancel={handleTimeCancel}
       />

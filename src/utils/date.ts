@@ -54,3 +54,36 @@ export const formatDate = (
     return `${year}-${month}-${day}`;
   }
 };
+
+// === TimeValue ↔ HH:mm 변환 유틸 ===
+
+/** 오전/오후 기반 시간 객체 */
+export interface TimeValue {
+  period: "오전" | "오후";
+  hour: string;
+  minute: string;
+}
+
+/**
+ * TimeValue → "HH:mm" (24시간제) 변환
+ * @example timeValueToHHmm({ period: "오후", hour: "03", minute: "30" }) → "15:30"
+ */
+export const timeValueToHHmm = (t: TimeValue): string => {
+  let hour = Number(t.hour);
+  if (t.period === "오후" && hour < 12) hour += 12;
+  if (t.period === "오전" && hour === 12) hour = 0;
+  return `${String(hour).padStart(2, "0")}:${t.minute}`;
+};
+
+/**
+ * "HH:mm" (24시간제) → TimeValue 변환
+ * @example hhmmToTimeValue("15:30") → { period: "오후", hour: "03", minute: "30" }
+ */
+export const hhmmToTimeValue = (timeStr: string): TimeValue => {
+  const [hourStr, minute] = timeStr.split(":");
+  let hour = Number(hourStr);
+  const period: "오전" | "오후" = hour >= 12 ? "오후" : "오전";
+  if (hour > 12) hour -= 12;
+  if (hour === 0) hour = 12;
+  return { period, hour: String(hour).padStart(2, "0"), minute };
+};
