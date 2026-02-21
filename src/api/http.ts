@@ -30,7 +30,7 @@ http.interceptors.request.use(
   }
 );
 
-// API-KEY 전용 인스턴트: 모든 요청에 API-KEY 헤더 자동 삽입
+// API-KEY 전용 인스턴스: 모든 요청에 API-KEY 헤더 자동 삽입
 apiKeyHttp.interceptors.request.use(
   (config) => {
     config.headers = config.headers ?? {};
