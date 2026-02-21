@@ -70,7 +70,7 @@ export const PlanCategoryBottomModalContent = ({
   // 카테고리 선택 시 상세 아이템 불러오기
   useEffect(() => {
     const fetchCategoryDetail = async () => {
-      if (!selectedCategoryType) return;
+      if (!selectedCategory) return;
       try {
         const res = await getScheduleCategoryDetail(
           selectedCategory.categoryNum
