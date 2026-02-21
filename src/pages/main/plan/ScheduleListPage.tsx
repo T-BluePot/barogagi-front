@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleViewType } from "@/components/main/plan/main/ScheduleViewToggleButton";
-import {
-  mockSchedules,
-  pastMockSchedules,
-  allSchedules,
-} from "@/mock/schedules";
+import { allSchedules } from "@/mock/schedules";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
