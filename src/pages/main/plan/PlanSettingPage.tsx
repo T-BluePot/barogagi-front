@@ -19,16 +19,48 @@ import { useAlertModalStore } from "@/stores/alertModalStore";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 
-// === type ===
+/**
+ * PlanSettingPage - 일정 구성 페이지
+ *
+ * [페이지 흐름]
+ * 1. "+ 일정 추가" 버튼 → 카테고리 선택 모달 → 카테고리 선택 → PlanFormModal(Create 모드) 열림
+ * 2. PlanFormModal 안에서 시간 / 장소 / 태그를 각각 선택 (하위 모달)
+ * 3. PlanFormModal 닫기 → 시간 유효성 검증 통과 시 일정 카드가 리스트에 추가됨
+ * 4. 기존 카드 클릭 → PlanFormModal(Edit 모드)로 수정 가능
+ * 5. 카드 스와이프 → 삭제 모달로 일정 삭제
+ * 6. 드래그 앤 드롭으로 일정 순서 변경
+ * 7. "다음" 버튼 → 스타일 선택 페이지로 이동
+ *
+ * [모달 계층 구조]
+ * - PlanCategoryBottomModal   : 카테고리 선택 (BottomModal)
+ * - PlanFormModal             : 일정 추가/수정 폼 (BottomModal)
+ *   ├─ SelectTimeConfirmModal   : 시간 선택 (ConfirmModal, z-200)
+ *   ├─ SelectRegionConfirmModal : 장소 선택 (ConfirmModal, z-200)
+ *   └─ SelectTagConfirmModal    : 태그 선택 (ConfirmModal, z-200)
+ * - DeletePlanModal           : 삭제 확인 (ConfirmModal)
+ * - AlertModal / ConfirmModal : 유효성 검증 피드백 (전역 스토어)
+ */
 import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
+
+  // --- 전역 모달 스토어 ---
   const { openConfirmModal } = useConfirmModalStore();
   const { openAlertModal } = useAlertModalStore();
+
+  // --- 위치 선택 페이지에서 저장한 지역 목록 ---
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
+
+  // --- 일정 카드 리스트 ---
   const [items, setItems] = useState<PlanData[]>([]);
+
+  // --- 시간 유효성 검증 훅 (순서 역전, 중복, 시작≥종료 등) ---
   const { validatePlanTime } = usePlanTimeValidation(items);
+  // ============================================
+  // 1) 일정 삭제
+  //    카드 스와이프 → 삭제 버튼 → 삭제 확인 모달
+  // ============================================
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | number | null>(
     null
@@ -52,17 +84,28 @@ export const PlanSettingPage = () => {
     setDeleteTargetId(null);
   };
 
+  // --- 드래그 앤 드롭 순서 변경 ---
   const handleOrderChange = (newItems: PlanData[]) => {
     setItems(newItems);
   };
 
+  // --- "+일정 추가" 버튼 → 카테고리 선택 모달 열기 ---
   const handleAddPlan = () => {
     handleCategoryModalOpen();
   };
 
-  // === PlanForm 모달 (일정 추가 폼) ===
+  // ============================================
+  // 2) PlanFormModal - 일정 추가/수정 폼
+  //    Create 모드: 새 일정 작성 (카테고리 선택 직후)
+  //    Edit 모드  : 기존 카드 클릭 시 수정
+  // ============================================
+
+  // DRAFT_ID: 시간/장소 모달에서 "아직 저장되지 않은 새 일정"을 식별하는 임시 ID
+  //           기존 카드 ID와 구분하여, 모달 결과를 draft에 반영할지 items에 반영할지 분기
   const DRAFT_ID = "__draft__";
   const [isPlanFormModalOpen, setIsPlanFormModalOpen] = useState(false);
+
+  // 폼에서 작성 중인 임시 데이터 (저장 전까지 여기에 보관)
   const [planFormDraft, setPlanFormDraft] = useState<{
     planNm: string;
     startTime?: string;
@@ -71,13 +114,17 @@ export const PlanSettingPage = () => {
     tags?: string[];
   } | null>(null);
 
-  // === Edit 모드 상태 ===
+  // Edit 모드 전용: 수정 대상 카드 ID / 메모
   const [editTargetId, setEditTargetId] = useState<string | number | null>(
     null
   );
   const [editNote, setEditNote] = useState("");
 
-  // === 시간 선택 모달 ===
+  // ============================================
+  // 3) 시간 선택 모달 (SelectTimeConfirmModal)
+  //    PlanFormModal 안의 "시간 추가" 클릭 시 열림
+  //    결과: DRAFT_ID면 draft에, 아니면 해당 카드에 직접 반영
+  // ============================================
   const [isTimeModalOpen, setIsTimeModalOpen] = useState(false);
   const [timeEditTargetId, setTimeEditTargetId] = useState<
     string | number | null
@@ -123,18 +170,23 @@ export const PlanSettingPage = () => {
     setTimeEditTargetId(null);
   };
 
+  // 시간 모달에 전달할 초기값 (draft 또는 기존 카드에서 꺼냄)
   const timeEditTarget =
     timeEditTargetId === DRAFT_ID
       ? { startTime: planFormDraft?.startTime, endTime: planFormDraft?.endTime }
       : items.find((item) => item.id === timeEditTargetId);
 
-  // === 지역 선택 모달 ===
+  // ============================================
+  // 4) 장소 선택 모달 (SelectRegionConfirmModal)
+  //    PlanFormModal 안의 "장소 추가" 클릭 시 열림
+  //    선택지: 이전 페이지(SelectLocationPage)에서 고른 지역 목록
+  // ============================================
   const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
   const [regionEditTargetId, setRegionEditTargetId] = useState<
     string | number | null
   >(null);
 
-  // SelectLocationPage에서 선택한 지역을 RegionOption 형태로 변환
+  // 이전 페이지에서 저장한 지역을 모달 선택지로 변환
   const regionOptions: RegionOption[] = selectedRegions.map((r) => ({
     id: String(r.regionNum),
     label: r.regionNm,
@@ -170,6 +222,7 @@ export const PlanSettingPage = () => {
     setRegionEditTargetId(null);
   };
 
+  // 장소 모달에 전달할 초기 선택값
   const regionEditTarget =
     regionEditTargetId === DRAFT_ID
       ? { location: planFormDraft?.address }
@@ -178,6 +231,10 @@ export const PlanSettingPage = () => {
     (r) => r.label === regionEditTarget?.location
   )?.id;
 
+  // ============================================
+  // 5) 카테고리 선택 모달 (PlanCategoryBottomModal)
+  //    "+일정 추가" → 카테고리 선택 → PlanFormModal(Create)로 이어짐
+  // ============================================
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const handleCategoryModalOpen = () => {
@@ -188,6 +245,7 @@ export const PlanSettingPage = () => {
     setIsCategoryModalOpen(false);
   };
 
+  // 카테고리 항목 클릭 → draft 초기화 후 PlanFormModal 열기
   const handleCategorySelect = (selected: SelectedCategoryItemType) => {
     setPlanFormDraft({
       planNm: selected.option.itemNm,
@@ -196,7 +254,10 @@ export const PlanSettingPage = () => {
     setIsPlanFormModalOpen(true);
   };
 
-  // === PlanCard 클릭 → Edit 모드 ===
+  // ============================================
+  // 6) 카드 클릭 → Edit 모드로 PlanFormModal 열기
+  //    기존 카드의 데이터를 draft에 복사 후 수정 가능
+  // ============================================
   const handleCardClick = (id: string | number) => {
     const target = items.find((item) => item.id === id);
     if (!target) return;
@@ -212,6 +273,7 @@ export const PlanSettingPage = () => {
     setIsPlanFormModalOpen(true);
   };
 
+  // --- PlanFormModal 상태 초기화 (모달 닫기 공통) ---
   const closePlanForm = () => {
     setIsPlanFormModalOpen(false);
     setPlanFormDraft(null);
@@ -219,7 +281,16 @@ export const PlanSettingPage = () => {
     setEditNote("");
   };
 
+  /**
+   * PlanFormModal 닫기 처리 (저장 시도)
+   *
+   * 흐름:
+   *  1. 시간 미선택 → confirm 모달로 "취소할지" 확인
+   *  2. 시간 유효성 검증 실패 → alert 모달로 에러 안내
+   *  3. 검증 통과 → Edit이면 기존 카드 업데이트, Create이면 새 카드 추가
+   */
   const handlePlanFormClose = () => {
+    // (1) 시간 미선택 → 일정 추가를 취소할지 사용자에게 확인
     if (planFormDraft && (!planFormDraft.startTime || !planFormDraft.endTime)) {
       openConfirmModal(
         {
@@ -228,15 +299,12 @@ export const PlanSettingPage = () => {
           confirmLabel: "취소하기",
           cancelLabel: "돌아가기",
         },
-        () => {
-          // 확인: 일정 추가 취소
-          closePlanForm();
-        }
+        () => closePlanForm()
       );
       return;
     }
 
-    // 시간 유효성 검증
+    // (2) 시간 유효성 검증 (순서 역전 · 중복 · 시작≥종료)
     if (planFormDraft?.startTime && planFormDraft?.endTime) {
       const insertIndex =
         editTargetId !== null
@@ -290,6 +358,9 @@ export const PlanSettingPage = () => {
     closePlanForm();
   };
 
+  // --- PlanFormModal 내부에서 하위 모달 열기 ---
+  // 다른 하위 모달이 열려있으면 먼저 닫고, 대상 모달만 열기 (배타적 전환)
+
   const handlePlanFormTimeClick = () => {
     setIsRegionModalOpen(false);
     setRegionEditTargetId(null);
@@ -304,7 +375,10 @@ export const PlanSettingPage = () => {
     setIsRegionModalOpen(true);
   };
 
-  // === 태그 선택 모달 ===
+  // ============================================
+  // 7) 태그 선택 모달 (SelectTagConfirmModal)
+  //    PlanFormModal(Create 모드) 안의 "태그" 클릭 시 열림
+  // ============================================
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
 
   // TODO: 추후 백엔드 API에서 태그 목록을 가져와서 교체
@@ -335,8 +409,12 @@ export const PlanSettingPage = () => {
     setIsTagModalOpen(false);
   };
 
+  // ============================================
+  // 렌더링
+  // ============================================
   return (
     <div className="flex flex-col w-full h-full">
+      {/* 일정 카드 리스트 + 추가 버튼 */}
       <div className="flex-1 overflow-auto p-4">
         <PlanSettingForm
           initialItems={items}
