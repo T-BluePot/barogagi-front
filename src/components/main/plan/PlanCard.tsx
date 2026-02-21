@@ -7,7 +7,7 @@ import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
 export interface PlanData {
   id: string | number;
-  emoji: string;
+  emoji?: string;
   title: string;
   startTime?: string; // HH:mm 형식
   endTime?: string; // HH:mm 형식
@@ -97,18 +97,20 @@ const PlanCard = ({
         onDragEnd={handleDragEnd}
         onClick={handleCardClick}
       >
-        {/* 이모지 */}
-        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-2xl">
-          {emoji}
-        </div>
+        {/* 이모지가 있을때만 렌더링 */}
+        {emoji && (
+          <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center text-2xl">
+            {emoji}
+          </div>
+        )}
 
         {/* 컨텐츠 영역 */}
-        <div className="flex-1 flex flex-col gap-1 ml-3 text-left">
+        <div className="flex-1 min-w-0 flex flex-col gap-1 ml-3 text-left">
           {/* 제목 */}
-          <span className="typo-subtitle text-gray-black">{title}</span>
+          <span className="typo-subtitle text-gray-black truncate">{title}</span>
 
           {/* 시간 & 장소 정보 */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             {/* 시간 */}
             <button
               type="button"
@@ -116,10 +118,10 @@ const PlanCard = ({
                 e.stopPropagation();
                 onTimeClick?.(id);
               }}
-              className="flex items-center gap-1 cursor-pointer"
+              className="flex items-center gap-1 min-w-0 cursor-pointer"
             >
-              <AccessTimeIcon className="!text-[16px] text-gray-40" />
-              <span className="typo-caption text-gray-40">
+              <AccessTimeIcon className="!text-[16px] text-gray-40 shrink-0" />
+              <span className="typo-caption text-gray-40 truncate">
                 {hasTime ? `${startTime} ~ ${endTime}` : "시간 추가"}
               </span>
             </button>
@@ -131,10 +133,10 @@ const PlanCard = ({
                 e.stopPropagation();
                 onLocationClick?.(id);
               }}
-              className="flex items-center gap-1 cursor-pointer"
+              className="flex items-center gap-1 min-w-0 cursor-pointer"
             >
-              <PlaceIcon className="!text-[16px] text-gray-40" />
-              <span className="typo-caption text-gray-40">
+              <PlaceIcon className="!text-[16px] text-gray-40 shrink-0" />
+              <span className="typo-caption text-gray-40 truncate">
                 {hasLocation ? location : "장소 추가"}
               </span>
             </button>

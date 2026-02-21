@@ -14,7 +14,6 @@ import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 const mockItems: PlanData[] = [
   {
     id: "1",
-    emoji: "🍜",
     title: "한강 라면",
     startTime: "11:30",
     endTime: "12:30",
@@ -22,7 +21,6 @@ const mockItems: PlanData[] = [
   },
   {
     id: "2",
-    emoji: "☕",
     title: "카페 방문",
     startTime: "13:00",
     endTime: "14:00",
