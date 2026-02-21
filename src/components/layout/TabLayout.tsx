@@ -3,9 +3,9 @@ import BottomTabBar from "../common/tab-bar/BottomTabBar";
 
 const TabLayout = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-0 flex flex-col h-full">
       {/* 페이지 콘텐츠 */}
-      <main className="min-h-screen pb-[60px]">
+      <main className="flex-1 min-h-0 pb-[60px]">
         <Outlet />
       </main>
       {/* 하단 탭 바 */}

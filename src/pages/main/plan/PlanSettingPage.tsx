@@ -7,6 +7,9 @@ import PlanCategoryBottomModal from "@/components/main/plan/common/modal/PlanCat
 import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
 
+// === type ===
+import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
+
 // 임시 mock 데이터
 const mockItems: PlanData[] = [
   {
@@ -89,16 +92,17 @@ export const PlanSettingPage = () => {
     setIsCategoryModalOpen(false);
   };
 
-  const handleCategorySelect = (
-    category: string,
-    option: { id: string; label: string }
-  ) => {
-    console.log("카테고리 선택:", category, option);
+  const handleCategorySelect = (selected: SelectedCategoryItemType) => {
+    console.log("선택:", selected);
+
+    // TODO: 예시
+    // 1. store에 저장
+    // 2. draft에 추가
     handleCategoryModalClose();
   };
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-white">
+    <div className="flex flex-col w-full h-full">
       <div className="flex-1 overflow-auto p-4">
         <PlanSettingForm
           initialItems={items}

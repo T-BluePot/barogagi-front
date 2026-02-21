@@ -1,20 +1,49 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// === constants ===
+import { ROUTES } from "@/constants/routes";
 import { SELECT_DATE_TEXT } from "@/constants/texts/main/plan/selectDate";
 
+// == utils ==
+import {
+  formatDateToServer,
+  parseServerDateToLocalDate,
+} from "@/utils/dateFormatters";
+
+// === components ===
 import Calendar from "@/components/main/plan/Calendar";
 import Button from "@/components/common/buttons/CommonButton";
-import { ROUTES } from "@/constants/routes";
+
+// === server ===
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 const SelectDatePage = () => {
   const navigate = useNavigate();
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const draft = useScheduleDraftStore((s) => s.draft);
+  const setDraft = useScheduleDraftStore((s) => s.setDraft);
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    draft.startDate ? parseServerDateToLocalDate(draft.startDate) : null
+  );
+  const handleNext = () => {
+    if (!selectedDate) return;
+
+    const formatted = formatDateToServer(selectedDate);
+
+    // 현재- 하루만 지원: start = end
+    setDraft({
+      startDate: formatted,
+      endDate: formatted,
+    });
+
+    navigate(ROUTES.PLAN.LOCATION);
+  };
 
   return (
     <div className="flex flex-col w-full h-full gap-6 bg-gray-white overflow-auto hide-scrollbar">
-      <div className="flex flex-col w-full mt-6">
+      <div className="flex flex-col w-full">
         <Calendar
           withTitle={true}
           selectedDate={selectedDate}
@@ -29,10 +58,7 @@ const SelectDatePage = () => {
               : SELECT_DATE_TEXT.NEXT_BUTTON.enabled
           }
           isDisabled={!selectedDate}
-          onClick={() => {
-            // 추후 선택된 일정 넘기기 로직 추가
-            navigate(ROUTES.PLAN.LOCATION);
-          }}
+          onClick={handleNext}
         />
       </div>
     </div>
