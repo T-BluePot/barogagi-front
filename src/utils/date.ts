@@ -77,7 +77,7 @@ export const timeValueToHHmm = (t: TimeValue): string => {
   let hour = Number(t.hour);
   if (t.period === "오후" && hour < 12) hour += 12;
   if (t.period === "오전" && hour === 12) hour = 0;
-  return `${String(hour).padStart(2, "0")}:${t.minute}`;
+  return `${String(hour).padStart(2, "0")}:${t.minute.padStart(2, "0")}`;
 };
 
 /**
