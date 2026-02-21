@@ -341,18 +341,20 @@ export const usePlanFormModal = (
   // 다른 하위 모달이 열려 있으면 먼저 닫고 대상 모달만 열기
   // ============================================
 
-  /** PlanFormModal 안의 "시간 추가" 클릭 → 장소 모달 닫고 시간 모달 열기 */
+  /** PlanFormModal 안의 "시간 추가" 클릭 → 장소·태그 모달 닫고 시간 모달 열기 */
   const handlePlanFormTimeClick = () => {
     setIsRegionOpen(false);
     setRegionTargetId(null);
+    setIsTagOpen(false);
     setTimeTargetId(DRAFT_ID);
     setIsTimeOpen(true);
   };
 
-  /** PlanFormModal 안의 "장소 추가" 클릭 → 시간 모달 닫고 장소 모달 열기 */
+  /** PlanFormModal 안의 "장소 추가" 클릭 → 시간·태그 모달 닫고 장소 모달 열기 */
   const handlePlanFormAddressClick = () => {
     setIsTimeOpen(false);
     setTimeTargetId(null);
+    setIsTagOpen(false);
     setRegionTargetId(DRAFT_ID);
     setIsRegionOpen(true);
   };
