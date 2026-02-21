@@ -12,12 +12,14 @@ import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
 import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 
 // === type ===
 import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
+  const { openAlertModal } = useAlertModalStore();
   const [items, setItems] = useState<PlanData[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | number | null>(
@@ -186,8 +188,14 @@ export const PlanSettingPage = () => {
   };
 
   const handlePlanFormClose = () => {
-    // TODO: validation 로직 추가 (예: 필수값 미입력 시 alert 등)
-    // if (!validate(planFormDraft)) return;
+    if (planFormDraft && (!planFormDraft.startTime || !planFormDraft.endTime)) {
+      openAlertModal({
+        title: "시간을 선택해주세요",
+        content: "일정에 시간을 추가해야 저장할 수 있습니다.",
+        buttonLabel: "확인",
+      });
+      return;
+    }
 
     if (planFormDraft) {
       const newPlan: PlanData = {
