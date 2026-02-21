@@ -25,9 +25,18 @@ const CommonSelectBox = <T extends string>({
     setIsOpen(false);
   };
 
-  const borderClass =
-    isFocused || isOpen ? "border-main" : "border-gray-30";
-  const labelClass = isFocused || isOpen ? "text-main" : "text-gray-60";
+  const isActive = isFocused || isOpen;
+
+  const triggerStyles = {
+    border: isActive ? "border-main" : "border-gray-30",
+    label: isActive ? "text-gray-90" : "text-gray-90",
+    value: value ? "text-gray-black" : "text-gray-40",
+  };
+
+  const optionStyles = {
+    selected: "bg-main-disable text-gray-black",
+    default: "text-gray-black hover:bg-gray-20",
+  };
 
   return (
     <div className="relative flex flex-col gap-1 text-left">
@@ -39,19 +48,16 @@ const CommonSelectBox = <T extends string>({
         onBlur={() => setIsFocused(false)}
         className={clsx(
           "flex w-full items-center justify-between border-b-2 py-3 transition-colors duration-300 cursor-pointer focus:outline-none",
-          borderClass
+          triggerStyles.border
         )}
       >
         <div className="flex flex-col items-start gap-0.5">
           {value && (
-            <span className={clsx("typo-tag", labelClass)}>{label}</span>
+            <span className={clsx("typo-tag", triggerStyles.label)}>
+              {label}
+            </span>
           )}
-          <span
-            className={clsx(
-              "typo-subtitle",
-              value ? "text-gray-black" : "text-gray-40"
-            )}
-          >
+          <span className={clsx("typo-subtitle", triggerStyles.value)}>
             {value ?? placeholder}
           </span>
         </div>
@@ -77,8 +83,8 @@ const CommonSelectBox = <T extends string>({
                 className={clsx(
                   "w-full text-left px-4 py-3 typo-body cursor-pointer transition-colors",
                   value === option
-                    ? "bg-main-disable text-gray-black"
-                    : "text-gray-black hover:bg-gray-20"
+                    ? optionStyles.selected
+                    : optionStyles.default
                 )}
               >
                 {option}
