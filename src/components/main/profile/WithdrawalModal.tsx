@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
+import CommonSelectBox from "@/components/common/inputs/CommonSelectBox";
+import CommonTextarea from "@/components/common/inputs/CommonTextarea";
 import {
   WITHDRAWAL_REASONS,
   WITHDRAWAL_MODAL_TEXT,
@@ -21,7 +23,6 @@ const WithdrawalModal = ({
     null
   );
   const [detail, setDetail] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // 두 단계 애니메이션: shouldRenderLayout(마운트) + showAnimation(CSS 트랜지션)
   const [shouldRenderLayout, setShouldRenderLayout] = useState(isOpen);
@@ -54,7 +55,6 @@ const WithdrawalModal = ({
 
   const handleSelectReason = (reason: WithdrawalReason) => {
     setSelectedReason(reason);
-    setIsDropdownOpen(false);
     if (reason !== "기타") {
       setDetail("");
     }
@@ -63,7 +63,6 @@ const WithdrawalModal = ({
   const resetState = () => {
     setSelectedReason(null);
     setDetail("");
-    setIsDropdownOpen(false);
   };
 
   if (!shouldRenderLayout) {
@@ -96,71 +95,23 @@ const WithdrawalModal = ({
         {WITHDRAWAL_MODAL_TEXT.CONTENT}
       </p>
 
-      {/* 탈퇴 사유 드롭다운 */}
-      <div className="flex flex-col gap-1 text-left">
-        <span className="typo-caption text-main-default">
-          {WITHDRAWAL_MODAL_TEXT.REASON_LABEL}
-        </span>
-
-        <button
-          type="button"
-          onClick={() => setIsDropdownOpen((prev) => !prev)}
-          className="flex items-center justify-between w-full py-3 border-b-2 border-main-default cursor-pointer"
-        >
-          <span
-            className={`typo-subtitle ${
-              selectedReason ? "text-gray-black" : "text-gray-40"
-            }`}
-          >
-            {selectedReason ?? WITHDRAWAL_MODAL_TEXT.REASON_PLACEHOLDER}
-          </span>
-          <svg
-            className={`w-5 h-5 text-gray-50 transition-transform ${
-              isDropdownOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-
-        {/* 드롭다운 목록 */}
-        {isDropdownOpen && (
-          <ul className="flex flex-col bg-gray-10 rounded-lg overflow-hidden">
-            {WITHDRAWAL_REASONS.map((reason) => (
-              <li key={reason}>
-                <button
-                  type="button"
-                  onClick={() => handleSelectReason(reason)}
-                  className={`w-full text-left px-4 py-3 typo-body cursor-pointer transition-colors ${
-                    selectedReason === reason
-                      ? "bg-main-light text-main-default"
-                      : "text-gray-black hover:bg-gray-20"
-                  }`}
-                >
-                  {reason}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {/* 탈퇴 사유 선택 */}
+      <CommonSelectBox
+        label={WITHDRAWAL_MODAL_TEXT.REASON_LABEL}
+        placeholder={WITHDRAWAL_MODAL_TEXT.REASON_PLACEHOLDER}
+        value={selectedReason}
+        options={WITHDRAWAL_REASONS}
+        onChange={handleSelectReason}
+      />
 
       {/* 기타 사유 입력 (기타 선택 시에만 노출) */}
       {isOtherReason && (
-        <textarea
+        <CommonTextarea
           value={detail}
-          onChange={(e) => setDetail(e.target.value)}
+          onChange={setDetail}
           placeholder={WITHDRAWAL_MODAL_TEXT.DETAIL_PLACEHOLDER}
           maxLength={500}
-          className="w-full min-h-40 p-4 mt-4 bg-gray-10 rounded-lg resize-none typo-body text-gray-black placeholder:text-gray-40 focus:outline-none"
+          className="mt-4"
         />
       )}
     </CommonConfirmModalLayout>
