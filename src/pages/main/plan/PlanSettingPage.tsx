@@ -13,6 +13,7 @@ import type { TimeValue } from "@/utils/date";
 import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
 import { useAlertModalStore } from "@/stores/alertModalStore";
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 
 // === type ===
 import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
@@ -20,6 +21,7 @@ import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
   const { openAlertModal } = useAlertModalStore();
+  const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const [items, setItems] = useState<PlanData[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | number | null>(
@@ -120,16 +122,11 @@ export const PlanSettingPage = () => {
     string | number | null
   >(null);
 
-  // TODO: 실제 API 연동 시 서버에서 받아온 지역 목록으로 교체
-  const regionOptions: RegionOption[] = [
-    { id: "1", label: "서울 강남구" },
-    { id: "2", label: "서울 종로구" },
-    { id: "3", label: "서울 마포구" },
-    { id: "4", label: "서울 강동구" },
-    { id: "5", label: "부산 해운대구" },
-    { id: "6", label: "대구 수성구" },
-    { id: "7", label: "인천 연수구" },
-  ];
+  // SelectLocationPage에서 선택한 지역을 RegionOption 형태로 변환
+  const regionOptions: RegionOption[] = selectedRegions.map((r) => ({
+    id: String(r.regionNum),
+    label: r.regionNm,
+  }));
 
   const handleLocationClick = (id: string | number) => {
     setRegionEditTargetId(id);
