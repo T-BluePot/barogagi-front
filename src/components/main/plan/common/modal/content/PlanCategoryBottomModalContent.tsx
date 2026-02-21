@@ -144,7 +144,7 @@ export const PlanCategoryBottomModalContent = ({
             >
               <span
                 className={`typo-body text-gray-black ${
-                  option.itemNm === "랜덤" && "font-semibold"
+                  option.itemNm === "랜덤" ? "font-semibold" : ""
                 }`}
               >
                 {option.itemNm}
