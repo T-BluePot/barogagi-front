@@ -1,11 +1,16 @@
 /**
  * 시간 입력값 검증 (1-12 범위)
+ * - 한 자리(0~9): 아직 입력 중이므로 허용
+ * - 두 자리(01~12): 최종 범위 검증
  * @param value - 입력된 값
  * @returns 유효한 경우 value, 아니면 null
  */
 export const validateHourInput = (value: string): string | null => {
   const cleaned = value.replace(/\D/g, "").slice(0, 2);
   if (cleaned === "") return cleaned;
+  // 한 자리 숫자는 입력 중 상태이므로 허용 (0~9)
+  if (cleaned.length === 1) return cleaned;
+  // 두 자리 완성: 01~12 범위만 허용
   const num = parseInt(cleaned, 10);
   return num >= 1 && num <= 12 ? cleaned : null;
 };
