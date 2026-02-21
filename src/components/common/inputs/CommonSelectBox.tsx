@@ -91,9 +91,7 @@ const CommonSelectBox = <T extends string>({
                 )}
               >
                 <span>{option}</span>
-                {value === option && (
-                  <CheckIcon className="text-main-dark" />
-                )}
+                {value === option && <CheckIcon className="text-main-dark" />}
               </button>
             </li>
           ))}
