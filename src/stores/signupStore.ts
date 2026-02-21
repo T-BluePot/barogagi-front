@@ -122,6 +122,11 @@ export const useSignupStore = create<SignupState>()(
     {
       name: "signup:draft",
       storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => {
+        const draft = { ...state.draft };
+        delete draft.password;
+        return { draft };
+      },
     }
   )
 );
