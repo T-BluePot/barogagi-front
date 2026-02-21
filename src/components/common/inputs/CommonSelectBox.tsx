@@ -1,6 +1,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import CheckIcon from "@mui/icons-material/Check";
 
 interface CommonSelectBoxProps<T extends string> {
   label: string;
@@ -31,11 +32,6 @@ const CommonSelectBox = <T extends string>({
     border: isActive ? "border-main" : "border-gray-30",
     label: isActive ? "text-gray-90" : "text-gray-90",
     value: value ? "text-gray-black" : "text-gray-40",
-  };
-
-  const optionStyles = {
-    selected: "bg-main text-gray-black",
-    default: "text-gray-black hover:bg-gray-20",
   };
 
   return (
@@ -88,13 +84,16 @@ const CommonSelectBox = <T extends string>({
                 type="button"
                 onClick={() => handleSelect(option)}
                 className={clsx(
-                  "w-full text-left px-4 py-3 typo-body cursor-pointer transition-colors",
+                  "flex w-full items-center justify-between px-4 py-3 typo-body cursor-pointer transition-colors",
                   value === option
-                    ? optionStyles.selected
-                    : optionStyles.default
+                    ? "text-gray-black"
+                    : "text-gray-40 hover:bg-gray-20"
                 )}
               >
-                {option}
+                <span>{option}</span>
+                {value === option && (
+                  <CheckIcon className="text-main-dark" />
+                )}
               </button>
             </li>
           ))}
