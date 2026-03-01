@@ -30,13 +30,11 @@ const initialDraft: ScheduleDraftType = {
  * 유니온 PlanDraftType을 source 기준으로 좁히는 런타임 가드
  * - Zustand 업데이트에서 타입 넓어짐(특히 isUserAdded)이 발생하는 것을 방지하기 위해 사용
  */
-function assertSource<T extends PlanDraftType["source"]>(
+function isSource<T extends PlanDraftType["source"]>(
   plan: PlanDraftType,
   source: T
-): asserts plan is Extract<PlanDraftType, { source: T }> {
-  if (plan.source !== source) {
-    throw new Error(`플랜 타입이 ${source}가 아닙니다.`);
-  }
+): plan is Extract<PlanDraftType, { source: T }> {
+  return plan.source === source;
 }
 
 /** Draft plan → 서버 요청 plan DTO 변환 */
@@ -202,9 +200,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
         set((state) => {
           const next = [...state.draft.planRegistReqDTOList];
           const cur = next[index];
-          if (!cur) return state;
-
-          assertSource(cur, "AI");
+          if (!cur || !isSource(cur, "AI")) return state;
 
           next[index] = {
             ...cur,
@@ -221,9 +217,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
         set((state) => {
           const next = [...state.draft.planRegistReqDTOList];
           const cur = next[index];
-          if (!cur) return state;
-
-          assertSource(cur, "USER_PLACE");
+          if (!cur || !isSource(cur, "USER_PLACE")) return state;
 
           next[index] = {
             ...cur,
@@ -239,9 +233,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
         set((state) => {
           const next = [...state.draft.planRegistReqDTOList];
           const cur = next[index];
-          if (!cur) return state;
-
-          assertSource(cur, "USER_CUSTOM");
+          if (!cur || !isSource(cur, "USER_CUSTOM")) return state;
 
           next[index] = {
             ...cur,
@@ -254,14 +246,25 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
         }),
 
       removePlan: (index) =>
-        set((state) => ({
-          draft: {
-            ...state.draft,
-            planRegistReqDTOList: state.draft.planRegistReqDTOList.filter(
-              (_, i) => i !== index
-            ),
-          },
-        })),
+        set((state) => {
+          const nextPlans = state.draft.planRegistReqDTOList.filter(
+            (_, i) => i !== index
+          );
+
+          let nextEditingIndex = state.editingPlanIndex;
+          if (nextEditingIndex !== null) {
+            if (nextEditingIndex === index) nextEditingIndex = null;
+            else if (nextEditingIndex > index) nextEditingIndex -= 1;
+          }
+
+          return {
+            draft: {
+              ...state.draft,
+              planRegistReqDTOList: nextPlans,
+            },
+            editingPlanIndex: nextEditingIndex,
+          };
+        }),
 
       buildRequest: () => {
         const { draft } = get();
