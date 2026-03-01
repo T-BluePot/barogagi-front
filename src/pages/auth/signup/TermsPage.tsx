@@ -28,12 +28,6 @@ const TermsPage = () => {
   const { openAlertModal } = useAlertModalStore();
 
   const setDraft = useSignupStore((s) => s.setDraft);
-  const draft = useSignupStore((s) => s.draft);
-
-  // store 저장값 변경될 때마다 확인
-  useEffect(() => {
-    console.log("[SignupStore] current draft:", draft);
-  }, [draft]);
 
   // === 약관 조회 관련 ===
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -145,11 +139,6 @@ const TermsPage = () => {
       },
     });
 
-    // 저장 확인 콘솔
-    console.log(
-      "[SignupStore] saved termsDTO:",
-      useSignupStore.getState().draft.termsDTO
-    );
     // 다음 회원가입 단계로 이동
     navigate(ROUTES.AUTH.SIGNUP.CREDENTIALS);
   };
