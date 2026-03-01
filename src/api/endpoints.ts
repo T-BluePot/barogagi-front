@@ -20,6 +20,7 @@ export const ENDPOINTS = {
     SIGNUP: "/api/v1/users",
     CHECK_ID: "/api/v1/users/userid/exists",
     CHECK_NICKNAME: "/api/v1/users/nickname/exists",
+    CHECK_TEL: "/api/v1/users/tel/exists",
     ME: "/api/v1/users/me", // 회원 탈퇴
   },
   MEMBERS: {

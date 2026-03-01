@@ -14,7 +14,7 @@ export const useSearchRegionsQuery = (query: string) => {
   return useQuery<BaseResponse<RegionSearchItemType[]>>({
     queryKey: commonKeys.regions.search(trimmed),
     queryFn: () => searchRegions(trimmed),
-    enabled: trimmed.length > 0, // debouncedKeyword가 ""이면 호출 X
+    enabled: trimmed.length > 0, // query(공백 제거 후)가 비어 있으면 호출 X
     staleTime: 30_000,
     gcTime: 5 * 60_000,
     placeholderData: (prev) => prev,

@@ -1,20 +1,22 @@
 import type { GenderType } from "@/constants/userInfo";
+import type { TermsDTOType } from "@/api/types";
 
 /** 서버 전송 용 회원가입 정보 저장 타입  */
 export type SignupPayloadType = {
-  userId: string; // required
-  password: string; // required
-  tel: string; // required
-  nickName: string; // required
-  email?: string; // optional
-  birth?: string; // optional
-  gender?: GenderType; // optional
+  userId: string;
+  password: string;
+  tel: string;
+  nickName: string;
+  email?: string;
+  birth?: string;
+  gender?: GenderType;
+  termsDTO: TermsDTOType;
 };
 
 /** 필수 필드 타입 */
 export type RequiredFields = Pick<
   SignupPayloadType,
-  "userId" | "password" | "tel" | "nickName"
+  "userId" | "password" | "tel" | "nickName" | "termsDTO"
 >;
 
 export type RequiredFieldKey = keyof RequiredFields;

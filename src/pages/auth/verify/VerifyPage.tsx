@@ -8,9 +8,14 @@ import { ROUTES } from "@/constants/routes";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { VerifyForm } from "@/components/auth/verify/VerifyForm";
 import VerifyErrorModal from "@/components/auth/verify/VerifyErrorModal";
+import ErrorModal from "@/components/auth/signup/ErrorModal";
 
-import { sendVerification } from "@/api/queries";
-import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
+import { checkTel, sendVerification } from "@/api/queries";
+import { handleTelError } from "@/utils/auth/handleTelError";
+import {
+  VERIFICATION_REQUEST_TYPE,
+  API_CODE,
+} from "@/constants/verificationTypes";
 
 type Flow = "signup-verify" | "find-id" | "reset-password";
 
@@ -70,14 +75,69 @@ const VerifyPage = () => {
     ? FLOW_CONFIG[flow as Flow]
     : FLOW_CONFIG["signup-verify"];
 
+  // 휴대폰 번호 중복 체크 전용
+  const [telErrorMsg, setTelErrorMsg] = useState("");
+  const [isTelModalOpen, setIsTelModalOpen] = useState(false);
+
+  // tel 모달 전용: 확인 클릭 시 실행할 후처리
+  const [telModalAction, setTelModalAction] = useState<(() => void) | null>(
+    null
+  );
+
+  const handleTelModalClick = () => {
+    setIsTelModalOpen(false);
+    setTelErrorMsg("");
+
+    // 닫은 후 실행
+    if (telModalAction) telModalAction();
+
+    // 한번 실행 후 초기화
+    setTelModalAction(null);
+  };
+
+  // VerifyForm 입력 리셋 트리거
+  const [resetKey, setResetKey] = useState(0);
+
+  // 인증번호 오류 전용
   const [errorText, setErrorText] = useState("");
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   const handleNext = async (phone: string) => {
+    setResetKey(0);
     const tel = phone.trim();
     if (!tel) return;
 
+    // 회원가입 flow 일 경우 휴대폰 번호 중복 확인 로직 실행
+    if (flow === "signup-verify") {
+      try {
+        // T200이면 여기서 그냥 통과(아무 분기 없음)
+        await checkTel(tel);
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          const code = error.response?.data?.code as string | undefined;
+          const message = error.response?.data?.message as string | undefined;
+
+          handleTelError({
+            code,
+            message,
+            setMessage: setTelErrorMsg,
+            setIsOpen: setIsTelModalOpen,
+            setTelModalAction,
+            action:
+              code === API_CODE.TEL_DUPLICATED
+                ? () => setResetKey((res) => res + 1)
+                : code === API_CODE.INVALID_ACCESS
+                  ? () => navigate(ROUTES.ROOT, { replace: true })
+                  : undefined,
+          });
+
+          return;
+        }
+      }
+    }
+
     try {
+      // 2) 인증번호 전송
       if (flow === "signup-verify") {
         await sendVerification(tel, VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP);
       } else if (flow === "find-id") {
@@ -107,6 +167,11 @@ const VerifyPage = () => {
 
   return (
     <div className="flex flex-col w-full px-6">
+      <ErrorModal
+        isOpen={isTelModalOpen}
+        message={telErrorMsg}
+        onClick={handleTelModalClick}
+      />
       <VerifyErrorModal
         isOpen={isErrorModalOpen}
         message={errorText}
@@ -119,6 +184,7 @@ const VerifyPage = () => {
         initialPhone={state.phone}
         buttonLabel={current.buttonLabel}
         onNext={handleNext}
+        resetKey={resetKey}
       />
     </div>
   );

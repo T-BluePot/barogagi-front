@@ -36,11 +36,7 @@ import type {
 import { handleSignupError } from "@/utils/auth/handleSignupError";
 import { signup } from "@/api/queries";
 
-// 3. 약관 동의
-import type { TermsProcessRequestType } from "@/api/types";
-import { agreeTerms } from "@/api/queries";
-
-// 4. 가입 최종 로직
+// 3. 가입 최종 로직
 import { completeSignupFlow } from "@/utils/auth/completeSignupFlow";
 
 const ProfilePage = () => {
@@ -234,8 +230,9 @@ const ProfilePage = () => {
     required: Pick<RequiredFields, "nickName">,
     optional?: Partial<OptionalFields>
   ): SignupPayloadType | null => {
-    const { userId, password, tel } = draft;
+    const { userId, password, tel, termsDTO } = draft;
 
+    // 필수: userId/password
     if (!userId || !password) {
       openErrorModal({
         message:
@@ -246,6 +243,7 @@ const ProfilePage = () => {
       return null;
     }
 
+    // 필수: tel
     if (!tel) {
       openErrorModal({
         message: "전화번호가 인증되지 않았습니다. \n해당 페이지로 이동합니다.",
@@ -255,7 +253,18 @@ const ProfilePage = () => {
       return null;
     }
 
-    const nickName = required.nickName;
+    // 필수: termsDTO (약관 페이지에서 저장해뒀어야 함)
+    if (!termsDTO) {
+      openErrorModal({
+        message: "약관 동의 정보가 누락되었습니다. \n약관 페이지로 이동합니다.",
+        redirectTo: ROUTES.AUTH.SIGNUP.TERMS, // 네 라우트에 맞게 수정
+        replace: true,
+      });
+      return null;
+    }
+
+    // 필수: nickName
+    const nickName = required.nickName?.trim();
     if (!nickName) {
       openErrorModal({ message: "닉네임을 입력해주세요." });
       return null;
@@ -265,11 +274,13 @@ const ProfilePage = () => {
       userId,
       password,
       tel,
-      nickName: nickName,
+      nickName,
+      termsDTO, // 핵심 추가
     };
 
-    if (optional?.birth) payload.birth = birth;
-    if (optional?.gender) payload.gender = gender;
+    // optional 처리
+    if (optional?.birth) payload.birth = optional.birth;
+    if (optional?.gender) payload.gender = optional.gender;
 
     return payload;
   };
@@ -284,13 +295,6 @@ const ProfilePage = () => {
     }
   };
 
-  // === 약관 동의 ===
-  const agreeTermsMutation = useMutation({
-    mutationFn: (params: {
-      userId: string;
-      termsAgreeList: TermsProcessRequestType[];
-    }) => agreeTerms(params.userId, params.termsAgreeList),
-  });
   // === 프로필 설정 스킵 ===
   const [isSkipProfile, setIsSkipProfile] = useState(false);
 
@@ -310,11 +314,7 @@ const ProfilePage = () => {
     try {
       // 회원가입 + 약관동의 + 완료이동까지 공통 플로우 실행
       await completeSignupFlow(payload, {
-        // react-query mutation의 Promise 기반 API 주입
         signup: signupMutation.mutateAsync,
-        agreeTerms: agreeTermsMutation.mutateAsync,
-
-        // UI 의존성은 외부에서 주입
         navigate,
         openErrorModal,
       });
@@ -343,8 +343,7 @@ const ProfilePage = () => {
       !trimmed || // 닉네임이 비어있거나
       !!error || // 유효성 검사 에러가 존재하거나
       !isNicknameVerified || // 닉네임 중복 확인을 통과하지 못했거나
-      signupMutation.isPending || // 회원 가입 진행중이거나
-      agreeTermsMutation.isPending // 약관 동의 검증중 일 때
+      signupMutation.isPending // 회원 가입 진행중일 때
     );
   };
 
@@ -371,7 +370,6 @@ const ProfilePage = () => {
       // 3) 회원가입 + 약관동의 + 완료이동까지 공통 플로우 실행
       await completeSignupFlow(payload, {
         signup: signupMutation.mutateAsync,
-        agreeTerms: agreeTermsMutation.mutateAsync,
         navigate,
         openErrorModal,
       });

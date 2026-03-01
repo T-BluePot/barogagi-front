@@ -28,7 +28,7 @@ const FindIdResultPage = () => {
 
       try {
         const response = await findUser(state.phone);
-        const user = response.data;
+        const user = response.data as { userId?: string };
 
         setResult({
           success: Boolean(user?.userId),

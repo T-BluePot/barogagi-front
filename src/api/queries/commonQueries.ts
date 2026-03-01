@@ -1,7 +1,7 @@
 /**
  * 기타(Common) 관련 API 요청 함수 (태그, 지역, 인증, 약관, 장소)
  */
-import { http, apiKeyHttp } from "../client";
+import { apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 
 import type { BaseResponse, TermsProcessRequestType } from "../types";
@@ -32,7 +32,7 @@ export const searchRegions = async (query: string) => {
 };
 
 export const getGeocode = async (regionNum: number) => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.REGION.GEOCODE,
     { params: { regionNum } }
   );
@@ -40,8 +40,18 @@ export const getGeocode = async (regionNum: number) => {
 };
 
 // === Verification ===
+
+/** 전화번호 중복 확인 */
+export const checkTel = async (tel: string) => {
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
+    ENDPOINTS.USERS.CHECK_TEL,
+    { params: { tel } }
+  );
+  return response.data;
+};
+
 export const sendVerificationCode = async (data: unknown) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.SEND,
     data
   );
@@ -49,7 +59,7 @@ export const sendVerificationCode = async (data: unknown) => {
 };
 
 export const verifyVerificationCode = async (data: unknown) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.VERIFY,
     data
   );
@@ -86,7 +96,7 @@ export const agreeTerms = async (
 
 // === Place ===
 export const searchPlaces = async (keyword: string) => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.PLACE.SEARCH,
     { params: { searchKeyword: keyword } }
   );

@@ -22,7 +22,6 @@ import type {
 
 // === data type ===
 import type { VerifyCodeType } from "@/types/signupTypes";
-import type { SignupPayloadType } from "@/types/signupTypes";
 import type { VerificationType } from "@/constants/verificationTypes";
 
 /** 로그인 */
@@ -67,18 +66,7 @@ export const refresh = async (data: RefreshTokenRequestType) => {
 };
 
 /** 회원가입 */
-export const signup = async (data: SignupPayloadType) => {
-  const payload: JoinRequestType = {
-    userId: data.userId,
-    password: data.password,
-    tel: data.tel,
-    nickName: data.nickName,
-
-    ...(data.email ? { email: data.email } : {}),
-    ...(data.birth ? { birth: data.birth } : {}),
-    ...(data.gender ? { gender: data.gender } : {}),
-  };
-
+export const signup = async (payload: JoinRequestType) => {
   const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.USERS.SIGNUP,
     payload

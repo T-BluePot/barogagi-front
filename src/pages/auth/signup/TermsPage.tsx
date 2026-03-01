@@ -5,14 +5,12 @@ import { TERMS_TEXT } from "@/constants/texts/auth/signup/terms";
 
 // === component ===
 import PageLoading from "@/components/layout/PageLoading";
-
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import Button from "@/components/common/buttons/CommonButton";
 
 import { useAlertModalStore } from "@/stores/alertModalStore";
 import { SelectAllConsentButton } from "@/components/auth/signup/SelectAllConsentButton";
 import { TermsListSection } from "@/components/auth/signup/TermsListSection";
-
 import ErrorModal from "@/components/auth/signup/ErrorModal";
 
 // === constant ===
@@ -23,11 +21,13 @@ import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 import type { TermsAgreeList } from "@/types/termsTypes";
 import { authKeys } from "@/api/keyFactories";
 import { getTermsList } from "@/api/queries";
-import { saveTermsAgreeList } from "@/utils/sessionStorage/termsAgree";
+import { useSignupStore } from "@/stores/signupStore";
 
 const TermsPage = () => {
   const navigate = useNavigate();
   const { openAlertModal } = useAlertModalStore();
+
+  const setDraft = useSignupStore((s) => s.setDraft);
 
   // === 약관 조회 관련 ===
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -39,7 +39,6 @@ const TermsPage = () => {
   // 약관 저장
   const terms = useMemo(() => {
     const list = data?.data ?? [];
-    // 원본 변경 방지 + sort 기준 정렬
     return list.slice().sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
   }, [data?.data]);
 
@@ -55,7 +54,6 @@ const TermsPage = () => {
   // 에러 발생 시: 페이지 return 하지 말고 모달만 띄우기
   useEffect(() => {
     if (!isError) return;
-
     setIsErrorModalOpen(true);
   }, [isError]);
 
@@ -87,7 +85,7 @@ const TermsPage = () => {
     return terms.every((t) => consents[t.termsNum] === true);
   }, [terms, consents]);
 
-  // 상세 보기 핸들러 - 모달창으로 약관명 / 약관 내용 확인
+  // 상세 보기 핸들러
   const handleOpenDetail = (termsNum: number) => {
     const found = terms.find((t) => t.termsNum === termsNum);
     if (!found) return;
@@ -121,7 +119,6 @@ const TermsPage = () => {
 
   // 다음 버튼 클릭 핸들러
   const handleAgreeTerms = () => {
-    // 필수 약관 미동의면 막기 (버튼 disabled라 보통 안 타지만, 안전장치)
     if (hasUncheckedRequiredTerms) {
       openAlertModal({
         title: "필수 약관 동의 필요",
@@ -130,23 +127,23 @@ const TermsPage = () => {
       return;
     }
 
-    // consents -> TermsAgreeList 변환
     const termsAgreeList: TermsAgreeList = terms.map((t) => ({
       termsNum: t.termsNum,
       agreeYn: consents[t.termsNum] === true ? "Y" : "N",
     }));
 
-    // sessionStorage에 저장
-    saveTermsAgreeList(termsAgreeList);
+    setDraft({
+      termsDTO: {
+        termsType: VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP,
+        termsAgreeList,
+      },
+    });
 
     // 다음 회원가입 단계로 이동
     navigate(ROUTES.AUTH.SIGNUP.CREDENTIALS);
   };
 
   if (isLoading) {
-    /**
-     * TODO: 추후 스켈레톤 컴포넌트로 수정
-     */
     return <PageLoading message="약관을 불러오는 중입니다..." />;
   }
 
@@ -160,6 +157,7 @@ const TermsPage = () => {
           navigate(ROUTES.AUTH.LANDING, { replace: true });
         }}
       />
+
       <div className="flex flex-1 flex-col w-full px-6 items-baseline">
         <PageTitle title={TERMS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">
@@ -176,6 +174,7 @@ const TermsPage = () => {
           />
         </div>
       </div>
+
       <div className="mt-auto w-full p-6 flex justify-center">
         <Button
           label={TERMS_TEXT.NEXT_BUTTON}

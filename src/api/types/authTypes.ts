@@ -1,5 +1,7 @@
-import type { Yn, TermsItem, TermsAgreeList } from "@/types/termsTypes";
-import type { GenderType } from "@/constants/userInfo";
+import type { Yn, TermsItem } from "@/types/termsTypes";
+import type { SignupPayloadType } from "@/types/signupTypes";
+
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 /**
  * 회원(Auth) 및 사용자 관련 요청 API 타입 정의
@@ -21,17 +23,17 @@ export type LoginResponseDataType = {
   refreshTokenExpiresIn: number; // 초 단위- ex: 2592000 = 30일
 };
 
-/** 회원가입 Request Body */
-export type JoinRequestType = {
-  userId: string;
-  password: string;
-  tel: string;
-  nickName: string;
+/** 약관 조회 응답 타입 */
+export type TermsResponseType = TermsItem[];
 
-  email?: string; // optional
-  birth?: string; // optional (YYYYMMDD)
-  gender?: GenderType; // optional
+/** 약관 동의 요청 DTO */
+export type TermsDTOType = {
+  termsType: typeof VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP;
+  termsAgreeList: TermsProcessRequestType[];
 };
+
+/** 회원가입 Request Body */
+export type JoinRequestType = SignupPayloadType;
 
 /** 회원 정보 수정 요청 DTO */
 export interface MemberRequestDTO {
@@ -75,15 +77,6 @@ export type FindUserResponseType = {
 export interface TermsProcessRequestType {
   termsNum: number;
   agreeYn: Yn;
-}
-
-/** 약관 조회 응답 타입 */
-export type TermsResponseType = TermsItem[];
-
-/** 약관 동의 요청 DTO */
-export interface TermsDTO {
-  userId: string;
-  termsAgreeList: TermsAgreeList;
 }
 
 /** 비밀번호 재설정 요청 DTO */
