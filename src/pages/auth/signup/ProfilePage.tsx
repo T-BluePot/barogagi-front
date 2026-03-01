@@ -278,9 +278,9 @@ const ProfilePage = () => {
       termsDTO, // 핵심 추가
     };
 
-    // optional 처리 (여기서 birth/gender는 draft 대신 현재 페이지 상태 사용 중이니 그대로)
-    if (optional?.birth) payload.birth = birth;
-    if (optional?.gender) payload.gender = gender;
+    // optional 처리
+    if (optional?.birth) payload.birth = optional.birth;
+    if (optional?.gender) payload.gender = optional.gender;
 
     return payload;
   };
