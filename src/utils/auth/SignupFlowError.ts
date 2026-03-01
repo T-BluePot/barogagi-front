@@ -1,15 +1,13 @@
-import type { SignupErrorCode } from "@/types/signupTypes";
+import type { SignupErrorCode, RequiredFieldKey } from "@/types/signupTypes";
 
 export class SignupFlowError extends Error {
   public readonly code: SignupErrorCode;
-  public readonly missingFields?: Array<
-    "userId" | "password" | "tel" | "nickName"
-  >;
+  public readonly missingFields?: RequiredFieldKey[];
 
   constructor(
     code: SignupErrorCode,
     message: string,
-    missingFields?: Array<"userId" | "password" | "tel" | "nickName">
+    missingFields?: RequiredFieldKey[]
   ) {
     super(message);
     this.name = "SignupFlowError";

@@ -38,6 +38,7 @@ const initialDraft: SignupDraft = {
   email: "",
   birth: "",
   gender: undefined,
+  termsDTO: undefined,
 };
 
 export const useSignupStore = create<SignupState>()(
@@ -56,9 +57,15 @@ export const useSignupStore = create<SignupState>()(
 
       // 특정 필드 삭제
       clearField: (key) =>
-        set((state) => ({
-          draft: { ...state.draft, [key]: key === "gender" ? undefined : "" },
-        })),
+        set((state) => {
+          // gender는 undefined로 초기화
+          if (key === "gender") {
+            return { draft: { ...state.draft, gender: undefined } };
+          }
+
+          // 나머지는 문자열로 초기화
+          return { draft: { ...state.draft, [key]: "" } };
+        }),
 
       // 최소 가입 조건 검증용 함수
       isMinimumReady: () => {
@@ -78,18 +85,18 @@ export const useSignupStore = create<SignupState>()(
       buildPayload: () => {
         const { draft } = get();
 
-        // 필수값 검증
         const userId = (draft.userId ?? "").trim();
         const password = (draft.password ?? "").trim();
         const tel = (draft.tel ?? "").trim();
         const nickName = (draft.nickName ?? "").trim();
+        const termsDTO = draft.termsDTO;
 
-        // 누락된 필드 계산
         const missingFields: RequiredFieldKey[] = [];
         if (!userId) missingFields.push("userId");
         if (!password) missingFields.push("password");
         if (!tel) missingFields.push("tel");
         if (!nickName) missingFields.push("nickName");
+        if (!termsDTO) missingFields.push("termsDTO");
 
         if (missingFields.length > 0) {
           throw new SignupFlowError(
@@ -99,7 +106,15 @@ export const useSignupStore = create<SignupState>()(
           );
         }
 
-        // 선택값은 값이 비어있으면 제외
+        const ensuredTermsDTO = draft.termsDTO;
+        if (!ensuredTermsDTO) {
+          throw new SignupFlowError(
+            "MISSING_REQUIRED_FIELDS",
+            "약관 동의 정보가 누락되었습니다.",
+            ["termsDTO"]
+          );
+        }
+
         const email = (draft.email ?? "").trim();
         const birth = (draft.birth ?? "").trim();
         const gender = draft.gender;
@@ -109,6 +124,7 @@ export const useSignupStore = create<SignupState>()(
           password,
           tel,
           nickName,
+          termsDTO: ensuredTermsDTO,
           ...(email ? { email } : {}),
           ...(birth ? { birth } : {}),
           ...(gender ? { gender } : {}),
