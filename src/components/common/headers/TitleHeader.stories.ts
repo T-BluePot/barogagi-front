@@ -37,6 +37,6 @@ export const WithChildren: Story = {
   args: {
     label: "추가 텍스트 헤더",
     isHeaderDark: false,
-    children: "해당 위치에 JSX 요소 추기",
+    children: "해당 위치에 JSX 요소 추가",
   },
 };
