@@ -43,7 +43,7 @@ export const getGeocode = async (regionNum: number) => {
 
 /** 전화번호 중복 확인 */
 export const checkTel = async (tel: string) => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.USERS.CHECK_TEL,
     { params: { tel } }
   );
