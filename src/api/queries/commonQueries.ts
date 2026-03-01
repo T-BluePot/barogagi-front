@@ -40,6 +40,16 @@ export const getGeocode = async (regionNum: number) => {
 };
 
 // === Verification ===
+
+/** 전화번호 중복 확인 */
+export const checkTel = async (tel: string) => {
+  const response = await http.get<BaseResponse<unknown>>(
+    ENDPOINTS.USERS.CHECK_TEL,
+    { params: { tel } }
+  );
+  return response.data;
+};
+
 export const sendVerificationCode = async (data: unknown) => {
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.SEND,
