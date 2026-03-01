@@ -63,4 +63,14 @@ export const ENDPOINTS = {
   PLACE: {
     SEARCH: "/api/v1/place/keyword-search",
   },
+
+  /** 카테고리 (Category) */
+  CATEGORY: {
+    LIST: "/api/v1/category/",
+  },
+
+  /** 아이템 (Item) - 카테고리 상세 */
+  ITEM: {
+    LIST: "/api/v1/item/",
+  },
 } as const;

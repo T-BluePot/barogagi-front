@@ -19,17 +19,25 @@ export const ScheduleList = ({
 }: ScheduleListProps) => {
   return (
     <div className="flex flex-col w-full gap-4">
-      {schedules.map((schedule) => {
-        return (
-          <ScheduleCard
-            key={schedule.scheduleNum}
-            isPast={isPast}
-            schedule={schedule}
-            onClickCard={() => onClickCard(schedule.scheduleNum)}
-            onDelete={() => onDelete(schedule.scheduleNum)}
-          />
-        );
-      })}
+      {schedules.length > 0 ? (
+        schedules.map((schedule) => {
+          return (
+            <ScheduleCard
+              key={schedule.scheduleNum}
+              isPast={isPast}
+              schedule={schedule}
+              onClickCard={() => onClickCard(schedule.scheduleNum)}
+              onDelete={() => onDelete(schedule.scheduleNum)}
+            />
+          );
+        })
+      ) : (
+        <div className="flex justify-center pt-25">
+          <p className="typo-sub-title text-gray-70">
+            아직 생성된 일정이 없습니다
+          </p>
+        </div>
+      )}
     </div>
   );
 };

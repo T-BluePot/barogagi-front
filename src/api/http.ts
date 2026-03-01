@@ -1,28 +1,29 @@
 /**
- * Axios 인스턴스 설정
- * - baseURL, timeout 등 기본 설정
- * - Request 인터셉터: Authorization 헤더에 토큰 자동 삽입
- * - Response 인터셉터: 401 에러 시 토큰 갱신(refresh) 후 재시도, 실패 시 로그아웃
+ * Axios 인터셉터 초기화 파일
+ *
+ * 역할:
+ * - http, apiKeyHttp 인스턴스에 공통 인증 인터셉터 적용
+ * - accessToken 자동 주입 (Request)
+ * - 401 발생 시 refresh 토큰으로 자동 갱신 후 재요청 (Response)
+ * - apiKeyHttp 전용 API-KEY 헤더 추가
+ *
+ * 주의:
+ * - 실제 인터셉터 로직은 axiosInterceptors.ts에 정의되어 있음
+ * - 이 파일은 앱 시작 시 1회 import 되어야 인터셉터가 등록됨
  */
 
-import type { AxiosRequestConfig, AxiosError } from "axios";
-import { ENDPOINTS } from "./endpoints";
+import { http, apiKeyHttp } from "./client";
+import { getApiKey } from "./apiKey";
+import { applyAuthInterceptors } from "./axiosInterceptors";
 
 import { http, apiKeyHttp } from "./client";
 import { getApiKey } from "./apiKey";
 
-// === token ===
-import { refresh } from "./queries";
-import { saveAuthTokens } from "@/lib/auth/tokenStorage";
-import { handleLogout } from "@/utils/auth/handleLogout";
-
-// 요청 인터셉터: Authorization 헤더에 토큰 자동 삽입
-http.interceptors.request.use(
+// apiKeyHttp 전용: API-KEY만 추가
+apiKeyHttp.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    config.headers = config.headers ?? {};
+    config.headers["API-KEY"] = getApiKey();
     return config;
   },
   (error) => {

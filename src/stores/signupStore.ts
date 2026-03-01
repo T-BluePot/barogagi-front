@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type {
   SignupPayloadType,
   RequiredFieldKey,
@@ -28,7 +29,7 @@ export type SignupState = {
   reset: () => void;
 };
 
-// 초기 트래프트 타입
+// 초기 draft
 const initialDraft: SignupDraft = {
   userId: "",
   password: "",
@@ -39,78 +40,93 @@ const initialDraft: SignupDraft = {
   gender: undefined,
 };
 
-export const useSignupStore = create<SignupState>((set, get) => ({
-  draft: initialDraft,
+export const useSignupStore = create<SignupState>()(
+  persist(
+    (set, get) => ({
+      draft: initialDraft,
 
-  // 특정 필드 업데이트
-  setDraft: (patch) =>
-    set((state) => ({
-      draft: {
-        ...state.draft,
-        ...patch,
+      // 특정 필드 업데이트
+      setDraft: (patch) =>
+        set((state) => ({
+          draft: {
+            ...state.draft,
+            ...patch,
+          },
+        })),
+
+      // 특정 필드 삭제
+      clearField: (key) =>
+        set((state) => ({
+          draft: { ...state.draft, [key]: key === "gender" ? undefined : "" },
+        })),
+
+      // 최소 가입 조건 검증용 함수
+      isMinimumReady: () => {
+        const { userId, password, tel, nickName } = get().draft;
+
+        const hasUserId =
+          typeof userId === "string" && userId.trim().length > 0;
+        const hasPassword =
+          typeof password === "string" && password.trim().length > 0;
+        const hasTel = typeof tel === "string" && tel.trim().length > 0;
+        const hasNickName =
+          typeof nickName === "string" && nickName.trim().length > 0;
+
+        return hasUserId && hasPassword && hasTel && hasNickName;
       },
-    })),
 
-  // 특정 필드 삭제
-  clearField: (key) =>
-    set((state) => ({
-      draft: { ...state.draft, [key]: key === "gender" ? undefined : "" },
-    })),
+      buildPayload: () => {
+        const { draft } = get();
 
-  // 최소 가입 조건 검증용 함수
-  isMinimumReady: () => {
-    const { userId, password, tel, nickName } = get().draft;
+        // 필수값 검증
+        const userId = (draft.userId ?? "").trim();
+        const password = (draft.password ?? "").trim();
+        const tel = (draft.tel ?? "").trim();
+        const nickName = (draft.nickName ?? "").trim();
 
-    const hasUserId = typeof userId === "string" && userId.trim().length > 0;
-    const hasPassword =
-      typeof password === "string" && password.trim().length > 0;
-    const hasTel = typeof tel === "string" && tel.trim().length > 0;
-    const hasNickName =
-      typeof nickName === "string" && nickName.trim().length > 0;
+        // 누락된 필드 계산
+        const missingFields: RequiredFieldKey[] = [];
+        if (!userId) missingFields.push("userId");
+        if (!password) missingFields.push("password");
+        if (!tel) missingFields.push("tel");
+        if (!nickName) missingFields.push("nickName");
 
-    return hasUserId && hasPassword && hasTel && hasNickName;
-  },
+        if (missingFields.length > 0) {
+          throw new SignupFlowError(
+            "MISSING_REQUIRED_FIELDS",
+            "회원가입 필수 정보가 누락되었습니다.",
+            missingFields
+          );
+        }
 
-  buildPayload: () => {
-    const { draft } = get();
+        // 선택값은 값이 비어있으면 제외
+        const email = (draft.email ?? "").trim();
+        const birth = (draft.birth ?? "").trim();
+        const gender = draft.gender;
 
-    // 필수값 검증
-    const userId = (draft.userId ?? "").trim();
-    const password = (draft.password ?? "").trim();
-    const tel = (draft.tel ?? "").trim();
-    const nickName = (draft.nickName ?? "").trim();
+        const payload: SignupPayloadType = {
+          userId,
+          password,
+          tel,
+          nickName,
+          ...(email ? { email } : {}),
+          ...(birth ? { birth } : {}),
+          ...(gender ? { gender } : {}),
+        };
 
-    // 누락된 필드 계산
-    const missingFields: RequiredFieldKey[] = [];
-    if (!userId) missingFields.push("userId");
-    if (!password) missingFields.push("password");
-    if (!tel) missingFields.push("tel");
-    if (!nickName) missingFields.push("nickName");
+        return payload;
+      },
 
-    if (missingFields.length > 0) {
-      throw new SignupFlowError(
-        "MISSING_REQUIRED_FIELDS",
-        "회원가입 필수 정보가 누락되었습니다.",
-        missingFields
-      );
+      reset: () => set(() => ({ draft: initialDraft })),
+    }),
+    {
+      name: "signup:draft",
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => {
+        const draft = { ...state.draft };
+        delete draft.password;
+        return { draft };
+      },
     }
-    // 선택값은 값이 비어있으면 제외
-    const email = (draft.email ?? "").trim();
-    const birth = (draft.birth ?? "").trim();
-    const gender = draft.gender;
-
-    const payload: SignupPayloadType = {
-      userId,
-      password,
-      tel,
-      nickName,
-      ...(email ? { email } : {}),
-      ...(birth ? { birth } : {}),
-      ...(gender ? { gender } : {}),
-    };
-
-    return payload;
-  },
-
-  reset: () => set(() => ({ draft: initialDraft })),
-}));
+  )
+);

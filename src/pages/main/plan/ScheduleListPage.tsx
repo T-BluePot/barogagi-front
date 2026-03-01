@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleViewType } from "@/components/main/plan/main/ScheduleViewToggleButton";
-import {
-  mockSchedules,
-  pastMockSchedules,
-  allSchedules,
-} from "@/mock/schedules";
+import { allSchedules } from "@/mock/schedules";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
@@ -66,10 +62,7 @@ const ScheduleListPage = () => {
   };
 
   return (
-    <div
-      className="flex flex-col
-     gap-6 bg-gray-white"
-    >
+    <div className="flex flex-col gap-6 h-full">
       <DeleteScheduleModal
         isOpen={isDeleteOpen}
         onClickCancel={handleCloseDeleteModal}
@@ -89,10 +82,10 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex w-full h-full px-6">
+          <div className="flex w-full px-6 min-h-0 pb-[60px]">
             <ListView
-              schedules={mockSchedules}
-              pastSchedules={pastMockSchedules}
+              schedules={[]}
+              pastSchedules={[]}
               onClickCard={handleOpenDetail}
               onDelete={handleDeleteSchedule}
             />

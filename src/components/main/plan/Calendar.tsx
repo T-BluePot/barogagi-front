@@ -28,10 +28,7 @@ export default function Calendar({
     a.getDate() === b.getDate();
 
   return (
-    <div className="flex flex-col w-full items-baseline gap-8">
-      {withTitle && selectedDate && (
-        <CalendarTitle selectedDate={selectedDate} />
-      )}
+    <div className="flex flex-col w-full items-baseline gap-3">
       <DatePicker
         locale={ko}
         inline // 캘린더 유지
@@ -48,7 +45,7 @@ export default function Calendar({
           const year = date.getFullYear();
           const month = date.getMonth() + 1;
           return (
-            <div className="flex h-16 justify-center items-center gap-6">
+            <div className="flex py-3 justify-center items-center gap-6">
               <button
                 aria-label="이전 달로 이동"
                 type="button"
@@ -80,8 +77,8 @@ export default function Calendar({
             dayOfWeek === 0
               ? "text-red-500"
               : dayOfWeek === 6
-              ? "text-blue-500"
-              : "text-gray-800";
+                ? "text-blue-500"
+                : "text-gray-800";
 
           // 일정 존재 여부 체크
           const dateKey = format(date, "yyyy-MM-dd");
@@ -109,6 +106,9 @@ export default function Calendar({
           );
         }}
       />
+      {withTitle && selectedDate && (
+        <CalendarTitle selectedDate={selectedDate} />
+      )}
     </div>
   );
 }

@@ -6,10 +6,16 @@ import { ENDPOINTS } from "../endpoints";
 
 import type { BaseResponse, TermsProcessRequestType } from "../types";
 import type { TermsResponseType } from "../types";
+import type {
+  ScheduleCategoryResponseType,
+  ScheduleCategoryItemResponseType,
+} from "../types";
+// === type ===
+import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
 
 // === Tag ===
 export const searchTags = async (data: unknown) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.TAG.SEARCH,
     data
   );
@@ -18,7 +24,7 @@ export const searchTags = async (data: unknown) => {
 
 // === Region ===
 export const searchRegions = async (query: string) => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<BaseResponse<RegionSearchItemType[]>>(
     ENDPOINTS.REGION.SEARCH,
     { params: { regionQuery: query } }
   );
@@ -84,5 +90,23 @@ export const searchPlaces = async (keyword: string) => {
     ENDPOINTS.PLACE.SEARCH,
     { params: { searchKeyword: keyword } }
   );
+  return response.data;
+};
+
+/** 일정 카테고리 */
+export const getScheduleCategories = async () => {
+  const response = await apiKeyHttp.get<
+    BaseResponse<ScheduleCategoryResponseType[]>
+  >(ENDPOINTS.CATEGORY.LIST);
+  return response.data;
+};
+
+/** 일정 카테고리 상세 조회 */
+export const getScheduleCategoryDetail = async (categoryNum: number) => {
+  const response = await apiKeyHttp.get<
+    BaseResponse<ScheduleCategoryItemResponseType[]>
+  >(ENDPOINTS.ITEM.LIST, {
+    params: { categoryNum },
+  });
   return response.data;
 };

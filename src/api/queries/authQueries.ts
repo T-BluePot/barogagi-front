@@ -49,9 +49,20 @@ export const logout = async (data: RefreshTokenRequestType) => {
 
 /** 토큰 재발급 */
 export const refresh = async (data: RefreshTokenRequestType) => {
+  const refreshToken = data.refreshToken;
+
+  if (!refreshToken) {
+    throw new Error("refreshToken이 없습니다.");
+  }
+
   const response = await refreshHttp.post<
     BaseResponse<RefreshResponseDataType>
-  >(ENDPOINTS.AUTH.REFRESH, data);
+  >(ENDPOINTS.AUTH.REFRESH, data, {
+    headers: {
+      "REFRESH-TOKEN": refreshToken, // 서버가 요구하는 필수 헤더
+    },
+  });
+
   return response.data;
 };
 

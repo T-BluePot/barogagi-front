@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { validateHourInput, validateMinuteInput } from "@/utils/date";
-
-interface TimeValue {
-  period: "오전" | "오후";
-  hour: string;
-  minute: string;
-}
+import type { TimeValue } from "@/utils/date";
 
 interface SelectTimeConfirmModalContentProps {
   initialStartTime?: TimeValue;

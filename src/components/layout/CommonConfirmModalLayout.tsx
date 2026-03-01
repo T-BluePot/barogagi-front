@@ -24,7 +24,7 @@ export default function CommonConfirmModalLayout({
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+      className={`fixed inset-0 flex items-center justify-center z-[200] transition-opacity duration-300 ${
         // 배경 투명도 애니메이션
         isVisible ? "opacity-100" : "opacity-0" // isVisible 상태에 따른 투명도 변경
       }`}
