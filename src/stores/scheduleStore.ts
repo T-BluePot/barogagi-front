@@ -23,6 +23,7 @@ const initialDraft: ScheduleDraftType = {
   endDate: "",
   comment: "",
   scheduleTagRegistReqDTOList: [],
+  scheduleRegionRegistReqDTOList: [],
   planRegistReqDTOList: [],
 };
 
@@ -135,6 +136,9 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
             scheduleTagRegistReqDTOList:
               patch.scheduleTagRegistReqDTOList ??
               state.draft.scheduleTagRegistReqDTOList,
+            scheduleRegionRegistReqDTOList:
+              patch.scheduleRegionRegistReqDTOList ??
+              state.draft.scheduleRegionRegistReqDTOList,
           },
         })),
 
@@ -286,6 +290,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           endDate,
           comment: comment ? comment : undefined,
           scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList,
+          scheduleRegionRegistReqDTOList: draft.scheduleRegionRegistReqDTOList,
           planRegistReqDTOList: planReqList,
         };
 
@@ -304,3 +309,10 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
     }
   )
 );
+
+// store 파일 맨 아래에 추가
+if (import.meta.env.DEV) {
+  useScheduleDraftStore.subscribe((state) => {
+    console.log("[ScheduleDraftStore]", state.draft);
+  });
+}

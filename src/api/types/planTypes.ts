@@ -52,6 +52,7 @@ export interface ScheduleRegistReqDTO {
   endDate: string;
   comment?: string;
   scheduleTagRegistReqDTOList?: TagRegistReqDTO[];
+  scheduleRegionRegistReqDTOList?: RegionRegistReqDTO[];
   planRegistReqDTOList?: PlanRegistReqDTO[];
 }
 
