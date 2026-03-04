@@ -17,14 +17,30 @@ import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
 
 // === store ===
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 const SelectLocationPage = () => {
   const navigate = useNavigate();
 
+  // 사용자 입력 검색어
   const [searchText, setSearchText] = useState<string>("");
+
+  // 지역 전용 store
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const addRegion = useRegionSelectionStore((s) => s.addRegion);
   const removeRegionByNum = useRegionSelectionStore((s) => s.removeRegionByNum);
+
+  // 일정 등록 store
+  const setDraft = useScheduleDraftStore((s) => s.setDraft);
+
+  // regionSelectionStore 변경 후 scheduleDraftStore에도 동기화하는 헬퍼
+  const syncToDraft = (regions: RegionSearchItemType[]) => {
+    setDraft({
+      scheduleRegionRegistReqDTOList: regions.map((r) => ({
+        regionNum: r.regionNum,
+      })),
+    });
+  };
 
   const hasSelection = selectedRegions.length > 0;
 
@@ -33,8 +49,18 @@ const SelectLocationPage = () => {
     if (!result.ok) {
       if (result.reason === "MAX") toast("최대 3개까지 선택할 수 있어요");
       if (result.reason === "DUPLICATE") toast("이미 선택된 지역이에요");
+      return;
     }
+    syncToDraft(result.next!);
   };
+
+  const handleRemoveRegion = (target: RegionSearchItemType) => {
+    removeRegionByNum(target.regionNum);
+    syncToDraft(
+      selectedRegions.filter((r) => r.regionNum !== target.regionNum)
+    );
+  };
+
   return (
     <div className="flex h-full flex-col w-full bg-gray-white overflow-auto">
       {/* 본문: 내부 스크롤만 허용하기 위해 min-h-0 + overflow-hidden */}
@@ -51,7 +77,7 @@ const SelectLocationPage = () => {
               />
               <RegionTagContainer
                 selectedRegions={selectedRegions}
-                onRemove={(target) => removeRegionByNum(target.regionNum)}
+                onRemove={handleRemoveRegion}
               />
             </div>
           </div>
