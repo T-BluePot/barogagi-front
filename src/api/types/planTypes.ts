@@ -1,10 +1,15 @@
-import type { PlanSource } from "@/types/api/scheduleTypes";
+import type { PlanSource, TagType } from "@/types/api/scheduleTypes";
 
 /**
  * 일정(Schedule) 관련 API 타입 정의
  */
 
 /** 태그 정보 */
+export interface TagReqType {
+  tagType: TagType;
+  categoryNum: number | null;
+}
+
 export interface TagRegistReqDTO {
   tagNum: number;
   tagNm: string;
