@@ -22,6 +22,7 @@ type PlanDraftBaseType = {
   isRandomCategory?: "Y" | "N"; // 랜덤 카테고리 옵션
 
   regionRegistReqDTOList?: RegionRegistReqDTO[];
+  planNm?: string; // 일정명
 };
 
 /** 1) 서비스/AI 기반 플랜 */
