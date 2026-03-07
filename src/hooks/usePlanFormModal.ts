@@ -23,6 +23,9 @@ import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 // 2) 일정 태그 (선택) 관련
 import { searchTags } from "@/api/queries";
 
+// 3. store
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
+
 /**
  * 일정 추가/수정 폼 모달 + 하위 모달(시간/장소/태그/카테고리) 상태 관리 훅
  *
@@ -43,9 +46,13 @@ const DRAFT_ID = "__draft__";
 /** 폼에서 작성 중인 임시 데이터 타입 (저장 전까지 여기에 보관) */
 interface PlanFormDraft {
   planNm: string;
-  categoryNum?: number;
+
   startTime?: string;
   endTime?: string;
+
+  categoryNum?: number;
+  itemNum?: number;
+
   address?: string;
   regionRegistReqDTOList?: RegionRegistReqDTO[];
   planTagRegistReqDTOList?: TagRegistReqDTO[];
@@ -59,6 +66,11 @@ export const usePlanFormModal = (
   const { openAlertModal } = useAlertModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const { validatePlanTime } = usePlanTimeValidation(items);
+  const {
+    addAIPlan,
+    updateAIPlan,
+    draft: storeDraft,
+  } = useScheduleDraftStore();
 
   // ============================================
   // PlanFormModal 상태
@@ -76,8 +88,14 @@ export const usePlanFormModal = (
 
   const handleCategorySelect = (selected: SelectedCategoryItemType) => {
     const categoryNum = selected.category.categoryNum;
+    console.log("선택한 카테고리: ", selected.category);
+    console.log("선택된 아이템:", selected.option);
 
-    setDraft({ planNm: selected.option.itemNm, categoryNum });
+    setDraft({
+      planNm: selected.option.itemNm,
+      categoryNum,
+      itemNum: selected.option.itemNum,
+    });
     setIsCategoryOpen(false);
     setIsPlanFormOpen(true);
 
@@ -89,11 +107,9 @@ export const usePlanFormModal = (
   // ============================================
   // 카드 클릭 → 기존 데이터를 draft에 복사 후 PlanFormModal 열기
   // ============================================
-  const [editTargetId, setEditTargetId] = useState<string | number | null>(
-    null
-  );
+  const [editTargetId, setEditTargetId] = useState<number | null>(null);
 
-  const handleCardClick = (id: string | number) => {
+  const handleCardClick = (id: number) => {
     const target = items.find((item) => item.id === id);
     if (!target) return;
 
@@ -173,6 +189,12 @@ export const usePlanFormModal = (
     // (3) 검증 통과
     if (draft && editTargetId !== null) {
       // 기존 카드 업데이트
+      updateAIPlan(editTargetId, {
+        startTime: draft.startTime,
+        endTime: draft.endTime,
+        regionRegistReqDTOList: draft.regionRegistReqDTOList,
+        planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+      });
       setItems((prev) =>
         prev.map((item) =>
           item.id === editTargetId
@@ -190,15 +212,27 @@ export const usePlanFormModal = (
       );
     } else if (draft) {
       // 새 카드 추가
+      const newId = storeDraft.planRegistReqDTOList.length;
+      const isRandomCategory = draft.itemNum === 1 ? "Y" : "N";
+      addAIPlan({
+        startTime: draft.startTime,
+        endTime: draft.endTime,
+        categoryNum: draft.categoryNum,
+        itemNum: draft.itemNum,
+        isRandomCategory,
+        regionRegistReqDTOList: draft.regionRegistReqDTOList,
+        planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+      });
       setItems((prev) => [
         ...prev,
         {
-          id: String(Date.now()),
+          id: newId,
           title: draft.planNm,
           startTime: draft.startTime,
           endTime: draft.endTime,
           location: draft.address,
           categoryNum: draft.categoryNum,
+          itemNum: draft.itemNum,
           planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
         },
       ]);
@@ -278,7 +312,15 @@ export const usePlanFormModal = (
 
     if (regionTargetId === DRAFT_ID) {
       setDraft((prev) =>
-        prev ? { ...prev, address: region?.label ?? undefined } : null
+        prev
+          ? {
+              ...prev,
+              address: region?.label ?? undefined,
+              regionRegistReqDTOList: region
+                ? [{ regionNum: Number(region.id), regionNm: region.label }]
+                : [],
+            }
+          : null
       );
     } else {
       setItems((prev) =>
