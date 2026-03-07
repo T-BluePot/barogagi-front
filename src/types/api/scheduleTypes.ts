@@ -73,6 +73,7 @@ export type ScheduleDraftType = {
   comment?: string;
 
   scheduleTagRegistReqDTOList: TagRegistReqDTO[];
+  scheduleRegionRegistReqDTOList: RegionRegistReqDTO[];
   planRegistReqDTOList: PlanDraftType[];
 };
 
@@ -81,3 +82,5 @@ export type SelectedCategoryItemType = {
   category: ScheduleCategoryResponseType; // 카테고리(탭)
   option: ScheduleCategoryItemResponseType; // 아이템(상세 옵션)
 };
+
+export type TagType = "S" | "P";
