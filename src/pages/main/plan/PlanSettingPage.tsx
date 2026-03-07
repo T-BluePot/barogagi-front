@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 // === component ===
 import { PlanSettingForm } from "@/components/main/plan/PlanSettingForm";
@@ -12,14 +13,15 @@ import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/Se
 import { SelectTagConfirmModal } from "@/components/main/plan/common/modal/SelectTagConfirmModal";
 import Button from "@/components/common/buttons/CommonButton";
 
-// === others ===
-import { ROUTES } from "@/constants/routes";
+// === hooks & utils ===
 import { usePlanDelete } from "@/hooks/usePlanDelete";
 import { usePlanFormModal } from "@/hooks/usePlanFormModal";
+import { hhmmToMinutes, minutesToHHmm } from "@/hooks/usePlanTimeValidation";
 
 // === server ===
 import { getScheduleCategories } from "@/api/queries";
 import type { ScheduleCategoryResponseType } from "@/api/types";
+import type { PlanDraftType } from "@/types/api/scheduleTypes";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
@@ -90,10 +92,38 @@ export const PlanSettingPage = () => {
   const handleOrderChange = (newItems: PlanData[]) => {
     const currentPlans =
       useScheduleDraftStore.getState().draft.planRegistReqDTOList;
+
+    // 1. 각 카드의 duration 계산
+    const durations = newItems.map((item) => {
+      if (!item.startTime || !item.endTime) return null;
+      return hhmmToMinutes(item.endTime) - hhmmToMinutes(item.startTime);
+    });
+
+    // 2. 첫 번째 카드의 시작 시간 기준으로 순서대로 재배치
+    let cursor = newItems[0]?.startTime
+      ? hhmmToMinutes(newItems[0].startTime)
+      : null;
+
+    const reindexed = newItems.map((item, i) => {
+      if (cursor === null || durations[i] === null) {
+        return { ...item, id: i };
+      }
+      const newStart = minutesToHHmm(cursor);
+      const newEnd = minutesToHHmm(cursor + durations[i]!);
+      cursor += durations[i]!;
+      return { ...item, id: i, startTime: newStart, endTime: newEnd };
+    });
+
+    // 3. store도 같이 업데이트
     const reorderedPlans = newItems.map((item) => currentPlans[item.id]);
-    const reindexed = newItems.map((item, i) => ({ ...item, id: i }));
+    const updatedPlans = reorderedPlans.map((plan, i) => ({
+      ...plan,
+      startTime: reindexed[i].startTime ?? plan.startTime, // undefined면 기존 값 유지
+      endTime: reindexed[i].endTime ?? plan.endTime,
+    })) as PlanDraftType[];
+
     setItems(reindexed);
-    setPlanList(reorderedPlans);
+    setPlanList(updatedPlans);
   };
 
   const { handleDeleteClick, deleteModalProps } = usePlanDelete(setItems);
