@@ -94,10 +94,10 @@ export const usePlanTimeValidation = (items: PlanData[]) => {
       insertIndex: number,
       excludeId?: string | number
     ): TimeValidationResult => {
-      // 자기 자신을 제외한 일정 목록 구성
-      const others = excludeId
-        ? items.filter((item) => item.id !== excludeId)
-        : [...items];
+      const others =
+        excludeId !== undefined
+          ? items.filter((_, i) => i !== insertIndex)
+          : [...items];
 
       const startMin = hhmmToMinutes(startTime);
       const endMin = hhmmToMinutes(endTime);
