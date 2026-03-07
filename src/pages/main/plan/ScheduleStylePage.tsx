@@ -12,30 +12,37 @@ import SectionSpacer from "@/components/layout/SectionSpacer";
 import StyleNoteSection from "@/components/main/plan/create/StyleNoteSection";
 import Button from "@/components/common/buttons/CommonButton";
 
-import { mockStlyes } from "@/mock/styles";
-
 // === server ===
 import { searchTags } from "@/api/queries";
+import type { TagRegistReqDTO } from "@/api/types";
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 const ScheduleStylePage = () => {
   const navigate = useNavigate();
+  const { setDraft } = useScheduleDraftStore();
+
+  const [styleTags, setStyleTags] = useState<TagRegistReqDTO[]>([]);
+  const [actives, setActives] = useState<ActiveMap>({});
 
   useEffect(() => {
     const fetchTags = async () => {
-      const res = await searchTags({
-        categoryNum: 11, // 여행 스타일 태그
-      });
-
+      const res = await searchTags({ tagType: "S", categoryNum: null });
+      setStyleTags(res.data ?? []);
       console.log("태그 응답값:", res);
     };
 
     fetchTags();
   }, []);
-  const [actives, setActives] = useState<ActiveMap>({});
 
   const isAllInactive = (actives: ActiveMap): boolean => {
     return Object.values(actives).every((v) => !v);
   };
+
+  // actives가 바뀔 때마다 store 업데이트
+  useEffect(() => {
+    const selectedTags = styleTags.filter((tag) => actives[tag.tagNum]);
+    setDraft({ scheduleTagRegistReqDTOList: selectedTags });
+  }, [actives]);
 
   // 여행 참고사항 입력값 상태
   const [scheduleNotes, setScheduleNotes] = useState<string>("");
@@ -44,7 +51,7 @@ const ScheduleStylePage = () => {
     <div className="flex flex-col w-full h-full bg-gray-white">
       <div className="flex flex-col">
         <StyleTagSection
-          styles={mockStlyes}
+          styles={styleTags}
           actives={actives}
           setActives={setActives}
         />
@@ -52,6 +59,7 @@ const ScheduleStylePage = () => {
         <StyleNoteSection
           scheduleNotes={scheduleNotes}
           setScheduleNotes={setScheduleNotes}
+          onBlur={() => setDraft({ comment: scheduleNotes })}
         />
       </div>
       <div className="mt-auto w-full p-6">
