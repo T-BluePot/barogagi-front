@@ -12,6 +12,7 @@ import Button from "@/components/common/buttons/CommonButton";
 import { ROUTES } from "@/constants/routes";
 import { usePlanDelete } from "@/hooks/usePlanDelete";
 import { usePlanFormModal } from "@/hooks/usePlanFormModal";
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 /**
  * PlanSettingPage - 일정 구성 페이지
@@ -29,7 +30,32 @@ import { usePlanFormModal } from "@/hooks/usePlanFormModal";
  */
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
-  const [items, setItems] = useState<PlanData[]>([]);
+  const { draft: storeDraft } = useScheduleDraftStore();
+
+  // useState 초기값을 store에서 파생
+  const [items, setItems] = useState<PlanData[]>(() =>
+    storeDraft.planRegistReqDTOList.map((plan, index) => ({
+      id: index,
+      title: plan.planNm ?? "일정",
+      startTime: plan.startTime,
+      endTime: plan.endTime,
+      location: undefined, // regionRegistReqDTOList에는 regionNm이 없으므로 undefined
+      categoryNum: plan.categoryNum,
+      itemNum: plan.itemNum,
+      planTagRegistReqDTOList: plan.planTagRegistReqDTOList,
+    }))
+  );
+
+  const { setPlanList } = useScheduleDraftStore();
+
+  const handleOrderChange = (newItems: PlanData[]) => {
+    const currentPlans =
+      useScheduleDraftStore.getState().draft.planRegistReqDTOList;
+    const reorderedPlans = newItems.map((item) => currentPlans[item.id]);
+    const reindexed = newItems.map((item, i) => ({ ...item, id: i }));
+    setItems(reindexed);
+    setPlanList(reorderedPlans);
+  };
 
   const { handleDeleteClick, deleteModalProps } = usePlanDelete(setItems);
   const {
@@ -48,7 +74,7 @@ export const PlanSettingPage = () => {
         <PlanSettingForm
           initialItems={items}
           onAddPlan={formHandlers.handleAddPlan}
-          onOrderChange={setItems}
+          onOrderChange={handleOrderChange}
           onCardClick={formHandlers.handleCardClick}
           onDeleteClick={handleDeleteClick}
           onTimeClick={formHandlers.handleTimeClick}
