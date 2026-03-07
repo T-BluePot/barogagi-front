@@ -7,10 +7,10 @@ interface PlanSettingFormProps {
   initialItems?: PlanData[];
   onAddPlan?: () => void;
   onOrderChange?: (items: PlanData[]) => void;
-  onCardClick?: (id: string | number) => void;
-  onDeleteClick?: (id: string | number) => void;
-  onTimeClick?: (id: string | number) => void;
-  onLocationClick?: (id: string | number) => void;
+  onCardClick?: (id: number) => void;
+  onDeleteClick?: (id: number) => void;
+  onTimeClick?: (id: number) => void;
+  onLocationClick?: (id: number) => void;
 }
 
 export const PlanSettingForm = ({

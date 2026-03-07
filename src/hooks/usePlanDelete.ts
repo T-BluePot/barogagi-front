@@ -1,5 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { PlanData } from "@/components/main/plan/PlanCard";
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 /**
  * 일정 삭제 모달 상태 관리 훅
@@ -19,10 +20,12 @@ export const usePlanDelete = (
   // 삭제 확인 모달 열림 여부
   const [isOpen, setIsOpen] = useState(false);
   // 삭제 대상 카드의 id (null이면 아직 선택 안 됨)
-  const [targetId, setTargetId] = useState<string | number | null>(null);
+  const [targetId, setTargetId] = useState<number | null>(null);
+
+  const { removePlan } = useScheduleDraftStore();
 
   /** 카드의 삭제 버튼 클릭 → 대상 id를 저장하고 모달 열기 */
-  const handleDeleteClick = (id: string | number) => {
+  const handleDeleteClick = (id: number) => {
     setTargetId(id);
     setIsOpen(true);
   };
@@ -30,7 +33,11 @@ export const usePlanDelete = (
   /** 모달에서 "확인" → 해당 카드를 목록에서 제거 후 모달 닫기 */
   const handleConfirm = () => {
     if (targetId !== null) {
-      setItems((prev) => prev.filter((item) => item.id !== targetId));
+      removePlan(targetId);
+      setItems((prev) => {
+        const filtered = prev.filter((item) => item.id !== targetId);
+        return filtered.map((item, i) => ({ ...item, id: i })); // ← id 재할당
+      });
     }
     setIsOpen(false);
     setTargetId(null);
