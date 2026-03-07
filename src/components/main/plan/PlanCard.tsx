@@ -4,6 +4,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlaceIcon from "@mui/icons-material/Place";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import type { TagRegistReqDTO } from "@/api/types";
 
 export interface PlanData {
   id: string | number;
@@ -12,6 +13,8 @@ export interface PlanData {
   startTime?: string; // HH:mm 형식
   endTime?: string; // HH:mm 형식
   location?: string;
+  categoryNum?: number; // 태그 목록 불러오기용
+  planTagRegistReqDTOList?: TagRegistReqDTO[]; // 기존 선택 태그 복원용
 }
 
 interface PlanCardProps {
