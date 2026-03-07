@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+// === component ===
 import { PlanSettingForm } from "@/components/main/plan/PlanSettingForm";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 import type { PlanData } from "@/components/main/plan/PlanCard";
@@ -9,9 +11,16 @@ import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/Sele
 import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/SelectRegionConfirmModal";
 import { SelectTagConfirmModal } from "@/components/main/plan/common/modal/SelectTagConfirmModal";
 import Button from "@/components/common/buttons/CommonButton";
+
+// === others ===
 import { ROUTES } from "@/constants/routes";
 import { usePlanDelete } from "@/hooks/usePlanDelete";
 import { usePlanFormModal } from "@/hooks/usePlanFormModal";
+
+// === server ===
+import { getScheduleCategories } from "@/api/queries";
+import type { ScheduleCategoryResponseType } from "@/api/types";
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 /**
@@ -32,19 +41,49 @@ export const PlanSettingPage = () => {
   const navigate = useNavigate();
   const { draft: storeDraft } = useScheduleDraftStore();
 
-  // useState 초기값을 store에서 파생
-  const [items, setItems] = useState<PlanData[]>(() =>
-    storeDraft.planRegistReqDTOList.map((plan, index) => ({
-      id: index,
-      title: plan.planNm ?? "일정",
-      startTime: plan.startTime,
-      endTime: plan.endTime,
-      location: undefined, // regionRegistReqDTOList에는 regionNm이 없으므로 undefined
-      categoryNum: plan.categoryNum,
-      itemNum: plan.itemNum,
-      planTagRegistReqDTOList: plan.planTagRegistReqDTOList,
-    }))
-  );
+  // 카테고리 맵 상태
+  const [categoryMap, setCategoryMap] = useState<Record<number, string>>({});
+
+  // 마운트 시 카테고리 목록 불러오기
+  useEffect(() => {
+    getScheduleCategories().then((res) => {
+      const map = (res.data ?? []).reduce(
+        (acc, cat: ScheduleCategoryResponseType) => {
+          acc[cat.categoryNum] = cat.categoryNm;
+          return acc;
+        },
+        {} as Record<number, string>
+      );
+      setCategoryMap(map);
+    });
+  }, []);
+
+  // items 초기화 - categoryMap 없을 땐 빈 배열, 준비되면 store에서 파생
+  const [items, setItems] = useState<PlanData[]>([]);
+
+  // 지역명 매칭
+  const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
+
+  useEffect(() => {
+    if (storeDraft.planRegistReqDTOList.length === 0) return;
+
+    setItems(
+      storeDraft.planRegistReqDTOList.map((plan, index) => ({
+        id: index,
+        title: categoryMap[plan.categoryNum ?? 0] ?? "일정",
+        startTime: plan.startTime,
+        endTime: plan.endTime,
+        location: plan.regionRegistReqDTOList?.[0]?.regionNum
+          ? selectedRegions.find(
+              (r) => r.regionNum === plan.regionRegistReqDTOList![0].regionNum
+            )?.regionNm
+          : undefined,
+        categoryNum: plan.categoryNum,
+        itemNum: plan.itemNum,
+        planTagRegistReqDTOList: plan.planTagRegistReqDTOList,
+      }))
+    );
+  }, [categoryMap]); // categoryMap 준비되면 items 초기화
 
   const { setPlanList } = useScheduleDraftStore();
 

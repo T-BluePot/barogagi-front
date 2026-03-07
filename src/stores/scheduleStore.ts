@@ -47,7 +47,7 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
     itemNum: plan.itemNum,
     isRandomCategory: plan.isRandomCategory,
     // regionNm 필드 제거 (서버 요청 DTO에는 필요 없음)
-    regionRegistReqDTOList: plan.regionRegistReqDTOList?.map(r => ({
+    regionRegistReqDTOList: plan.regionRegistReqDTOList?.map((r) => ({
       regionNum: r.regionNum,
       regionLevel1: r.regionLevel1,
       regionLevel2: r.regionLevel2,
