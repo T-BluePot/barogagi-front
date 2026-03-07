@@ -46,7 +46,14 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
     endTime: plan.endTime,
     itemNum: plan.itemNum,
     isRandomCategory: plan.isRandomCategory,
-    regionRegistReqDTOList: plan.regionRegistReqDTOList,
+    // regionNm 필드 제거 (서버 요청 DTO에는 필요 없음)
+    regionRegistReqDTOList: plan.regionRegistReqDTOList?.map(r => ({
+      regionNum: r.regionNum,
+      regionLevel1: r.regionLevel1,
+      regionLevel2: r.regionLevel2,
+      regionLevel3: r.regionLevel3,
+      regionLevel4: r.regionLevel4,
+    })),
     isUserAdded: plan.isUserAdded,
   };
 
@@ -113,6 +120,9 @@ export type ScheduleDraftStore = {
   ) => void;
 
   removePlan: (index: number) => void;
+
+  // plan 목록 교체 (드래그 앤 드롭 순서 변경용)
+  setPlanList: (plans: PlanDraftType[]) => void;
 
   // 서버 요청 DTO 생성
   buildRequest: () => ScheduleRegistReqDTO;
@@ -269,6 +279,11 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
             editingPlanIndex: nextEditingIndex,
           };
         }),
+
+      setPlanList: (plans) =>
+        set((state) => ({
+          draft: { ...state.draft, planRegistReqDTOList: plans },
+        })),
 
       buildRequest: () => {
         const { draft } = get();

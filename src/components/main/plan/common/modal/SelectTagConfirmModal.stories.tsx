@@ -44,7 +44,7 @@ export const Default: Story = {
 
 export const WithInitialSelection: Story = {
   args: {
-    initialSelectedIds: ["1", "3"],
+    initialSelectedIds: [1, 3],
     onConfirm: () => {},
     onCancel: () => {},
   },
