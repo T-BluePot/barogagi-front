@@ -5,6 +5,7 @@ import { InfoItemContainer } from "./InfoItemContainer";
 import { TextTag } from "../../../tags/TextTag";
 
 import type { IconType } from "@/types/main/plan/bottom-modal/itemsTypes";
+import type { TagRegistResDTO } from "@/api/types";
 
 interface CommonInfoItemProps {
   placeholder: string;
@@ -93,7 +94,7 @@ export const InputInfoItem = ({
 };
 
 interface TagInfoItemProps {
-  tags?: string[];
+  tags?: TagRegistResDTO[];
   onClick?: () => void;
 }
 
@@ -118,8 +119,8 @@ export const TagInfoItem = ({ tags, onClick }: TagInfoItemProps) => {
         {isEmpty
           ? "이 일정에 대한 태그 (선택)"
           : tags.map((tag) => (
-              <div key={tag} className="pr-1">
-                <TextTag size="large" label={tag} />
+              <div key={tag.tagNum} className="pr-1">
+                <TextTag size="large" label={tag.tagNm} />
               </div>
             ))}
       </div>
