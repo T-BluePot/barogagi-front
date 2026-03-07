@@ -1,14 +1,24 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { PlanData } from "@/components/main/plan/PlanCard";
 import type { RegionOption } from "@/components/main/plan/common/modal/content/SelectRegionConfirmModalContent";
-import type { TagOption } from "@/components/main/plan/common/modal/content/SelectTagConfirmModalContent";
-import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
-import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
+
+// === server
+import type { RegionRegistReqDTO, TagRegistReqDTO } from "@/api/types";
+
+// 1. 카테고리
+import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
+
+// 2. 상세
+// 1) 장소 관련
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+// 2) 일정 태그 (선택) 관련
+import type { TagRegistResDTO } from "@/api/types";
+import { searchTags } from "@/api/queries";
 
 /**
  * 일정 추가/수정 폼 모달 + 하위 모달(시간/장소/태그/카테고리) 상태 관리 훅
@@ -40,22 +50,22 @@ import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
  */
 const DRAFT_ID = "__draft__";
 
-// TODO: 추후 백엔드 API에서 태그 목록을 가져와서 교체
-const TAG_OPTIONS: TagOption[] = [
-  { id: "1", label: "분위기 좋은" },
-  { id: "2", label: "자리가 편한" },
-  { id: "3", label: "뷰가 좋은" },
-  { id: "4", label: "저렴한" },
-  { id: "5", label: "핫플" },
-];
-
 /** 폼에서 작성 중인 임시 데이터 타입 (저장 전까지 여기에 보관) */
 interface PlanFormDraft {
-  planNm: string;       // 일정 이름 (카테고리에서 선택한 항목명)
-  startTime?: string;   // 시작 시간 (HH:mm)
-  endTime?: string;     // 종료 시간 (HH:mm)
-  address?: string;     // 장소명
-  tags?: string[];      // 태그 라벨 목록
+  planNm: string; // 일정 이름 (카테고리에서 선택한 항목명)
+  startTime?: string; // 시작 시간 (HH:mm)
+  endTime?: string; // 종료 시간 (HH:mm)
+  address?: string; // 장소명
+  tags?: TagRegistReqDTO[]; // 태그 라벨 목록
+}
+
+interface PlanFormDraft {
+  planNm: string;
+  categoryNum?: number;
+  startTime?: string;
+  endTime?: string;
+  regionRegistReqDTOList?: RegionRegistReqDTO[];
+  planTagRegistReqDTOList?: TagRegistReqDTO[];
 }
 
 export const usePlanFormModal = (
@@ -64,7 +74,7 @@ export const usePlanFormModal = (
 ) => {
   // --- 전역 모달 스토어 (유효성 검증 피드백용) ---
   const { openConfirmModal } = useConfirmModalStore(); // 확인/취소 2버튼 모달
-  const { openAlertModal } = useAlertModalStore();     // 확인 1버튼 모달
+  const { openAlertModal } = useAlertModalStore(); // 확인 1버튼 모달
 
   // --- 이전 페이지(SelectLocationPage)에서 선택한 지역 목록 ---
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
@@ -75,7 +85,7 @@ export const usePlanFormModal = (
   // ============================================
   // PlanFormModal 상태
   // ============================================
-  const [isPlanFormOpen, setIsPlanFormOpen] = useState(false);  // 폼 모달 열림 여부
+  const [isPlanFormOpen, setIsPlanFormOpen] = useState(false); // 폼 모달 열림 여부
   const [draft, setDraft] = useState<PlanFormDraft | null>(null); // 작성 중인 임시 데이터
   const [editTargetId, setEditTargetId] = useState<string | number | null>(
     null // null이면 Create 모드, 값이 있으면 해당 id의 카드를 수정하는 Edit 모드
@@ -87,15 +97,22 @@ export const usePlanFormModal = (
   // "+일정 추가" 버튼 → 카테고리 목록 표시 → 항목 선택 → PlanFormModal 열기
   // ============================================
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [tagOptions, setTagOptions] = useState<TagRegistResDTO[]>([]);
 
   /** "+일정 추가" 버튼 클릭 */
   const handleAddPlan = () => setIsCategoryOpen(true);
 
   /** 카테고리 항목 선택 → 일정 이름을 draft에 저장하고 PlanFormModal 열기 */
   const handleCategorySelect = (selected: SelectedCategoryItemType) => {
+    const categoryNum = selected.category.categoryNum;
+
     setDraft({ planNm: selected.option.itemNm });
     setIsCategoryOpen(false);
     setIsPlanFormOpen(true);
+
+    searchTags({ tagType: "P", categoryNum }).then((res) =>
+      setTagOptions(res.data ?? [])
+    );
   };
 
   // ============================================
@@ -220,7 +237,7 @@ export const usePlanFormModal = (
   // PlanFormModal 안의 "시간 추가" 클릭 시 열림
   // 결과: DRAFT_ID면 draft에, 아니면 해당 카드에 직접 반영
   // ============================================
-  const [isTimeOpen, setIsTimeOpen] = useState(false);  // 시간 모달 열림 여부
+  const [isTimeOpen, setIsTimeOpen] = useState(false); // 시간 모달 열림 여부
   const [timeTargetId, setTimeTargetId] = useState<string | number | null>(
     null // DRAFT_ID 또는 기존 카드 id
   );
@@ -272,7 +289,7 @@ export const usePlanFormModal = (
   // PlanFormModal 안의 "장소 추가" 클릭 시 열림
   // 선택지: 이전 페이지(SelectLocationPage)에서 고른 지역 목록
   // ============================================
-  const [isRegionOpen, setIsRegionOpen] = useState(false);  // 장소 모달 열림 여부
+  const [isRegionOpen, setIsRegionOpen] = useState(false); // 장소 모달 열림 여부
   const [regionTargetId, setRegionTargetId] = useState<string | number | null>(
     null // DRAFT_ID 또는 기존 카드 id
   );
@@ -323,9 +340,9 @@ export const usePlanFormModal = (
   const [isTagOpen, setIsTagOpen] = useState(false);
 
   /** 태그 모달에서 "확인" → 선택한 태그를 draft에 반영 */
-  const handleTagConfirm = (tags: TagOption[]) => {
+  const handleTagConfirm = (tags: TagRegistResDTO[]) => {
     setDraft((prev) =>
-      prev ? { ...prev, tags: tags.map((t) => t.label) } : null
+      prev ? { ...prev, planTagRegistReqDTOList: tags } : null
     );
     setIsTagOpen(false);
   };
@@ -390,9 +407,9 @@ export const usePlanFormModal = (
     (r) => r.label === regionEditTarget?.location
   )?.id;
 
-  // 태그 모달 초기값: draft의 태그 라벨 → TAG_OPTIONS에서 id 찾기
-  const initialTagIds = draft?.tags
-    ? TAG_OPTIONS.filter((t) => draft.tags!.includes(t.label)).map((t) => t.id)
+  // 태그 모달 초기값: draft의 태그 라벨 → tagOptions에서 tagNm 찾기
+  const initialTagIds = draft?.planTagRegistReqDTOList
+    ? draft.planTagRegistReqDTOList.map((t) => t.tagNum)
     : [];
 
   /**
@@ -477,7 +494,7 @@ export const usePlanFormModal = (
     /** 태그 선택 모달 props */
     tagModalProps: {
       isOpen: isTagOpen,
-      tags: TAG_OPTIONS,
+      tags: tagOptions,
       initialSelectedIds: initialTagIds,
       onConfirm: handleTagConfirm,
       onCancel: handleTagCancel,
