@@ -40,7 +40,7 @@ export const createSchedule = async (data: ScheduleRegistReqDTO) => {
 
 /** 일정 저장 (최종 저장) */
 export const saveSchedule = async (data: ScheduleRegistResDTO) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.SCHEDULE.SAVE,
     data
   );
