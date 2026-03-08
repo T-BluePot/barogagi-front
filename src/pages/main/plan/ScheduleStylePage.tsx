@@ -19,7 +19,7 @@ import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 const ScheduleStylePage = () => {
   const navigate = useNavigate();
-  const { setDraft } = useScheduleDraftStore();
+  const { setDraft, draft } = useScheduleDraftStore();
 
   const [styleTags, setStyleTags] = useState<TagRegistReqDTO[]>([]);
   const [actives, setActives] = useState<ActiveMap>({});
@@ -27,8 +27,18 @@ const ScheduleStylePage = () => {
   useEffect(() => {
     const fetchTags = async () => {
       const res = await searchTags({ tagType: "S", categoryNum: null });
-      setStyleTags(res.data ?? []);
-      console.log("태그 응답값:", res);
+      const tags = res.data ?? [];
+      setStyleTags(tags);
+
+      // 태그 목록 로드 후 store에 저장된 선택값 반영
+      const savedTagNums = new Set(
+        draft.scheduleTagRegistReqDTOList.map((t) => t.tagNum)
+      );
+      const initialActives: ActiveMap = {};
+      tags.forEach((tag) => {
+        initialActives[tag.tagNum] = savedTagNums.has(tag.tagNum);
+      });
+      setActives(initialActives);
     };
 
     fetchTags();
@@ -45,8 +55,9 @@ const ScheduleStylePage = () => {
   }, [actives]);
 
   // 여행 참고사항 입력값 상태
-  const [scheduleNotes, setScheduleNotes] = useState<string>("");
-
+  const [scheduleNotes, setScheduleNotes] = useState<string>(
+    draft.comment ?? "" // ← store에서 초기값
+  );
   return (
     <div className="flex flex-col w-full h-full bg-gray-white">
       <div className="flex flex-col">
