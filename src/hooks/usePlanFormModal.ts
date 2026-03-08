@@ -192,7 +192,7 @@ export const usePlanFormModal = (
       updateAIPlan(editTargetId, {
         startTime: draft.startTime,
         endTime: draft.endTime,
-        regionRegistReqDTOList: draft.regionRegistReqDTOList,
+        regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
         planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
       });
       setItems((prev) =>
@@ -220,7 +220,7 @@ export const usePlanFormModal = (
         categoryNum: draft.categoryNum,
         itemNum: draft.itemNum,
         isRandomCategory,
-        regionRegistReqDTOList: draft.regionRegistReqDTOList,
+        regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
         planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
       });
       setItems((prev) => [
@@ -427,6 +427,9 @@ export const usePlanFormModal = (
       isOpen: isCategoryOpen,
       onClose: () => setIsCategoryOpen(false),
       onSelectOption: handleCategorySelect,
+      onClickAction: () => {
+        // TODO: 직접 등록하기 로직 실행
+      },
     },
     planFormModalProps: {
       action: {

@@ -46,13 +46,8 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
     endTime: plan.endTime,
     itemNum: plan.itemNum,
     isRandomCategory: plan.isRandomCategory,
-    // regionNm 필드 제거 (서버 요청 DTO에는 필요 없음)
-    regionRegistReqDTOList: plan.regionRegistReqDTOList?.map((r) => ({
+    regionRegistReqDTOList: (plan.regionRegistReqDTOList ?? []).map((r) => ({
       regionNum: r.regionNum,
-      regionLevel1: r.regionLevel1,
-      regionLevel2: r.regionLevel2,
-      regionLevel3: r.regionLevel3,
-      regionLevel4: r.regionLevel4,
     })),
     isUserAdded: plan.isUserAdded,
   };
@@ -66,7 +61,7 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
   if (plan.source === "AI") {
     return {
       ...common,
-      planTagRegistReqDTOList: plan.planTagRegistReqDTOList,
+      planTagRegistReqDTOList: plan.planTagRegistReqDTOList ?? [],
     };
   }
 
@@ -288,10 +283,10 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
       buildRequest: () => {
         const { draft } = get();
 
-        const scheduleNm = (draft.scheduleNm ?? "").trim();
-        const startDate = (draft.startDate ?? "").trim();
-        const endDate = (draft.endDate ?? "").trim();
-        const comment = (draft.comment ?? "").trim();
+        const scheduleNm = draft.scheduleNm ?? "";
+        const startDate = draft.startDate ?? "";
+        const endDate = draft.endDate ?? "";
+        const comment = draft.comment ?? "";
 
         if (!scheduleNm) throw new Error("일정명이 필요합니다.");
         if (!startDate) throw new Error("시작 날짜가 필요합니다.");
