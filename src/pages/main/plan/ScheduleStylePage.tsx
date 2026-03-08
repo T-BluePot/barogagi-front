@@ -15,6 +15,8 @@ import Button from "@/components/common/buttons/CommonButton";
 // === server ===
 import { searchTags } from "@/api/queries";
 import type { TagRegistReqDTO } from "@/api/types";
+import { generateScheduleNm } from "@/utils/main/plan/generateScheduleNm";
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 const ScheduleStylePage = () => {
@@ -58,6 +60,15 @@ const ScheduleStylePage = () => {
   const [scheduleNotes, setScheduleNotes] = useState<string>(
     draft.comment ?? "" // ← store에서 초기값
   );
+
+  // === 추천 알정 생성 ===
+  const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
+
+  const handleNext = () => {
+    setDraft({ scheduleNm: generateScheduleNm(selectedRegions) });
+    navigate(ROUTES.PLAN.CREATE);
+  };
+
   return (
     <div className="flex flex-col w-full h-full bg-gray-white">
       <div className="flex flex-col">
@@ -77,10 +88,7 @@ const ScheduleStylePage = () => {
         <Button
           label={SCHEDULE_STYLE_TEXT.NEXT_BUTTON}
           isDisabled={isAllInactive(actives)}
-          onClick={() => {
-            // 추후 선택된 일정 넘기기 로직 추가
-            navigate(ROUTES.PLAN.CREATE);
-          }}
+          onClick={handleNext}
         />
       </div>
     </div>
