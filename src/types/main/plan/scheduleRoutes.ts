@@ -1,5 +1,4 @@
-import type { PlanDataProps } from "./planListTypes";
-
+import type { PlanRegistResDTO } from "@/api/types";
 /**
  * 사용 화면에 따른 타입 분기
  * create: 추천 루트(생성 완료) 화면
@@ -30,7 +29,7 @@ interface CreateFooterProps {
 // 공통 부분
 interface ScheduleRoutesContentBase {
   header: ContentHeaderProps;
-  plans: PlanDataProps[];
+  plans: PlanRegistResDTO[];
 }
 
 // create 화면: 편집 불가 + 일정 완성 푸터
