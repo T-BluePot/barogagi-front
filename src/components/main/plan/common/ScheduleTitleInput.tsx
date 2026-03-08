@@ -29,17 +29,16 @@ const ScheduleTitleInput = ({
       ref={wrapperRef}
       className="relative flex w-full h-12 justify-between items-center px-1 py-2 border-b border-gray-40 focus:outline-none"
       onBlur={(e) => {
-        // 포커스가 벗어났을 때 (단, 내부의 다른 요소로 이동하는 경우는 제외)
         const relatedTarget = e.relatedTarget as Node | null;
-
-        if (relatedTarget && wrapperRef.current?.contains(relatedTarget)) {
-          // 포커스가 내부의 다른 요소로 이동한 경우는 무시
+        if (relatedTarget && wrapperRef.current?.contains(relatedTarget))
           return;
-        }
-        // 사용자가 일정명을 비우지 않도록 기본값 설정
-        if (scheduleName.trim() === "") {
-          setScheduleName(ROUTES_CREATE_TEXT.HEADER.DEFAULT_SCHEDULE_NAME);
-        }
+
+        const finalName =
+          scheduleName.trim() === ""
+            ? ROUTES_CREATE_TEXT.HEADER.DEFAULT_SCHEDULE_NAME
+            : scheduleName;
+
+        setScheduleName(finalName);
         setEditMode(false);
       }}
     >
