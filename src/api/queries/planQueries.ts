@@ -33,7 +33,8 @@ export const getScheduleDetail = async (scheduleNum: number) => {
 export const createSchedule = async (data: ScheduleRegistReqDTO) => {
   const response = await apiKeyHttp.post<BaseResponse<ScheduleRegistResDTO>>(
     ENDPOINTS.SCHEDULE.CREATE,
-    data
+    data,
+    { timeout: 60000 }
   );
   return response.data;
 };
