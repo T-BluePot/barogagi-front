@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleRoutesPageProps } from "@/types/main/plan/scheduleRoutes";
@@ -11,6 +13,7 @@ import {
 } from "@/utils/main/plan/filterList";
 import { usePlanEditStore } from "@/stores/planEditStore";
 
+import PageLoading from "@/components/layout/PageLoading";
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
@@ -18,25 +21,68 @@ import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 
 import { allSchedules } from "@/mock/schedules";
-import { mockPlans } from "@/mock/plans"; // 추후 실제 데이터로 변경
+import { mockPlans } from "@/mock/plans";
+
+// === server ===
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
+import { createSchedule } from "@/api/queries";
+import type { PlanRegistResDTO, ScheduleRegistResDTO } from "@/api/types";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
 
-  // --- 넘어온 화면 확인용
   const isCreate = variant === "create";
   const isDetail = variant === "detail";
 
-  const { id } = useParams<{ id: string }>(); // /plan/:id/detail 에서 사용
-  // 내 일정 페이지에서 넘어온 num 기반 필터된 plan 리스트
+  // ----- 일정 생성 로직 -----
+  const { buildRequest } = useScheduleDraftStore();
+  const hasFetched = useRef(false);
+
+  const [scheduleResult, setScheduleResult] =
+    useState<ScheduleRegistResDTO | null>(null);
+  const [createPlans, setCreatePlans] = useState<PlanRegistResDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isCreate) return;
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    const fetchCreateSchedule = async () => {
+      try {
+        const req = buildRequest();
+        const res = await createSchedule(req);
+        console.log("일정 생성 응답값 전체:", JSON.stringify(res, null, 2));
+        setScheduleResult(res.data);
+        setCreatePlans(res.data?.planRegistResDTOList ?? []);
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          toast.error(
+            err.response?.data?.message ?? "일정 생성에 실패했습니다."
+          );
+        } else if (err instanceof Error) {
+          toast.error(err.message);
+        } else {
+          toast("일정 생성에 실패했습니다.\n다시 시도해주세요");
+        }
+        navigate(-1);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCreateSchedule();
+  }, []);
+
+  const { id } = useParams<{ id: string }>();
 
   // ----- 헤더 영역 -----
   const [scheduleName, setScheduleName] = useState<string>("");
-  const [scheduleDate, setScheduleDate] = useState<Date>(new Date());
+  const [scheduleDate, setScheduleDate] = useState<string>("");
 
   const scheduleNum = id ? Number(id) : undefined;
 
-  // ----- 현재 페이지에서 사용할 plan 리스트: scheduleNum 기준 필터 -----
+  // ----- detail 모드 플랜 리스트 -----
   const plansForPage = filterPlansByScheduleNum(
     isDetail,
     mockPlans,
@@ -45,38 +91,35 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 일정 이름 / 날짜 초기 세팅 -----
   useEffect(() => {
-    // create 모드: 기본값 세팅
     if (!isDetail) {
-      setScheduleName("오늘의 일정");
-      setScheduleDate(new Date());
+      setScheduleName(scheduleResult?.scheduleNm ?? "생성된 일정");
+      setScheduleDate(scheduleResult?.startDate ?? "");
       return;
     }
 
-    // detail 모드인데 id가 없는 경우: 방어 코드
     if (!scheduleNum || Number.isNaN(scheduleNum)) {
       setScheduleName("오늘의 일정");
-      setScheduleDate(new Date());
+      setScheduleDate("");
       return;
     }
 
-    // allSchedules 에서 현재 schedule 찾기
     const currentSchedule = findScheduleByNum(allSchedules, scheduleNum);
 
     if (!currentSchedule) {
-      // 해당 schedule 이 없으면 기본값 사용
       setScheduleName("오늘의 일정");
-      setScheduleDate(new Date());
+      setScheduleDate("");
       return;
     }
 
-    // 찾은 schedule 기반으로 이름 / 날짜 세팅
     setScheduleName(currentSchedule.scheduleNm);
+    setScheduleDate(currentSchedule.startDate);
+  }, [isDetail, scheduleNum, scheduleResult]);
 
-    // startDate 를 Date 객체로 변환 (예: "2025-01-02")
-    setScheduleDate(new Date(currentSchedule.startDate));
-  }, [isDetail, scheduleNum]);
-
-  // ----- 일정 list 영역 -----
+  // scheduleName이 바뀔 때 scheduleResult도 동기화
+  const handleChangeScheduleName = (next: string) => {
+    setScheduleName(next);
+    setScheduleResult((prev) => (prev ? { ...prev, scheduleNm: next } : prev));
+  };
 
   // ----- 일정 삭제하기 modal -----
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
@@ -100,34 +143,23 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const target = findPlanByNum(plansForPage, planNum);
     if (!target) return;
 
-    // 서버에서 받은 원본 데이터를 기반으로 "초기 드래프트" 생성
     setDraft({
-      planNum: target.plan.planNum, // 대표 식별자 (PK)
-
-      // Plan 섹션
+      planNum: target.plan.planNum,
       plan: {
         planNm: target.plan.planNm,
         startTime: target.plan.startTime,
         endTime: target.plan.endTime,
       },
-
-      // Place 섹션
       place: {
-        placeNum: target.place.placeNum, // FK
-        placeNm: target.place.regionNm, // UI 표시용 장소명
-        address: target.place.address, // UI 표시용 주소
+        placeNum: target.place.placeNum,
+        placeNm: target.place.regionNm,
+        address: target.place.address,
       },
-
-      // Tags 섹션 필요 시 아래 활성화
-      // tags: {
-      //   selectedTagNums: target.tags.map(t => t.tagNum),
-      // },
     });
 
     setIsEditModalOpen(true);
   };
 
-  // 컴포넌트 내부에서 사용할 메모 저장 변수
   const [planNotes, setPlanNotes] = useState<PlanNoteMap>({});
 
   const handleChangeNote = (planNum: number, nextValue: string) => {
@@ -139,29 +171,34 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 일정 confirm -----
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
+
+  // ----- 로딩 중 -----
+  if (isCreate && isLoading) {
+    return (
+      <PageLoading
+        message="AI가 일정을 생성하고 있어요. 잠시만 기다려주세요"
+        isHeaderDark={false}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-5">
-      {/* 일정 생성 모달 */}
       <CreateScheduleModal
         isConfirmOpen={isCreateModalOpen}
         onConfirmCancel={handleCloseCreateModal}
         onConfirmConfirm={() => {
-          // 일정 생성 API 호출
           handleCloseCreateModal();
           navigate(ROUTES.PLAN.LIST);
         }}
       />
-      {/* 팝메뉴- 일정 수정 및 삭제 모달 */}
 
       {editDraft && (
         <PlanFormModal
           action={{
             isOpen: isEditModalOpen,
             onClose: () => {
-              // 서버 연동 시 변경사항 저장 로직 추가
               setIsEditModalOpen(false);
               clearDraft();
             },
@@ -170,7 +207,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           }}
           info={{
             mode: "Edit",
-            // --- 일정 기본 정보 ---
             planNum: editDraft.planNum,
             planNm: editDraft.plan.planNm,
             startTime: editDraft.plan.startTime,
@@ -178,7 +214,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             address: editDraft.place.address,
             onClickAddress: () => navigate("search"),
             onClickTime: () => {},
-            // --- 일정 노트 아이템 관련 ---
             note: planNotes[editDraft.planNum],
             noteValue: planNotes[editDraft.planNum] ?? "",
             onChangeNote: (next: string) =>
@@ -186,25 +221,24 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           }}
         />
       )}
+
       <DeletePlanModal
         isOpen={isDeleteModalOpen}
         onClickCancel={handleCloseDeleteModal}
         onClickConfirm={() => {
-          // TODO: deletePlanNum을 사용해서 서버 삭제 API 호출
           console.log("삭제할 일정:", deletePlanNum);
           handleCloseDeleteModal();
         }}
       />
-      {/* 공통 콘텐츠 영역 */}
+
       {isCreate && (
         <ScheduleRoutesContent
           header={{
             scheduleDate,
             scheduleName,
-            onChangeScheduleName: setScheduleName,
+            onChangeScheduleName: handleChangeScheduleName,
           }}
-          plans={plansForPage}
-          // isEditable false → create 모드로 동작
+          plans={createPlans}
           isEditable={false}
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
@@ -219,13 +253,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             onChangeScheduleName: setScheduleName,
           }}
           plans={plansForPage}
-          // isEditable true → detail 모드로 동작: popMenu 연동
           isEditable={isDetail}
           onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
         />
       )}
-      {/* 자식 검색 라우트 */}
       <Outlet />
     </div>
   );
