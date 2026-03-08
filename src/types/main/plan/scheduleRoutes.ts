@@ -11,7 +11,7 @@ export type Variant = "create" | "detail";
 
 // 헤더 정보
 interface ContentHeaderProps {
-  scheduleDate: Date;
+  scheduleDate: string;
   scheduleName: string;
   onChangeScheduleName: (next: string) => void;
 }
@@ -41,8 +41,7 @@ interface ScheduleRoutesContentCreate extends ScheduleRoutesContentBase {
 
 // detail 화면: 편집 가능 + 액션 필수
 interface ScheduleRoutesContentDetail
-  extends ScheduleRoutesContentBase,
-    EditActionsProps {
+  extends ScheduleRoutesContentBase, EditActionsProps {
   isEditable: true;
   footer?: never;
 }

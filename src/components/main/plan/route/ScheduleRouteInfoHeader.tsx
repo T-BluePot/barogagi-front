@@ -1,5 +1,4 @@
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { formatDate } from "@/utils/date";
 
 import ScheduleTitleInput from "../common/ScheduleTitleInput";
 
@@ -10,7 +9,7 @@ interface InfoHeaderProps {
 
   scheduleName: string; // 일정명
   setScheduleName: (name: string) => void; // 일정명 변경 함수
-  scheduleDate: Date; // 일정 날짜
+  scheduleDate: string; // 일정 날짜
 }
 
 const ScheduleRouteInfoHeader = ({
@@ -24,9 +23,7 @@ const ScheduleRouteInfoHeader = ({
     <header className="flex flex-col w-full">
       {/* 날짜 영역 */}
       <div className="flex px-1 w-full justify-between">
-        <span className="typo-subtitle text-gray-80">
-          {formatDate(scheduleDate)}
-        </span>
+        <span className="typo-subtitle text-gray-80">{scheduleDate}</span>
       </div>
       {/* 일정명 영역 */}
       <div className="flex flex-col w-full h-12 pb-[1px] items-baseline gap-2">
