@@ -27,6 +27,7 @@ import { mockPlans } from "@/mock/plans";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 import { createSchedule } from "@/api/queries";
 import type { PlanRegistResDTO, ScheduleRegistResDTO } from "@/api/types";
+import { saveSchedule } from "@/api/queries";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
@@ -65,6 +66,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         } else {
           toast("일정 생성에 실패했습니다.\n다시 시도해주세요");
         }
+        console.error(err);
         navigate(-1);
       } finally {
         setIsLoading(false);
@@ -173,6 +175,30 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
 
+  // ----- 일정 저장 로직 -----
+  const handleSaveSchedule = async () => {
+    if (!scheduleResult) return;
+    console.log("저장할 scheduleNm:", scheduleResult.scheduleNm);
+
+    try {
+      const res = await saveSchedule(scheduleResult);
+      if (res.code !== "S204" && res.code !== "S203") {
+        toast(res.message ?? "일정 저장에 실패했습니다.");
+        return;
+      }
+      handleCloseCreateModal();
+      navigate(ROUTES.PLAN.LIST);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        toast(err.response?.data?.message ?? "일정 저장에 실패했습니다.");
+      } else if (err instanceof Error) {
+        toast(err.message);
+      } else {
+        toast("일정 저장에 실패했습니다.\n다시 시도해주세요");
+      }
+    }
+  };
+
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
     return (
@@ -188,10 +214,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       <CreateScheduleModal
         isConfirmOpen={isCreateModalOpen}
         onConfirmCancel={handleCloseCreateModal}
-        onConfirmConfirm={() => {
-          handleCloseCreateModal();
-          navigate(ROUTES.PLAN.LIST);
-        }}
+        onConfirmConfirm={handleSaveSchedule}
       />
 
       {editDraft && (
