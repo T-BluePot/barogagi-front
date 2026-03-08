@@ -98,18 +98,15 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
         />
       </div>
       <div className="flex flex-col flex-1 w-full min-h-0 p-6 overflow-y-auto gap-4 hide-scrollbar">
-        {plans.map((plan) => {
-          const planNum = plan.plan.planNum;
+        {plans.map((plan, index) => {
+          const planNum = plan.planNum ?? index; // planNum이 null일 수 있으니 index fallback
           const isOpen = openPlanNum === planNum;
 
           if (isEditable) {
             return (
               <PlanDetailCard
                 key={planNum}
-                plan={plan.plan}
-                place={plan.place}
-                tags={plan.tags}
-                src={plan.src}
+                plan={plan}
                 isOpen={isOpen}
                 onToggleOpen={() => handleToggleOpen(planNum)}
                 mode="detail"
@@ -121,10 +118,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           return (
             <PlanDetailCard
               key={planNum}
-              plan={plan.plan}
-              place={plan.place}
-              tags={plan.tags}
-              src={plan.src}
+              plan={plan}
               isOpen={isOpen}
               onToggleOpen={() => handleToggleOpen(planNum)}
               mode="create"
