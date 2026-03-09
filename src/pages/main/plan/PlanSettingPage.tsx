@@ -67,7 +67,10 @@ export const PlanSettingPage = () => {
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
 
   useEffect(() => {
-    if (storeDraft.planRegistReqDTOList.length === 0) return;
+    if (storeDraft.planRegistReqDTOList.length === 0) {
+      setItems([]);
+      return;
+    }
 
     setItems(
       storeDraft.planRegistReqDTOList.map((plan, index) => ({
@@ -88,7 +91,7 @@ export const PlanSettingPage = () => {
         })),
       }))
     );
-  }, [categoryMap]); // categoryMap 준비되면 items 초기화
+  }, [categoryMap, storeDraft.planRegistReqDTOList, selectedRegions]); // categoryMap 준비되면 items 초기화
 
   const { setPlanList } = useScheduleDraftStore();
 
