@@ -1,4 +1,4 @@
-import { ActionBottomModal } from "@/components/common/modal/bottom-modal/ActionBottomModal ";
+import { ActionBottomModal } from "@/components/common/modal/bottom-modal/ActionBottomModal";
 import { PlanCategoryBottomModalContent } from "./content/PlanCategoryBottomModalContent";
 import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
 
