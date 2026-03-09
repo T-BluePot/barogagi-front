@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+
+// === component ===
 import { PlanSettingForm } from "@/components/main/plan/PlanSettingForm";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 import type { PlanData } from "@/components/main/plan/PlanCard";
@@ -9,9 +12,18 @@ import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/Sele
 import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/SelectRegionConfirmModal";
 import { SelectTagConfirmModal } from "@/components/main/plan/common/modal/SelectTagConfirmModal";
 import Button from "@/components/common/buttons/CommonButton";
-import { ROUTES } from "@/constants/routes";
+
+// === hooks & utils ===
 import { usePlanDelete } from "@/hooks/usePlanDelete";
 import { usePlanFormModal } from "@/hooks/usePlanFormModal";
+import { hhmmToMinutes, minutesToHHmm } from "@/hooks/usePlanTimeValidation";
+
+// === server ===
+import { getScheduleCategories } from "@/api/queries";
+import type { ScheduleCategoryResponseType } from "@/api/types";
+import type { PlanDraftType } from "@/types/api/scheduleTypes";
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 /**
  * PlanSettingPage - 일정 구성 페이지
@@ -29,7 +41,96 @@ import { usePlanFormModal } from "@/hooks/usePlanFormModal";
  */
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
+  const { draft: storeDraft } = useScheduleDraftStore();
+
+  // 카테고리 맵 상태
+  const [categoryMap, setCategoryMap] = useState<Record<number, string>>({});
+
+  // 마운트 시 카테고리 목록 불러오기
+  useEffect(() => {
+    getScheduleCategories().then((res) => {
+      const map = (res.data ?? []).reduce(
+        (acc, cat: ScheduleCategoryResponseType) => {
+          acc[cat.categoryNum] = cat.categoryNm;
+          return acc;
+        },
+        {} as Record<number, string>
+      );
+      setCategoryMap(map);
+    });
+  }, []);
+
+  // items 초기화 - categoryMap 없을 땐 빈 배열, 준비되면 store에서 파생
   const [items, setItems] = useState<PlanData[]>([]);
+
+  // 지역명 매칭
+  const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
+
+  useEffect(() => {
+    if (storeDraft.planRegistReqDTOList.length === 0) {
+      setItems([]);
+      return;
+    }
+
+    setItems(
+      storeDraft.planRegistReqDTOList.map((plan, index) => ({
+        id: index,
+        title: categoryMap[plan.categoryNum ?? 0] ?? "일정",
+        startTime: plan.startTime,
+        endTime: plan.endTime,
+        location: plan.regionRegistReqDTOList?.[0]?.regionNum
+          ? selectedRegions.find(
+              (r) => r.regionNum === plan.regionRegistReqDTOList![0].regionNum
+            )?.regionNm
+          : undefined,
+        categoryNum: plan.categoryNum,
+        itemNum: plan.itemNum,
+        planTagRegistReqDTOList: plan.planTagRegistReqDTOList?.map((t) => ({
+          tagNum: t.tagNum,
+          tagNm: t.tagNm ?? "", // undefined 방지
+        })),
+      }))
+    );
+  }, [categoryMap, storeDraft.planRegistReqDTOList, selectedRegions]); // categoryMap 준비되면 items 초기화
+
+  const { setPlanList } = useScheduleDraftStore();
+
+  const handleOrderChange = (newItems: PlanData[]) => {
+    const currentPlans =
+      useScheduleDraftStore.getState().draft.planRegistReqDTOList;
+
+    // 1. 각 카드의 duration 계산
+    const durations = newItems.map((item) => {
+      if (!item.startTime || !item.endTime) return null;
+      return hhmmToMinutes(item.endTime) - hhmmToMinutes(item.startTime);
+    });
+
+    // 2. 첫 번째 카드의 시작 시간 기준으로 순서대로 재배치
+    let cursor = newItems[0]?.startTime
+      ? hhmmToMinutes(newItems[0].startTime)
+      : null;
+
+    const reindexed = newItems.map((item, i) => {
+      if (cursor === null || durations[i] === null) {
+        return { ...item, id: i };
+      }
+      const newStart = minutesToHHmm(cursor);
+      const newEnd = minutesToHHmm(cursor + durations[i]!);
+      cursor += durations[i]!;
+      return { ...item, id: i, startTime: newStart, endTime: newEnd };
+    });
+
+    // 3. store도 같이 업데이트
+    const reorderedPlans = newItems.map((item) => currentPlans[item.id]);
+    const updatedPlans = reorderedPlans.map((plan, i) => ({
+      ...plan,
+      startTime: reindexed[i].startTime ?? plan.startTime, // undefined면 기존 값 유지
+      endTime: reindexed[i].endTime ?? plan.endTime,
+    })) as PlanDraftType[];
+
+    setItems(reindexed);
+    setPlanList(updatedPlans);
+  };
 
   const { handleDeleteClick, deleteModalProps } = usePlanDelete(setItems);
   const {
@@ -48,7 +149,7 @@ export const PlanSettingPage = () => {
         <PlanSettingForm
           initialItems={items}
           onAddPlan={formHandlers.handleAddPlan}
-          onOrderChange={setItems}
+          onOrderChange={handleOrderChange}
           onCardClick={formHandlers.handleCardClick}
           onDeleteClick={handleDeleteClick}
           onTimeClick={formHandlers.handleTimeClick}

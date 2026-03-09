@@ -13,6 +13,10 @@ import AddScheduleButton from "@/components/main/plan/main/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+import { useConfirmModalStore } from "@/stores/confirmModalStore";
+
 const ScheduleListPage = () => {
   const navigate = useNavigate();
 
@@ -61,6 +65,42 @@ const ScheduleListPage = () => {
     handleCloseDeleteModal();
   };
 
+  // === 일정 생성 관련 ===
+  const { draft, reset } = useScheduleDraftStore();
+  const { clearRegions } = useRegionSelectionStore();
+  const { openConfirmModal } = useConfirmModalStore();
+
+  // store 값 존재 여부
+  const hasStoreDraft =
+    draft.planRegistReqDTOList.length > 0 ||
+    !!draft.scheduleNm ||
+    !!draft.startDate ||
+    !!draft.endDate ||
+    !!draft.comment ||
+    draft.scheduleTagRegistReqDTOList.length > 0 ||
+    draft.scheduleRegionRegistReqDTOList.length > 0;
+
+  const handleAddSchedule = () => {
+    if (hasStoreDraft) {
+      openConfirmModal(
+        {
+          title: "이어서 만드시겠습니까?",
+          content: "이전에 작성 중인 일정이 있습니다.\n이어서 만드시겠습니까?",
+          confirmLabel: "이어하기",
+          cancelLabel: "새로 만들기",
+        },
+        () => navigate(ROUTES.PLAN.DATE), // 확인(이어서) → 그냥 이동
+        () => {
+          reset(); // scheduleStore 초기화
+          clearRegions(); // regionSelectionStore 초기화
+          navigate(ROUTES.PLAN.DATE);
+        } // 취소(새로 만들기) → reset 후 이동
+      );
+    } else {
+      navigate(ROUTES.PLAN.DATE);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6 h-full">
       <DeleteScheduleModal
@@ -93,7 +133,7 @@ const ScheduleListPage = () => {
         )}
       </div>
       <div className="fixed bottom-20 right-6 z-35">
-        <AddScheduleButton onAddSchedule={() => navigate(ROUTES.PLAN.DATE)} />
+        <AddScheduleButton onAddSchedule={handleAddSchedule} />
       </div>
     </div>
   );

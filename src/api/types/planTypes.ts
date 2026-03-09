@@ -1,18 +1,22 @@
-import type { PlanSource } from "@/types/api/scheduleTypes";
+import type { PlanSource, TagType } from "@/types/api/scheduleTypes";
 
 /**
  * 일정(Schedule) 관련 API 타입 정의
  */
 
 /** 태그 정보 */
-export interface TagRegistReqDTO {
+export interface TagReqType {
+  tagType: TagType;
+  categoryNum: number | null;
+}
+export interface TagRegistResDTO {
   tagNum: number;
   tagNm: string;
 }
 
-export interface TagRegistResDTO {
+export interface TagRegistReqDTO {
   tagNum: number;
-  tagNm: string;
+  tagNm?: string;
 }
 
 /** 지역 정보 */
@@ -52,6 +56,7 @@ export interface ScheduleRegistReqDTO {
   endDate: string;
   comment?: string;
   scheduleTagRegistReqDTOList?: TagRegistReqDTO[];
+  scheduleRegionRegistReqDTOList?: RegionRegistReqDTO[];
   planRegistReqDTOList?: PlanRegistReqDTO[];
 }
 

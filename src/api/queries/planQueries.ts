@@ -2,7 +2,7 @@
  * 일정(Schedule) 관련 API 요청 함수
  */
 
-import { http } from "../client";
+import { apiKeyHttp, http } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import type {
   BaseResponse,
@@ -31,16 +31,17 @@ export const getScheduleDetail = async (scheduleNum: number) => {
 
 /** 일정 생성 (AI 생성 등 초기 생성) */
 export const createSchedule = async (data: ScheduleRegistReqDTO) => {
-  const response = await http.post<BaseResponse<ScheduleRegistResDTO>>(
+  const response = await apiKeyHttp.post<BaseResponse<ScheduleRegistResDTO>>(
     ENDPOINTS.SCHEDULE.CREATE,
-    data
+    data,
+    { timeout: 60000 }
   );
   return response.data;
 };
 
 /** 일정 저장 (최종 저장) */
 export const saveSchedule = async (data: ScheduleRegistResDTO) => {
-  const response = await http.post<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.SCHEDULE.SAVE,
     data
   );

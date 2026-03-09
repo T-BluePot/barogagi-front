@@ -20,10 +20,10 @@ import PlanCard, { type PlanData } from "./PlanCard";
 
 interface SortableCardProps {
   data: PlanData;
-  onCardClick?: (id: string | number) => void;
-  onDeleteClick?: (id: string | number) => void;
-  onTimeClick?: (id: string | number) => void;
-  onLocationClick?: (id: string | number) => void;
+  onCardClick?: (id: number) => void;
+  onDeleteClick?: (id: number) => void;
+  onTimeClick?: (id: number) => void;
+  onLocationClick?: (id: number) => void;
 }
 
 /** 드래그 가능한 개별 카드 래퍼 */
@@ -67,10 +67,10 @@ const SortableCard = ({
 interface PlanCardListProps {
   items: PlanData[];
   onOrderChange?: (items: PlanData[]) => void;
-  onCardClick?: (id: string | number) => void;
-  onDeleteClick?: (id: string | number) => void;
-  onTimeClick?: (id: string | number) => void;
-  onLocationClick?: (id: string | number) => void;
+  onCardClick?: (id: number) => void;
+  onDeleteClick?: (id: number) => void;
+  onTimeClick?: (id: number) => void;
+  onLocationClick?: (id: number) => void;
 }
 
 /**

@@ -35,6 +35,9 @@ export type BottomModalHeaderProps = TitleHeaderProps | DetailHeaderProps;
 export type CommonBottomModalProps = BottomModalLayoutProps &
   Omit<TitleHeaderProps, "variant">;
 
+export type ActionBottomModalProps = BottomModalLayoutProps &
+  Omit<TitleWithActionHeaderProps, "variant">;
+
 type ActionOrDetailHeaderCore = Omit<DetailHeaderProps, "variant">;
 
 /* ConfirmBottomModal 전용 props */

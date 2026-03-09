@@ -1,3 +1,5 @@
+import type { TagRegistResDTO } from "@/api/types";
+
 /**
  * 모달 타입
  * Create: 일정 구성 화면
@@ -35,7 +37,7 @@ interface ModalBaseInfo {
  */
 interface CreateModalInfo extends ModalBaseInfo {
   mode: "Create"; // 식별자 필드
-  tags?: string[];
+  tags?: TagRegistResDTO[];
   onClickTags: () => void;
 }
 

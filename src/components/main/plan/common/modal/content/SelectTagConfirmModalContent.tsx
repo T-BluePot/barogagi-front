@@ -1,15 +1,11 @@
-import { useState } from "react";
-
-export interface TagOption {
-  id: string;
-  label: string;
-}
+import { useState, useEffect } from "react";
+import type { TagRegistResDTO } from "@/api/types";
 
 interface SelectTagConfirmModalContentProps {
-  tags: TagOption[];
-  initialSelectedIds?: string[];
+  tags: TagRegistResDTO[];
+  initialSelectedIds?: number[];
   maxSelection?: number;
-  onChangeTags?: (tags: TagOption[]) => void;
+  onChangeTags?: (tags: TagRegistResDTO[]) => void;
 }
 
 export const SelectTagConfirmModalContent = ({
@@ -18,28 +14,30 @@ export const SelectTagConfirmModalContent = ({
   maxSelection,
   onChangeTags,
 }: SelectTagConfirmModalContentProps) => {
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(
     new Set(initialSelectedIds)
   );
 
-  const handleToggle = (tag: TagOption) => {
+  const handleToggle = (tag: TagRegistResDTO) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
 
-      if (next.has(tag.id)) {
-        next.delete(tag.id);
+      if (next.has(tag.tagNum)) {
+        next.delete(tag.tagNum);
       } else {
-        if (maxSelection && next.size >= maxSelection) {
-          return prev; // 최대 선택 수 초과 시 무시
-        }
-        next.add(tag.id);
+        if (maxSelection && next.size >= maxSelection) return prev;
+        next.add(tag.tagNum);
       }
 
-      const selectedTags = tags.filter((t) => next.has(t.id));
-      onChangeTags?.(selectedTags);
-      return next;
+      return next; // onChangeTags 제거
     });
   };
+
+  // selectedIds 바뀔 때마다 onChangeTags 호출
+  useEffect(() => {
+    const selectedTags = tags.filter((t) => selectedIds.has(t.tagNum));
+    onChangeTags?.(selectedTags);
+  }, [selectedIds, tags, onChangeTags]);
 
   return (
     <div className="flex flex-col items-center gap-4 py-4">
@@ -49,10 +47,10 @@ export const SelectTagConfirmModalContent = ({
       {/* 태그 목록 */}
       <div className="flex flex-wrap gap-2 justify-center px-2">
         {tags.map((tag) => {
-          const isSelected = selectedIds.has(tag.id);
+          const isSelected = selectedIds.has(tag.tagNum);
           return (
             <button
-              key={tag.id}
+              key={tag.tagNum}
               type="button"
               onClick={() => handleToggle(tag)}
               className={`px-4 py-2 rounded-full typo-body transition-colors ${
@@ -61,7 +59,7 @@ export const SelectTagConfirmModalContent = ({
                   : "bg-gray-10 text-gray-60"
               }`}
             >
-              {tag.label}
+              {tag.tagNm ?? ""}
             </button>
           );
         })}

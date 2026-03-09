@@ -22,6 +22,7 @@ type PlanDraftBaseType = {
   isRandomCategory?: "Y" | "N"; // 랜덤 카테고리 옵션
 
   regionRegistReqDTOList?: RegionRegistReqDTO[];
+  planNm?: string; // 일정명
 };
 
 /** 1) 서비스/AI 기반 플랜 */
@@ -73,6 +74,7 @@ export type ScheduleDraftType = {
   comment?: string;
 
   scheduleTagRegistReqDTOList: TagRegistReqDTO[];
+  scheduleRegionRegistReqDTOList: RegionRegistReqDTO[];
   planRegistReqDTOList: PlanDraftType[];
 };
 
@@ -81,3 +83,5 @@ export type SelectedCategoryItemType = {
   category: ScheduleCategoryResponseType; // 카테고리(탭)
   option: ScheduleCategoryItemResponseType; // 아이템(상세 옵션)
 };
+
+export type TagType = "S" | "P";

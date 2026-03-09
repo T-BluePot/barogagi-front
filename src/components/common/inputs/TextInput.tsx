@@ -8,6 +8,7 @@ interface TextInputProps {
   value?: string;
   onChange?: (value: string) => void;
   maxLength?: number;
+  onBlur?: (e: React.FocusEvent) => void;
 }
 
 const TextInput = ({
@@ -16,6 +17,7 @@ const TextInput = ({
   value,
   onChange,
   maxLength,
+  onBlur,
 }: TextInputProps) => {
   // 공통 스타일
   const baseClass =
@@ -33,6 +35,7 @@ const TextInput = ({
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         maxLength={maxLength}
+        onBlur={onBlur}
       />
     );
   }
@@ -47,6 +50,7 @@ const TextInput = ({
       value={value}
       onChange={(e) => onChange?.(e.target.value)}
       maxLength={maxLength}
+      onBlur={onBlur}
     />
   );
 };

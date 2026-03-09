@@ -11,10 +11,8 @@ const meta = {
   component: PlanDetailCard,
   tags: ["autodocs"],
   args: {
-    plan: mockPlans[0].plan,
-    place: mockPlans[0].place,
-    tags: mockPlans[0].tags,
-    src: mockPlans[0].src,
+    plan: mockPlans[0],
+    src: undefined,
   },
 } satisfies Meta<typeof PlanDetailCard>;
 

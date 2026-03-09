@@ -13,6 +13,7 @@ type RegionSelectionStore = {
   addRegion: (item: RegionSearchItemType) => {
     ok: boolean;
     reason?: "MAX" | "DUPLICATE";
+    next?: RegionSearchItemType[];
   };
 
   // 단건 제거
@@ -53,7 +54,7 @@ export const useRegionSelectionStore = create<RegionSelectionStore>()(
         }
 
         set({ selectedRegions: [...selectedRegions, item] });
-        return { ok: true };
+        return { ok: true, next: [...selectedRegions, item] };
       },
 
       removeRegionByNum: (regionNum) =>

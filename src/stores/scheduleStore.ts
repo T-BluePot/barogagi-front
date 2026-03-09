@@ -23,6 +23,7 @@ const initialDraft: ScheduleDraftType = {
   endDate: "",
   comment: "",
   scheduleTagRegistReqDTOList: [],
+  scheduleRegionRegistReqDTOList: [],
   planRegistReqDTOList: [],
 };
 
@@ -45,7 +46,9 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
     endTime: plan.endTime,
     itemNum: plan.itemNum,
     isRandomCategory: plan.isRandomCategory,
-    regionRegistReqDTOList: plan.regionRegistReqDTOList,
+    regionRegistReqDTOList: (plan.regionRegistReqDTOList ?? []).map((r) => ({
+      regionNum: r.regionNum,
+    })),
     isUserAdded: plan.isUserAdded,
   };
 
@@ -58,7 +61,9 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
   if (plan.source === "AI") {
     return {
       ...common,
-      planTagRegistReqDTOList: plan.planTagRegistReqDTOList,
+      planTagRegistReqDTOList: (plan.planTagRegistReqDTOList ?? []).map(
+        ({ tagNum }) => ({ tagNum })
+      ),
     };
   }
 
@@ -113,6 +118,9 @@ export type ScheduleDraftStore = {
 
   removePlan: (index: number) => void;
 
+  // plan 목록 교체 (드래그 앤 드롭 순서 변경용)
+  setPlanList: (plans: PlanDraftType[]) => void;
+
   // 서버 요청 DTO 생성
   buildRequest: () => ScheduleRegistReqDTO;
 
@@ -135,6 +143,9 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
             scheduleTagRegistReqDTOList:
               patch.scheduleTagRegistReqDTOList ??
               state.draft.scheduleTagRegistReqDTOList,
+            scheduleRegionRegistReqDTOList:
+              patch.scheduleRegionRegistReqDTOList ??
+              state.draft.scheduleRegionRegistReqDTOList,
           },
         })),
 
@@ -266,13 +277,18 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           };
         }),
 
+      setPlanList: (plans) =>
+        set((state) => ({
+          draft: { ...state.draft, planRegistReqDTOList: plans },
+        })),
+
       buildRequest: () => {
         const { draft } = get();
 
-        const scheduleNm = (draft.scheduleNm ?? "").trim();
-        const startDate = (draft.startDate ?? "").trim();
-        const endDate = (draft.endDate ?? "").trim();
-        const comment = (draft.comment ?? "").trim();
+        const scheduleNm = draft.scheduleNm ?? "";
+        const startDate = draft.startDate ?? "";
+        const endDate = draft.endDate ?? "";
+        const comment = draft.comment ?? "";
 
         if (!scheduleNm) throw new Error("일정명이 필요합니다.");
         if (!startDate) throw new Error("시작 날짜가 필요합니다.");
@@ -285,7 +301,10 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           startDate,
           endDate,
           comment: comment ? comment : undefined,
-          scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList,
+          scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList.map(
+            ({ tagNum }) => ({ tagNum })
+          ),
+          scheduleRegionRegistReqDTOList: draft.scheduleRegionRegistReqDTOList,
           planRegistReqDTOList: planReqList,
         };
 
@@ -304,3 +323,10 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
     }
   )
 );
+
+// store 파일 맨 아래에 추가
+if (import.meta.env.DEV) {
+  useScheduleDraftStore.subscribe((state) => {
+    console.log("[ScheduleDraftStore]", state.draft);
+  });
+}

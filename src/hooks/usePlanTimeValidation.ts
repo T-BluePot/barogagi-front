@@ -36,9 +36,18 @@ export interface TimeValidationResult {
  * "HH:mm" 문자열을 분(minute) 단위 숫자로 변환
  * @example "14:30" → 870
  */
-const hhmmToMinutes = (time: string): number => {
+export const hhmmToMinutes = (time: string): number => {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
+};
+
+// 분 → HH:mm 변환
+export const minutesToHHmm = (minutes: number): string => {
+  const h = Math.floor(minutes / 60)
+    .toString()
+    .padStart(2, "0");
+  const m = (minutes % 60).toString().padStart(2, "0");
+  return `${h}:${m}`;
 };
 
 /**
@@ -94,10 +103,10 @@ export const usePlanTimeValidation = (items: PlanData[]) => {
       insertIndex: number,
       excludeId?: string | number
     ): TimeValidationResult => {
-      // 자기 자신을 제외한 일정 목록 구성
-      const others = excludeId
-        ? items.filter((item) => item.id !== excludeId)
-        : [...items];
+      const others =
+        excludeId !== undefined
+          ? items.filter((_, i) => i !== insertIndex)
+          : [...items];
 
       const startMin = hhmmToMinutes(startTime);
       const endMin = hhmmToMinutes(endTime);

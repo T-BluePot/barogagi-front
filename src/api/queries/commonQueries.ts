@@ -5,7 +5,8 @@ import { apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 
 import type { BaseResponse, TermsProcessRequestType } from "../types";
-import type { TermsResponseType } from "../types";
+import type { TermsResponseType, TagReqType, TagRegistResDTO } from "../types";
+
 import type {
   ScheduleCategoryResponseType,
   ScheduleCategoryItemResponseType,
@@ -14,8 +15,8 @@ import type {
 import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
 
 // === Tag ===
-export const searchTags = async (data: unknown) => {
-  const response = await apiKeyHttp.post<BaseResponse<unknown>>(
+export const searchTags = async (data: TagReqType) => {
+  const response = await apiKeyHttp.post<BaseResponse<TagRegistResDTO[]>>(
     ENDPOINTS.TAG.SEARCH,
     data
   );
