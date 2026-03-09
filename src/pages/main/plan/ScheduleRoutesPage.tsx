@@ -41,6 +41,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   useEffect(() => {
     if (!isCreate) return;
 
+    const alreadyCalled = sessionStorage.getItem("schedule:creating");
+    if (alreadyCalled) return;
+    sessionStorage.setItem("schedule:creating", "true");
+
     let ignore = false;
 
     const fetchCreateSchedule = async () => {
