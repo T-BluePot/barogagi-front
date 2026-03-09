@@ -37,7 +37,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
 
   const handleMapClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (placeLink) window.open(placeLink, "_blank");
+    if (placeLink) window.open(placeLink, "_blank", "noopener,noreferrer");
   };
 
   const planTime = `${startTime} ~ ${endTime}`;
