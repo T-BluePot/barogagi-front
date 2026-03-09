@@ -6,11 +6,7 @@ import toast from "react-hot-toast";
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleRoutesPageProps } from "@/types/main/plan/scheduleRoutes";
 import type { PlanNoteMap } from "@/types/main/plan/bottom-modal/planFromTypes";
-import {
-  findScheduleByNum,
-  filterPlansByScheduleNum,
-  findPlanByNum,
-} from "@/utils/main/plan/filterList";
+
 import { usePlanEditStore } from "@/stores/planEditStore";
 
 import PageLoading from "@/components/layout/PageLoading";
@@ -19,9 +15,6 @@ import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesCo
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
-
-import { allSchedules } from "@/mock/schedules";
-import { mockPlans } from "@/mock/plans";
 
 // === server ===
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
@@ -92,11 +85,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const scheduleNum = id ? Number(id) : undefined;
 
   // ----- detail 모드 플랜 리스트 -----
-  const plansForPage = filterPlansByScheduleNum(
-    isDetail,
-    mockPlans,
-    scheduleNum
-  );
 
   // ----- 일정 이름 / 날짜 초기 세팅 -----
   useEffect(() => {
@@ -111,17 +99,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       setScheduleDate("");
       return;
     }
-
-    const currentSchedule = findScheduleByNum(allSchedules, scheduleNum);
-
-    if (!currentSchedule) {
-      setScheduleName("오늘의 일정");
-      setScheduleDate("");
-      return;
-    }
-
-    setScheduleName(currentSchedule.scheduleNm);
-    setScheduleDate(currentSchedule.startDate);
   }, [isDetail, scheduleNum, scheduleResult]);
 
   // scheduleName이 바뀔 때 scheduleResult도 동기화
@@ -146,25 +123,13 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 일정 수정하기 bottom modal -----
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const { draft: editDraft, setDraft, clearDraft } = usePlanEditStore();
+  const { draft: editDraft, clearDraft } = usePlanEditStore();
 
-  const handleRequestEdit = (planNum: number) => {
-    const target = findPlanByNum(plansForPage, planNum);
-    if (!target) return;
-
-    setDraft({
-      planNum: target.plan.planNum,
-      plan: {
-        planNm: target.plan.planNm,
-        startTime: target.plan.startTime,
-        endTime: target.plan.endTime,
-      },
-      place: {
-        placeNum: target.place.placeNum,
-        placeNm: target.place.regionNm,
-        address: target.place.address,
-      },
-    });
+  const handleRequestEdit = () => /**
+   * (planNum: number)
+   */ {
+    // TODO: 추후 선택된 plan의 Num을 연동
+    // - 기존 필터링 함수의 경우 서버 연동 시 필요 없는 부분이라 제외
 
     setIsEditModalOpen(true);
   };
@@ -286,7 +251,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             scheduleName,
             onChangeScheduleName: setScheduleName,
           }}
-          plans={plansForPage}
+          plans={[]}
           isEditable={isDetail}
           onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
