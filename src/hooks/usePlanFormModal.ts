@@ -184,8 +184,10 @@ export const usePlanFormModal = (
 
     // (3) 검증 통과
     if (draft && editTargetId !== null) {
-      // 기존 카드 업데이트
-      updateAIPlan(editTargetId, {
+      const targetIndex = items.findIndex((item) => item.id === editTargetId);
+      if (targetIndex === -1) return;
+
+      updateAIPlan(targetIndex, {
         startTime: draft.startTime,
         endTime: draft.endTime,
         regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
