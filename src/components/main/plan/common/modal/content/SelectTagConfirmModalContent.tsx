@@ -59,7 +59,7 @@ export const SelectTagConfirmModalContent = ({
                   : "bg-gray-10 text-gray-60"
               }`}
             >
-              {tag.tagNm}
+              {tag.tagNm ?? ""}
             </button>
           );
         })}
