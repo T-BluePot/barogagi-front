@@ -62,11 +62,7 @@ export const usePlanFormModal = (
   const { openAlertModal } = useAlertModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const { validatePlanTime } = usePlanTimeValidation(items);
-  const {
-    addAIPlan,
-    updateAIPlan,
-    draft: storeDraft,
-  } = useScheduleDraftStore();
+  const { addAIPlan, updateAIPlan } = useScheduleDraftStore();
 
   // ============================================
   // PlanFormModal 상태
@@ -212,7 +208,7 @@ export const usePlanFormModal = (
       );
     } else if (draft) {
       // 새 카드 추가
-      const newId = storeDraft.planRegistReqDTOList.length;
+      const newId = Date.now();
       const isRandomCategory = draft.itemNum === 1 ? "Y" : "N";
       addAIPlan({
         startTime: draft.startTime,
