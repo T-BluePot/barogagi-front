@@ -61,7 +61,9 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
   if (plan.source === "AI") {
     return {
       ...common,
-      planTagRegistReqDTOList: plan.planTagRegistReqDTOList ?? [],
+      planTagRegistReqDTOList: (plan.planTagRegistReqDTOList ?? []).map(
+        ({ tagNum }) => ({ tagNum })
+      ),
     };
   }
 
@@ -299,7 +301,9 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           startDate,
           endDate,
           comment: comment ? comment : undefined,
-          scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList,
+          scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList.map(
+            ({ tagNum }) => ({ tagNum })
+          ),
           scheduleRegionRegistReqDTOList: draft.scheduleRegionRegistReqDTOList,
           planRegistReqDTOList: planReqList,
         };
