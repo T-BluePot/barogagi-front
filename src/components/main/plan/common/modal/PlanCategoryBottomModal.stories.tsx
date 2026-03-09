@@ -25,6 +25,7 @@ export const Default: Story = {
   args: {
     onClose: () => {},
     onSelectOption: () => {},
+    onClickAction: () => {},
   },
 };
 
@@ -33,5 +34,6 @@ export const Closed: Story = {
     isOpen: false,
     onClose: () => {},
     onSelectOption: () => {},
+    onClickAction: () => {},
   },
 };
