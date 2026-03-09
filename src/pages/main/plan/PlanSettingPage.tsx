@@ -82,7 +82,10 @@ export const PlanSettingPage = () => {
           : undefined,
         categoryNum: plan.categoryNum,
         itemNum: plan.itemNum,
-        planTagRegistReqDTOList: plan.planTagRegistReqDTOList,
+        planTagRegistReqDTOList: plan.planTagRegistReqDTOList?.map((t) => ({
+          tagNum: t.tagNum,
+          tagNm: t.tagNm ?? "", // undefined 방지
+        })),
       }))
     );
   }, [categoryMap]); // categoryMap 준비되면 items 초기화

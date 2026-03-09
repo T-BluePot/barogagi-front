@@ -46,7 +46,7 @@ export const ScheduleStyleTagContainer = ({
         <CommonTag
           key={style.tagNum}
           size="small"
-          label={style.tagNm}
+          label={style.tagNm ?? ""}
           isActive={!!actives[style.tagNum]} // undefined 대비 이중 부정
           onClick={() => toggle(style.tagNum)}
         />
