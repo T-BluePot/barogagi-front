@@ -9,13 +9,12 @@ export interface TagReqType {
   tagType: TagType;
   categoryNum: number | null;
 }
-
-export interface TagRegistReqDTO {
+export interface TagRegistResDTO {
   tagNum: number;
-  tagNm?: string;
+  tagNm: string;
 }
 
-export interface TagRegistResDTO {
+export interface TagRegistReqDTO {
   tagNum: number;
   tagNm?: string;
 }
