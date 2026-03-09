@@ -52,9 +52,10 @@ const ScheduleStylePage = () => {
 
   // actives가 바뀔 때마다 store 업데이트
   useEffect(() => {
+    if (styleTags.length === 0) return;
     const selectedTags = styleTags.filter((tag) => actives[tag.tagNum]);
     setDraft({ scheduleTagRegistReqDTOList: selectedTags });
-  }, [actives]);
+  }, [actives, styleTags]);
 
   // 여행 참고사항 입력값 상태
   const [scheduleNotes, setScheduleNotes] = useState<string>(
