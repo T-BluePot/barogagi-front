@@ -34,6 +34,7 @@ export const ScheduleStyleTagContainer = ({
     // 새로 켜려는 경우에만 최대 5개 제한 적용
     if (selectedCount >= 5) {
       toast("태그는 최대 5개까지 선택할 수 있습니다");
+      return;
     }
 
     // 정상적으로 켜기
