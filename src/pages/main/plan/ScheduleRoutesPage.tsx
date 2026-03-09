@@ -24,6 +24,7 @@ import { allSchedules } from "@/mock/schedules";
 import { mockPlans } from "@/mock/plans";
 
 // === server ===
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 import { createSchedule } from "@/api/queries";
 import type { PlanRegistResDTO, ScheduleRegistResDTO } from "@/api/types";
@@ -36,7 +37,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const isDetail = variant === "detail";
 
   // ----- 일정 생성 로직 -----
-  const { buildRequest } = useScheduleDraftStore();
+  const { buildRequest, reset } = useScheduleDraftStore();
+  const { clearRegions } = useRegionSelectionStore();
   const hasFetched = useRef(false);
 
   const [scheduleResult, setScheduleResult] =
@@ -187,6 +189,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         return;
       }
       handleCloseCreateModal();
+
+      // 일정 저장 성공 시 store 초기화
+      reset();
+      clearRegions();
       navigate(ROUTES.PLAN.LIST);
     } catch (err) {
       if (err instanceof AxiosError) {
