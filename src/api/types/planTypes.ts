@@ -12,7 +12,7 @@ export interface TagReqType {
 
 export interface TagRegistReqDTO {
   tagNum: number;
-  tagNm: string;
+  tagNm?: string;
 }
 
 export interface TagRegistResDTO {
