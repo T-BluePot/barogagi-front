@@ -33,10 +33,11 @@ const ScheduleTitleInput = ({
         if (relatedTarget && wrapperRef.current?.contains(relatedTarget))
           return;
 
+        const trimmedName = scheduleName.trim();
         const finalName =
-          scheduleName.trim() === ""
+          trimmedName === ""
             ? ROUTES_CREATE_TEXT.HEADER.DEFAULT_SCHEDULE_NAME
-            : scheduleName;
+            : trimmedName;
 
         setScheduleName(finalName);
         setEditMode(false);
