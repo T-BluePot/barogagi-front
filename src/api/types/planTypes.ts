@@ -17,7 +17,7 @@ export interface TagRegistReqDTO {
 
 export interface TagRegistResDTO {
   tagNum: number;
-  tagNm: string;
+  tagNm?: string;
 }
 
 /** 지역 정보 */
