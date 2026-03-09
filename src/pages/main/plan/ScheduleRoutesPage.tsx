@@ -39,7 +39,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 일정 생성 로직 -----
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
-  const hasFetched = useRef(false);
 
   const [scheduleResult, setScheduleResult] =
     useState<ScheduleRegistResDTO | null>(null);
@@ -48,17 +47,19 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   useEffect(() => {
     if (!isCreate) return;
-    if (hasFetched.current) return;
-    hasFetched.current = true;
+
+    let ignore = false;
 
     const fetchCreateSchedule = async () => {
       try {
         const req = buildRequest();
         const res = await createSchedule(req);
         console.log("일정 생성 응답값 전체:", JSON.stringify(res, null, 2));
+        if (ignore) return;
         setScheduleResult(res.data);
         setCreatePlans(res.data?.planRegistResDTOList ?? []);
       } catch (err) {
+        if (ignore) return;
         if (err instanceof AxiosError) {
           toast.error(
             err.response?.data?.message ?? "일정 생성에 실패했습니다."
@@ -71,11 +72,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         console.error(err);
         navigate(-1);
       } finally {
-        setIsLoading(false);
+        if (!ignore) setIsLoading(false);
       }
     };
 
     fetchCreateSchedule();
+
+    return () => {
+      ignore = true;
+    }; // 언마운트 시 결과 무시
   }, []);
 
   const { id } = useParams<{ id: string }>();
