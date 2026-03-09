@@ -37,7 +37,7 @@ export const SelectTagConfirmModalContent = ({
   useEffect(() => {
     const selectedTags = tags.filter((t) => selectedIds.has(t.tagNum));
     onChangeTags?.(selectedTags);
-  }, [selectedIds]);
+  }, [selectedIds, tags, onChangeTags]);
 
   return (
     <div className="flex flex-col items-center gap-4 py-4">
