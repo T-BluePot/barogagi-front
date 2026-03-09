@@ -21,14 +21,14 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const placeInfo = plan.planDescription ?? "";
   const placeLink = plan.planLink ?? "";
   const tagNames = plan.planTagRegistResDTOList.map((t) => t.tagNm);
-  const planNum = plan.planNum ?? 0;
+  const planNum = plan.planNum;
   const imageSrc = src ?? fallbackImg;
 
   const moreButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (simple) return;
+    if (simple || planNum == null) return;
     props.onOpenCardMenu({
       planNum,
       anchorEl: moreButtonRef.current,
