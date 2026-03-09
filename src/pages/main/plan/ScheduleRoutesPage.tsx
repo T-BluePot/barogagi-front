@@ -47,7 +47,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       try {
         const req = buildRequest();
         const res = await createSchedule(req);
-        console.log("일정 생성 응답값 전체:", JSON.stringify(res, null, 2));
         if (ignore) return;
         setScheduleResult(res.data);
         setCreatePlans(res.data?.planRegistResDTOList ?? []);
@@ -150,7 +149,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 일정 저장 로직 -----
   const handleSaveSchedule = async () => {
     if (!scheduleResult) return;
-    console.log("저장할 scheduleNm:", scheduleResult.scheduleNm);
 
     try {
       const res = await saveSchedule(scheduleResult);
