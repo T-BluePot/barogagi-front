@@ -8,11 +8,7 @@ import { useAlertModalStore } from "@/stores/alertModalStore";
 import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 
 // === server
-import type {
-  RegionRegistReqDTO,
-  TagRegistReqDTO,
-  TagRegistResDTO,
-} from "@/api/types";
+import type { RegionRegistReqDTO, TagRegistResDTO } from "@/api/types";
 
 // 1. 카테고리
 import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
@@ -55,7 +51,7 @@ interface PlanFormDraft {
 
   address?: string;
   regionRegistReqDTOList?: RegionRegistReqDTO[];
-  planTagRegistReqDTOList?: TagRegistReqDTO[];
+  planTagRegistReqDTOList?: TagRegistResDTO[];
 }
 
 export const usePlanFormModal = (
@@ -193,7 +189,9 @@ export const usePlanFormModal = (
         startTime: draft.startTime,
         endTime: draft.endTime,
         regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
-        planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+        planTagRegistReqDTOList:
+          draft.planTagRegistReqDTOList?.map(({ tagNum }) => ({ tagNum })) ??
+          [],
       });
       setItems((prev) =>
         prev.map((item) =>
@@ -221,7 +219,9 @@ export const usePlanFormModal = (
         itemNum: draft.itemNum,
         isRandomCategory,
         regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
-        planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+        planTagRegistReqDTOList:
+          draft.planTagRegistReqDTOList?.map(({ tagNum }) => ({ tagNum })) ??
+          [],
       });
       setItems((prev) => [
         ...prev,
