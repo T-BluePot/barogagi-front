@@ -102,7 +102,9 @@ export type ScheduleDraftStore = {
     seed?: Partial<Omit<AIPlanDraftType, "source" | "isUserAdded">>
   ) => void;
   addUserPlacePlan: (planNm: string, place: UserAddedPlaceDTO) => void;
-  addUserCustomPlan: (planNm: string) => void;
+  addUserCustomPlan: (
+    seed: Pick<UserCustomPlanDraftType, "planNm" | "startTime" | "endTime">
+  ) => void;
 
   // plan 수정 (source별로 분리: 유니온 타입 넓어짐 방지)
   updateAIPlan: (
@@ -193,7 +195,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           },
         })),
 
-      addUserCustomPlan: (planNm) =>
+      addUserCustomPlan: (seed) =>
         set((state) => ({
           draft: {
             ...state.draft,
@@ -202,9 +204,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
               {
                 source: "USER_CUSTOM",
                 isUserAdded: "Y",
-                startTime: "08:00",
-                endTime: "09:00",
-                planNm,
+                ...seed,
               },
             ],
           },
