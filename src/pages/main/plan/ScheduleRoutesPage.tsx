@@ -173,9 +173,26 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 일정 수정하기 bottom modal -----
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const { draft: editDraft, clearDraft } = usePlanEditStore();
+  const { setDraft, draft: editDraft, clearDraft } = usePlanEditStore();
 
-  const handleRequestEdit = () => {
+  const handleRequestEdit = (planNum: number) => {
+    const target = planList.find((p) => p.planNum === planNum);
+    if (!target) return;
+
+    setDraft({
+      planNum: target.planNum ?? planNum,
+      plan: {
+        planNm: target.planNm ?? "",
+        startTime: target.startTime,
+        endTime: target.endTime,
+      },
+      place: {
+        placeNum: null,
+        placeNm: target.regionNm ?? "",
+        address: target.planAddress ?? "",
+      },
+    });
+
     setIsEditModalOpen(true);
   };
 
