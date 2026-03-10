@@ -15,11 +15,9 @@ export const toCommonPlan = (vo: PlanDetailVO): PlanRegistResDTO => ({
   regionNum: vo.regionVOList[0]?.regionNum ?? 0,
   regionNm:
     vo.regionVOList[0]?.regionLevel4 ?? vo.regionVOList[0]?.regionLevel3 ?? "",
-  planTagRegistResDTOList: vo.tagDetailVOList.map((t) => ({
-    tagNum: t.tagNum,
-    tagNm: t.tagNm,
-    tagType: t.tagType,
-    categoryNum: t.categoryNum,
+  planTagRegistResDTOList: vo.tagDetailVOList.map(({ tagNum, tagNm }) => ({
+    tagNum,
+    tagNm,
   })),
   planSource: "USER_CUSTOM",
 });
