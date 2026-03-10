@@ -40,36 +40,39 @@ function isSource<T extends PlanDraftType["source"]>(
 
 /** Draft plan → 서버 요청 plan DTO 변환 */
 function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
-  // 공통 필드
-  const common: PlanRegistReqDTO = {
+  // 공통 필드 (base에 있는 것만)
+  const common = {
     startTime: plan.startTime,
     endTime: plan.endTime,
-    itemNum: plan.itemNum,
-    isRandomCategory: plan.isRandomCategory,
-    regionRegistReqDTOList: (plan.regionRegistReqDTOList ?? []).map((r) => ({
-      regionNum: r.regionNum,
-    })),
-    isUserAdded: plan.isUserAdded,
   };
 
-  // 명세: isRandomCategory="Y"면 categoryNum은 전달하지 않아도 됨
-  if (plan.isRandomCategory !== "Y") {
-    common.categoryNum = plan.categoryNum;
-  }
-
-  // source별 분기
   if (plan.source === "AI") {
-    return {
+    const aiPlan: PlanRegistReqDTO = {
       ...common,
+      isUserAdded: plan.isUserAdded,
+      itemNum: plan.itemNum,
+      isRandomCategory: plan.isRandomCategory,
+      regionRegistReqDTOList: (plan.regionRegistReqDTOList ?? []).map((r) => ({
+        regionNum: r.regionNum,
+      })),
       planTagRegistReqDTOList: (plan.planTagRegistReqDTOList ?? []).map(
         ({ tagNum }) => ({ tagNum })
       ),
     };
+
+    // 명세: isRandomCategory="Y"면 categoryNum은 전달하지 않아도 됨
+    if (plan.isRandomCategory !== "Y") {
+      aiPlan.categoryNum = plan.categoryNum;
+    }
+
+    return aiPlan;
   }
 
   if (plan.source === "USER_PLACE") {
     return {
       ...common,
+      isUserAdded: plan.isUserAdded,
+      planNm: plan.planNm,
       userAddedPlaceDTO: plan.userAddedPlaceDTO,
     };
   }
@@ -77,6 +80,7 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
   // USER_CUSTOM
   return {
     ...common,
+    isUserAdded: plan.isUserAdded,
     planNm: plan.planNm,
   };
 }
@@ -97,7 +101,7 @@ export type ScheduleDraftStore = {
   addAIPlan: (
     seed?: Partial<Omit<AIPlanDraftType, "source" | "isUserAdded">>
   ) => void;
-  addUserPlacePlan: (place: UserAddedPlaceDTO) => void;
+  addUserPlacePlan: (planNm: string, place: UserAddedPlaceDTO) => void;
   addUserCustomPlan: (planNm: string) => void;
 
   // plan 수정 (source별로 분리: 유니온 타입 넓어짐 방지)
@@ -171,7 +175,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           },
         })),
 
-      addUserPlacePlan: (place) =>
+      addUserPlacePlan: (planNm, place) =>
         set((state) => ({
           draft: {
             ...state.draft,
@@ -182,7 +186,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
                 isUserAdded: "Y",
                 startTime: "08:00",
                 endTime: "09:00",
-                isRandomCategory: "N",
+                planNm,
                 userAddedPlaceDTO: place,
               },
             ],
@@ -200,7 +204,6 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
                 isUserAdded: "Y",
                 startTime: "08:00",
                 endTime: "09:00",
-                isRandomCategory: "N",
                 planNm,
               },
             ],
@@ -216,7 +219,6 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           next[index] = {
             ...cur,
             ...patch,
-            // 불변 규칙 강제
             source: "AI",
             isUserAdded: "N",
           };
