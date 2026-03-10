@@ -17,7 +17,6 @@ import type {
 } from "@/types/api/scheduleTypes";
 
 // 2. 상세
-// 1) 장소 관련
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 // 2) 일정 태그 (선택) 관련
 import { searchTags } from "@/api/queries";
