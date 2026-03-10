@@ -8,6 +8,7 @@ import type {
   BaseResponse,
   ScheduleRegistReqDTO,
   ScheduleRegistResDTO,
+  ScheduleDetailResDTO,
 } from "../types";
 
 /** 내 일정 목록 조회 */
@@ -20,7 +21,7 @@ export const getScheduleList = async () => {
 
 /** 일정 상세 조회 */
 export const getScheduleDetail = async (scheduleNum: number) => {
-  const response = await http.get<BaseResponse<ScheduleRegistResDTO>>(
+  const response = await apiKeyHttp.get<BaseResponse<ScheduleDetailResDTO>>(
     ENDPOINTS.SCHEDULE.DETAIL,
     {
       params: { scheduleNum },
