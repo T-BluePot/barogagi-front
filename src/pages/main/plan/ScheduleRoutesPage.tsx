@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
@@ -37,28 +37,38 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const [scheduleResult, setScheduleResult] =
     useState<ScheduleRegistResDTO | null>(null);
   const [planList, setPlanList] = useState<PlanRegistResDTO[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
 
-  // 일정 생성하기 로직
+  // useRef로 중복 호출 방지
+  // sessionStorage와 달리 컴포넌트 인스턴스에 묶여있어 탭 간 공유 / 이전 값 잔류 문제가 없음
+  // React StrictMode의 마운트→언마운트→재마운트 사이클에서도 정확히 1회 fetch 보장
+  const hasFetched = useRef(false);
+
   useEffect(() => {
     if (!isCreate) return;
+    if (hasFetched.current) return; // 이미 호출됐으면 스킵
+    hasFetched.current = true;
 
-    const alreadyCalled = sessionStorage.getItem("schedule:creating");
-    if (alreadyCalled) return;
-    sessionStorage.setItem("schedule:creating", "true");
-
-    let ignore = false;
+    setIsLoading(true);
 
     const fetchCreateSchedule = async () => {
       try {
         const req = buildRequest();
+        console.log("[req]", JSON.stringify(req, null, 2));
         const res = await createSchedule(req);
-        if (ignore) return;
+        console.log(res);
+
+        // HTTP 200이지만 에러 코드로 내려오는 경우 처리 (catch에 안 걸림)
+        if (res.code !== "S201") {
+          toast(res.message ?? "일정 생성에 실패했습니다.");
+          navigate(-1);
+          return;
+        }
+
         setScheduleResult(res.data);
         setPlanList(res.data?.planRegistResDTOList ?? []);
       } catch (err) {
-        if (ignore) return;
         if (err instanceof AxiosError) {
           toast(err.response?.data?.message ?? "일정 생성에 실패했습니다.");
         } else if (err instanceof Error) {
@@ -69,15 +79,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         console.error(err);
         navigate(-1);
       } finally {
-        if (!ignore) setIsLoading(false);
-        sessionStorage.removeItem("schedule:creating");
+        setIsLoading(false);
       }
     };
 
     fetchCreateSchedule();
-    return () => {
-      ignore = true;
-    };
   }, []);
 
   // ----- detail: 일정 상세 로직 -----
