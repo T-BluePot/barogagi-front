@@ -11,7 +11,10 @@ import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 import type { RegionRegistReqDTO, TagRegistResDTO } from "@/api/types";
 
 // 1. 카테고리
-import type { SelectedCategoryItemType } from "@/types/api/scheduleTypes";
+import type {
+  PlanSource,
+  SelectedCategoryItemType,
+} from "@/types/api/scheduleTypes";
 
 // 2. 상세
 // 1) 장소 관련
@@ -41,6 +44,7 @@ const DRAFT_ID = "__draft__";
 
 /** 폼에서 작성 중인 임시 데이터 타입 (저장 전까지 여기에 보관) */
 interface PlanFormDraft {
+  source: PlanSource;
   planNm: string;
 
   startTime?: string;
@@ -62,7 +66,8 @@ export const usePlanFormModal = (
   const { openAlertModal } = useAlertModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const { validatePlanTime } = usePlanTimeValidation(items);
-  const { addAIPlan, updateAIPlan } = useScheduleDraftStore();
+  const { addAIPlan, updateAIPlan, addUserCustomPlan } =
+    useScheduleDraftStore();
 
   // ============================================
   // PlanFormModal 상태
@@ -84,6 +89,7 @@ export const usePlanFormModal = (
     console.log("선택된 아이템:", selected.option);
 
     setDraft({
+      source: "AI",
       planNm: selected.option.itemNm,
       categoryNum,
       itemNum: selected.option.itemNum,
@@ -97,6 +103,20 @@ export const usePlanFormModal = (
   };
 
   // ============================================
+  // 직접 등록 관련 로직
+  // ============================================
+  const [isPlanNameOpen, setIsPlanNameOpen] = useState(false);
+
+  const handlePlanNameConfirm = (planNm: string) => {
+    setDraft({
+      source: "USER_CUSTOM",
+      planNm,
+    });
+    setIsPlanNameOpen(false);
+    setIsPlanFormOpen(true);
+  };
+
+  // ============================================
   // 카드 클릭 → 기존 데이터를 draft에 복사 후 PlanFormModal 열기
   // ============================================
   const [editTargetId, setEditTargetId] = useState<number | null>(null);
@@ -107,6 +127,7 @@ export const usePlanFormModal = (
 
     setEditTargetId(id);
     setDraft({
+      source: target.source ?? "AI",
       planNm: target.title,
       startTime: target.startTime,
       endTime: target.endTime,
@@ -207,24 +228,30 @@ export const usePlanFormModal = (
         )
       );
     } else if (draft) {
-      // 새 카드 추가
       const newId = Date.now();
-      const isRandomCategory = draft.itemNum === 1 ? "Y" : "N";
-      addAIPlan({
-        startTime: draft.startTime,
-        endTime: draft.endTime,
-        categoryNum: draft.categoryNum,
-        itemNum: draft.itemNum,
-        isRandomCategory,
-        regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
-        planTagRegistReqDTOList:
-          draft.planTagRegistReqDTOList?.map(({ tagNum }) => ({ tagNum })) ??
-          [],
-      });
+
+      if (draft.source === "AI") {
+        const isRandomCategory = draft.itemNum === 1 ? "Y" : "N";
+        addAIPlan({
+          startTime: draft.startTime,
+          endTime: draft.endTime,
+          categoryNum: draft.categoryNum,
+          itemNum: draft.itemNum,
+          isRandomCategory,
+          regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
+          planTagRegistReqDTOList:
+            draft.planTagRegistReqDTOList?.map(({ tagNum }) => ({ tagNum })) ??
+            [],
+        });
+      } else if (draft.source === "USER_CUSTOM") {
+        addUserCustomPlan(draft.planNm);
+      }
+
       setItems((prev) => [
         ...prev,
         {
           id: newId,
+          source: draft.source,
           title: draft.planNm,
           startTime: draft.startTime,
           endTime: draft.endTime,
@@ -426,8 +453,14 @@ export const usePlanFormModal = (
       onClose: () => setIsCategoryOpen(false),
       onSelectOption: handleCategorySelect,
       onClickAction: () => {
-        // TODO: 직접 등록하기 로직 실행
+        setIsPlanNameOpen(false);
+        setIsPlanFormOpen(true);
       },
+    },
+    planNameModalProps: {
+      isOpen: isPlanNameOpen,
+      onConfirm: handlePlanNameConfirm,
+      onCancel: () => setIsPlanNameOpen(false),
     },
     planFormModalProps: {
       action: {
