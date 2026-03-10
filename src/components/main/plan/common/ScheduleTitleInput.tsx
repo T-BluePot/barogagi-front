@@ -5,24 +5,32 @@ import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 
 import CancelIcon from "@mui/icons-material/Cancel";
 
-interface ScheduleTitleInputProps {
-  scheduleName: string; // 일정명
-  setScheduleName: (name: string) => void; // 일정명 변경 함수
+type SizeType = "normal" | "small";
 
-  setEditMode: (mode: boolean) => void; // 편집 모드 설정 함수
+interface ScheduleTitleInputProps {
+  scheduleName: string;
+  setScheduleName: (name: string) => void;
+  setEditMode: (mode: boolean) => void;
+  placeholder?: string;
+  size?: SizeType;
 }
 
 const ScheduleTitleInput = ({
   scheduleName,
   setScheduleName,
   setEditMode,
+  placeholder = ROUTES_CREATE_TEXT.HEADER.SCHEDULE_NAME_PLACEHOLDER,
+  size = "normal",
 }: ScheduleTitleInputProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const inputClass = `border-0 focus:ring-0 focus:outline-none w-full`;
-  const inputFontClass = `typo-title-01`;
-  const inputPlaceholder = `placeholder:text-xl placeholder-gray-30`;
+  const inputFontClass = size === "normal" ? "typo-title-01" : "typo-subtitle";
+  const inputPlaceholder =
+    size === "normal"
+      ? "placeholder:text-xl placeholder-gray-30"
+      : "placeholder:text-base placeholder-gray-30";
 
   return (
     <div
@@ -47,17 +55,13 @@ const ScheduleTitleInput = ({
         ref={inputRef}
         type="text"
         className={clsx(inputClass, inputFontClass, inputPlaceholder)}
-        placeholder={ROUTES_CREATE_TEXT.HEADER.SCHEDULE_NAME_PLACEHOLDER}
+        placeholder={placeholder}
         value={scheduleName}
-        onChange={(e) => {
-          setScheduleName(e.target.value);
-        }}
+        onChange={(e) => setScheduleName(e.target.value)}
         onKeyDown={(e) => {
-          // Enter 키가 눌렸는지 확인
           if (e.key === "Enter") {
-            // 현재 input의 값을 scheduleName에 저장
             setScheduleName(e.currentTarget.value);
-            e.currentTarget.blur(); // 포커스 해제
+            e.currentTarget.blur();
           }
         }}
         autoFocus
@@ -68,7 +72,7 @@ const ScheduleTitleInput = ({
         onClick={(e) => {
           e.preventDefault();
           setScheduleName("");
-          inputRef.current?.focus(); // 입력창에 포커스 유지
+          inputRef.current?.focus();
         }}
         className="absolute right-1"
       >
