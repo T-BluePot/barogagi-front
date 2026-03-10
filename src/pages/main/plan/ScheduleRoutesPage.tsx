@@ -60,11 +60,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       } catch (err) {
         if (ignore) return;
         if (err instanceof AxiosError) {
-          toast.error(
-            err.response?.data?.message ?? "일정 생성에 실패했습니다."
-          );
+          toast(err.response?.data?.message ?? "일정 생성에 실패했습니다.");
         } else if (err instanceof Error) {
-          toast.error(err.message);
+          toast(err.message);
         } else {
           toast("일정 생성에 실패했습니다.\n다시 시도해주세요");
         }
@@ -98,7 +96,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         if (ignore) return;
 
         if (res.code !== "S202") {
-          toast.error(res.message ?? "일정을 불러오지 못했습니다");
+          toast(res.message ?? "일정을 불러오지 못했습니다");
           navigate(-1);
           return;
         }
@@ -117,11 +115,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       } catch (err) {
         if (ignore) return;
         if (err instanceof AxiosError) {
-          toast.error(
-            err.response?.data?.message ?? "일정을 불러오지 못했습니다"
-          );
+          toast(err.response?.data?.message ?? "일정을 불러오지 못했습니다");
         } else if (err instanceof Error) {
-          toast.error(err.message);
+          toast(err.message);
         } else {
           toast("일정을 불러오지 못했습니다");
         }
