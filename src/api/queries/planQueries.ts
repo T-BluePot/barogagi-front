@@ -2,7 +2,7 @@
  * 일정(Schedule) 관련 API 요청 함수
  */
 
-import { apiKeyHttp, http } from "../client";
+import { apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import type {
   BaseResponse,
@@ -13,7 +13,7 @@ import type {
 
 /** 내 일정 목록 조회 */
 export const getScheduleList = async () => {
-  const response = await http.get<BaseResponse<ScheduleRegistResDTO[]>>(
+  const response = await apiKeyHttp.get<BaseResponse<ScheduleRegistResDTO[]>>(
     ENDPOINTS.SCHEDULE.LIST
   );
   return response.data;
@@ -51,7 +51,7 @@ export const saveSchedule = async (data: ScheduleRegistResDTO) => {
 
 /** 일정 수정 */
 export const updateSchedule = async (data: ScheduleRegistResDTO) => {
-  const response = await http.put<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.put<BaseResponse<unknown>>(
     ENDPOINTS.SCHEDULE.UPDATE,
     data
   );
@@ -60,7 +60,7 @@ export const updateSchedule = async (data: ScheduleRegistResDTO) => {
 
 /** 일정 삭제 */
 export const deleteSchedule = async (scheduleNum: number) => {
-  const response = await http.delete<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.delete<BaseResponse<unknown>>(
     ENDPOINTS.SCHEDULE.DELETE,
     {
       params: { scheduleNum },
