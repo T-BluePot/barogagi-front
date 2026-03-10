@@ -113,7 +113,7 @@ export interface RegionVO {
 export interface TagDetailVO {
   tagNum: number;
   tagNm: string;
-  tagType: string;
+  tagType: TagType;
   categoryNum: number;
 }
 
