@@ -7,7 +7,7 @@ import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 
-// === server
+// === server ===
 import type { RegionRegistReqDTO, TagRegistResDTO } from "@/api/types";
 
 // 1. 카테고리
@@ -18,26 +18,10 @@ import type {
 
 // 2. 상세
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
-// 2) 일정 태그 (선택) 관련
 import { searchTags } from "@/api/queries";
 
 // 3. store
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
-
-/**
- * 일정 추가/수정 폼 모달 + 하위 모달(시간/장소/태그/카테고리) 상태 관리 훅
- *
- * [흐름]
- * Create: "+일정 추가" → 카테고리 선택 → PlanFormModal → 시간/장소/태그 선택 → 저장
- * 카드 클릭: 기존 카드의 데이터를 draft에 복사한 뒤 PlanFormModal 열기 (Create 모드)
- *
- * [DRAFT_ID 패턴]
- * 시간/장소 모달은 "기존 카드 수정"과 "새 일정 작성" 양쪽에서 사용됨
- * DRAFT_ID로 구분하여 결과를 draft에 반영할지 items에 직접 반영할지 분기
- *
- * @param items    - 현재 일정 카드 목록 (순서 검증에 사용)
- * @param setItems - 일정 목록 상태 변경 함수 (카드 추가/수정 시 호출)
- */
 
 const DRAFT_ID = "__draft__";
 
@@ -65,7 +49,7 @@ export const usePlanFormModal = (
   const { openAlertModal } = useAlertModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const { validatePlanTime } = usePlanTimeValidation(items);
-  const { addAIPlan, updateAIPlan, addUserCustomPlan } =
+  const { addAIPlan, updateAIPlan, addUserCustomPlan, updateUserCustomPlan } =
     useScheduleDraftStore();
 
   // ============================================
@@ -84,8 +68,6 @@ export const usePlanFormModal = (
 
   const handleCategorySelect = (selected: SelectedCategoryItemType) => {
     const categoryNum = selected.category.categoryNum;
-    console.log("선택한 카테고리: ", selected.category);
-    console.log("선택된 아이템:", selected.option);
 
     setDraft({
       source: "AI",
@@ -136,13 +118,13 @@ export const usePlanFormModal = (
     });
     setIsPlanFormOpen(true);
 
-    // categoryNum 있으면 태그 목록 다시 불러오기
     if (target.categoryNum) {
       searchTags({ tagType: "P", categoryNum: target.categoryNum }).then(
         (res) => setTagOptions(res.data ?? [])
       );
     }
   };
+
   // ============================================
   // PlanFormModal 닫기
   // ============================================
@@ -198,19 +180,26 @@ export const usePlanFormModal = (
       }
     }
 
-    // (3) 검증 통과
+    // (3) 검증 통과 - 수정
     if (draft && editTargetId !== null) {
       const targetIndex = items.findIndex((item) => item.id === editTargetId);
       if (targetIndex === -1) return;
 
-      updateAIPlan(targetIndex, {
-        startTime: draft.startTime,
-        endTime: draft.endTime,
-        regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
-        planTagRegistReqDTOList:
-          draft.planTagRegistReqDTOList?.map(({ tagNum }) => ({ tagNum })) ??
-          [],
-      });
+      if (draft.source === "AI") {
+        updateAIPlan(targetIndex, {
+          startTime: draft.startTime,
+          endTime: draft.endTime,
+          regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
+          planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [], // ← tagNm 포함 그대로
+        });
+      } else if (draft.source === "USER_CUSTOM") {
+        updateUserCustomPlan(targetIndex, {
+          startTime: draft.startTime,
+          endTime: draft.endTime,
+          planNm: draft.planNm,
+        });
+      }
+
       setItems((prev) =>
         prev.map((item) =>
           item.id === editTargetId
@@ -221,12 +210,13 @@ export const usePlanFormModal = (
                 endTime: draft.endTime,
                 location: draft.address,
                 categoryNum: draft.categoryNum,
-                planTagRegistReqDTOList: draft.planTagRegistReqDTOList, // ← 추가
+                planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
               }
             : item
         )
       );
     } else if (draft) {
+      // (3) 검증 통과 - 새 카드 추가
       const newId = Date.now();
 
       if (draft.source === "AI") {
@@ -238,12 +228,14 @@ export const usePlanFormModal = (
           itemNum: draft.itemNum,
           isRandomCategory,
           regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
-          planTagRegistReqDTOList:
-            draft.planTagRegistReqDTOList?.map(({ tagNum }) => ({ tagNum })) ??
-            [],
+          planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [], // ← tagNm 포함 그대로
         });
       } else if (draft.source === "USER_CUSTOM") {
-        addUserCustomPlan(draft.planNm);
+        addUserCustomPlan({
+          planNm: draft.planNm,
+          startTime: draft.startTime!,
+          endTime: draft.endTime!,
+        });
       }
 
       setItems((prev) => [
@@ -428,17 +420,29 @@ export const usePlanFormModal = (
     ? draft.planTagRegistReqDTOList.map((t) => t.tagNum)
     : [];
 
-  const planFormInfo = {
-    mode: "Create" as const,
-    planNm: draft?.planNm,
-    startTime: draft?.startTime,
-    endTime: draft?.endTime,
-    address: draft?.address,
-    tags: draft?.planTagRegistReqDTOList,
-    onClickTime: handlePlanFormTimeClick,
-    onClickAddress: handlePlanFormAddressClick,
-    onClickTags: handlePlanFormTagsClick,
-  };
+  // source 기반으로 planFormInfo 분리
+  const planFormInfo =
+    draft?.source === "AI"
+      ? {
+          mode: "Create" as const,
+          planNm: draft?.planNm,
+          startTime: draft?.startTime,
+          endTime: draft?.endTime,
+          address: draft?.address,
+          tags: draft?.planTagRegistReqDTOList,
+          onClickTime: handlePlanFormTimeClick,
+          onClickAddress: handlePlanFormAddressClick,
+          onClickTags: handlePlanFormTagsClick,
+        }
+      : {
+          mode: "UserCustom" as const,
+          planNm: draft?.planNm,
+          startTime: draft?.startTime,
+          endTime: draft?.endTime,
+          address: draft?.address,
+          onClickTime: handlePlanFormTimeClick,
+          onClickAddress: handlePlanFormAddressClick,
+        };
 
   return {
     formHandlers: {
@@ -452,8 +456,8 @@ export const usePlanFormModal = (
       onClose: () => setIsCategoryOpen(false),
       onSelectOption: handleCategorySelect,
       onClickAction: () => {
-        setIsPlanNameOpen(false);
-        setIsPlanFormOpen(true);
+        setIsCategoryOpen(false);
+        setIsPlanNameOpen(true);
       },
     },
     planNameModalProps: {
