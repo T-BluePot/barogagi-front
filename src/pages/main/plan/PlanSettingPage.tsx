@@ -11,6 +11,7 @@ import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/SelectRegionConfirmModal";
 import { SelectTagConfirmModal } from "@/components/main/plan/common/modal/SelectTagConfirmModal";
+import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInputModal";
 import Button from "@/components/common/buttons/CommonButton";
 
 // === hooks & utils ===
@@ -159,6 +160,7 @@ export const PlanSettingPage = () => {
   const {
     formHandlers,
     categoryModalProps,
+    planNameModalProps,
     planFormModalProps,
     timeModalProps,
     regionModalProps,
@@ -191,6 +193,7 @@ export const PlanSettingPage = () => {
 
       {/* 모달 영역 */}
       <PlanCategoryBottomModal {...categoryModalProps} />
+      <PlanNameInputModal {...planNameModalProps} />
       <PlanFormModal {...planFormModalProps} />
       <DeletePlanModal {...deleteModalProps} />
       <SelectTimeConfirmModal {...timeModalProps} />
