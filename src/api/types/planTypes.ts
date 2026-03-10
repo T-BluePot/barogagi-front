@@ -100,3 +100,41 @@ export interface ScheduleCategoryItemResponseType {
   itemNum: number;
   itemNm: string;
 }
+
+/** 일정 상세 조회 응답 타입 */
+export interface RegionVO {
+  regionNum: number;
+  regionLevel1: string;
+  regionLevel2: string | null;
+  regionLevel3: string | null;
+  regionLevel4: string | null;
+}
+
+export interface TagDetailVO {
+  tagNum: number;
+  tagNm: string;
+  tagType: string;
+  categoryNum: number;
+}
+
+export interface PlanDetailVO {
+  planNum: number;
+  planNm: string;
+  startTime: string;
+  endTime: string;
+  itemNum: number;
+  itemNm: string;
+  categoryNum: number;
+  categoryNm: string;
+  regionVOList: RegionVO[];
+  tagDetailVOList: TagDetailVO[];
+}
+
+export interface ScheduleDetailResDTO {
+  scheduleNum: number;
+  scheduleNm: string;
+  startDate: string;
+  endDate: string;
+  radius: number;
+  planDetailVOList: PlanDetailVO[];
+}
