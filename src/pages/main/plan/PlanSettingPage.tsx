@@ -39,6 +39,7 @@ import { useScheduleDraftStore } from "@/stores/scheduleStore";
  * - usePlanDelete     : 삭제 모달 (hooks/usePlanDelete.ts)
  * - usePlanFormModal  : 일정 폼 + 하위 모달 (hooks/usePlanFormModal.ts)
  */
+
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
   const { draft: storeDraft } = useScheduleDraftStore();
@@ -73,25 +74,47 @@ export const PlanSettingPage = () => {
     }
 
     setItems(
-      storeDraft.planRegistReqDTOList.map((plan, index) => ({
-        id: index,
-        title: categoryMap[plan.categoryNum ?? 0] ?? "일정",
-        startTime: plan.startTime,
-        endTime: plan.endTime,
-        location: plan.regionRegistReqDTOList?.[0]?.regionNum
-          ? selectedRegions.find(
-              (r) => r.regionNum === plan.regionRegistReqDTOList![0].regionNum
-            )?.regionNm
-          : undefined,
-        categoryNum: plan.categoryNum,
-        itemNum: plan.itemNum,
-        planTagRegistReqDTOList: plan.planTagRegistReqDTOList?.map((t) => ({
-          tagNum: t.tagNum,
-          tagNm: t.tagNm ?? "", // undefined 방지
-        })),
-      }))
+      storeDraft.planRegistReqDTOList.map((plan, index) => {
+        if (plan.source === "AI") {
+          return {
+            id: index,
+            source: "AI" as const, // ← as const 추가
+            title: categoryMap[plan.categoryNum ?? 0] ?? "일정",
+            startTime: plan.startTime,
+            endTime: plan.endTime,
+            location: selectedRegions.find(
+              (r) => r.regionNum === plan.regionRegistReqDTOList?.[0]?.regionNum
+            )?.regionNm,
+            categoryNum: plan.categoryNum,
+            itemNum: plan.itemNum,
+            planTagRegistReqDTOList: plan.planTagRegistReqDTOList?.map((t) => ({
+              tagNum: t.tagNum,
+              tagNm: t.tagNm ?? "",
+            })),
+          };
+        }
+
+        if (plan.source === "USER_PLACE") {
+          return {
+            id: index,
+            source: "USER_PLACE" as const,
+            title: plan.planNm,
+            startTime: plan.startTime,
+            endTime: plan.endTime,
+            location: plan.userAddedPlaceDTO.addressName,
+          };
+        }
+
+        return {
+          id: index,
+          source: "USER_CUSTOM" as const,
+          title: plan.planNm,
+          startTime: plan.startTime,
+          endTime: plan.endTime,
+        };
+      })
     );
-  }, [categoryMap, storeDraft.planRegistReqDTOList, selectedRegions]); // categoryMap 준비되면 items 초기화
+  }, [categoryMap, storeDraft.planRegistReqDTOList, selectedRegions]);
 
   const { setPlanList } = useScheduleDraftStore();
 
