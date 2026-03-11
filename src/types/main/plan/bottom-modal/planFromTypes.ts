@@ -1,4 +1,4 @@
-import type { TagRegistResDTO } from "@/api/types";
+import type { TagRegistResDTO, UserAddedPlaceDTO } from "@/api/types";
 
 /**
  * 모달 타입
@@ -98,7 +98,7 @@ export interface EditPlanDraft {
 export type EditPlanPlace = EditPlanDraft["place"];
 
 // 장소 선택 핸들러 공통 타입
-export type OnSelectPlace = (location: EditPlanPlace) => void;
+export type OnSelectPlace = (location: UserAddedPlaceDTO) => void;
 
 // planNum 기준으로 메모를 저장하는 맵 타입
 export type PlanNoteMap = Record<number, string>;
