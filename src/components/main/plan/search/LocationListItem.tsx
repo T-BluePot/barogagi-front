@@ -4,11 +4,9 @@ import clsx from "clsx";
 import AddLocationModal from "./AddLocationModal";
 import { LocationIcon } from "./LocationIcon";
 
+import type { UserAddedPlaceDTO } from "@/api/types";
 // 타입: EditPlanDraft["place"] + 핸들러 공통 타입
-import type {
-  EditPlanPlace,
-  OnSelectPlace,
-} from "@/types/main/plan/bottom-modal/planFromTypes";
+import type { OnSelectPlace } from "@/types/main/plan/bottom-modal/planFromTypes";
 
 interface ModalProps {
   // 확인 클릭 시 이 아이템의 location 전체를 부모로 전달
@@ -16,7 +14,7 @@ interface ModalProps {
 }
 
 export interface LocationListItemProps {
-  location: EditPlanPlace; // { placeNum, placeNm, address }
+  location: UserAddedPlaceDTO; // { placeName, placeUrl, addressName }
   addModalProps: ModalProps;
 }
 
@@ -32,7 +30,7 @@ const LocationListItem = ({
       {/* 등록 모달 */}
       <AddLocationModal
         isOpen={isAddModalOpen}
-        locationNm={location.placeNm}
+        locationNm={location.placeName}
         handleConfirm={() => {
           // 이 아이템이 가진 location 전체를 부모로 전달
           addModalProps.handleConfirm(location);
@@ -45,8 +43,8 @@ const LocationListItem = ({
       <div className="flex flex-row items-center gap-5">
         <LocationIcon />
         <div className="flex flex-col items-baseline gap-1">
-          <p className="typo-subtitle">{location.placeNm}</p>
-          <p className={subTextClass}>{location.address}</p>
+          <p className="typo-subtitle">{location.placeName}</p>
+          <p className={subTextClass}>{location.addressName}</p>
         </div>
       </div>
 
