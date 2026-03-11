@@ -1,27 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { usePlanEditStore } from "@/stores/planEditStore";
-import type { EditPlanPlace } from "@/types/main/plan/bottom-modal/planFromTypes";
 import { LOCATION_SEARCH_TEXT } from "@/constants/texts/main/plan/locationSearch";
 import { useDebouncedKeyword } from "@/utils/useDebouncedKeyword";
-import { mockRecentLocations, mockLocations } from "@/mock/locations";
+import { mockRecentLocations } from "@/mock/locations";
 
+// === component ===
 import SearchBackHeader from "@/components/main/plan/common/SearchBackHeader";
 import RecentSearchSection from "@/components/main/plan/search/RecentSearchSection";
 import SearchLocationSection from "@/components/main/plan/search/SearchLocationSection";
+
+// === server ===
+import { searchPlaces } from "@/api/queries";
+import type { UserAddedPlaceDTO } from "@/api/types";
+import { useUserPlaceStore } from "@/stores/userPlaceStore";
 
 const LocationSearchPage = () => {
   const navigate = useNavigate();
 
   const [value, setValue] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<UserAddedPlaceDTO[]>([]);
 
   const debouncedValue = useDebouncedKeyword(value);
   const hasValue = debouncedValue.length > 0;
 
-  const updatePlace = usePlanEditStore((state) => state.updatePlace);
-  const handleAddLocation = (place: EditPlanPlace) => {
-    updatePlace(place);
+  // --- 검색 리스트 불러오기 로직
+  useEffect(() => {
+    // 검색어가 없을 경우 초기화
+    if (!hasValue) {
+      setSearchResults([]);
+      return;
+    }
+
+    searchPlaces(debouncedValue)
+      .then((res) => setSearchResults(res.data ?? []))
+      .catch(() => setSearchResults([]));
+  }, [debouncedValue]);
+
+  const { setPlace } = useUserPlaceStore();
+
+  const handleAddLocation = (place: UserAddedPlaceDTO) => {
+    setPlace(place);
     navigate(-1);
   };
 
@@ -43,11 +62,11 @@ const LocationSearchPage = () => {
           <RecentSearchSection
             recentLocations={mockRecentLocations}
             onClickClear={() => {}}
-            onClickAddLocation={handleAddLocation}
+            onClickAddLocation={() => {}}
           />
         ) : (
           <SearchLocationSection
-            searchLocations={mockLocations}
+            searchLocations={searchResults}
             onClickAddLocation={handleAddLocation}
           />
         )}
