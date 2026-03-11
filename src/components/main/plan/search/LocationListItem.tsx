@@ -25,8 +25,17 @@ const LocationListItem = ({
   const subTextClass = `typo-description text-gray-60`;
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
 
+  // --- 장소 URL 이동 로직
+  const handleCardClick = () => {
+    if (!location.placeUrl) return;
+    window.open(location.placeUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
-    <div className="flex flex-row px-6 py-4 justify-between items-center border-b border-gray-5 active:bg-gray-5">
+    <div
+      className="flex flex-row px-6 py-4 justify-between items-center border-b border-gray-5 active:bg-gray-5"
+      onClick={handleCardClick}
+    >
       {/* 등록 모달 */}
       <AddLocationModal
         isOpen={isAddModalOpen}
@@ -49,7 +58,13 @@ const LocationListItem = ({
       </div>
 
       {/* 등록 버튼 */}
-      <button type="button" onClick={() => setIsAddModalOpen(true)}>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+          setIsAddModalOpen(true);
+        }}
+      >
         <div className={clsx(subTextClass, "active:underline")}>등록</div>
       </button>
     </div>
