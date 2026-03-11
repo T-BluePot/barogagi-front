@@ -13,7 +13,7 @@ import type {
   TermsResponseType,
   TagReqType,
   TagRegistResDTO,
-  UserAddedPlaceDTO,
+  KakaoPlaceDTO,
 } from "../types";
 import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
 
@@ -37,7 +37,7 @@ export const searchRegions = async (query: string) => {
 
 // === Place: 카카오 api 장소 검색 ===
 export const searchPlaces = async (keyword: string) => {
-  const response = await apiKeyHttp.get<BaseResponse<UserAddedPlaceDTO[]>>(
+  const response = await apiKeyHttp.get<BaseResponse<KakaoPlaceDTO[]>>(
     ENDPOINTS.PLACE.SEARCH,
     { params: { searchKeyword: keyword } }
   );
