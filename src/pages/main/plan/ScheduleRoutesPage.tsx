@@ -221,6 +221,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       handleCloseCreateModal();
       reset();
       clearRegions();
+      toast("일정이 저장되었습니다");
       navigate(ROUTES.PLAN.LIST);
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -236,10 +237,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
     return (
-      <PageLoading
-        message="AI가 일정을 생성하고 있어요. 잠시만 기다려주세요"
-        isHeaderDark={false}
-      />
+      <PageLoading message="AI가 일정을 생성하고 있어요" isHeaderDark={false} />
     );
   }
 
