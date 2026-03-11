@@ -102,7 +102,7 @@ export const PlanSettingPage = () => {
             title: plan.planNm,
             startTime: plan.startTime,
             endTime: plan.endTime,
-            location: plan.userAddedPlaceDTO.addressName,
+            location: plan.userAddedPlaceDTO?.addressName,
           };
         }
 
@@ -167,6 +167,17 @@ export const PlanSettingPage = () => {
     tagModalProps,
   } = usePlanFormModal(items, setItems);
 
+  const handleLocationClick = (id: number) => {
+    const target = items.find((item) => item.id === id);
+    if (!target) return;
+
+    if (target.source === "AI") {
+      formHandlers.handleLocationClick(id);
+    } else {
+      navigate("search");
+    }
+  };
+
   return (
     <div className="flex flex-col w-full h-full">
       {/* 일정 카드 리스트 + 추가 버튼 */}
@@ -178,7 +189,7 @@ export const PlanSettingPage = () => {
           onCardClick={formHandlers.handleCardClick}
           onDeleteClick={handleDeleteClick}
           onTimeClick={formHandlers.handleTimeClick}
-          onLocationClick={formHandlers.handleLocationClick}
+          onLocationClick={handleLocationClick}
         />
       </div>
 

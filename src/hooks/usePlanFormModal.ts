@@ -370,15 +370,9 @@ export const usePlanFormModal = (
     label: r.regionNm,
   }));
 
-  const handleLocationClick = (id: number) => {
-    const target = items.find((item) => item.id === id);
-    if (!target) return;
-
-    if (target.source === "AI") {
-      formHandlers.handleLocationClick(id); // 기존 지역 선택 모달
-    } else {
-      navigate("search"); // USER_CUSTOM / USER_PLACE → 검색 페이지
-    }
+  const handleLocationClick = (id: string | number) => {
+    setRegionTargetId(id);
+    setIsRegionOpen(true);
   };
 
   const handleRegionConfirm = (region: RegionOption | null) => {
