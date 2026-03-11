@@ -32,6 +32,7 @@ export type AIPlanDraftType = PlanDraftBaseType & {
 export type UserCustomPlanDraftType = PlanDraftBaseType & {
   source: "USER_CUSTOM";
   isUserAdded: "Y";
+  isRandomCategory: "N";
   planNm: string;
   planTagRegistReqDTOList?: never;
 };

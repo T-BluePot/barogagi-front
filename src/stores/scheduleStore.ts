@@ -55,9 +55,7 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
       regionRegistReqDTOList: (plan.regionRegistReqDTOList ?? []).map((r) => ({
         regionNum: r.regionNum,
       })),
-      planTagRegistReqDTOList: (plan.planTagRegistReqDTOList ?? []).map(
-        ({ tagNum }) => ({ tagNum })
-      ),
+      planTagRegistReqDTOList: plan.planTagRegistReqDTOList ?? [],
     };
 
     // 명세: isRandomCategory="Y"면 categoryNum은 전달하지 않아도 됨
@@ -72,6 +70,7 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
     return {
       ...common,
       isUserAdded: plan.isUserAdded,
+      isRandomCategory: "N",
       planNm: plan.planNm,
       userAddedPlaceDTO: plan.userAddedPlaceDTO,
     };
@@ -81,6 +80,7 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
   return {
     ...common,
     isUserAdded: plan.isUserAdded,
+    isRandomCategory: "N",
     planNm: plan.planNm,
   };
 }
@@ -101,7 +101,11 @@ export type ScheduleDraftStore = {
   addAIPlan: (
     seed?: Partial<Omit<AIPlanDraftType, "source" | "isUserAdded">>
   ) => void;
-  addUserPlacePlan: (planNm: string, place: UserAddedPlaceDTO) => void;
+  addUserPlacePlan: (
+    seed: Pick<UserPlacePlanDraftType, "planNm" | "startTime" | "endTime"> & {
+      userAddedPlaceDTO: UserAddedPlaceDTO;
+    }
+  ) => void;
   addUserCustomPlan: (
     seed: Pick<UserCustomPlanDraftType, "planNm" | "startTime" | "endTime">
   ) => void;
@@ -177,7 +181,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           },
         })),
 
-      addUserPlacePlan: (planNm, place) =>
+      addUserPlacePlan: (seed) =>
         set((state) => ({
           draft: {
             ...state.draft,
@@ -186,10 +190,8 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
               {
                 source: "USER_PLACE",
                 isUserAdded: "Y",
-                startTime: "08:00",
-                endTime: "09:00",
-                planNm,
-                userAddedPlaceDTO: place,
+                isRandomCategory: "N",
+                ...seed,
               },
             ],
           },
@@ -204,6 +206,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
               {
                 source: "USER_CUSTOM",
                 isUserAdded: "Y",
+                isRandomCategory: "N",
                 ...seed,
               },
             ],
@@ -303,9 +306,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           startDate,
           endDate,
           comment: comment ? comment : undefined,
-          scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList.map(
-            ({ tagNum }) => ({ tagNum })
-          ),
+          scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList,
           scheduleRegionRegistReqDTOList: draft.scheduleRegionRegistReqDTOList,
           planRegistReqDTOList: planReqList,
         };
