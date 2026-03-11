@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
 // === component ===
@@ -199,6 +199,9 @@ export const PlanSettingPage = () => {
       <SelectTimeConfirmModal {...timeModalProps} />
       <SelectRegionConfirmModal {...regionModalProps} />
       <SelectTagConfirmModal {...tagModalProps} />
+
+      {/* 자식 컴포넌트: 검색 화면 영역 */}
+      <Outlet />
     </div>
   );
 };
