@@ -4,14 +4,17 @@
 import { apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 
-import type { BaseResponse, TermsProcessRequestType } from "../types";
-import type { TermsResponseType, TagReqType, TagRegistResDTO } from "../types";
-
+// === type ===
 import type {
+  BaseResponse,
+  TermsProcessRequestType,
   ScheduleCategoryResponseType,
   ScheduleCategoryItemResponseType,
+  TermsResponseType,
+  TagReqType,
+  TagRegistResDTO,
+  UserAddedPlaceDTO,
 } from "../types";
-// === type ===
 import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
 
 // === Tag ===
@@ -23,11 +26,20 @@ export const searchTags = async (data: TagReqType) => {
   return response.data;
 };
 
-// === Region ===
+// === Region: 지역 검색 ===
 export const searchRegions = async (query: string) => {
   const response = await apiKeyHttp.get<BaseResponse<RegionSearchItemType[]>>(
     ENDPOINTS.REGION.SEARCH,
     { params: { regionQuery: query } }
+  );
+  return response.data;
+};
+
+// === Place: 카카오 api 장소 검색 ===
+export const searchPlaces = async (keyword: string) => {
+  const response = await apiKeyHttp.get<BaseResponse<UserAddedPlaceDTO[]>>(
+    ENDPOINTS.PLACE.SEARCH,
+    { params: { searchKeyword: keyword } }
   );
   return response.data;
 };
@@ -91,15 +103,6 @@ export const agreeTerms = async (
       termsAgreeList: termsAgreeList,
       termsType: type,
     }
-  );
-  return response.data;
-};
-
-// === Place ===
-export const searchPlaces = async (keyword: string) => {
-  const response = await apiKeyHttp.get<BaseResponse<unknown>>(
-    ENDPOINTS.PLACE.SEARCH,
-    { params: { searchKeyword: keyword } }
   );
   return response.data;
 };
