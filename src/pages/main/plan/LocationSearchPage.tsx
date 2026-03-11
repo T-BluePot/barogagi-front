@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { LOCATION_SEARCH_TEXT } from "@/constants/texts/main/plan/locationSearch";
 import { useDebouncedKeyword } from "@/utils/useDebouncedKeyword";
-import { mockRecentLocations } from "@/mock/locations";
 
 // === component ===
 import SearchBackHeader from "@/components/main/plan/common/SearchBackHeader";
@@ -12,7 +11,7 @@ import SearchLocationSection from "@/components/main/plan/search/SearchLocationS
 
 // === server ===
 import { searchPlaces } from "@/api/queries";
-import type { UserAddedPlaceDTO } from "@/api/types";
+import type { UserAddedPlaceDTO, KakaoPlaceDTO } from "@/api/types";
 import { useUserPlaceStore } from "@/stores/userPlaceStore";
 
 const LocationSearchPage = () => {
@@ -33,11 +32,21 @@ const LocationSearchPage = () => {
     }
 
     searchPlaces(debouncedValue)
-      .then((res) => setSearchResults(res.data ?? []))
-      .catch(() => setSearchResults([]));
+      .then((res) => {
+        const mapped = (res.data ?? []).map((item: KakaoPlaceDTO) => ({
+          placeName: item.place_name,
+          placeUrl: item.place_url,
+          addressName: item.address_name,
+        }));
+        setSearchResults(mapped);
+      })
+      .catch((err) => {
+        console.error("[searchPlaces err]", err);
+        setSearchResults([]);
+      });
   }, [debouncedValue]);
 
-  const { setPlace } = useUserPlaceStore();
+  const { setPlace, recentPlaces, clearRecentPlaces } = useUserPlaceStore();
 
   const handleAddLocation = (place: UserAddedPlaceDTO) => {
     setPlace(place);
@@ -60,9 +69,9 @@ const LocationSearchPage = () => {
         </div>
         {!hasValue ? (
           <RecentSearchSection
-            recentLocations={mockRecentLocations}
-            onClickClear={() => {}}
-            onClickAddLocation={() => {}}
+            recentLocations={recentPlaces}
+            onClickClear={clearRecentPlaces}
+            onClickAddLocation={handleAddLocation}
           />
         ) : (
           <SearchLocationSection
