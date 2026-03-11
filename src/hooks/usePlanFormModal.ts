@@ -152,6 +152,8 @@ export const usePlanFormModal = (
       address: target.location,
       categoryNum: target.categoryNum,
       planTagRegistReqDTOList: target.planTagRegistReqDTOList,
+      regionRegistReqDTOList: target.regionRegistReqDTOList,
+      userAddedPlaceDTO: target.userAddedPlaceDTO,
     });
     setIsPlanFormOpen(true);
 
@@ -256,6 +258,7 @@ export const usePlanFormModal = (
                 location: draft.address,
                 categoryNum: draft.categoryNum,
                 planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+                userAddedPlaceDTO: draft.userAddedPlaceDTO,
               }
             : item
         )
@@ -302,6 +305,8 @@ export const usePlanFormModal = (
           categoryNum: draft.categoryNum,
           itemNum: draft.itemNum,
           planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+          regionRegistReqDTOList: draft.regionRegistReqDTOList,
+          userAddedPlaceDTO: draft.userAddedPlaceDTO,
         },
       ]);
     }
@@ -336,14 +341,29 @@ export const usePlanFormModal = (
           : null
       );
     } else {
+      const targetIndex = items.findIndex((item) => item.id === timeTargetId);
+      const target = items.find((item) => item.id === timeTargetId);
+      const newStart = timeValueToHHmm(start);
+      const newEnd = timeValueToHHmm(end);
+
+      if (target?.source === "AI") {
+        updateAIPlan(targetIndex, { startTime: newStart, endTime: newEnd });
+      } else if (target?.source === "USER_CUSTOM") {
+        updateUserCustomPlan(targetIndex, {
+          startTime: newStart,
+          endTime: newEnd,
+        });
+      } else if (target?.source === "USER_PLACE") {
+        updateUserPlacePlan(targetIndex, {
+          startTime: newStart,
+          endTime: newEnd,
+        });
+      }
+
       setItems((prev) =>
         prev.map((item) =>
           item.id === timeTargetId
-            ? {
-                ...item,
-                startTime: timeValueToHHmm(start),
-                endTime: timeValueToHHmm(end),
-              }
+            ? { ...item, startTime: newStart, endTime: newEnd }
             : item
         )
       );
@@ -391,6 +411,12 @@ export const usePlanFormModal = (
           : null
       );
     } else {
+      const targetIndex = items.findIndex((item) => item.id === regionTargetId);
+      updateAIPlan(targetIndex, {
+        regionRegistReqDTOList: region
+          ? [{ regionNum: Number(region.id) }]
+          : [],
+      });
       setItems((prev) =>
         prev.map((item) =>
           item.id === regionTargetId

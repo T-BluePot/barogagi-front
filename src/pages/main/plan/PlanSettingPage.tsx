@@ -88,6 +88,7 @@ export const PlanSettingPage = () => {
             )?.regionNm,
             categoryNum: plan.categoryNum,
             itemNum: plan.itemNum,
+            regionRegistReqDTOList: plan.regionRegistReqDTOList,
             planTagRegistReqDTOList: plan.planTagRegistReqDTOList?.map((t) => ({
               tagNum: t.tagNum,
               tagNm: t.tagNm ?? "",

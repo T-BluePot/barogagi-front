@@ -6,7 +6,11 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
 // === api type ===
-import type { TagRegistResDTO } from "@/api/types";
+import type {
+  RegionRegistReqDTO,
+  TagRegistResDTO,
+  UserAddedPlaceDTO,
+} from "@/api/types";
 import type { PlanSource } from "@/types/api/scheduleTypes";
 
 export interface PlanData {
@@ -20,6 +24,8 @@ export interface PlanData {
   categoryNum?: number; // AI 전용
   itemNum?: number; // AI 전용
   planTagRegistReqDTOList?: TagRegistResDTO[]; // AI 전용
+  regionRegistReqDTOList?: RegionRegistReqDTO[];
+  userAddedPlaceDTO?: UserAddedPlaceDTO;
 }
 
 interface PlanCardProps {
