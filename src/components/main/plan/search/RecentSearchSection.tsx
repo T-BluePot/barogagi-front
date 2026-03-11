@@ -4,15 +4,13 @@ import RecentSearchHeader from "./RecentSearchHeader";
 import LocationListItem from "./LocationListItem";
 
 import ClearAllModal from "./ClearAllModal";
+import type { UserAddedPlaceDTO } from "@/api/types";
 
-import type {
-  EditPlanPlace,
-  OnSelectPlace,
-} from "@/types/main/plan/bottom-modal/planFromTypes";
+import type { OnSelectPlace } from "@/types/main/plan/bottom-modal/planFromTypes";
 
 interface RecentSearchSectionProps {
   onClickClear: () => void; // 최근 검색어 비우기
-  recentLocations: EditPlanPlace[]; // 최근 추가한 장소 (최대 10개, 로컬에서 저장)
+  recentLocations: UserAddedPlaceDTO[]; // 최근 추가한 장소 (최대 10개, 로컬에서 저장)
   onClickAddLocation: OnSelectPlace; // 장소 추가
 }
 
@@ -37,8 +35,8 @@ const RecentSearchSection = ({
       <RecentSearchHeader onClick={() => setIsClearAllModalOpen(true)} />
       {hasRecentLocations && (
         <div className="flex flex-col w-full h-full overflow-y-auto hide-scrollbar">
-          {recentLocations.map((loc) => (
-            <div key={loc.placeNum}>
+          {recentLocations.map((loc, index) => (
+            <div key={loc.placeUrl ?? loc.placeName ?? index}>
               <LocationListItem
                 location={loc}
                 addModalProps={{
