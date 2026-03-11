@@ -35,7 +35,7 @@ const ScheduleRouteInfoHeader = ({
             }}
           >
             <div className="flex flex-row items-end gap-1 px-1 py-2">
-              <span className="typo-title-01">{scheduleName}</span>
+              <span className="typo-title-01 text-start">{scheduleName}</span>
               <div>
                 <EditOutlinedIcon fontSize="small" className="text-gray-40" />
               </div>
