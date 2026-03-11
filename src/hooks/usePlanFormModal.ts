@@ -1,14 +1,24 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useNavigate } from "react-router-dom";
+
+// === component ===
 import type { PlanData } from "@/components/main/plan/PlanCard";
 import type { RegionOption } from "@/components/main/plan/common/modal/content/SelectRegionConfirmModalContent";
-import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
-import type { TimeValue } from "@/utils/date";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 
+// === util ===
+import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
+import type { TimeValue } from "@/utils/date";
+
 // === server ===
-import type { RegionRegistReqDTO, TagRegistResDTO } from "@/api/types";
+import type {
+  RegionRegistReqDTO,
+  TagRegistResDTO,
+  UserAddedPlaceDTO,
+} from "@/api/types";
+import { useUserPlaceStore } from "@/stores/userPlaceStore";
 
 // 1. 카테고리
 import type {
@@ -39,6 +49,8 @@ interface PlanFormDraft {
   address?: string;
   regionRegistReqDTOList?: RegionRegistReqDTO[];
   planTagRegistReqDTOList?: TagRegistResDTO[];
+
+  userAddedPlaceDTO?: UserAddedPlaceDTO;
 }
 
 export const usePlanFormModal = (
@@ -49,8 +61,14 @@ export const usePlanFormModal = (
   const { openAlertModal } = useAlertModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
   const { validatePlanTime } = usePlanTimeValidation(items);
-  const { addAIPlan, updateAIPlan, addUserCustomPlan, updateUserCustomPlan } =
-    useScheduleDraftStore();
+  const {
+    addAIPlan,
+    updateAIPlan,
+    addUserCustomPlan,
+    addUserPlacePlan,
+    updateUserCustomPlan,
+    updateUserPlacePlan,
+  } = useScheduleDraftStore();
 
   // ============================================
   // PlanFormModal 상태
@@ -86,6 +104,9 @@ export const usePlanFormModal = (
   // ============================================
   // 직접 등록 관련 로직
   // ============================================
+  const navigate = useNavigate();
+  const { place, clearPlace } = useUserPlaceStore();
+
   const [isPlanNameOpen, setIsPlanNameOpen] = useState(false);
 
   const handlePlanNameConfirm = (planNm: string) => {
@@ -96,6 +117,22 @@ export const usePlanFormModal = (
     setIsPlanNameOpen(false);
     setIsPlanFormOpen(true);
   };
+
+  useEffect(() => {
+    if (!place) return;
+
+    setDraft((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        source: "USER_PLACE" as const,
+        address: place.addressName,
+        userAddedPlaceDTO: place,
+      };
+    });
+
+    clearPlace();
+  }, [place]);
 
   // ============================================
   // 카드 클릭 → 기존 데이터를 draft에 복사 후 PlanFormModal 열기
@@ -132,6 +169,7 @@ export const usePlanFormModal = (
     setIsPlanFormOpen(false);
     setDraft(null);
     setEditTargetId(null);
+    clearPlace();
   };
 
   const handlePlanFormClose = () => {
@@ -198,6 +236,13 @@ export const usePlanFormModal = (
           endTime: draft.endTime,
           planNm: draft.planNm,
         });
+      } else if (draft.source === "USER_PLACE") {
+        updateUserPlacePlan(targetIndex, {
+          startTime: draft.startTime,
+          endTime: draft.endTime,
+          planNm: draft.planNm,
+          userAddedPlaceDTO: draft.userAddedPlaceDTO,
+        });
       }
 
       setItems((prev) =>
@@ -235,6 +280,13 @@ export const usePlanFormModal = (
           planNm: draft.planNm,
           startTime: draft.startTime!,
           endTime: draft.endTime!,
+        });
+      } else if (draft.source === "USER_PLACE") {
+        addUserPlacePlan({
+          planNm: draft.planNm,
+          startTime: draft.startTime!,
+          endTime: draft.endTime!,
+          userAddedPlaceDTO: draft.userAddedPlaceDTO!,
         });
       }
 
@@ -318,9 +370,15 @@ export const usePlanFormModal = (
     label: r.regionNm,
   }));
 
-  const handleLocationClick = (id: string | number) => {
-    setRegionTargetId(id);
-    setIsRegionOpen(true);
+  const handleLocationClick = (id: number) => {
+    const target = items.find((item) => item.id === id);
+    if (!target) return;
+
+    if (target.source === "AI") {
+      formHandlers.handleLocationClick(id); // 기존 지역 선택 모달
+    } else {
+      navigate("search"); // USER_CUSTOM / USER_PLACE → 검색 페이지
+    }
   };
 
   const handleRegionConfirm = (region: RegionOption | null) => {
@@ -387,8 +445,13 @@ export const usePlanFormModal = (
     setIsTimeOpen(false);
     setTimeTargetId(null);
     setIsTagOpen(false);
-    setRegionTargetId(DRAFT_ID);
-    setIsRegionOpen(true);
+
+    if (draft?.source === "AI") {
+      setRegionTargetId(DRAFT_ID);
+      setIsRegionOpen(true);
+    } else {
+      navigate("search");
+    }
   };
 
   const handlePlanFormTagsClick = () => {
