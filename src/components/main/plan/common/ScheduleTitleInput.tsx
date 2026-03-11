@@ -25,7 +25,7 @@ const ScheduleTitleInput = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const inputClass = `border-0 focus:ring-0 focus:outline-none w-full`;
+  const inputClass = `border-0 focus:ring-0 focus:outline-none w-full pr-6`;
   const inputFontClass = size === "normal" ? "typo-title-01" : "typo-subtitle";
   const inputPlaceholder =
     size === "normal"
