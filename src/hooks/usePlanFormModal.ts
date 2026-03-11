@@ -121,15 +121,33 @@ export const usePlanFormModal = (
   useEffect(() => {
     if (!place) return;
 
-    setDraft((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        source: "USER_PLACE" as const,
-        address: place.addressName,
-        userAddedPlaceDTO: place,
-      };
-    });
+    if (draft) {
+      setDraft((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          source: "USER_PLACE" as const,
+          address: place.addressName,
+          userAddedPlaceDTO: place,
+        };
+      });
+    } else if (editTargetId !== null) {
+      const targetIndex = items.findIndex((item) => item.id === editTargetId);
+      updateUserPlacePlan(targetIndex, { userAddedPlaceDTO: place });
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === editTargetId
+            ? {
+                ...item,
+                source: "USER_PLACE" as const,
+                location: place.addressName,
+                userAddedPlaceDTO: place,
+              }
+            : item
+        )
+      );
+      setEditTargetId(null);
+    }
 
     clearPlace();
   }, [place]);
@@ -391,10 +409,17 @@ export const usePlanFormModal = (
   }));
 
   const handleLocationClick = (id: string | number) => {
-    setRegionTargetId(id);
-    setIsRegionOpen(true);
-  };
+    const target = items.find((item) => item.id === id);
+    if (!target) return;
 
+    if (target.source === "AI") {
+      setRegionTargetId(id);
+      setIsRegionOpen(true);
+    } else {
+      setEditTargetId(id as number);
+      navigate("search");
+    }
+  };
   const handleRegionConfirm = (region: RegionOption | null) => {
     if (regionTargetId === null) return;
 

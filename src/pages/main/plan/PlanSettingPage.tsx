@@ -169,14 +169,7 @@ export const PlanSettingPage = () => {
   } = usePlanFormModal(items, setItems);
 
   const handleLocationClick = (id: number) => {
-    const target = items.find((item) => item.id === id);
-    if (!target) return;
-
-    if (target.source === "AI") {
-      formHandlers.handleLocationClick(id);
-    } else {
-      navigate("search");
-    }
+    formHandlers.handleLocationClick(id);
   };
 
   return (
