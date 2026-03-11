@@ -34,7 +34,9 @@ const LocationListItem = ({
   return (
     <div
       className="flex flex-row px-6 py-4 justify-between items-center border-b border-gray-5 active:bg-gray-5"
-      onClick={handleCardClick}
+      onClick={() => {
+        setIsAddModalOpen(true);
+      }}
     >
       {/* 등록 모달 */}
       <AddLocationModal
@@ -62,10 +64,10 @@ const LocationListItem = ({
         type="button"
         onClick={(e) => {
           e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
-          setIsAddModalOpen(true);
+          handleCardClick();
         }}
       >
-        <div className={clsx(subTextClass, "active:underline")}>등록</div>
+        <div className={clsx(subTextClass, "active:underline")}>이동</div>
       </button>
     </div>
   );
