@@ -20,8 +20,8 @@ const SearchLocationSection = ({
         <EmptyStateSection />
       ) : (
         <>
-          {searchLocations.map((loc) => (
-            <div key={loc.placeUrl ?? loc.placeName}>
+          {searchLocations.map((loc, index) => (
+            <div key={loc.placeUrl ?? loc.placeName ?? index}>
               <LocationListItem
                 location={loc}
                 addModalProps={{
