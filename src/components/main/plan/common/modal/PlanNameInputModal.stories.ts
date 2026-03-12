@@ -1,4 +1,5 @@
 import type { StoryObj, Meta } from "@storybook/react-vite";
+import { fn } from "storybook/test";
 import PlanNameInputModal from "./PlanNameInputModal";
 
 const meta: Meta<typeof PlanNameInputModal> = {
@@ -10,6 +11,8 @@ const meta: Meta<typeof PlanNameInputModal> = {
   },
   args: {
     isOpen: true,
+    onConfirm: fn(),
+    onCancel: fn(),
   },
 };
 
