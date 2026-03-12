@@ -37,8 +37,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const [scheduleResult, setScheduleResult] =
     useState<ScheduleRegistResDTO | null>(null);
   const [planList, setPlanList] = useState<PlanRegistResDTO[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(isCreate);
+  const [isDetailLoading, setIsDetailLoading] = useState(isDetail);
 
   // useRef로 중복 호출 방지
   // sessionStorage와 달리 컴포넌트 인스턴스에 묶여있어 탭 간 공유 / 이전 값 잔류 문제가 없음
