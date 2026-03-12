@@ -12,6 +12,10 @@ interface UserPlaceState {
   clearRecentPlaces: () => void;
 }
 
+const getRecentPlaceKey = (place: UserAddedPlaceDTO) =>
+  place.placeUrl ??
+  `${place.placeName ?? "unknown"}::${place.addressName ?? ""}`;
+
 export const useUserPlaceStore = create<UserPlaceState>()(
   persist(
     (set) => ({
@@ -23,7 +27,9 @@ export const useUserPlaceStore = create<UserPlaceState>()(
           place,
           recentPlaces: [
             place,
-            ...state.recentPlaces.filter((p) => p.placeUrl !== place.placeUrl),
+            ...state.recentPlaces.filter(
+              (p) => getRecentPlaceKey(p) !== getRecentPlaceKey(place)
+            ),
           ].slice(0, MAX_RECENT),
         })),
 
