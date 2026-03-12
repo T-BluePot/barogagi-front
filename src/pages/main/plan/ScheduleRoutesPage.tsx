@@ -55,9 +55,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const fetchCreateSchedule = async () => {
       try {
         const req = buildRequest();
-        console.log("[req]", JSON.stringify(req, null, 2));
         const res = await createSchedule(req);
-        console.log(res);
 
         // HTTP 200이지만 에러 코드로 내려오는 경우 처리 (catch에 안 걸림)
         if (res.code !== "S201") {
