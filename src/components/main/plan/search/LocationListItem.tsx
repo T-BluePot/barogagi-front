@@ -13,6 +13,7 @@ interface ModalProps {
   handleConfirm: OnSelectPlace;
 }
 
+// TODO: 태블릿 지원 시 키보드 접근성 처리 필요 (role="button", tabIndex, onKeyDown)
 export interface LocationListItemProps {
   location: UserAddedPlaceDTO; // { placeName, placeUrl, addressName }
   addModalProps: ModalProps;
