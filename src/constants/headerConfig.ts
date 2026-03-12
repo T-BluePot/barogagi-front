@@ -173,13 +173,13 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     showCloseConfirm: true,
     confirmMessage: "지금 나가면 생성된 일정이 모두 사라집니다.",
   },
+
   [ROUTES.PLAN.DETAIL]: {
     type: "back",
     isHeaderDark: false,
   },
-  [ROUTES.PLAN.SEARCH]: {
-    type: "none",
-  },
+  [ROUTES.PLAN.SETTING_SEARCH]: { type: "none" },
+  [ROUTES.PLAN.DETAIL_SEARCH]: { type: "none" },
 
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {

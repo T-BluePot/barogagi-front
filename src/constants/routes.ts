@@ -68,7 +68,9 @@ export const ROUTES = {
     STYLE: "/plan/style", // 일정 스타일 선택
     CREATE: "/plan/create", // 추천 루트 완료
     DETAIL: "/plan/:id/detail", // 루트 상세 페이지
-    SEARCH: "/plan/search", // 장소 검색 페이지
+    // 장소 검색 페이지
+    SETTING_SEARCH: "/plan/setting/search",
+    DETAIL_SEARCH: "/plan/:id/detail/search",
   },
 
   // 추가 기능들
@@ -106,7 +108,9 @@ export const getRoutePath = {
     create: () => ROUTES.PLAN.CREATE,
     detail: (id: string) =>
       ROUTES.PLAN.DETAIL.replace(":id", encodeURIComponent(id)),
-    search: () => ROUTES.PLAN.SEARCH,
+    settingSearch: () => ROUTES.PLAN.SETTING_SEARCH,
+    detailSearch: (id: string) =>
+      ROUTES.PLAN.DETAIL_SEARCH.replace(":id", encodeURIComponent(id)),
   },
   user: {
     detail: (id: string) =>
@@ -137,5 +141,6 @@ export const ALL_ROUTES = [
   ROUTES.USER.DETAIL,
   ROUTES.PLAN.CREATE,
   ROUTES.PLAN.DETAIL,
-  ROUTES.PLAN.SEARCH,
+  ROUTES.PLAN.SETTING_SEARCH,
+  ROUTES.PLAN.DETAIL_SEARCH,
 ] as const;
