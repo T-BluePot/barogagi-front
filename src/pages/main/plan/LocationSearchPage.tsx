@@ -25,14 +25,15 @@ const LocationSearchPage = () => {
 
   // --- 검색 리스트 불러오기 로직
   useEffect(() => {
-    // 검색어가 없을 경우 초기화
     if (!hasValue) {
       setSearchResults([]);
       return;
     }
+    let ignore = false;
 
     searchPlaces(debouncedValue)
       .then((res) => {
+        if (ignore) return;
         const mapped = (res.data ?? []).map((item: KakaoPlaceDTO) => ({
           placeName: item.place_name,
           placeUrl: item.place_url,
@@ -41,9 +42,14 @@ const LocationSearchPage = () => {
         setSearchResults(mapped);
       })
       .catch((err) => {
+        if (ignore) return;
         console.error("[searchPlaces err]", err);
         setSearchResults([]);
       });
+
+    return () => {
+      ignore = true;
+    };
   }, [debouncedValue]);
 
   const { setPlace, recentPlaces, clearRecentPlaces } = useUserPlaceStore();
