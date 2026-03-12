@@ -35,6 +35,21 @@ export interface UserAddedPlaceDTO {
   addressName?: string;
 }
 
+/** 카카오 장소 검색 API 응답 (snake_case) */
+export interface KakaoPlaceDTO {
+  place_name: string;
+  place_url: string;
+  address_name: string;
+  road_address_name: string;
+  category_group_name: string;
+  distance: string;
+  id: string;
+  phone: string;
+  x: string;
+  y: string;
+  regionNum: number | null;
+}
+
 /** 세부 일정(Plan) 요청 DTO */
 export interface PlanRegistReqDTO {
   startTime?: string; // HH:mm

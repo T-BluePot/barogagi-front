@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
@@ -37,28 +37,36 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const [scheduleResult, setScheduleResult] =
     useState<ScheduleRegistResDTO | null>(null);
   const [planList, setPlanList] = useState<PlanRegistResDTO[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(isCreate);
+  const [isDetailLoading, setIsDetailLoading] = useState(isDetail);
 
-  // 일정 생성하기 로직
+  // useRef로 중복 호출 방지
+  // sessionStorage와 달리 컴포넌트 인스턴스에 묶여있어 탭 간 공유 / 이전 값 잔류 문제가 없음
+  // React StrictMode의 마운트→언마운트→재마운트 사이클에서도 정확히 1회 fetch 보장
+  const hasFetched = useRef(false);
+
   useEffect(() => {
     if (!isCreate) return;
+    if (hasFetched.current) return; // 이미 호출됐으면 스킵
+    hasFetched.current = true;
 
-    const alreadyCalled = sessionStorage.getItem("schedule:creating");
-    if (alreadyCalled) return;
-    sessionStorage.setItem("schedule:creating", "true");
-
-    let ignore = false;
+    setIsLoading(true);
 
     const fetchCreateSchedule = async () => {
       try {
         const req = buildRequest();
         const res = await createSchedule(req);
-        if (ignore) return;
+
+        // HTTP 200이지만 에러 코드로 내려오는 경우 처리 (catch에 안 걸림)
+        if (res.code !== "S201") {
+          toast(res.message ?? "일정 생성에 실패했습니다.");
+          navigate(-1);
+          return;
+        }
+
         setScheduleResult(res.data);
         setPlanList(res.data?.planRegistResDTOList ?? []);
       } catch (err) {
-        if (ignore) return;
         if (err instanceof AxiosError) {
           toast(err.response?.data?.message ?? "일정 생성에 실패했습니다.");
         } else if (err instanceof Error) {
@@ -69,15 +77,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         console.error(err);
         navigate(-1);
       } finally {
-        if (!ignore) setIsLoading(false);
-        sessionStorage.removeItem("schedule:creating");
+        setIsLoading(false);
       }
     };
 
     fetchCreateSchedule();
-    return () => {
-      ignore = true;
-    };
   }, []);
 
   // ----- detail: 일정 상세 로직 -----
@@ -215,6 +219,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       handleCloseCreateModal();
       reset();
       clearRegions();
+      toast("일정이 저장되었습니다");
       navigate(ROUTES.PLAN.LIST);
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -230,10 +235,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
     return (
-      <PageLoading
-        message="AI가 일정을 생성하고 있어요. 잠시만 기다려주세요"
-        isHeaderDark={false}
-      />
+      <PageLoading message="AI가 일정을 생성하고 있어요" isHeaderDark={false} />
     );
   }
 

@@ -1,4 +1,4 @@
-import type { TagRegistResDTO } from "@/api/types";
+import type { TagRegistResDTO, UserAddedPlaceDTO } from "@/api/types";
 
 /**
  * 모달 타입
@@ -42,6 +42,13 @@ interface CreateModalInfo extends ModalBaseInfo {
 }
 
 /**
+ * UserCustom 모드 전용 필드(Base만)
+ */
+interface UserCustomModalInfo extends ModalBaseInfo {
+  mode: "UserCustom";
+}
+
+/**
  * Edit 모드 전용 필드(note)
  */
 interface EditModalInfo extends ModalBaseInfo {
@@ -52,9 +59,9 @@ interface EditModalInfo extends ModalBaseInfo {
 }
 
 /**
- * 두 타입을 합쳐서 ModalInfo로 정의
+ * 타입을 합쳐서 ModalInfo로 정의
  */
-type ModalInfo = CreateModalInfo | EditModalInfo;
+type ModalInfo = CreateModalInfo | UserCustomModalInfo | EditModalInfo;
 
 export interface PlanFormModalProps {
   action: ModalAction;
@@ -91,7 +98,7 @@ export interface EditPlanDraft {
 export type EditPlanPlace = EditPlanDraft["place"];
 
 // 장소 선택 핸들러 공통 타입
-export type OnSelectPlace = (location: EditPlanPlace) => void;
+export type OnSelectPlace = (location: UserAddedPlaceDTO) => void;
 
 // planNum 기준으로 메모를 저장하는 맵 타입
 export type PlanNoteMap = Record<number, string>;

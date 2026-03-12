@@ -1,14 +1,11 @@
 import LocationListItem from "./LocationListItem";
-
-import type {
-  EditPlanPlace,
-  OnSelectPlace,
-} from "@/types/main/plan/bottom-modal/planFromTypes";
-
 import EmptyStateSection from "../common/EmptyStateSection";
 
+import type { UserAddedPlaceDTO } from "@/api/types";
+import type { OnSelectPlace } from "@/types/main/plan/bottom-modal/planFromTypes";
+
 interface SearchLocationSectionProps {
-  searchLocations: EditPlanPlace[]; // 검색된 장소 목록
+  searchLocations: UserAddedPlaceDTO[]; // 검색된 장소 목록
   onClickAddLocation: OnSelectPlace; // 장소 추가
 }
 
@@ -23,8 +20,8 @@ const SearchLocationSection = ({
         <EmptyStateSection />
       ) : (
         <>
-          {searchLocations.map((loc) => (
-            <div key={loc.placeNum}>
+          {searchLocations.map((loc, index) => (
+            <div key={loc.placeUrl ?? loc.placeName ?? index}>
               <LocationListItem
                 location={loc}
                 addModalProps={{

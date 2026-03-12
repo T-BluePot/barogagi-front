@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
 // === component ===
@@ -11,6 +11,7 @@ import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 import { SelectRegionConfirmModal } from "@/components/main/plan/common/modal/SelectRegionConfirmModal";
 import { SelectTagConfirmModal } from "@/components/main/plan/common/modal/SelectTagConfirmModal";
+import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInputModal";
 import Button from "@/components/common/buttons/CommonButton";
 
 // === hooks & utils ===
@@ -39,6 +40,7 @@ import { useScheduleDraftStore } from "@/stores/scheduleStore";
  * - usePlanDelete     : 삭제 모달 (hooks/usePlanDelete.ts)
  * - usePlanFormModal  : 일정 폼 + 하위 모달 (hooks/usePlanFormModal.ts)
  */
+
 export const PlanSettingPage = () => {
   const navigate = useNavigate();
   const { draft: storeDraft } = useScheduleDraftStore();
@@ -73,25 +75,49 @@ export const PlanSettingPage = () => {
     }
 
     setItems(
-      storeDraft.planRegistReqDTOList.map((plan, index) => ({
-        id: index,
-        title: categoryMap[plan.categoryNum ?? 0] ?? "일정",
-        startTime: plan.startTime,
-        endTime: plan.endTime,
-        location: plan.regionRegistReqDTOList?.[0]?.regionNum
-          ? selectedRegions.find(
-              (r) => r.regionNum === plan.regionRegistReqDTOList![0].regionNum
-            )?.regionNm
-          : undefined,
-        categoryNum: plan.categoryNum,
-        itemNum: plan.itemNum,
-        planTagRegistReqDTOList: plan.planTagRegistReqDTOList?.map((t) => ({
-          tagNum: t.tagNum,
-          tagNm: t.tagNm ?? "", // undefined 방지
-        })),
-      }))
+      storeDraft.planRegistReqDTOList.map((plan, index) => {
+        if (plan.source === "AI") {
+          return {
+            id: index,
+            source: "AI" as const, // ← as const 추가
+            title: categoryMap[plan.categoryNum ?? 0] ?? "일정",
+            startTime: plan.startTime,
+            endTime: plan.endTime,
+            location: selectedRegions.find(
+              (r) => r.regionNum === plan.regionRegistReqDTOList?.[0]?.regionNum
+            )?.regionNm,
+            categoryNum: plan.categoryNum,
+            itemNum: plan.itemNum,
+            regionRegistReqDTOList: plan.regionRegistReqDTOList,
+            planTagRegistReqDTOList: plan.planTagRegistReqDTOList?.map((t) => ({
+              tagNum: t.tagNum,
+              tagNm: t.tagNm ?? "",
+            })),
+          };
+        }
+
+        if (plan.source === "USER_PLACE") {
+          return {
+            id: index,
+            source: "USER_PLACE" as const,
+            title: plan.planNm,
+            startTime: plan.startTime,
+            endTime: plan.endTime,
+            location: plan.userAddedPlaceDTO?.addressName,
+            userAddedPlaceDTO: plan.userAddedPlaceDTO,
+          };
+        }
+
+        return {
+          id: index,
+          source: "USER_CUSTOM" as const,
+          title: plan.planNm,
+          startTime: plan.startTime,
+          endTime: plan.endTime,
+        };
+      })
     );
-  }, [categoryMap, storeDraft.planRegistReqDTOList, selectedRegions]); // categoryMap 준비되면 items 초기화
+  }, [categoryMap, storeDraft.planRegistReqDTOList, selectedRegions]);
 
   const { setPlanList } = useScheduleDraftStore();
 
@@ -136,11 +162,16 @@ export const PlanSettingPage = () => {
   const {
     formHandlers,
     categoryModalProps,
+    planNameModalProps,
     planFormModalProps,
     timeModalProps,
     regionModalProps,
     tagModalProps,
   } = usePlanFormModal(items, setItems);
+
+  const handleLocationClick = (id: number) => {
+    formHandlers.handleLocationClick(id);
+  };
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -153,7 +184,7 @@ export const PlanSettingPage = () => {
           onCardClick={formHandlers.handleCardClick}
           onDeleteClick={handleDeleteClick}
           onTimeClick={formHandlers.handleTimeClick}
-          onLocationClick={formHandlers.handleLocationClick}
+          onLocationClick={handleLocationClick}
         />
       </div>
 
@@ -168,11 +199,15 @@ export const PlanSettingPage = () => {
 
       {/* 모달 영역 */}
       <PlanCategoryBottomModal {...categoryModalProps} />
+      <PlanNameInputModal {...planNameModalProps} />
       <PlanFormModal {...planFormModalProps} />
       <DeletePlanModal {...deleteModalProps} />
       <SelectTimeConfirmModal {...timeModalProps} />
       <SelectRegionConfirmModal {...regionModalProps} />
       <SelectTagConfirmModal {...tagModalProps} />
+
+      {/* 자식 컴포넌트: 검색 화면 영역 */}
+      <Outlet />
     </div>
   );
 };

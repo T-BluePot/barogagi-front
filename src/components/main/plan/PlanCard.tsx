@@ -4,18 +4,28 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlaceIcon from "@mui/icons-material/Place";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import type { TagRegistResDTO } from "@/api/types";
+
+// === api type ===
+import type {
+  RegionRegistReqDTO,
+  TagRegistResDTO,
+  UserAddedPlaceDTO,
+} from "@/api/types";
+import type { PlanSource } from "@/types/api/scheduleTypes";
 
 export interface PlanData {
   id: number;
+  source: PlanSource;
   emoji?: string;
   title: string;
-  startTime?: string; // HH:mm 형식
-  endTime?: string; // HH:mm 형식
+  startTime?: string;
+  endTime?: string;
   location?: string;
-  categoryNum?: number; // 태그 목록 불러오기용
-  itemNum?: number; // isRandomCategory 분기 판단용
-  planTagRegistReqDTOList?: TagRegistResDTO[]; // 기존 선택 태그 복원용
+  categoryNum?: number; // AI 전용
+  itemNum?: number; // AI 전용
+  planTagRegistReqDTOList?: TagRegistResDTO[]; // AI 전용
+  regionRegistReqDTOList?: RegionRegistReqDTO[];
+  userAddedPlaceDTO?: UserAddedPlaceDTO;
 }
 
 interface PlanCardProps {

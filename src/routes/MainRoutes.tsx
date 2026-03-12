@@ -51,7 +51,9 @@ export const MainRoutes = () => (
       <Route path={ROUTES.MAIN.PROFILE_EDIT} element={<ProfileEditPage />} />
       <Route path={ROUTES.PLAN.DATE} element={<SelectDatePage />} />
       <Route path={ROUTES.PLAN.LOCATION} element={<SelectLocationPage />} />
-      <Route path={ROUTES.PLAN.SETTING} element={<PlanSettingPage />} />
+      <Route path={ROUTES.PLAN.SETTING} element={<PlanSettingPage />}>
+        <Route path="search" element={<LocationSearchPage />} />
+      </Route>
       <Route path={ROUTES.PLAN.STYLE} element={<ScheduleStylePage />} />
       <Route
         path={ROUTES.PLAN.CREATE}
@@ -63,7 +65,6 @@ export const MainRoutes = () => (
       >
         <Route path="search" element={<LocationSearchPage />} />
       </Route>
-      <Route path={ROUTES.PLAN.SEARCH} element={<LocationSearchPage />} />
 
       {/* TODO: 페이지 구현 후 Route 등록 예정 */}
       {/* <Route path={ROUTES.MAIN.SETTINGS} element={<SettingsPage />} /> */}

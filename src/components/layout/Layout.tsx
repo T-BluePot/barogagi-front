@@ -23,6 +23,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
   const { goBack, goToLanding, goToProfile } = useAppNavigation();
   const [showBackConfirmModal, setShowBackConfirmModal] = useState(false); // 뒤로가기 로직 전용 모달창
+  const [showCloseConfirmModal, setShowCloseConfirmModal] = useState(false); // 창 닫기 로직 전용 모달창
 
   const executeBack = () => {
     // backPath가 설정되어 있으면 해당 경로로 이동
@@ -64,7 +65,11 @@ export const Layout = ({ children }: LayoutProps) => {
 
   // 닫기 핸들러 (모달이나 특별한 경우)
   const handleClose = () => {
-    goToLanding();
+    if (headerConfig.type === "close" && headerConfig.showCloseConfirm) {
+      setShowCloseConfirmModal(true);
+      return;
+    }
+    executeBack();
   };
 
   // 헤더 렌더링
@@ -149,6 +154,30 @@ export const Layout = ({ children }: LayoutProps) => {
           cancelButtonInfo={{
             label: "취소",
             onClick: () => setShowBackConfirmModal(false),
+          }}
+        />
+      )}
+      {/* 창 닫기 확인 모달 */}
+      {showCloseConfirmModal && (
+        <CommonConfirmModal
+          isOpen={showCloseConfirmModal}
+          modalContent={{
+            title: "일정 생성을 취소하시겠습니까?",
+            content:
+              headerConfig.type === "close" && headerConfig.confirmMessage
+                ? headerConfig.confirmMessage
+                : "지금 나가면 생성된 일정이 모두 사라집니다.",
+          }}
+          confirmButtonInfo={{
+            label: "확인",
+            onClick: () => {
+              setShowCloseConfirmModal(false);
+              executeBack();
+            },
+          }}
+          cancelButtonInfo={{
+            label: "취소",
+            onClick: () => setShowCloseConfirmModal(false),
           }}
         />
       )}
