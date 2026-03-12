@@ -104,6 +104,7 @@ export const PlanSettingPage = () => {
             startTime: plan.startTime,
             endTime: plan.endTime,
             location: plan.userAddedPlaceDTO?.addressName,
+            userAddedPlaceDTO: plan.userAddedPlaceDTO,
           };
         }
 
