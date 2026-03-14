@@ -9,11 +9,12 @@ import type {
   ScheduleRegistReqDTO,
   ScheduleRegistResDTO,
   ScheduleDetailResDTO,
+  ScheduleListResDTO,
 } from "../types";
 
 /** 내 일정 목록 조회 */
 export const getScheduleList = async () => {
-  const response = await apiKeyHttp.get<BaseResponse<ScheduleRegistResDTO[]>>(
+  const response = await apiKeyHttp.get<BaseResponse<ScheduleListResDTO>>(
     ENDPOINTS.SCHEDULE.LIST
   );
   return response.data;
