@@ -30,6 +30,7 @@ export const Default: Story = {
   args: {
     data: {
       id: 1,
+      source: "USER_CUSTOM",
       emoji: "🥓",
       title: "브런치",
     },
@@ -41,6 +42,7 @@ export const WithTimeAndLocation: Story = {
   args: {
     data: {
       id: 2,
+      source: "USER_CUSTOM",
       emoji: "🥓",
       title: "브런치",
       startTime: "10:00",
@@ -55,6 +57,7 @@ export const WithTimeOnly: Story = {
   args: {
     data: {
       id: 4,
+      source: "USER_CUSTOM",
       emoji: "☕",
       title: "카페",
       startTime: "14:00",
@@ -68,6 +71,7 @@ export const WithLocationOnly: Story = {
   args: {
     data: {
       id: 5,
+      source: "USER_CUSTOM",
       emoji: "🍜",
       title: "점심",
       location: "서울시 강남구",

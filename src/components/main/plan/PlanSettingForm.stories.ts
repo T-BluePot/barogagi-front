@@ -6,6 +6,7 @@ import type { PlanData } from "./PlanCard";
 const mockItems: PlanData[] = [
   {
     id: 1,
+    source: "USER_CUSTOM",
     emoji: "🍜",
     title: "한강 라면",
     startTime: "11:30",
@@ -14,6 +15,7 @@ const mockItems: PlanData[] = [
   },
   {
     id: 2,
+    source: "USER_CUSTOM",
     emoji: "☕",
     title: "카페 방문",
     startTime: "13:00",
@@ -22,6 +24,7 @@ const mockItems: PlanData[] = [
   },
   {
     id: 3,
+    source: "USER_CUSTOM",
     emoji: "🎬",
     title: "영화 관람",
     startTime: "15:00",
@@ -78,11 +81,13 @@ export const WithoutTimeAndLocation: Story = {
     initialItems: [
       {
         id: 1,
+        source: "USER_CUSTOM",
         emoji: "📝",
         title: "메모만 있는 일정",
       },
       {
         id: 2,
+        source: "USER_CUSTOM",
         emoji: "🎯",
         title: "목표 설정",
       },

@@ -5,6 +5,7 @@ import type { PlanData } from "./PlanCard";
 const mockItems: PlanData[] = [
   {
     id: 1,
+    source: "USER_CUSTOM",
     emoji: "🥓",
     title: "브런치",
     startTime: "10:00",
@@ -13,6 +14,7 @@ const mockItems: PlanData[] = [
   },
   {
     id: 2,
+    source: "USER_CUSTOM",
     emoji: "☕",
     title: "카페",
     startTime: "12:00",
@@ -20,6 +22,7 @@ const mockItems: PlanData[] = [
   },
   {
     id: 3,
+    source: "USER_CUSTOM",
     emoji: "🎬",
     title: "영화",
     startTime: "14:00",
@@ -28,6 +31,7 @@ const mockItems: PlanData[] = [
   },
   {
     id: 4,
+    source: "USER_CUSTOM",
     emoji: "🍜",
     title: "저녁",
     location: "서울시 강남구",
