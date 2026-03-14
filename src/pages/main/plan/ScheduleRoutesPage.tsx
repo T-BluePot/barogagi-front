@@ -15,6 +15,8 @@ import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesCo
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
+import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInputModal";
+import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 
 // === server ===
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
@@ -23,6 +25,8 @@ import { createSchedule, saveSchedule, getScheduleDetail } from "@/api/queries";
 import type { PlanRegistResDTO, ScheduleRegistResDTO } from "@/api/types";
 import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
+import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
+import type { TimeValue } from "@/utils/date";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
@@ -204,6 +208,37 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setPlanNotes((prev) => ({ ...prev, [planNum]: nextValue }));
   };
 
+  // ----- 계획 제목 수정 모달 -----
+  const [isNameModalOpen, setIsNameModalOpen] = useState<boolean>(false);
+
+  const handleEditTitleClick = () => setIsNameModalOpen(true);
+
+  const handleNameConfirm = (planNm: string) => {
+    if (editDraft) {
+      setDraft({ ...editDraft, plan: { ...editDraft.plan, planNm } });
+    }
+    setIsNameModalOpen(false);
+  };
+
+  // ----- 계획 시간 수정 모달 -----
+  const [isTimeModalOpen, setIsTimeModalOpen] = useState<boolean>(false);
+
+  const handleTimeClick = () => setIsTimeModalOpen(true);
+
+  const handleTimeConfirm = (start: TimeValue, end: TimeValue) => {
+    if (editDraft) {
+      setDraft({
+        ...editDraft,
+        plan: {
+          ...editDraft.plan,
+          startTime: timeValueToHHmm(start),
+          endTime: timeValueToHHmm(end),
+        },
+      });
+    }
+    setIsTimeModalOpen(false);
+  };
+
   // ----- 일정 confirm -----
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
@@ -286,7 +321,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
               clearDraft();
             },
             onConfirm: () => {},
-            onClickEditTitle: () => {},
+            onClickEditTitle: handleEditTitleClick,
           }}
           info={{
             mode: "Edit",
@@ -296,7 +331,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             endTime: editDraft.plan.endTime,
             address: editDraft.place.address,
             onClickAddress: () => navigate("search"),
-            onClickTime: () => {},
+            onClickTime: handleTimeClick,
             note: planNotes[editDraft.planNum],
             noteValue: planNotes[editDraft.planNum] ?? "",
             onChangeNote: (next: string) =>
@@ -304,6 +339,28 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           }}
         />
       )}
+
+      <PlanNameInputModal
+        isOpen={isNameModalOpen}
+        onConfirm={handleNameConfirm}
+        onCancel={() => setIsNameModalOpen(false)}
+      />
+
+      <SelectTimeConfirmModal
+        isOpen={isTimeModalOpen}
+        initialStartTime={
+          editDraft?.plan.startTime
+            ? hhmmToTimeValue(editDraft.plan.startTime)
+            : undefined
+        }
+        initialEndTime={
+          editDraft?.plan.endTime
+            ? hhmmToTimeValue(editDraft.plan.endTime)
+            : undefined
+        }
+        onConfirm={handleTimeConfirm}
+        onCancel={() => setIsTimeModalOpen(false)}
+      />
 
       <DeletePlanModal
         isOpen={isDeleteModalOpen}
