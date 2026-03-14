@@ -104,6 +104,21 @@ export interface ScheduleRegistResDTO {
   planRegistResDTOList: PlanRegistResDTO[];
 }
 
+/** 일정 목록 항목 DTO (GET /schedule/list 개별 항목) */
+export interface ScheduleListItemDTO {
+  scheduleNum: number;
+  scheduleNm: string;
+  startDate: string;
+  endDate: string;
+  scheduleTagRegistResDTOList: TagRegistResDTO[];
+}
+
+/** 일정 목록 조회 응답 DTO (GET /schedule/list) */
+export interface ScheduleListResDTO {
+  pastSchedules: ScheduleListItemDTO[];
+  upcomingSchedules: ScheduleListItemDTO[];
+}
+
 /** 일정 카테고리 응답 타입 */
 export interface ScheduleCategoryResponseType {
   categoryNum: number;
