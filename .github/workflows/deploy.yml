@@ -26,7 +26,6 @@ jobs:
           if [[ "${GITHUB_REF##*/}" == "release" ]]; then
             echo "${{ secrets.PROD_PRIVATE_KEY }}" > key.pem
           else
-            # main 브랜치용 테섭 키가 있다면 여기 작성 (현재는 placeholder)
             echo "No test server for frontend yet." 
           fi
           chmod 600 key.pem
