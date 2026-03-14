@@ -22,6 +22,7 @@ import { useScheduleDraftStore } from "@/stores/scheduleStore";
 import { createSchedule, saveSchedule, getScheduleDetail } from "@/api/queries";
 import type { PlanRegistResDTO, ScheduleRegistResDTO } from "@/api/types";
 import { toCommonPlan } from "@/utils/api/planMapper";
+import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- create: 일정 생성 로직 -----
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
+  const updateMutation = useUpdateScheduleMutation();
 
   // create / detail 공통 state
   const [scheduleResult, setScheduleResult] =
@@ -258,6 +260,28 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           action={{
             isOpen: isEditModalOpen,
             onClose: () => {
+              // editDraft 변경사항을 planList와 scheduleResult에 반영 후 수정 API 호출
+              if (scheduleResult) {
+                const updatedPlans = planList.map((p) =>
+                  p.planNum === editDraft.planNum
+                    ? {
+                        ...p,
+                        planNm: editDraft.plan.planNm,
+                        startTime: editDraft.plan.startTime,
+                        endTime: editDraft.plan.endTime,
+                        regionNm: editDraft.place.placeNm,
+                        planAddress: editDraft.place.address,
+                      }
+                    : p
+                );
+                const updatedSchedule = {
+                  ...scheduleResult,
+                  planRegistResDTOList: updatedPlans,
+                };
+                setPlanList(updatedPlans);
+                setScheduleResult(updatedSchedule);
+                updateMutation.mutate(updatedSchedule);
+              }
               setIsEditModalOpen(false);
               clearDraft();
             },
@@ -285,7 +309,21 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         isOpen={isDeleteModalOpen}
         onClickCancel={handleCloseDeleteModal}
         onClickConfirm={() => {
-          console.log("삭제할 일정:", deletePlanNum);
+          if (deletePlanNum == null || !scheduleResult) {
+            handleCloseDeleteModal();
+            return;
+          }
+          // 해당 계획을 목록에서 제거 후 수정 API 호출
+          const updatedPlans = planList.filter(
+            (p) => p.planNum !== deletePlanNum
+          );
+          const updatedSchedule = {
+            ...scheduleResult,
+            planRegistResDTOList: updatedPlans,
+          };
+          setPlanList(updatedPlans);
+          setScheduleResult(updatedSchedule);
+          updateMutation.mutate(updatedSchedule);
           handleCloseDeleteModal();
         }}
       />
