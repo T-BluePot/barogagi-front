@@ -25,18 +25,23 @@ jobs:
         run: |
           if [[ "${GITHUB_REF##*/}" == "release" ]]; then
             echo "${{ secrets.PROD_PRIVATE_KEY }}" > key.pem
+            chmod 600 key.pem
           else
             echo "No test server for frontend yet." 
           fi
-          chmod 600 key.pem
 
       - name: Set Environment Variables [release]
         if: github.ref == 'refs/heads/release'
         run: |
           echo "HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
           echo "USERNAME=${{ secrets.PROD_USERNAME }}" >> $GITHUB_ENV
-          # 프론트엔드 실제 정적 파일이 위치할 경로
           echo "TARGET_DIR=/srv/barogagi/frontend/dist" >> $GITHUB_ENV
+
+      - name: Create .env file from Secrets
+        if: github.ref == 'refs/heads/release'
+        run: |
+          echo "VITE_API_BASE_URL=${{ secrets.PROD_VITE_API_BASE_URL }}" >> .env
+          echo "VITE_API_KEY=${{ secrets.PROD_VITE_API_KEY }}" >> .env
 
       - name: Build Frontend
         if: github.ref == 'refs/heads/release'
@@ -48,12 +53,11 @@ jobs:
         if: github.ref == 'refs/heads/release'
         run: |
           set -e
-          # 1. 기존 서버의 dist 폴더 비우기 (남아있는 기존 파일 제거)
-          ssh -i key.pem -o StrictHostKeyChecking=no $USERNAME@$HOST "rm -rf $TARGET_DIR/*"
+          # 1. 대상 디렉토리가 없으면 생성하고 권한 설정
+          ssh -i key.pem -o StrictHostKeyChecking=no $USERNAME@$HOST "sudo mkdir -p $TARGET_DIR && sudo chown $USERNAME:$USERNAME $TARGET_DIR && rm -rf $TARGET_DIR/*"
           
-          # 2. 빌드된 dist 폴더 내부 파일 전송
-          # (주의: dist 폴더 자체가 아니라 '내용물'을 보내야 하므로 dist/ 뒤에 * 사용)
-          scp -i key.pem -o StrictHostKeyChecking=no -r ./dist/* $USERNAME@$HOST:$TARGET_DIR/
+          # 2. 빌드된 dist 폴더 내용 전송 (./dist/ 로 경로 명확화)
+          scp -i key.pem -o StrictHostKeyChecking=no -r ./dist/. $USERNAME@$HOST:$TARGET_DIR/
 
       - name: Placeholder for TEST (main)
         if: github.ref == 'refs/heads/main'
