@@ -1,10 +1,10 @@
-import type { ScheduleRegistResDTO } from "@/api/types";
+import type { ScheduleListItemDTO } from "@/api/types";
 import type { Schedule } from "@/types/scheduleTypes";
 
 /**
- * API 응답 DTO(ScheduleRegistResDTO)를 UI 컴포넌트용 Schedule 타입으로 변환
+ * API 목록 응답 DTO(ScheduleListItemDTO)를 UI 컴포넌트용 Schedule 타입으로 변환
  */
-export const toSchedule = (dto: ScheduleRegistResDTO): Schedule => ({
+export const toSchedule = (dto: ScheduleListItemDTO): Schedule => ({
   scheduleNum: dto.scheduleNum,
   membershipNo: 0,
   scheduleNm: dto.scheduleNm,
@@ -21,27 +21,3 @@ export const toSchedule = (dto: ScheduleRegistResDTO): Schedule => ({
     categoryNum: 0,
   })),
 });
-
-/**
- * 일정 목록을 현재/지난 일정으로 분류
- * @param schedules 전체 일정 목록
- * @returns { current: 현재+미래 일정, past: 지난 일정 }
- */
-export const splitSchedulesByDate = (
-  schedules: Schedule[]
-): { current: Schedule[]; past: Schedule[] } => {
-  const today = new Date().toISOString().slice(0, 10);
-
-  const current: Schedule[] = [];
-  const past: Schedule[] = [];
-
-  schedules.forEach((schedule) => {
-    if (schedule.endDate < today) {
-      past.push(schedule);
-    } else {
-      current.push(schedule);
-    }
-  });
-
-  return { current, past };
-};
