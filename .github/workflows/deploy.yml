@@ -1,0 +1,61 @@
+name: Deploy Frontend to EC2 [main/release]
+
+on:
+  push:
+    branches:
+      - main
+      - release
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: github.ref == 'refs/heads/release'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup SSH key [main/release]
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "release" ]]; then
+            echo "${{ secrets.PROD_PRIVATE_KEY }}" > key.pem
+          else
+            # main 브랜치용 테섭 키가 있다면 여기 작성 (현재는 placeholder)
+            echo "No test server for frontend yet." 
+          fi
+          chmod 600 key.pem
+
+      - name: Set Environment Variables [release]
+        if: github.ref == 'refs/heads/release'
+        run: |
+          echo "HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
+          echo "USERNAME=${{ secrets.PROD_USERNAME }}" >> $GITHUB_ENV
+          # 프론트엔드 실제 정적 파일이 위치할 경로
+          echo "TARGET_DIR=/srv/barogagi/frontend/dist" >> $GITHUB_ENV
+
+      - name: Build Frontend
+        if: github.ref == 'refs/heads/release'
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy to PROD (release)
+        if: github.ref == 'refs/heads/release'
+        run: |
+          set -e
+          # 1. 기존 서버의 dist 폴더 비우기 (남아있는 기존 파일 제거)
+          ssh -i key.pem -o StrictHostKeyChecking=no $USERNAME@$HOST "rm -rf $TARGET_DIR/*"
+          
+          # 2. 빌드된 dist 폴더 내부 파일 전송
+          # (주의: dist 폴더 자체가 아니라 '내용물'을 보내야 하므로 dist/ 뒤에 * 사용)
+          scp -i key.pem -o StrictHostKeyChecking=no -r ./dist/* $USERNAME@$HOST:$TARGET_DIR/
+
+      - name: Placeholder for TEST (main)
+        if: github.ref == 'refs/heads/main'
+        run: echo "Frontend test server is not configured yet. Skipping deploy."
