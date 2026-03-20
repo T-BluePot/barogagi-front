@@ -108,6 +108,7 @@ export const usePlanFormModal = (
   const { place, clearPlace } = useUserPlaceStore();
 
   const [isPlanNameOpen, setIsPlanNameOpen] = useState(false);
+  const [editTargetId, setEditTargetId] = useState<number | null>(null);
 
   const handlePlanNameConfirm = (planNm: string) => {
     setDraft({
@@ -132,8 +133,9 @@ export const usePlanFormModal = (
         };
       });
     } else if (editTargetId !== null) {
-      const targetIndex = items.findIndex((item) => item.id === editTargetId);
-      updateUserPlacePlan(targetIndex, { userAddedPlaceDTO: place });
+      const target = items.find((item) => item.id === editTargetId);
+      if (!target) return;
+      updateUserPlacePlan(target.storeIndex, { userAddedPlaceDTO: place });
       setItems((prev) =>
         prev.map((item) =>
           item.id === editTargetId
@@ -155,7 +157,6 @@ export const usePlanFormModal = (
   // ============================================
   // 카드 클릭 → 기존 데이터를 draft에 복사 후 PlanFormModal 열기
   // ============================================
-  const [editTargetId, setEditTargetId] = useState<number | null>(null);
 
   const handleCardClick = (id: number) => {
     const target = items.find((item) => item.id === id);
@@ -240,24 +241,24 @@ export const usePlanFormModal = (
 
     // (3) 검증 통과 - 수정
     if (draft && editTargetId !== null) {
-      const targetIndex = items.findIndex((item) => item.id === editTargetId);
-      if (targetIndex === -1) return;
+      const target = items.find((item) => item.id === editTargetId);
+      if (!target) return;
 
       if (draft.source === "AI") {
-        updateAIPlan(targetIndex, {
+        updateAIPlan(target.storeIndex, {
           startTime: draft.startTime,
           endTime: draft.endTime,
           regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
           planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [], // ← tagNm 포함 그대로
         });
       } else if (draft.source === "USER_CUSTOM") {
-        updateUserCustomPlan(targetIndex, {
+        updateUserCustomPlan(target.storeIndex, {
           startTime: draft.startTime,
           endTime: draft.endTime,
           planNm: draft.planNm,
         });
       } else if (draft.source === "USER_PLACE") {
-        updateUserPlacePlan(targetIndex, {
+        updateUserPlacePlan(target.storeIndex, {
           startTime: draft.startTime,
           endTime: draft.endTime,
           planNm: draft.planNm,
@@ -310,11 +311,14 @@ export const usePlanFormModal = (
           userAddedPlaceDTO: draft.userAddedPlaceDTO!,
         });
       }
+      const nextStoreIndex =
+        useScheduleDraftStore.getState().draft.planRegistReqDTOList.length - 1;
 
       setItems((prev) => [
         ...prev,
         {
           id: newId,
+          storeIndex: nextStoreIndex,
           source: draft.source,
           title: draft.planNm,
           startTime: draft.startTime,
@@ -359,20 +363,22 @@ export const usePlanFormModal = (
           : null
       );
     } else {
-      const targetIndex = items.findIndex((item) => item.id === timeTargetId);
       const target = items.find((item) => item.id === timeTargetId);
       const newStart = timeValueToHHmm(start);
       const newEnd = timeValueToHHmm(end);
 
       if (target?.source === "AI") {
-        updateAIPlan(targetIndex, { startTime: newStart, endTime: newEnd });
+        updateAIPlan(target.storeIndex, {
+          startTime: newStart,
+          endTime: newEnd,
+        });
       } else if (target?.source === "USER_CUSTOM") {
-        updateUserCustomPlan(targetIndex, {
+        updateUserCustomPlan(target.storeIndex, {
           startTime: newStart,
           endTime: newEnd,
         });
       } else if (target?.source === "USER_PLACE") {
-        updateUserPlacePlan(targetIndex, {
+        updateUserPlacePlan(target.storeIndex, {
           startTime: newStart,
           endTime: newEnd,
         });
@@ -436,8 +442,9 @@ export const usePlanFormModal = (
           : null
       );
     } else {
-      const targetIndex = items.findIndex((item) => item.id === regionTargetId);
-      updateAIPlan(targetIndex, {
+      const target = items.find((item) => item.id === regionTargetId);
+      if (!target) return;
+      updateAIPlan(target.storeIndex, {
         regionRegistReqDTOList: region
           ? [{ regionNum: Number(region.id) }]
           : [],
