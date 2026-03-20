@@ -48,6 +48,7 @@ const SelectDatePage = () => {
           withTitle={true}
           selectedDate={selectedDate}
           onChangeDate={(date) => setSelectedDate(date)}
+          disablePastDates={true}
         />
       </div>
       <div className="mt-auto w-full p-6">
