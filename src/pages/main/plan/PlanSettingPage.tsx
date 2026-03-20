@@ -79,6 +79,7 @@ export const PlanSettingPage = () => {
         if (plan.source === "AI") {
           return {
             id: index,
+            storeIndex: index,
             source: "AI" as const, // ← as const 추가
             title: categoryMap[plan.categoryNum ?? 0] ?? "일정",
             startTime: plan.startTime,
@@ -99,6 +100,7 @@ export const PlanSettingPage = () => {
         if (plan.source === "USER_PLACE") {
           return {
             id: index,
+            storeIndex: index,
             source: "USER_PLACE" as const,
             title: plan.planNm,
             startTime: plan.startTime,
@@ -110,6 +112,7 @@ export const PlanSettingPage = () => {
 
         return {
           id: index,
+          storeIndex: index,
           source: "USER_CUSTOM" as const,
           title: plan.planNm,
           startTime: plan.startTime,
@@ -125,40 +128,45 @@ export const PlanSettingPage = () => {
     const currentPlans =
       useScheduleDraftStore.getState().draft.planRegistReqDTOList;
 
-    // 1. 각 카드의 duration 계산
+    // storeIndex로 정확히 plan 꺼내기
+    const reorderedPlans = newItems.map(
+      (item) => currentPlans[item.storeIndex]
+    );
+
+    // duration 계산 및 시간 재계산 로직 동일
     const durations = newItems.map((item) => {
       if (!item.startTime || !item.endTime) return null;
       return hhmmToMinutes(item.endTime) - hhmmToMinutes(item.startTime);
     });
 
-    // 2. 첫 번째 카드의 시작 시간 기준으로 순서대로 재배치
     let cursor = newItems[0]?.startTime
       ? hhmmToMinutes(newItems[0].startTime)
       : null;
 
-    const reindexed = newItems.map((item, i) => {
-      if (cursor === null || durations[i] === null) {
-        return { ...item, id: i };
-      }
+    const updatedPlans = reorderedPlans.map((plan, i) => {
+      if (cursor === null || durations[i] === null) return plan;
       const newStart = minutesToHHmm(cursor);
       const newEnd = minutesToHHmm(cursor + durations[i]!);
       cursor += durations[i]!;
-      return { ...item, id: i, startTime: newStart, endTime: newEnd };
-    });
+      return { ...plan, startTime: newStart, endTime: newEnd };
+    }) as PlanDraftType[];
 
-    // 3. store도 같이 업데이트
-    const reorderedPlans = newItems.map((item) => currentPlans[item.id]);
-    const updatedPlans = reorderedPlans.map((plan, i) => ({
-      ...plan,
-      startTime: reindexed[i].startTime ?? plan.startTime, // undefined면 기존 값 유지
-      endTime: reindexed[i].endTime ?? plan.endTime,
-    })) as PlanDraftType[];
+    // items도 storeIndex 재정렬 후 재할당
+    const reindexedItems = newItems.map((item, i) => ({
+      ...item,
+      storeIndex: i,
+      startTime: updatedPlans[i].startTime,
+      endTime: updatedPlans[i].endTime,
+    }));
 
-    setItems(reindexed);
+    setItems(reindexedItems);
     setPlanList(updatedPlans);
   };
 
-  const { handleDeleteClick, deleteModalProps } = usePlanDelete(setItems);
+  const { handleDeleteClick, deleteModalProps } = usePlanDelete(
+    items,
+    setItems
+  );
   const {
     formHandlers,
     categoryModalProps,
