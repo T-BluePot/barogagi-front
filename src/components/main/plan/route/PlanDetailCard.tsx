@@ -46,7 +46,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
     <div
       className="flex flex-col items-baseline px-6 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
       onClick={() => {
-        if (!placeLink) return;
+        if (!placeLink && !isOpen) return;
         onToggleOpen();
       }}
     >
