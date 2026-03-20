@@ -139,7 +139,11 @@ export const usePlanFormModal = (
       });
     } else if (editTargetId !== null) {
       const target = items.find((item) => item.id === editTargetId);
-      if (!target) return;
+      if (!target) {
+        setEditTargetId(null);
+        clearPlace();
+        return;
+      }
       convertToUserPlacePlan(target.storeIndex, {
         planNm: target.title,
         startTime: target.startTime ?? "",
@@ -252,7 +256,10 @@ export const usePlanFormModal = (
     // (3) 검증 통과 - 수정
     if (draft && editTargetId !== null) {
       const target = items.find((item) => item.id === editTargetId);
-      if (!target) return;
+      if (!target) {
+        closePlanForm();
+        return;
+      }
 
       if (draft.source === "AI") {
         updateAIPlan(target.storeIndex, {
@@ -449,7 +456,11 @@ export const usePlanFormModal = (
 
   const handleLocationClick = (id: string | number) => {
     const target = items.find((item) => item.id === id);
-    if (!target) return;
+    if (!target) {
+      setIsRegionOpen(false);
+      setRegionTargetId(null);
+      return;
+    }
 
     if (target.source === "AI") {
       setRegionTargetId(id);
