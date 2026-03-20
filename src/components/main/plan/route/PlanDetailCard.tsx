@@ -45,7 +45,10 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   return (
     <div
       className="flex flex-col items-baseline px-6 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
-      onClick={onToggleOpen}
+      onClick={() => {
+        if (!placeLink && !isOpen) return;
+        onToggleOpen();
+      }}
     >
       <div className="flex w-full justify-between items-baseline">
         <div className="flex flex-col justify-start items-start gap-2">
@@ -74,7 +77,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
       <div
         className={clsx(
           "w-full overflow-hidden transition-all duration-300 ease-in-out",
-          isOpen ? "opacity-100 h-max py-3" : "opacity-0 h-0 py-0"
+          isOpen ? "opacity-100 h-max pt-3 pb-6" : "opacity-0 h-0 py-0"
         )}
         onClick={handleMapClick}
       >

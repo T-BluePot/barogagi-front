@@ -15,6 +15,7 @@ import { useScheduleDraftStore } from "@/stores/scheduleStore";
  * - deleteModalProps  : DeletePlanModal 컴포넌트에 그대로 전달할 props
  */
 export const usePlanDelete = (
+  items: PlanData[],
   setItems: Dispatch<SetStateAction<PlanData[]>>
 ) => {
   // 삭제 확인 모달 열림 여부
@@ -33,10 +34,13 @@ export const usePlanDelete = (
   /** 모달에서 "확인" → 해당 카드를 목록에서 제거 후 모달 닫기 */
   const handleConfirm = () => {
     if (targetId !== null) {
-      removePlan(targetId);
+      const target = items.find((item) => item.id === targetId);
+      if (!target) return;
+
+      removePlan(target.storeIndex); // storeIndex 기준으로 삭제
       setItems((prev) => {
         const filtered = prev.filter((item) => item.id !== targetId);
-        return filtered.map((item, i) => ({ ...item, id: i })); // ← id 재할당
+        return filtered.map((item, i) => ({ ...item, storeIndex: i })); // storeIndex 재할당
       });
     }
     setIsOpen(false);

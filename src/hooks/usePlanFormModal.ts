@@ -6,11 +6,14 @@ import type { PlanData } from "@/components/main/plan/PlanCard";
 import type { RegionOption } from "@/components/main/plan/common/modal/content/SelectRegionConfirmModalContent";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
-import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 
 // === util ===
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
+import {
+  usePlanTimeValidation,
+  hhmmToMinutes,
+} from "@/hooks/usePlanTimeValidation";
 
 // === server ===
 import type {
@@ -68,6 +71,8 @@ export const usePlanFormModal = (
     addUserPlacePlan,
     updateUserCustomPlan,
     updateUserPlacePlan,
+    convertToUserPlacePlan,
+    setPlanList,
   } = useScheduleDraftStore();
 
   // ============================================
@@ -108,6 +113,7 @@ export const usePlanFormModal = (
   const { place, clearPlace } = useUserPlaceStore();
 
   const [isPlanNameOpen, setIsPlanNameOpen] = useState(false);
+  const [editTargetId, setEditTargetId] = useState<number | null>(null);
 
   const handlePlanNameConfirm = (planNm: string) => {
     setDraft({
@@ -132,8 +138,18 @@ export const usePlanFormModal = (
         };
       });
     } else if (editTargetId !== null) {
-      const targetIndex = items.findIndex((item) => item.id === editTargetId);
-      updateUserPlacePlan(targetIndex, { userAddedPlaceDTO: place });
+      const target = items.find((item) => item.id === editTargetId);
+      if (!target) {
+        setEditTargetId(null);
+        clearPlace();
+        return;
+      }
+      convertToUserPlacePlan(target.storeIndex, {
+        planNm: target.title,
+        startTime: target.startTime ?? "",
+        endTime: target.endTime ?? "",
+        userAddedPlaceDTO: place,
+      });
       setItems((prev) =>
         prev.map((item) =>
           item.id === editTargetId
@@ -155,7 +171,6 @@ export const usePlanFormModal = (
   // ============================================
   // 카드 클릭 → 기존 데이터를 draft에 복사 후 PlanFormModal 열기
   // ============================================
-  const [editTargetId, setEditTargetId] = useState<number | null>(null);
 
   const handleCardClick = (id: number) => {
     const target = items.find((item) => item.id === id);
@@ -240,24 +255,27 @@ export const usePlanFormModal = (
 
     // (3) 검증 통과 - 수정
     if (draft && editTargetId !== null) {
-      const targetIndex = items.findIndex((item) => item.id === editTargetId);
-      if (targetIndex === -1) return;
+      const target = items.find((item) => item.id === editTargetId);
+      if (!target) {
+        closePlanForm();
+        return;
+      }
 
       if (draft.source === "AI") {
-        updateAIPlan(targetIndex, {
+        updateAIPlan(target.storeIndex, {
           startTime: draft.startTime,
           endTime: draft.endTime,
           regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
           planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [], // ← tagNm 포함 그대로
         });
       } else if (draft.source === "USER_CUSTOM") {
-        updateUserCustomPlan(targetIndex, {
+        updateUserCustomPlan(target.storeIndex, {
           startTime: draft.startTime,
           endTime: draft.endTime,
           planNm: draft.planNm,
         });
       } else if (draft.source === "USER_PLACE") {
-        updateUserPlacePlan(targetIndex, {
+        updateUserPlacePlan(target.storeIndex, {
           startTime: draft.startTime,
           endTime: draft.endTime,
           planNm: draft.planNm,
@@ -294,7 +312,7 @@ export const usePlanFormModal = (
           itemNum: draft.itemNum,
           isRandomCategory,
           regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
-          planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [], // ← tagNm 포함 그대로
+          planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [],
         });
       } else if (draft.source === "USER_CUSTOM") {
         addUserCustomPlan({
@@ -311,22 +329,48 @@ export const usePlanFormModal = (
         });
       }
 
-      setItems((prev) => [
-        ...prev,
-        {
-          id: newId,
-          source: draft.source,
-          title: draft.planNm,
-          startTime: draft.startTime,
-          endTime: draft.endTime,
-          location: draft.address,
-          categoryNum: draft.categoryNum,
-          itemNum: draft.itemNum,
-          planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
-          regionRegistReqDTOList: draft.regionRegistReqDTOList,
-          userAddedPlaceDTO: draft.userAddedPlaceDTO,
-        },
-      ]);
+      // store에 추가된 직후 전체 planList를 시간 순서로 정렬 후 반영
+      const addedList =
+        useScheduleDraftStore.getState().draft.planRegistReqDTOList;
+
+      const sortedList = [...addedList].sort((a, b) => {
+        if (!a.startTime) return 1;
+        if (!b.startTime) return -1;
+        return hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime);
+      });
+
+      setPlanList(sortedList);
+
+      // items도 sortedList 순서에 맞게 재구성
+      const newCard = {
+        id: newId,
+        source: draft.source,
+        title: draft.planNm,
+        startTime: draft.startTime,
+        endTime: draft.endTime,
+        location: draft.address,
+        categoryNum: draft.categoryNum,
+        itemNum: draft.itemNum,
+        planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+        regionRegistReqDTOList: draft.regionRegistReqDTOList,
+        userAddedPlaceDTO: draft.userAddedPlaceDTO,
+      };
+
+      setItems((prev) => {
+        const merged = [
+          ...prev,
+          { ...newCard, storeIndex: addedList.length - 1 },
+        ];
+
+        // startTime 기준 정렬 후 storeIndex 재부여
+        const sorted = [...merged].sort((a, b) => {
+          if (!a.startTime) return 1;
+          if (!b.startTime) return -1;
+          return hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime);
+        });
+
+        return sorted.map((item, i) => ({ ...item, storeIndex: i }));
+      });
     }
 
     closePlanForm();
@@ -359,20 +403,22 @@ export const usePlanFormModal = (
           : null
       );
     } else {
-      const targetIndex = items.findIndex((item) => item.id === timeTargetId);
       const target = items.find((item) => item.id === timeTargetId);
       const newStart = timeValueToHHmm(start);
       const newEnd = timeValueToHHmm(end);
 
       if (target?.source === "AI") {
-        updateAIPlan(targetIndex, { startTime: newStart, endTime: newEnd });
+        updateAIPlan(target.storeIndex, {
+          startTime: newStart,
+          endTime: newEnd,
+        });
       } else if (target?.source === "USER_CUSTOM") {
-        updateUserCustomPlan(targetIndex, {
+        updateUserCustomPlan(target.storeIndex, {
           startTime: newStart,
           endTime: newEnd,
         });
       } else if (target?.source === "USER_PLACE") {
-        updateUserPlacePlan(targetIndex, {
+        updateUserPlacePlan(target.storeIndex, {
           startTime: newStart,
           endTime: newEnd,
         });
@@ -410,7 +456,11 @@ export const usePlanFormModal = (
 
   const handleLocationClick = (id: string | number) => {
     const target = items.find((item) => item.id === id);
-    if (!target) return;
+    if (!target) {
+      setIsRegionOpen(false);
+      setRegionTargetId(null);
+      return;
+    }
 
     if (target.source === "AI") {
       setRegionTargetId(id);
@@ -436,8 +486,9 @@ export const usePlanFormModal = (
           : null
       );
     } else {
-      const targetIndex = items.findIndex((item) => item.id === regionTargetId);
-      updateAIPlan(targetIndex, {
+      const target = items.find((item) => item.id === regionTargetId);
+      if (!target) return;
+      updateAIPlan(target.storeIndex, {
         regionRegistReqDTOList: region
           ? [{ regionNum: Number(region.id) }]
           : [],

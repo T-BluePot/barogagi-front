@@ -24,9 +24,17 @@ const SelectDatePage = () => {
   const draft = useScheduleDraftStore((s) => s.draft);
   const setDraft = useScheduleDraftStore((s) => s.setDraft);
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const parsedDate = draft.startDate
+    ? parseServerDateToLocalDate(draft.startDate)
+    : null;
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(
-    draft.startDate ? parseServerDateToLocalDate(draft.startDate) : null
+    parsedDate && parsedDate >= today ? parsedDate : null // 과거 날짜면 null로 초기화
   );
+
   const handleNext = () => {
     if (!selectedDate) return;
 
@@ -48,6 +56,7 @@ const SelectDatePage = () => {
           withTitle={true}
           selectedDate={selectedDate}
           onChangeDate={(date) => setSelectedDate(date)}
+          disablePastDates={true}
         />
       </div>
       <div className="mt-auto w-full p-6">

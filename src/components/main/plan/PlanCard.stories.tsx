@@ -29,6 +29,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     data: {
+      storeIndex: 0,
       id: 1,
       source: "USER_CUSTOM",
       emoji: "🥓",
@@ -41,6 +42,7 @@ export const Default: Story = {
 export const WithTimeAndLocation: Story = {
   args: {
     data: {
+      storeIndex: 1,
       id: 2,
       source: "USER_CUSTOM",
       emoji: "🥓",
@@ -56,6 +58,7 @@ export const WithTimeAndLocation: Story = {
 export const WithTimeOnly: Story = {
   args: {
     data: {
+      storeIndex: 2,
       id: 4,
       source: "USER_CUSTOM",
       emoji: "☕",
@@ -70,6 +73,7 @@ export const WithTimeOnly: Story = {
 export const WithLocationOnly: Story = {
   args: {
     data: {
+      storeIndex: 3,
       id: 5,
       source: "USER_CUSTOM",
       emoji: "🍜",

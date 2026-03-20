@@ -111,32 +111,20 @@ export const usePlanTimeValidation = (items: PlanData[]) => {
       const startMin = hhmmToMinutes(startTime);
       const endMin = hhmmToMinutes(endTime);
 
-      // insertIndex는 others 기준 인덱스이므로 먼저 슬라이스 후 시간 없는 항목 제외
-      const before = others
-        .slice(0, insertIndex)
-        .filter((item) => item.startTime && item.endTime);
-      for (const prev of before) {
-        const prevEndMin = hhmmToMinutes(prev.endTime!);
-        if (startMin < prevEndMin) {
-          return {
-            isValid: false,
-            errorTitle: "시간 순서를 확인해주세요",
-            errorContent: `"${prev.title}" 일정(~${prev.endTime})보다 앞선 시간입니다.`,
-          };
-        }
-      }
+      // 시간이 있는 항목만 추출해서 시간 기준 겹침 검사
+      const timed = others.filter((item) => item.startTime && item.endTime);
 
-      // 뒷순서 일정과 비교: insertIndex 뒤에 있는 일정들
-      const after = others
-        .slice(insertIndex)
-        .filter((item) => item.startTime && item.endTime);
-      for (const next of after) {
-        const nextStartMin = hhmmToMinutes(next.startTime!);
-        if (endMin > nextStartMin) {
+      for (const existing of timed) {
+        const existStartMin = hhmmToMinutes(existing.startTime!);
+        const existEndMin = hhmmToMinutes(existing.endTime!);
+
+        // 겹침 조건: 새 블록이 기존 블록의 시간 범위와 overlap되는 경우
+        const isOverlap = startMin < existEndMin && endMin > existStartMin;
+        if (isOverlap) {
           return {
             isValid: false,
-            errorTitle: "시간 순서를 확인해주세요",
-            errorContent: `"${next.title}" 일정(${next.startTime}~)과 시간이 겹칩니다.`,
+            errorTitle: "시간이 겹칩니다",
+            errorContent: `"${existing.title}" 일정(${existing.startTime}~${existing.endTime})과 시간이 겹칩니다.`,
           };
         }
       }

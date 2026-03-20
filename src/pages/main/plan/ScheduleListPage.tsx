@@ -26,6 +26,7 @@ const ScheduleListPage = () => {
     if (viewType === "list") {
       setViewType("calendar");
     } else setViewType("list");
+    setSelectedDate(null); // 모드 전환 시 선택된 날짜 초기화
   };
 
   // calendar 모드
@@ -122,7 +123,7 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex w-full px-6 min-h-0 pb-[60px]">
+          <div className="flex w-full px-6 min-h-0">
             <ListView
               schedules={[]}
               pastSchedules={[]}
@@ -131,6 +132,7 @@ const ScheduleListPage = () => {
             />
           </div>
         )}
+        <div className="h-[60px]" />
       </div>
       <div className="fixed bottom-20 right-6 z-35">
         <AddScheduleButton onAddSchedule={handleAddSchedule} />

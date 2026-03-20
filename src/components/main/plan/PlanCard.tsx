@@ -15,6 +15,7 @@ import type { PlanSource } from "@/types/api/scheduleTypes";
 
 export interface PlanData {
   id: number;
+  storeIndex: number;
   source: PlanSource;
   emoji?: string;
   title: string;
