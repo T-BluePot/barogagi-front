@@ -139,9 +139,7 @@ export const PlanSettingPage = () => {
       return hhmmToMinutes(item.endTime) - hhmmToMinutes(item.startTime);
     });
 
-    let cursor = newItems[0]?.startTime
-      ? hhmmToMinutes(newItems[0].startTime)
-      : null;
+    let cursor = items[0]?.startTime ? hhmmToMinutes(items[0].startTime) : null;
 
     const updatedPlans = reorderedPlans.map((plan, i) => {
       if (cursor === null || durations[i] === null) return plan;
