@@ -6,11 +6,14 @@ import type { PlanData } from "@/components/main/plan/PlanCard";
 import type { RegionOption } from "@/components/main/plan/common/modal/content/SelectRegionConfirmModalContent";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
-import { usePlanTimeValidation } from "@/hooks/usePlanTimeValidation";
 
 // === util ===
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
+import {
+  usePlanTimeValidation,
+  hhmmToMinutes,
+} from "@/hooks/usePlanTimeValidation";
 
 // === server ===
 import type {
@@ -68,6 +71,7 @@ export const usePlanFormModal = (
     addUserPlacePlan,
     updateUserCustomPlan,
     updateUserPlacePlan,
+    setPlanList,
   } = useScheduleDraftStore();
 
   // ============================================
@@ -295,7 +299,7 @@ export const usePlanFormModal = (
           itemNum: draft.itemNum,
           isRandomCategory,
           regionRegistReqDTOList: draft.regionRegistReqDTOList ?? [],
-          planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [], // ← tagNm 포함 그대로
+          planTagRegistReqDTOList: draft.planTagRegistReqDTOList ?? [],
         });
       } else if (draft.source === "USER_CUSTOM") {
         addUserCustomPlan({
@@ -311,26 +315,49 @@ export const usePlanFormModal = (
           userAddedPlaceDTO: draft.userAddedPlaceDTO!,
         });
       }
-      const nextStoreIndex =
-        useScheduleDraftStore.getState().draft.planRegistReqDTOList.length - 1;
 
-      setItems((prev) => [
-        ...prev,
-        {
-          id: newId,
-          storeIndex: nextStoreIndex,
-          source: draft.source,
-          title: draft.planNm,
-          startTime: draft.startTime,
-          endTime: draft.endTime,
-          location: draft.address,
-          categoryNum: draft.categoryNum,
-          itemNum: draft.itemNum,
-          planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
-          regionRegistReqDTOList: draft.regionRegistReqDTOList,
-          userAddedPlaceDTO: draft.userAddedPlaceDTO,
-        },
-      ]);
+      // store에 추가된 직후 전체 planList를 시간 순서로 정렬 후 반영
+      const addedList =
+        useScheduleDraftStore.getState().draft.planRegistReqDTOList;
+
+      const sortedList = [...addedList].sort((a, b) => {
+        if (!a.startTime) return 1;
+        if (!b.startTime) return -1;
+        return hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime);
+      });
+
+      setPlanList(sortedList);
+
+      // items도 sortedList 순서에 맞게 재구성
+      const newCard = {
+        id: newId,
+        source: draft.source,
+        title: draft.planNm,
+        startTime: draft.startTime,
+        endTime: draft.endTime,
+        location: draft.address,
+        categoryNum: draft.categoryNum,
+        itemNum: draft.itemNum,
+        planTagRegistReqDTOList: draft.planTagRegistReqDTOList,
+        regionRegistReqDTOList: draft.regionRegistReqDTOList,
+        userAddedPlaceDTO: draft.userAddedPlaceDTO,
+      };
+
+      setItems((prev) => {
+        const merged = [
+          ...prev,
+          { ...newCard, storeIndex: addedList.length - 1 },
+        ];
+
+        // startTime 기준 정렬 후 storeIndex 재부여
+        const sorted = [...merged].sort((a, b) => {
+          if (!a.startTime) return 1;
+          if (!b.startTime) return -1;
+          return hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime);
+        });
+
+        return sorted.map((item, i) => ({ ...item, storeIndex: i }));
+      });
     }
 
     closePlanForm();
