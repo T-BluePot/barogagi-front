@@ -44,8 +44,11 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
 
   return (
     <div
-      className="flex flex-col items-baseline px-6 pt-4 bg-gray-white rounded-xl gap-3 select-none shadow-md"
-      onClick={onToggleOpen}
+      className="flex flex-col items-baseline px-6 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
+      onClick={() => {
+        if (!placeLink) return;
+        onToggleOpen();
+      }}
     >
       <div className="flex w-full justify-between items-baseline">
         <div className="flex flex-col justify-start items-start gap-2">
