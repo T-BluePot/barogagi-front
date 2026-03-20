@@ -71,6 +71,7 @@ export const usePlanFormModal = (
     addUserPlacePlan,
     updateUserCustomPlan,
     updateUserPlacePlan,
+    convertToUserPlacePlan,
     setPlanList,
   } = useScheduleDraftStore();
 
@@ -139,7 +140,12 @@ export const usePlanFormModal = (
     } else if (editTargetId !== null) {
       const target = items.find((item) => item.id === editTargetId);
       if (!target) return;
-      updateUserPlacePlan(target.storeIndex, { userAddedPlaceDTO: place });
+      convertToUserPlacePlan(target.storeIndex, {
+        planNm: target.title,
+        startTime: target.startTime ?? "",
+        endTime: target.endTime ?? "",
+        userAddedPlaceDTO: place,
+      });
       setItems((prev) =>
         prev.map((item) =>
           item.id === editTargetId
