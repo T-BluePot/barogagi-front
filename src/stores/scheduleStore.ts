@@ -126,6 +126,13 @@ export type ScheduleDraftStore = {
     patch: Partial<Omit<UserCustomPlanDraftType, "source" | "isUserAdded">>
   ) => void;
 
+  convertToUserPlacePlan: (
+    index: number,
+    data: Pick<UserPlacePlanDraftType, "planNm" | "startTime" | "endTime"> & {
+      userAddedPlaceDTO: UserAddedPlaceDTO;
+    }
+  ) => void;
+
   removePlan: (index: number) => void;
 
   // plan 목록 교체 (드래그 앤 드롭 순서 변경용)
@@ -256,6 +263,32 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
             ...patch,
             source: "USER_CUSTOM",
             isUserAdded: "Y",
+          };
+
+          return { draft: { ...state.draft, planRegistReqDTOList: next } };
+        }),
+      convertToUserPlacePlan: (
+        index: number,
+        data: Pick<
+          UserPlacePlanDraftType,
+          "planNm" | "startTime" | "endTime"
+        > & {
+          userAddedPlaceDTO: UserAddedPlaceDTO;
+        }
+      ) =>
+        set((state) => {
+          const next = [...state.draft.planRegistReqDTOList];
+          const cur = next[index];
+          if (!cur) return state;
+
+          next[index] = {
+            source: "USER_PLACE",
+            isUserAdded: "Y",
+            isRandomCategory: "N",
+            planNm: data.planNm,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            userAddedPlaceDTO: data.userAddedPlaceDTO,
           };
 
           return { draft: { ...state.draft, planRegistReqDTOList: next } };
