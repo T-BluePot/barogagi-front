@@ -123,7 +123,7 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex w-full px-6 min-h-0 pb-[60px]">
+          <div className="flex w-full px-6 min-h-0">
             <ListView
               schedules={[]}
               pastSchedules={[]}
