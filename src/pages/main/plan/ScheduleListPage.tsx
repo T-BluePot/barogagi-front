@@ -24,7 +24,8 @@ const ScheduleListPage = () => {
   const navigate = useNavigate();
 
   // === 일정 목록 조회 ===
-  const { current, past, all, isLoading } = useScheduleListQuery();
+  const { current, past, all, isLoading, isError, refetch } =
+    useScheduleListQuery();
   const deleteMutation = useDeleteScheduleMutation();
 
   const [viewType, setViewType] = useState<ScheduleViewType>("list");
@@ -111,7 +112,19 @@ const ScheduleListPage = () => {
       />
       <ScheduleListHeader viewType={viewType} toggleViewType={toggleViewType} />
       <div className="flex-1">
-        {viewType === "calendar" ? (
+        {isError ? (
+          <div className="flex flex-col items-center justify-center w-full pt-25 gap-4">
+            <p className="typo-sub-title text-gray-70">
+              일정을 불러오지 못했습니다.
+            </p>
+            <button
+              className="typo-body text-main underline"
+              onClick={() => refetch()}
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : viewType === "calendar" ? (
           <div className="flex h-full">
             <CalendarView
               selectedDate={selectedDate}
