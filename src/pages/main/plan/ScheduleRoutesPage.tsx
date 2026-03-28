@@ -19,10 +19,17 @@ import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInpu
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 
 // === server ===
+import { useQueryClient } from "@tanstack/react-query";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 import { createSchedule, saveSchedule, getScheduleDetail } from "@/api/queries";
-import type { PlanRegistResDTO, ScheduleRegistResDTO } from "@/api/types";
+import { scheduleKeys } from "@/api/keyFactories";
+import type {
+  PlanRegistResDTO,
+  ScheduleRegistResDTO,
+  BaseResponse,
+  ScheduleListResDTO,
+} from "@/api/types";
 import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
@@ -35,6 +42,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const isDetail = variant === "detail";
 
   // ----- create: 일정 생성 로직 -----
+  const queryClient = useQueryClient();
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
@@ -112,13 +120,25 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         }
 
         // ScheduleDetailResDTO → 공통 state로 변환 후 저장
+        // detail API에 태그가 포함되지 않으므로 목록 캐시에서 복원
+        const listCache = queryClient.getQueryData<
+          BaseResponse<ScheduleListResDTO>
+        >(scheduleKeys.lists());
+        const allItems = [
+          ...(listCache?.data?.upcomingSchedules ?? []),
+          ...(listCache?.data?.pastSchedules ?? []),
+        ];
+        const cachedTags =
+          allItems.find((s) => s.scheduleNum === res.data.scheduleNum)
+            ?.scheduleTagRegistResDTOList ?? [];
+
         const convertedPlans = res.data.planDetailVOList.map(toCommonPlan);
         setScheduleResult({
           scheduleNum: res.data.scheduleNum,
           scheduleNm: res.data.scheduleNm,
           startDate: res.data.startDate,
           endDate: res.data.endDate,
-          scheduleTagRegistResDTOList: [],
+          scheduleTagRegistResDTOList: cachedTags,
           planRegistResDTOList: convertedPlans,
         });
         setPlanList(convertedPlans);
