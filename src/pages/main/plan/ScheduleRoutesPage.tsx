@@ -316,7 +316,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             isOpen: isEditModalOpen,
             onClose: () => {
               // editDraft 변경사항을 planList와 scheduleResult에 반영 후 수정 API 호출
+              // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
               if (scheduleResult) {
+                const prevPlans = planList;
+                const prevSchedule = scheduleResult;
+
                 const updatedPlans = planList.map((p) =>
                   p.planNum === editDraft.planNum
                     ? {
@@ -335,7 +339,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                 };
                 setPlanList(updatedPlans);
                 setScheduleResult(updatedSchedule);
-                updateMutation.mutate(updatedSchedule);
+                updateMutation.mutate(updatedSchedule, {
+                  onError: () => {
+                    setPlanList(prevPlans);
+                    setScheduleResult(prevSchedule);
+                  },
+                });
               }
               setIsEditModalOpen(false);
               clearDraft();
@@ -391,6 +400,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             return;
           }
           // 해당 계획을 목록에서 제거 후 수정 API 호출
+          // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
+          const prevPlans = planList;
+          const prevSchedule = scheduleResult;
+
           const updatedPlans = planList.filter(
             (p) => p.planNum !== deletePlanNum
           );
@@ -400,7 +413,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           };
           setPlanList(updatedPlans);
           setScheduleResult(updatedSchedule);
-          updateMutation.mutate(updatedSchedule);
+          updateMutation.mutate(updatedSchedule, {
+            onError: () => {
+              setPlanList(prevPlans);
+              setScheduleResult(prevSchedule);
+            },
+          });
           handleCloseDeleteModal();
         }}
       />
