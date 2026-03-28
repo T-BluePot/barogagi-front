@@ -9,12 +9,21 @@ import type { ScheduleRegistResDTO } from "@/api/types";
 /**
  * 일정 수정 뮤테이션 훅
  * - 수정 성공 시 일정 목록 및 상세 캐시를 무효화하여 최신 데이터 반영
+ * - HTTP 200이지만 BaseResponse.code가 성공이 아닌 경우를 검증
  */
 export const useUpdateScheduleMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ScheduleRegistResDTO) => updateSchedule(data),
+    mutationFn: async (data: ScheduleRegistResDTO) => {
+      const res = await updateSchedule(data);
+
+      if (!res.code.startsWith("S")) {
+        throw new Error(res.message ?? "일정 수정에 실패했습니다.");
+      }
+
+      return res;
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: scheduleKeys.lists() });
       queryClient.invalidateQueries({
@@ -26,7 +35,7 @@ export const useUpdateScheduleMutation = () => {
       if (err instanceof AxiosError) {
         toast(err.response?.data?.message ?? "일정 수정에 실패했습니다.");
       } else {
-        toast("일정 수정에 실패했습니다.");
+        toast(err.message || "일정 수정에 실패했습니다.");
       }
     },
   });
