@@ -150,6 +150,7 @@ export interface TagDetailVO {
 export interface PlanDetailVO {
   planNum: number;
   planNm: string;
+  planLink: string | null;
   startTime: string;
   endTime: string;
   itemNum: number;

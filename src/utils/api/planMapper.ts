@@ -6,6 +6,7 @@ import type { PlanRegistResDTO, PlanDetailVO } from "@/api/types";
 export const toCommonPlan = (vo: PlanDetailVO): PlanRegistResDTO => ({
   planNum: vo.planNum,
   planNm: vo.planNm,
+  planLink: vo.planLink ?? undefined,
   startTime: vo.startTime,
   endTime: vo.endTime,
   itemNum: vo.itemNum,
