@@ -33,9 +33,10 @@ const WithdrawalModal = ({
   useEffect(() => {
     if (isOpen) {
       setShouldRenderLayout(true);
-      requestAnimationFrame(() => {
+      const rafId = requestAnimationFrame(() => {
         setShowAnimation(true);
       });
+      return () => cancelAnimationFrame(rafId);
     } else {
       setShowAnimation(false);
     }
