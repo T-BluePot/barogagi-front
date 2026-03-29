@@ -15,13 +15,25 @@ import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesCo
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
+import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInputModal";
+import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 
 // === server ===
+import { useQueryClient } from "@tanstack/react-query";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 import { createSchedule, saveSchedule, getScheduleDetail } from "@/api/queries";
-import type { PlanRegistResDTO, ScheduleRegistResDTO } from "@/api/types";
+import { scheduleKeys } from "@/api/keyFactories";
+import type {
+  PlanRegistResDTO,
+  ScheduleRegistResDTO,
+  BaseResponse,
+  ScheduleListResDTO,
+} from "@/api/types";
 import { toCommonPlan } from "@/utils/api/planMapper";
+import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
+import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
+import type { TimeValue } from "@/utils/date";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
@@ -30,8 +42,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const isDetail = variant === "detail";
 
   // ----- create: 일정 생성 로직 -----
+  const queryClient = useQueryClient();
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
+  const updateMutation = useUpdateScheduleMutation();
 
   // create / detail 공통 state
   const [scheduleResult, setScheduleResult] =
@@ -106,13 +120,25 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         }
 
         // ScheduleDetailResDTO → 공통 state로 변환 후 저장
+        // detail API에 태그가 포함되지 않으므로 목록 캐시에서 복원
+        const listCache = queryClient.getQueryData<
+          BaseResponse<ScheduleListResDTO>
+        >(scheduleKeys.lists());
+        const allItems = [
+          ...(listCache?.data?.upcomingSchedules ?? []),
+          ...(listCache?.data?.pastSchedules ?? []),
+        ];
+        const cachedTags =
+          allItems.find((s) => s.scheduleNum === res.data.scheduleNum)
+            ?.scheduleTagRegistResDTOList ?? [];
+
         const convertedPlans = res.data.planDetailVOList.map(toCommonPlan);
         setScheduleResult({
           scheduleNum: res.data.scheduleNum,
           scheduleNm: res.data.scheduleNm,
           startDate: res.data.startDate,
           endDate: res.data.endDate,
-          scheduleTagRegistResDTOList: [],
+          scheduleTagRegistResDTOList: cachedTags,
           planRegistResDTOList: convertedPlans,
         });
         setPlanList(convertedPlans);
@@ -202,6 +228,37 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setPlanNotes((prev) => ({ ...prev, [planNum]: nextValue }));
   };
 
+  // ----- 계획 제목 수정 모달 -----
+  const [isNameModalOpen, setIsNameModalOpen] = useState<boolean>(false);
+
+  const handleEditTitleClick = () => setIsNameModalOpen(true);
+
+  const handleNameConfirm = (planNm: string) => {
+    if (editDraft) {
+      setDraft({ ...editDraft, plan: { ...editDraft.plan, planNm } });
+    }
+    setIsNameModalOpen(false);
+  };
+
+  // ----- 계획 시간 수정 모달 -----
+  const [isTimeModalOpen, setIsTimeModalOpen] = useState<boolean>(false);
+
+  const handleTimeClick = () => setIsTimeModalOpen(true);
+
+  const handleTimeConfirm = (start: TimeValue, end: TimeValue) => {
+    if (editDraft) {
+      setDraft({
+        ...editDraft,
+        plan: {
+          ...editDraft.plan,
+          startTime: timeValueToHHmm(start),
+          endTime: timeValueToHHmm(end),
+        },
+      });
+    }
+    setIsTimeModalOpen(false);
+  };
+
   // ----- 일정 confirm -----
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
@@ -258,11 +315,42 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           action={{
             isOpen: isEditModalOpen,
             onClose: () => {
+              // editDraft 변경사항을 planList와 scheduleResult에 반영 후 수정 API 호출
+              // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
+              if (scheduleResult) {
+                const prevPlans = planList;
+                const prevSchedule = scheduleResult;
+
+                const updatedPlans = planList.map((p) =>
+                  p.planNum === editDraft.planNum
+                    ? {
+                        ...p,
+                        planNm: editDraft.plan.planNm,
+                        startTime: editDraft.plan.startTime,
+                        endTime: editDraft.plan.endTime,
+                        regionNm: editDraft.place.placeNm,
+                        planAddress: editDraft.place.address,
+                      }
+                    : p
+                );
+                const updatedSchedule = {
+                  ...scheduleResult,
+                  planRegistResDTOList: updatedPlans,
+                };
+                setPlanList(updatedPlans);
+                setScheduleResult(updatedSchedule);
+                updateMutation.mutate(updatedSchedule, {
+                  onError: () => {
+                    setPlanList(prevPlans);
+                    setScheduleResult(prevSchedule);
+                  },
+                });
+              }
               setIsEditModalOpen(false);
               clearDraft();
             },
             onConfirm: () => {},
-            onClickEditTitle: () => {},
+            onClickEditTitle: handleEditTitleClick,
           }}
           info={{
             mode: "Edit",
@@ -272,7 +360,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             endTime: editDraft.plan.endTime,
             address: editDraft.place.address,
             onClickAddress: () => navigate("search"),
-            onClickTime: () => {},
+            onClickTime: handleTimeClick,
             note: planNotes[editDraft.planNum],
             noteValue: planNotes[editDraft.planNum] ?? "",
             onChangeNote: (next: string) =>
@@ -281,11 +369,56 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         />
       )}
 
+      <PlanNameInputModal
+        isOpen={isNameModalOpen}
+        onConfirm={handleNameConfirm}
+        onCancel={() => setIsNameModalOpen(false)}
+      />
+
+      <SelectTimeConfirmModal
+        isOpen={isTimeModalOpen}
+        initialStartTime={
+          editDraft?.plan.startTime
+            ? hhmmToTimeValue(editDraft.plan.startTime)
+            : undefined
+        }
+        initialEndTime={
+          editDraft?.plan.endTime
+            ? hhmmToTimeValue(editDraft.plan.endTime)
+            : undefined
+        }
+        onConfirm={handleTimeConfirm}
+        onCancel={() => setIsTimeModalOpen(false)}
+      />
+
       <DeletePlanModal
         isOpen={isDeleteModalOpen}
         onClickCancel={handleCloseDeleteModal}
         onClickConfirm={() => {
-          console.log("삭제할 일정:", deletePlanNum);
+          if (deletePlanNum == null || !scheduleResult) {
+            handleCloseDeleteModal();
+            return;
+          }
+          // 해당 계획을 목록에서 제거 후 수정 API 호출
+          // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
+          const prevPlans = planList;
+          const prevSchedule = scheduleResult;
+
+          const updatedPlans = planList.filter(
+            (p) => p.planNum !== deletePlanNum
+          );
+          const updatedSchedule = {
+            ...scheduleResult,
+            planRegistResDTOList: updatedPlans,
+          };
+          setPlanList(updatedPlans);
+          setScheduleResult(updatedSchedule);
+          updateMutation.mutate(updatedSchedule, {
+            onError: () => {
+              setPlanList(prevPlans);
+              setScheduleResult(prevSchedule);
+            },
+          });
           handleCloseDeleteModal();
         }}
       />

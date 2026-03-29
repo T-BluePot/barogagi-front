@@ -60,6 +60,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
             <button
               ref={moreButtonRef}
               onClick={handleEditClick}
+              aria-label="더보기"
               className="rounded-full bg-transparent w-[24px] h-[24px] hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
             >
               <MoreVertIcon className="text-gray-40 !text-[20px]" />
