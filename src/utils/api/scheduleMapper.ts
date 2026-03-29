@@ -6,18 +6,11 @@ import type { Schedule } from "@/types/scheduleTypes";
  */
 export const toSchedule = (dto: ScheduleListItemDTO): Schedule => ({
   scheduleNum: dto.scheduleNum,
-  membershipNo: 0,
   scheduleNm: dto.scheduleNm,
   startDate: dto.startDate,
   endDate: dto.endDate,
-  radius: 0,
-  regDate: "",
-  delYn: "N",
-  updDate: "",
   tags: (dto.scheduleTagRegistResDTOList ?? []).map((t) => ({
     tagNum: t.tagNum,
     tagNm: t.tagNm,
-    tagType: "",
-    categoryNum: 0,
   })),
 });
