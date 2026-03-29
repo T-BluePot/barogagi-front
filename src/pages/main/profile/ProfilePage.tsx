@@ -1,19 +1,26 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getMe } from "@/api/queries/authQueries";
+import { getMe, withdrawMe } from "@/api/queries/authQueries";
 import { authKeys } from "@/api/keyFactories";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_PAGE_TEXT } from "@/constants/texts/main/profile";
+import { WITHDRAWAL_MODAL_TEXT } from "@/constants/texts/main/profile/withdrawal";
 import ProfileInfoSection from "@/components/main/profile/ProfileInfoSection";
 import ProfileMenuSection from "@/components/main/profile/ProfileMenuSection";
 import ProfileMenuItem from "@/components/main/profile/ProfileMenuItem";
+import WithdrawalModal from "@/components/main/profile/WithdrawalModal";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
+import { useAlertModalStore } from "@/stores/alertModalStore";
 import type { BaseResponse } from "@/api/types";
 import type { UserData } from "@/types/profileTypes";
+import type { WithdrawalReason } from "@/constants/texts/main/profile/withdrawal";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { openConfirmModal } = useConfirmModalStore();
+  const { openAlertModal } = useAlertModalStore();
+  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
 
   // 사용자 정보 조회
   const { data: userResponse } = useQuery({
@@ -32,10 +39,25 @@ const ProfilePage = () => {
   };
 
   // 회원 탈퇴 처리
-  const handleWithdraw = () => {
-    // TODO: 회원 탈퇴 API 호출 구현
-    localStorage.removeItem("accessToken");
-    navigate(ROUTES.AUTH.SIGNIN, { replace: true });
+  const handleWithdraw = async (_reason: WithdrawalReason, _detail: string) => {
+    try {
+      const response = await withdrawMe();
+
+      if (response.code === "D200") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("accessTokenExpiry");
+        localStorage.removeItem("refreshTokenExpiry");
+
+        setIsWithdrawalModalOpen(false);
+        openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.SUCCESS_MESSAGE });
+        navigate(ROUTES.AUTH.SIGNIN, { replace: true });
+      } else {
+        openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+      }
+    } catch {
+      openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+    }
   };
 
   // 로그아웃 모달 열기
@@ -48,19 +70,6 @@ const ProfilePage = () => {
         cancelLabel: PROFILE_PAGE_TEXT.LOGOUT_MODAL.CANCEL_LABEL,
       },
       handleLogout
-    );
-  };
-
-  // 탈퇴 모달 열기
-  const handleOpenWithdrawModal = () => {
-    openConfirmModal(
-      {
-        title: PROFILE_PAGE_TEXT.WITHDRAW_MODAL.TITLE,
-        content: PROFILE_PAGE_TEXT.WITHDRAW_MODAL.CONTENT,
-        confirmLabel: PROFILE_PAGE_TEXT.WITHDRAW_MODAL.CONFIRM_LABEL,
-        cancelLabel: PROFILE_PAGE_TEXT.WITHDRAW_MODAL.CANCEL_LABEL,
-      },
-      handleWithdraw
     );
   };
 
@@ -82,9 +91,16 @@ const ProfilePage = () => {
         />
         <ProfileMenuItem
           label={PROFILE_PAGE_TEXT.MENU_SECTION.WITHDRAW}
-          onClick={handleOpenWithdrawModal}
+          onClick={() => setIsWithdrawalModalOpen(true)}
         />
       </ProfileMenuSection>
+
+      {/* 회원 탈퇴 모달 */}
+      <WithdrawalModal
+        isOpen={isWithdrawalModalOpen}
+        onClose={() => setIsWithdrawalModalOpen(false)}
+        onConfirm={handleWithdraw}
+      />
     </div>
   );
 };

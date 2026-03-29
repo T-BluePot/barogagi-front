@@ -173,3 +173,21 @@ export const resetPassword = async (userId: string, password: string) => {
   );
   return response.data;
 };
+
+/** 회원 탈퇴 */
+export const withdrawMe = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) {
+    throw new Error("refreshToken이 없습니다.");
+  }
+
+  const response = await http.delete<BaseResponse<unknown>>(
+    ENDPOINTS.USERS.ME,
+    {
+      headers: {
+        "REFRESH-TOKEN": refreshToken,
+      },
+    }
+  );
+  return response.data;
+};
