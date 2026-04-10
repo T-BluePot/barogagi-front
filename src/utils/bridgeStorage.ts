@@ -18,3 +18,6 @@ const bridgeStorage = {
 };
 
 export default bridgeStorage;
+
+export const getPersistStorage = () =>
+  window.BarogagiApp ? bridgeStorage : sessionStorage;
