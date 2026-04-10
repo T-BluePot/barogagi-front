@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import bridgeStorage from "@/utils/bridgeStorage";
 import type {
   SignupPayloadType,
   RequiredFieldKey,
@@ -137,7 +138,7 @@ export const useSignupStore = create<SignupState>()(
     }),
     {
       name: "signup:draft",
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => window.BarogagiApp ? bridgeStorage : sessionStorage),
       partialize: (state) => {
         const draft = { ...state.draft };
         delete draft.password;

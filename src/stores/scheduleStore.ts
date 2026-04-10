@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import bridgeStorage from "@/utils/bridgeStorage";
 
 // === schedule types ===
 import type {
@@ -351,7 +352,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
     }),
     {
       name: "schedule:create:draft",
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => window.BarogagiApp ? bridgeStorage : sessionStorage),
       partialize: (state) => ({
         draft: state.draft,
         editingPlanIndex: state.editingPlanIndex,
