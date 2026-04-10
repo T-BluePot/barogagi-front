@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
+import { getPersistStorage } from "@/utils/bridgeStorage";
 
 type RegionSelectionStore = {
   // 선택된 지역 목록(최대 3개)
@@ -68,7 +69,7 @@ export const useRegionSelectionStore = create<RegionSelectionStore>()(
     }),
     {
       name: "plan:create:selected-regions",
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(getPersistStorage),
       partialize: (state) => ({ selectedRegions: state.selectedRegions }),
     }
   )
