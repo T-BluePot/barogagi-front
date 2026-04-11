@@ -217,7 +217,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       place: {
         placeNum: null,
         placeNm: target.regionNm ?? "",
-        address: target.planAddress ?? "",
+        address: target.planAddress ?? target.regionNm ?? "",
       },
     });
 
