@@ -13,6 +13,7 @@ import type { TimeValue } from "@/utils/date";
 import {
   usePlanTimeValidation,
   hhmmToMinutes,
+  minutesToHHmm,
 } from "@/hooks/usePlanTimeValidation";
 
 // === server ===
@@ -566,6 +567,17 @@ export const usePlanFormModal = (
       ? { startTime: draft?.startTime, endTime: draft?.endTime }
       : items.find((item) => item.id === timeTargetId);
 
+  // 새 일정 기본 시간: 기존 블록이 있을 때 이전 블록의 종료 시간 기준
+  const isDraftNoTime = timeTargetId === DRAFT_ID && !draft?.startTime;
+  const timedItems = isDraftNoTime ? items.filter((item) => item.endTime) : [];
+  const lastTimedItem = timedItems.length > 0 ? timedItems[timedItems.length - 1] : null;
+  const newDraftDefaultStart = lastTimedItem?.endTime
+    ? hhmmToTimeValue(lastTimedItem.endTime)
+    : undefined;
+  const newDraftDefaultEnd = lastTimedItem?.endTime
+    ? hhmmToTimeValue(minutesToHHmm(hhmmToMinutes(lastTimedItem.endTime) + 60))
+    : undefined;
+
   const regionEditTarget =
     regionTargetId === DRAFT_ID
       ? { location: draft?.address }
@@ -636,10 +648,10 @@ export const usePlanFormModal = (
       isOpen: isTimeOpen,
       initialStartTime: timeEditTarget?.startTime
         ? hhmmToTimeValue(timeEditTarget.startTime)
-        : undefined,
+        : newDraftDefaultStart,
       initialEndTime: timeEditTarget?.endTime
         ? hhmmToTimeValue(timeEditTarget.endTime)
-        : undefined,
+        : newDraftDefaultEnd,
       onConfirm: handleTimeConfirm,
       onCancel: handleTimeCancel,
     },
