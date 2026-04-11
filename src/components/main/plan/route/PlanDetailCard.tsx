@@ -22,7 +22,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const placeAddress = plan.planAddress ?? "";
   const placeInfo = plan.planDescription ?? "";
   const placeLink = plan.planLink ?? "";
-  const tagNames = plan.planTagRegistResDTOList.map((t) => t.tagNm);
+  const tagNames = (plan.planTagRegistResDTOList ?? []).map((t) => t.tagNm);
   const planNum = plan.planNum;
   const imageSrc = src ?? fallbackImg;
 
