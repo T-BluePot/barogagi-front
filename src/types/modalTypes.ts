@@ -29,6 +29,7 @@ export interface CommonConfirmModalLayoutPropsType {
   cancelButtonInfo: ButtonInfoType; // 취소 버튼 정보
   onCloseComplete: () => void; // 페이드아웃 애니메이션 완료 시 호출
   children?: ReactNode; // 모달 내용 영역
+  contentClassName?: string; // 콘텐츠 영역 overflow 등 커스터마이징
 }
 
 export interface CommonConfirmModalPropsType {

@@ -66,6 +66,7 @@ const WithdrawalModal = ({
   return (
     <CommonConfirmModalLayout
       isVisible={showAnimation}
+      contentClassName="overflow-visible"
       confirmButtonInfo={{
         label: WITHDRAWAL_MODAL_TEXT.CONFIRM_LABEL,
         onClick: handleConfirm,

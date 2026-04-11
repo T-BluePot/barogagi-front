@@ -7,6 +7,7 @@ export default function CommonConfirmModalLayout({
   cancelButtonInfo,
   onCloseComplete,
   children,
+  contentClassName,
 }: CommonConfirmModalLayoutPropsType) {
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -39,7 +40,7 @@ export default function CommonConfirmModalLayout({
         onClick={(e) => e.stopPropagation()} // 모달 내용 클릭 시 이벤트 전파 중지
       >
         {/* 모달 내용 영역 */}
-        <div className="flex-1 overflow-y-auto p-4">{children}</div>
+        <div className={`flex-1 p-4 ${contentClassName ?? "overflow-y-auto"}`}>{children}</div>
 
         {/* 버튼 영역 */}
         <div className="flex justify-center border-t border-gray-10 flex-shrink-0">
