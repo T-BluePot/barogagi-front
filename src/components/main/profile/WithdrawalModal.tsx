@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
 import CommonSelectBox from "@/components/common/inputs/CommonSelectBox";
 import CommonTextarea from "@/components/common/inputs/CommonTextarea";
-import {
-  WITHDRAWAL_REASONS,
-  WITHDRAWAL_MODAL_TEXT,
-  type WithdrawalReason,
-} from "@/constants/texts/main/profile/withdrawal";
+import { WITHDRAWAL_MODAL_TEXT } from "@/constants/texts/main/profile/withdrawal";
+import { useWithdrawalReasonsQuery } from "@/hooks/queries/useWithdrawalReasonsQuery";
+import type { WithdrawalReasonDTO } from "@/api/types";
 
 interface WithdrawalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (reason: WithdrawalReason, detail: string) => void;
+  onConfirm: (reasonNo: number, withdrawReason: string) => void;
 }
 
 const WithdrawalModal = ({
@@ -19,9 +17,9 @@ const WithdrawalModal = ({
   onClose,
   onConfirm,
 }: WithdrawalModalProps) => {
-  const [selectedReason, setSelectedReason] = useState<WithdrawalReason | null>(
-    null
-  );
+  const { reasons } = useWithdrawalReasonsQuery();
+
+  const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [detail, setDetail] = useState("");
 
   // 두 단계 애니메이션: shouldRenderLayout(마운트) + showAnimation(CSS 트랜지션)
@@ -29,6 +27,8 @@ const WithdrawalModal = ({
   const [showAnimation, setShowAnimation] = useState(false);
 
   const isConfirmDisabled = !selectedReason;
+
+  const reasonOptions = reasons.map((r: WithdrawalReasonDTO) => r.reason);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,16 +44,14 @@ const WithdrawalModal = ({
 
   const handleConfirm = () => {
     if (isConfirmDisabled || !selectedReason) return;
-    onConfirm(selectedReason, detail.trim());
+    const matched = reasons.find((r: WithdrawalReasonDTO) => r.reason === selectedReason);
+    if (!matched) return;
+    onConfirm(matched.reasonNo, matched.reason);
   };
 
   const handleCancel = () => {
     resetState();
     onClose();
-  };
-
-  const handleSelectReason = (reason: WithdrawalReason) => {
-    setSelectedReason(reason);
   };
 
   const resetState = () => {
@@ -96,8 +94,8 @@ const WithdrawalModal = ({
         label={WITHDRAWAL_MODAL_TEXT.REASON_LABEL}
         placeholder={WITHDRAWAL_MODAL_TEXT.REASON_PLACEHOLDER}
         value={selectedReason}
-        options={WITHDRAWAL_REASONS}
-        onChange={handleSelectReason}
+        options={reasonOptions}
+        onChange={setSelectedReason}
       />
 
       {/* 사유 상세 입력 */}
