@@ -22,7 +22,7 @@ export const ScheduleCard = ({
   isPast = false,
 }: ScheduleCardProps) => {
   const cardClasses = clsx(
-    "flex flex-col w-full p-6 items-baseline border rounded-xl gap-4 cursor-pointer bg-gray-white",
+    "flex flex-col w-full pt-4 pb-3.5 px-3 items-baseline border rounded-xl gap-3 cursor-pointer bg-gray-white",
     {
       "border-gray-black": !isPast,
       "border-gray-80": isPast,
@@ -35,7 +35,7 @@ export const ScheduleCard = ({
         {/* 기존 카드 */}
         <div onClick={onClickCard} className={cardClasses}>
           {/* 카드 헤더 */}
-          <div className="flex w-full justify-between items-baseline">
+          <div className="flex w-full justify-between items-baseline pl-2">
             <div className="flex flex-col items-baseline gap-2">
               {/* 날짜 */}
               <div className="flex items-center gap-1">
@@ -67,13 +67,17 @@ export const ScheduleCard = ({
           </div>
 
           {/* 태그 */}
-          <div className="flex gap-2">
-            {schedule.tags.map((tag, idx) => (
-              <CommonTag key={idx} label={tag.tagNm} size="small" />
-            ))}
-          </div>
+          {/* 태그가 없을 때 빈 공간 유지용 div */}
+          {schedule.tags.length > 0 ? (
+            <div className="flex gap-2">
+              {schedule.tags.map((tag, idx) => (
+                <CommonTag key={idx} label={tag.tagNm} size="small" />
+              ))}
+            </div>
+          ) : (
+            <div />
+          )}
         </div>
-
         {/* 지난 일정일 때만 오버레이 표시 */}
         {isPast && (
           <div className="pointer-events-none absolute inset-0 bg-black/25 backdrop-blur-[1px]" />
