@@ -9,7 +9,7 @@ import type { WithdrawalReasonDTO } from "@/api/types";
 interface WithdrawalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (reasonNo: number, withdrawReason: string) => void;
+  onConfirm: (reasonNo: number, withdrawReason?: string) => void;
 }
 
 const WithdrawalModal = ({
@@ -46,7 +46,8 @@ const WithdrawalModal = ({
     if (isConfirmDisabled || !selectedReason) return;
     const matched = reasons.find((r: WithdrawalReasonDTO) => r.reasonNm === selectedReason);
     if (!matched) return;
-    onConfirm(matched.reasonNo, detail.trim());
+    const trimmed = detail.trim();
+    onConfirm(matched.reasonNo, trimmed || undefined);
   };
 
   const handleCancel = () => {

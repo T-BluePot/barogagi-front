@@ -38,7 +38,7 @@ const ProfilePage = () => {
   };
 
   // 회원 탈퇴 처리
-  const handleWithdraw = async (reasonNo: number, withdrawReason: string) => {
+  const handleWithdraw = async (reasonNo: number, withdrawReason?: string) => {
     try {
       const response = await withdrawMe({ reasonNo, withdrawReason });
 

@@ -97,5 +97,5 @@ export interface WithdrawalReasonDTO {
 /** 회원 탈퇴 요청 DTO */
 export interface WithdrawRequestDTO {
   reasonNo: number;
-  withdrawReason: string;
+  withdrawReason?: string;
 }
