@@ -153,7 +153,6 @@ const ScheduleListPage = () => {
             )}
           </div>
         )}
-        <div className="h-[60px]" />
       </div>
       <div className="fixed bottom-20 right-6 z-35">
         <AddScheduleButton onAddSchedule={handleAddSchedule} />

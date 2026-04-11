@@ -188,7 +188,7 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isContentDark: false,
   },
   [ROUTES.MAIN.PROFILE]: {
-    type: "back",
+    type: "title",
     label: "프로필",
     isHeaderDark: true,
   },

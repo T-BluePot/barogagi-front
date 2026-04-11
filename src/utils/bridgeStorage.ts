@@ -19,5 +19,13 @@ const bridgeStorage = {
 
 export default bridgeStorage;
 
+const sessionStorageAdapter = {
+  getItem: (name: string) => Promise.resolve(sessionStorage.getItem(name)),
+  setItem: (name: string, value: string) =>
+    Promise.resolve(sessionStorage.setItem(name, value)),
+  removeItem: (name: string) =>
+    Promise.resolve(sessionStorage.removeItem(name)),
+};
+
 export const getPersistStorage = () =>
-  window.BarogagiApp ? bridgeStorage : sessionStorage;
+  window.BarogagiApp ? bridgeStorage : sessionStorageAdapter;

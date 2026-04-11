@@ -151,6 +151,7 @@ export interface PlanDetailVO {
   planNum: number;
   planNm: string;
   planLink: string | null;
+  planDescription?: string;
   startTime: string;
   endTime: string;
   itemNum: number;
