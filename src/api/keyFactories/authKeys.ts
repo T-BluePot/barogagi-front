@@ -21,4 +21,7 @@ export const authKeys = {
 
   /** 현재 로그인한 사용자 정보 조회 키 (예: ["auth", "me"]) */
   me: () => [...authKeys.all, "me"] as const,
+
+  /** 탈퇴 사유 목록 조회 키 (예: ["auth", "withdrawal-reasons"]) */
+  withdrawalReasons: () => [...authKeys.all, "withdrawal-reasons"] as const,
 } as const;

@@ -18,6 +18,8 @@ import type {
   ApprovalCompleteRequestType,
   FindUserResponseType,
   PasswordResetConfirmDTO,
+  WithdrawalReasonDTO,
+  WithdrawRequestDTO,
 } from "../types";
 
 // === data type ===
@@ -174,8 +176,16 @@ export const resetPassword = async (userId: string, password: string) => {
   return response.data;
 };
 
+/** 탈퇴 사유 목록 조회 */
+export const getWithdrawalReasons = async () => {
+  const response = await apiKeyHttp.get<BaseResponse<WithdrawalReasonDTO[]>>(
+    ENDPOINTS.USERS.WITHDRAWAL_REASONS
+  );
+  return response.data;
+};
+
 /** 회원 탈퇴 */
-export const withdrawMe = async () => {
+export const withdrawMe = async (data: WithdrawRequestDTO) => {
   const refreshToken = localStorage.getItem("refreshToken");
   if (!refreshToken) {
     throw new Error("refreshToken이 없습니다.");
@@ -187,6 +197,7 @@ export const withdrawMe = async () => {
       headers: {
         "REFRESH-TOKEN": refreshToken,
       },
+      data,
     }
   );
   return response.data;
