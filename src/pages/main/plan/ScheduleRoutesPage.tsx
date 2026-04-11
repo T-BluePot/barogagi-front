@@ -320,33 +320,47 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
               // editDraft 변경사항을 planList와 scheduleResult에 반영 후 수정 API 호출
               // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
               if (scheduleResult) {
-                const prevPlans = planList;
-                const prevSchedule = scheduleResult;
-
-                const updatedPlans = planList.map((p) =>
-                  p.planNum === editDraft.planNum
-                    ? {
-                        ...p,
-                        planNm: editDraft.plan.planNm,
-                        startTime: editDraft.plan.startTime,
-                        endTime: editDraft.plan.endTime,
-                        regionNm: editDraft.place.placeNm,
-                        planAddress: editDraft.place.address,
-                      }
-                    : p
+                const originalPlan = planList.find(
+                  (p) => p.planNum === editDraft.planNum
                 );
-                const updatedSchedule = {
-                  ...scheduleResult,
-                  planRegistResDTOList: updatedPlans,
-                };
-                setPlanList(updatedPlans);
-                setScheduleResult(updatedSchedule);
-                updateMutation.mutate(updatedSchedule, {
-                  onError: () => {
-                    setPlanList(prevPlans);
-                    setScheduleResult(prevSchedule);
-                  },
-                });
+                const hasChanged =
+                  !originalPlan ||
+                  editDraft.plan.planNm !== (originalPlan.planNm ?? "") ||
+                  editDraft.plan.startTime !== originalPlan.startTime ||
+                  editDraft.plan.endTime !== originalPlan.endTime ||
+                  editDraft.place.placeNm !== (originalPlan.regionNm ?? "") ||
+                  editDraft.place.address !==
+                    (originalPlan.planAddress ?? originalPlan.regionNm ?? "");
+
+                if (hasChanged) {
+                  const prevPlans = planList;
+                  const prevSchedule = scheduleResult;
+
+                  const updatedPlans = planList.map((p) =>
+                    p.planNum === editDraft.planNum
+                      ? {
+                          ...p,
+                          planNm: editDraft.plan.planNm,
+                          startTime: editDraft.plan.startTime,
+                          endTime: editDraft.plan.endTime,
+                          regionNm: editDraft.place.placeNm,
+                          planAddress: editDraft.place.address,
+                        }
+                      : p
+                  );
+                  const updatedSchedule = {
+                    ...scheduleResult,
+                    planRegistResDTOList: updatedPlans,
+                  };
+                  setPlanList(updatedPlans);
+                  setScheduleResult(updatedSchedule);
+                  updateMutation.mutate(updatedSchedule, {
+                    onError: () => {
+                      setPlanList(prevPlans);
+                      setScheduleResult(prevSchedule);
+                    },
+                  });
+                }
               }
               setIsEditModalOpen(false);
               clearDraft();
