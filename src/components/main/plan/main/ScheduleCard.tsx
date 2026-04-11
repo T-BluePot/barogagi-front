@@ -39,14 +39,16 @@ export const ScheduleCard = ({
             <div className="flex flex-col items-baseline gap-2">
               {/* 날짜 */}
               <div className="flex items-center gap-1">
-                <CalendarTodayIcon className="!text-[12px] text-gray-40" />
+                <CalendarTodayIcon className="text-[12px]! text-gray-40" />
                 <span className="typo-description text-gray-40">
                   {schedule.startDate}
                 </span>
               </div>
 
               {/* 일정명 */}
-              <span className="typo-title-02">{schedule.scheduleNm}</span>
+              <span className="typo-title-02 text-start pr-2">
+                {schedule.scheduleNm}
+              </span>
             </div>
 
             {/* 삭제 버튼 */}
@@ -59,7 +61,7 @@ export const ScheduleCard = ({
                   onDelete?.();
                 }}
               >
-                <DeleteOutlineIcon className="text-gray-black !text-[20px]" />
+                <DeleteOutlineIcon className="text-gray-black text-title-02!" />
               </button>
             )}
           </div>
