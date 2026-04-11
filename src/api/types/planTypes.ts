@@ -77,7 +77,7 @@ export interface ScheduleRegistReqDTO {
 
 /** 세부 일정(Plan) 응답 DTO */
 export interface PlanRegistResDTO {
-  planSource: PlanSource;
+  planSource?: PlanSource;
   startTime: string;
   endTime: string;
   itemNum: number;
@@ -90,7 +90,7 @@ export interface PlanRegistResDTO {
   planDescription?: string;
   planAddress?: string;
   regionNm?: string;
-  regionNum: number;
+  regionNum?: number;
   planTagRegistResDTOList: TagRegistResDTO[];
 }
 

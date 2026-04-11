@@ -29,6 +29,7 @@ import type {
   ScheduleRegistResDTO,
   BaseResponse,
   ScheduleListResDTO,
+  UserAddedPlaceDTO,
 } from "@/api/types";
 import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
@@ -224,6 +225,22 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setIsEditModalOpen(true);
   };
 
+  // 장소 검색 페이지에서 선택한 장소를 draft에 직접 반영하는 콜백
+  // Outlet context로 LocationSearchPage에 전달하여 store 타이밍 문제 우회
+  const handlePlaceSelect = (place: UserAddedPlaceDTO) => {
+    const currentDraft = editDraft ?? usePlanEditStore.getState().draft;
+    if (!currentDraft) return;
+    setDraft({
+      ...currentDraft,
+      place: {
+        placeNum: null,
+        placeNm: place.placeName,
+        address: place.addressName ?? place.placeName,
+      },
+    });
+    setIsEditModalOpen(true);
+  };
+
   const [planNotes, setPlanNotes] = useState<PlanNoteMap>({});
 
   const handleChangeNote = (planNum: number, nextValue: string) => {
@@ -320,33 +337,47 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
               // editDraft 변경사항을 planList와 scheduleResult에 반영 후 수정 API 호출
               // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
               if (scheduleResult) {
-                const prevPlans = planList;
-                const prevSchedule = scheduleResult;
-
-                const updatedPlans = planList.map((p) =>
-                  p.planNum === editDraft.planNum
-                    ? {
-                        ...p,
-                        planNm: editDraft.plan.planNm,
-                        startTime: editDraft.plan.startTime,
-                        endTime: editDraft.plan.endTime,
-                        regionNm: editDraft.place.placeNm,
-                        planAddress: editDraft.place.address,
-                      }
-                    : p
+                const originalPlan = planList.find(
+                  (p) => p.planNum === editDraft.planNum
                 );
-                const updatedSchedule = {
-                  ...scheduleResult,
-                  planRegistResDTOList: updatedPlans,
-                };
-                setPlanList(updatedPlans);
-                setScheduleResult(updatedSchedule);
-                updateMutation.mutate(updatedSchedule, {
-                  onError: () => {
-                    setPlanList(prevPlans);
-                    setScheduleResult(prevSchedule);
-                  },
-                });
+                const hasChanged =
+                  !!originalPlan &&
+                  (editDraft.plan.planNm !== (originalPlan.planNm ?? "") ||
+                    editDraft.plan.startTime !== originalPlan.startTime ||
+                    editDraft.plan.endTime !== originalPlan.endTime ||
+                    editDraft.place.placeNm !== (originalPlan.regionNm ?? "") ||
+                    editDraft.place.address !==
+                      (originalPlan.planAddress ?? originalPlan.regionNm ?? ""));
+
+                if (hasChanged) {
+                  const prevPlans = planList;
+                  const prevSchedule = scheduleResult;
+
+                  const updatedPlans = planList.map((p) =>
+                    p.planNum === editDraft.planNum
+                      ? {
+                          ...p,
+                          planNm: editDraft.plan.planNm,
+                          startTime: editDraft.plan.startTime,
+                          endTime: editDraft.plan.endTime,
+                          regionNm: editDraft.place.placeNm,
+                          planAddress: editDraft.place.address,
+                        }
+                      : p
+                  );
+                  const updatedSchedule = {
+                    ...scheduleResult,
+                    planRegistResDTOList: updatedPlans,
+                  };
+                  setPlanList(updatedPlans);
+                  setScheduleResult(updatedSchedule);
+                  updateMutation.mutate(updatedSchedule, {
+                    onError: () => {
+                      setPlanList(prevPlans);
+                      setScheduleResult(prevSchedule);
+                    },
+                  });
+                }
               }
               setIsEditModalOpen(false);
               clearDraft();
@@ -453,7 +484,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           onRequestDelete={handleRequestDelete}
         />
       )}
-      <Outlet />
+      <Outlet context={{ onPlaceSelect: handlePlaceSelect }} />
     </div>
   );
 };

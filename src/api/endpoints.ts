@@ -35,8 +35,8 @@ export const ENDPOINTS = {
     DETAIL: "/api/v1/schedule/detail", // Query param: scheduleNum
     CREATE: "/api/v1/schedule/create", // 일정 생성 (등록 전)
     SAVE: "/api/v1/schedule/save", // 일정 저장 (최종 등록)
-    UPDATE: "/api/v1/schedule", // PUT
-    DELETE: "/api/v1/schedule", // DELETE
+    UPDATE: "/api/v1/schedule/", // PUT
+    DELETE: "/api/v1/schedule/", // DELETE
   },
 
   /** 메인 홈 */
