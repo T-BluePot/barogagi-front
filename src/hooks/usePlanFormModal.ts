@@ -570,13 +570,25 @@ export const usePlanFormModal = (
   // 새 일정 기본 시간: 기존 블록이 있을 때 이전 블록의 종료 시간 기준
   const isDraftNoTime = timeTargetId === DRAFT_ID && !draft?.startTime;
   const timedItems = isDraftNoTime ? items.filter((item) => item.endTime) : [];
-  const lastTimedItem = timedItems.length > 0 ? timedItems[timedItems.length - 1] : null;
-  const newDraftDefaultStart = lastTimedItem?.endTime
-    ? hhmmToTimeValue(lastTimedItem.endTime)
+  const lastTimedItem =
+    timedItems.length > 0 ? timedItems[timedItems.length - 1] : null;
+
+  const lastEndMinutes = lastTimedItem?.endTime
+    ? hhmmToMinutes(lastTimedItem.endTime)
     : undefined;
-  const newDraftDefaultEnd = lastTimedItem?.endTime
-    ? hhmmToTimeValue(minutesToHHmm(hhmmToMinutes(lastTimedItem.endTime) + 60))
-    : undefined;
+  const nextEndMinutes =
+    lastEndMinutes !== undefined && lastEndMinutes + 60 < 24 * 60
+      ? lastEndMinutes + 60
+      : undefined;
+
+  const newDraftDefaultStart =
+    lastEndMinutes !== undefined
+      ? hhmmToTimeValue(minutesToHHmm(lastEndMinutes))
+      : undefined;
+  const newDraftDefaultEnd =
+    nextEndMinutes !== undefined
+      ? hhmmToTimeValue(minutesToHHmm(nextEndMinutes))
+      : undefined;
 
   const regionEditTarget =
     regionTargetId === DRAFT_ID
