@@ -70,6 +70,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       try {
         const req = buildRequest();
         const res = await createSchedule(req);
+        console.log("[create 응답]", JSON.stringify(res.data, null, 2));
 
         // HTTP 200이지만 에러 코드로 내려오는 경우 처리 (catch에 안 걸림)
         if (res.code !== "S201") {
@@ -111,6 +112,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const fetchDetail = async () => {
       try {
         const res = await getScheduleDetail(scheduleNum);
+        console.log("[detail 응답]", JSON.stringify(res.data, null, 2));
         if (ignore) return;
 
         if (res.code !== "S202") {
@@ -371,6 +373,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
       <PlanNameInputModal
         isOpen={isNameModalOpen}
+        initialValue={editDraft?.plan.planNm}
         onConfirm={handleNameConfirm}
         onCancel={() => setIsNameModalOpen(false)}
       />

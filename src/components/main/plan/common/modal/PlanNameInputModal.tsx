@@ -6,6 +6,7 @@ export interface PlanNameInputModalProps {
   isOpen: boolean;
   onConfirm: (planNm: string) => void;
   onCancel: () => void;
+  initialValue?: string;
 }
 
 /**
@@ -17,6 +18,7 @@ const PlanNameInputModal = ({
   isOpen,
   onConfirm,
   onCancel,
+  initialValue,
 }: PlanNameInputModalProps) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -34,7 +36,7 @@ const PlanNameInputModal = ({
     prevIsOpenRef.current = isOpen;
 
     if (justOpened) {
-      setPlanNm(""); // 열릴 때마다 초기화 → 중간 이탈 후 재진입 시 이전 값 안 남음
+      setPlanNm(initialValue ?? ""); // 수정 모드면 기존 값, 아니면 빈 문자열로 초기화
       setShouldRender(true);
       rafIdRef.current = requestAnimationFrame(() => setShowAnimation(true));
     } else if (!isOpen) {
