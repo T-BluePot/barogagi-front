@@ -22,6 +22,7 @@ export const ENDPOINTS = {
     CHECK_NICKNAME: "/api/v1/users/nickname/exists",
     CHECK_TEL: "/api/v1/users/tel/exists",
     ME: "/api/v1/users/me", // 회원 탈퇴
+    WITHDRAWAL_REASONS: "/api/v1/withdrawal-reasons", // 탈퇴 사유 목록 조회
   },
   MEMBERS: {
     GET_ME: "/api/v1/members", // 회원 정보 조회

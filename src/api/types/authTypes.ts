@@ -84,3 +84,15 @@ export interface PasswordResetConfirmDTO {
   userId: string;
   password: string;
 }
+
+/** 탈퇴 사유 항목 DTO */
+export interface WithdrawalReasonDTO {
+  reasonNo: number;
+  reason: string;
+}
+
+/** 회원 탈퇴 요청 DTO */
+export interface WithdrawRequestDTO {
+  reasonNo: number;
+  withdrawReason: string;
+}
