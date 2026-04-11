@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
+import { AxiosError } from "axios";
 import { getMe, updateMe } from "@/api/queries/authQueries";
 import { authKeys } from "@/api/keyFactories";
 import { ROUTES } from "@/constants/routes";
@@ -47,10 +48,14 @@ const ProfileEditPage = () => {
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
       navigate(ROUTES.MAIN.PROFILE, { replace: true });
     },
-    onError: () => {
+    onError: (error) => {
+      const serverMessage =
+        error instanceof AxiosError
+          ? (error.response?.data as BaseResponse<null>)?.message
+          : undefined;
       openAlertModal({
         title: PROFILE_EDIT_TEXT.ERROR_MODAL.TITLE,
-        content: PROFILE_EDIT_TEXT.ERROR_MODAL.CONTENT,
+        content: serverMessage ?? PROFILE_EDIT_TEXT.ERROR_MODAL.CONTENT,
         buttonLabel: PROFILE_EDIT_TEXT.ERROR_MODAL.BUTTON_LABEL,
       });
     },

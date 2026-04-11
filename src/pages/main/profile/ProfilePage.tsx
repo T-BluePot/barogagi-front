@@ -14,7 +14,6 @@ import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 import type { BaseResponse } from "@/api/types";
 import type { UserData } from "@/types/profileTypes";
-import type { WithdrawalReason } from "@/constants/texts/main/profile/withdrawal";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -39,9 +38,9 @@ const ProfilePage = () => {
   };
 
   // 회원 탈퇴 처리
-  const handleWithdraw = async (_reason: WithdrawalReason, _detail: string) => {
+  const handleWithdraw = async (reasonNo: number, withdrawReason?: string) => {
     try {
-      const response = await withdrawMe();
+      const response = await withdrawMe({ reasonNo, withdrawReason });
 
       if (response.code === "D200") {
         localStorage.removeItem("accessToken");
