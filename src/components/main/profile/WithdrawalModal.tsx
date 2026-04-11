@@ -46,7 +46,7 @@ const WithdrawalModal = ({
     if (isConfirmDisabled || !selectedReason) return;
     const matched = reasons.find((r: WithdrawalReasonDTO) => r.reasonNm === selectedReason);
     if (!matched) return;
-    onConfirm(matched.reasonNo, matched.reasonNm);
+    onConfirm(matched.reasonNo, detail.trim());
   };
 
   const handleCancel = () => {
