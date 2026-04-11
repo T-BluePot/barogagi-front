@@ -28,7 +28,7 @@ const WithdrawalModal = ({
 
   const isConfirmDisabled = !selectedReason;
 
-  const reasonOptions = reasons.map((r: WithdrawalReasonDTO) => r.reason);
+  const reasonOptions = reasons.map((r: WithdrawalReasonDTO) => r.reasonNm);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,9 +44,9 @@ const WithdrawalModal = ({
 
   const handleConfirm = () => {
     if (isConfirmDisabled || !selectedReason) return;
-    const matched = reasons.find((r: WithdrawalReasonDTO) => r.reason === selectedReason);
+    const matched = reasons.find((r: WithdrawalReasonDTO) => r.reasonNm === selectedReason);
     if (!matched) return;
-    onConfirm(matched.reasonNo, matched.reason);
+    onConfirm(matched.reasonNo, matched.reasonNm);
   };
 
   const handleCancel = () => {

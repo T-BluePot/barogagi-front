@@ -88,7 +88,10 @@ export interface PasswordResetConfirmDTO {
 /** 탈퇴 사유 항목 DTO */
 export interface WithdrawalReasonDTO {
   reasonNo: number;
-  reason: string;
+  reasonNm: string;
+  essentialYn: string;
+  useAt: string;
+  sort: number;
 }
 
 /** 회원 탈퇴 요청 DTO */
