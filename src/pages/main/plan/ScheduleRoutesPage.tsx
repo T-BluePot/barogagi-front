@@ -29,6 +29,7 @@ import type {
   ScheduleRegistResDTO,
   BaseResponse,
   ScheduleListResDTO,
+  UserAddedPlaceDTO,
 } from "@/api/types";
 import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
@@ -221,6 +222,22 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       },
     });
 
+    setIsEditModalOpen(true);
+  };
+
+  // 장소 검색 페이지에서 선택한 장소를 draft에 직접 반영하는 콜백
+  // Outlet context로 LocationSearchPage에 전달하여 store 타이밍 문제 우회
+  const handlePlaceSelect = (place: UserAddedPlaceDTO) => {
+    const currentDraft = editDraft ?? usePlanEditStore.getState().draft;
+    if (!currentDraft) return;
+    setDraft({
+      ...currentDraft,
+      place: {
+        placeNum: null,
+        placeNm: place.placeName,
+        address: place.addressName ?? place.placeName,
+      },
+    });
     setIsEditModalOpen(true);
   };
 
@@ -467,7 +484,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           onRequestDelete={handleRequestDelete}
         />
       )}
-      <Outlet />
+      <Outlet context={{ onPlaceSelect: handlePlaceSelect }} />
     </div>
   );
 };

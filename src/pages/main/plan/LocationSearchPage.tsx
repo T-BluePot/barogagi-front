@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 import { LOCATION_SEARCH_TEXT } from "@/constants/texts/main/plan/locationSearch";
 import { useDebouncedKeyword } from "@/utils/useDebouncedKeyword";
@@ -53,9 +53,16 @@ const LocationSearchPage = () => {
   }, [debouncedValue]);
 
   const { setPlace, recentPlaces, clearRecentPlaces } = useUserPlaceStore();
+  const context = useOutletContext<{
+    onPlaceSelect?: (place: UserAddedPlaceDTO) => void;
+  } | null>();
 
   const handleAddLocation = (place: UserAddedPlaceDTO) => {
-    setPlace(place);
+    if (context?.onPlaceSelect) {
+      context.onPlaceSelect(place);
+    } else {
+      setPlace(place);
+    }
     navigate(-1);
   };
 
