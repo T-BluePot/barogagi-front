@@ -573,9 +573,14 @@ export const usePlanFormModal = (
   const lastTimedItem =
     timedItems.length > 0 ? timedItems[timedItems.length - 1] : null;
 
-  const lastEndMinutes = lastTimedItem?.endTime
-    ? hhmmToMinutes(lastTimedItem.endTime)
-    : undefined;
+  const lastEndMinutes = (() => {
+    if (!lastTimedItem?.endTime) return undefined;
+    const minutes = hhmmToMinutes(lastTimedItem.endTime);
+    return Number.isFinite(minutes) && minutes >= 0 && minutes < 24 * 60
+      ? minutes
+      : undefined;
+  })();
+
   const nextEndMinutes =
     lastEndMinutes !== undefined && lastEndMinutes + 60 < 24 * 60
       ? lastEndMinutes + 60
