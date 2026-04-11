@@ -341,13 +341,13 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                   (p) => p.planNum === editDraft.planNum
                 );
                 const hasChanged =
-                  !originalPlan ||
-                  editDraft.plan.planNm !== (originalPlan.planNm ?? "") ||
-                  editDraft.plan.startTime !== originalPlan.startTime ||
-                  editDraft.plan.endTime !== originalPlan.endTime ||
-                  editDraft.place.placeNm !== (originalPlan.regionNm ?? "") ||
-                  editDraft.place.address !==
-                    (originalPlan.planAddress ?? originalPlan.regionNm ?? "");
+                  !!originalPlan &&
+                  (editDraft.plan.planNm !== (originalPlan.planNm ?? "") ||
+                    editDraft.plan.startTime !== originalPlan.startTime ||
+                    editDraft.plan.endTime !== originalPlan.endTime ||
+                    editDraft.place.placeNm !== (originalPlan.regionNm ?? "") ||
+                    editDraft.place.address !==
+                      (originalPlan.planAddress ?? originalPlan.regionNm ?? ""));
 
                 if (hasChanged) {
                   const prevPlans = planList;
