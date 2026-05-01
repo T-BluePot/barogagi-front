@@ -18,10 +18,10 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    id: {
-      control: "text",
+    termsNum: {
+      control: "number",
     },
-    label: {
+    title: {
       control: "text",
     },
     isConsented: {
@@ -39,8 +39,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Required: Story = {
   args: {
-    id: "privacy",
-    label: "개인정보 처리방침 (필수)",
+    termsNum: 1,
+    title: "개인정보 처리방침 (필수)",
     isConsented: false,
   },
   decorators: [
@@ -54,8 +54,8 @@ export const Required: Story = {
 
 export const RequiredChecked: Story = {
   args: {
-    id: "privacy",
-    label: "개인정보 처리방침 (필수)",
+    termsNum: 1,
+    title: "개인정보 처리방침 (필수)",
     isConsented: true,
   },
   decorators: [
@@ -69,8 +69,8 @@ export const RequiredChecked: Story = {
 
 export const Optional: Story = {
   args: {
-    id: "marketing",
-    label: "마케팅 수신 동의 (선택)",
+    termsNum: 2,
+    title: "마케팅 수신 동의 (선택)",
     isConsented: false,
   },
   decorators: [
@@ -84,8 +84,8 @@ export const Optional: Story = {
 
 export const OptionalChecked: Story = {
   args: {
-    id: "marketing",
-    label: "마케팅 수신 동의 (선택)",
+    termsNum: 2,
+    title: "마케팅 수신 동의 (선택)",
     isConsented: true,
   },
   decorators: [
@@ -99,8 +99,8 @@ export const OptionalChecked: Story = {
 
 export const LongLabel: Story = {
   args: {
-    id: "terms",
-    label: "바로가기 서비스 이용약관 및 개인정보 처리방침 동의 (필수)",
+    termsNum: 1,
+    title: "바로가기 서비스 이용약관 및 개인정보 처리방침 동의 (필수)",
     isConsented: false,
   },
   decorators: [
@@ -114,8 +114,8 @@ export const LongLabel: Story = {
 
 export const Multiple: Story = {
   args: {
-    id: "terms",
-    label: "이용약관 (필수)",
+    termsNum: 1,
+    title: "이용약관 (필수)",
     isConsented: true,
   },
   render: () => {
@@ -125,22 +125,22 @@ export const Multiple: Story = {
     return (
       <div className="w-96 p-6 bg-gray-900 space-y-4">
         <TermsConsentItem
-          id="terms"
-          label="이용약관 (필수)"
+          termsNum={1}
+          title="이용약관 (필수)"
           isConsented={true}
           onToggle={handleToggle}
           onOpenDetail={handleOpenDetail}
         />
         <TermsConsentItem
-          id="privacy"
-          label="개인정보 처리방침 (필수)"
+          termsNum={2}
+          title="개인정보 처리방침 (필수)"
           isConsented={true}
           onToggle={handleToggle}
           onOpenDetail={handleOpenDetail}
         />
         <TermsConsentItem
-          id="marketing"
-          label="마케팅 수신 동의 (선택)"
+          termsNum={3}
+          title="마케팅 수신 동의 (선택)"
           isConsented={false}
           onToggle={handleToggle}
           onOpenDetail={handleOpenDetail}

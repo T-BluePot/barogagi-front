@@ -20,7 +20,9 @@ export const ENDPOINTS = {
     SIGNUP: "/api/v1/users",
     CHECK_ID: "/api/v1/users/userid/exists",
     CHECK_NICKNAME: "/api/v1/users/nickname/exists",
+    CHECK_TEL: "/api/v1/users/tel/exists",
     ME: "/api/v1/users/me", // 회원 탈퇴
+    WITHDRAWAL_REASONS: "/api/v1/withdrawal-reasons", // 탈퇴 사유 목록 조회
   },
   MEMBERS: {
     GET_ME: "/api/v1/members", // 회원 정보 조회
@@ -33,8 +35,8 @@ export const ENDPOINTS = {
     DETAIL: "/api/v1/schedule/detail", // Query param: scheduleNum
     CREATE: "/api/v1/schedule/create", // 일정 생성 (등록 전)
     SAVE: "/api/v1/schedule/save", // 일정 저장 (최종 등록)
-    UPDATE: "/api/v1/schedule", // PUT
-    DELETE: "/api/v1/schedule", // DELETE
+    UPDATE: "/api/v1/schedule/", // PUT
+    DELETE: "/api/v1/schedule/", // DELETE
   },
 
   /** 메인 홈 */
@@ -62,5 +64,15 @@ export const ENDPOINTS = {
   },
   PLACE: {
     SEARCH: "/api/v1/place/keyword-search",
+  },
+
+  /** 카테고리 (Category) */
+  CATEGORY: {
+    LIST: "/api/v1/category/",
+  },
+
+  /** 아이템 (Item) - 카테고리 상세 */
+  ITEM: {
+    LIST: "/api/v1/item/",
   },
 } as const;

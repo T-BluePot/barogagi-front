@@ -1,13 +1,17 @@
 /**
  * 메인 홈(Home) 관련 API 요청 함수
  */
-import { http } from "../http";
+import { http, apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
-import type { BaseResponse } from "../types";
+import type {
+  HomeScheduleResponseDTO,
+  PopularTagResponseDTO,
+  PopularRegionResponseDTO,
+} from "../types";
 
 /** 인기 태그 조회 */
 export const getPopularTags = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<PopularTagResponseDTO>(
     ENDPOINTS.HOME.POPULAR_TAGS
   );
   return response.data;
@@ -15,7 +19,7 @@ export const getPopularTags = async () => {
 
 /** 인기 지역 조회 */
 export const getPopularRegions = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await apiKeyHttp.get<PopularRegionResponseDTO>(
     ENDPOINTS.HOME.POPULAR_REGIONS
   );
   return response.data;
@@ -23,7 +27,7 @@ export const getPopularRegions = async () => {
 
 /** 내 일정 정보 (메인화면용) */
 export const getMySchedulesSummary = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await http.get<HomeScheduleResponseDTO>(
     ENDPOINTS.HOME.MY_SCHEDULES
   );
   return response.data;

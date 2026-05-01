@@ -29,6 +29,9 @@ const meta = {
     selectedDate: {
       control: "date",
     },
+    disablePastDates: {
+      control: "boolean",
+    },
   },
 } satisfies Meta<typeof Calendar>;
 
@@ -38,28 +41,26 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     withTitle: false,
-    selectedDate: new Date(2025, 4, 15), // 2025년 5월 15일
+    selectedDate: new Date(),
     onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
-      "2025-05-05": true,
-      "2025-05-10": true,
-      "2025-05-20": true,
-      "2025-05-25": true,
+      "2026-03-25": true,
+      "2026-03-28": true,
     },
+    disablePastDates: false,
   },
 };
 
 export const WithTitle: Story = {
   args: {
     withTitle: true,
-    selectedDate: new Date(2025, 4, 15), // 2025년 5월 15일
+    selectedDate: new Date(),
     onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
-      "2025-05-05": true,
-      "2025-05-10": true,
-      "2025-05-20": true,
-      "2025-05-25": true,
+      "2026-03-25": true,
+      "2026-03-28": true,
     },
+    disablePastDates: false,
   },
 };
 
@@ -69,56 +70,63 @@ export const NoSelectedDate: Story = {
     selectedDate: null,
     onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
-      "2025-05-05": true,
-      "2025-05-10": true,
-      "2025-05-20": true,
+      "2026-03-25": true,
+      "2026-03-28": true,
     },
+    disablePastDates: false,
   },
 };
 
 export const NoMarkedDates: Story = {
   args: {
     withTitle: false,
-    selectedDate: new Date(2025, 4, 15),
+    selectedDate: new Date(),
     onChangeDate: () => console.log("onChangeDate"),
     markedDates: {},
+    disablePastDates: false,
   },
 };
 
 export const ManyMarkedDates: Story = {
   args: {
     withTitle: true,
-    selectedDate: new Date(2025, 4, 15),
+    selectedDate: new Date(),
     onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
-      "2025-05-01": true,
-      "2025-05-03": true,
-      "2025-05-05": true,
-      "2025-05-07": true,
-      "2025-05-10": true,
-      "2025-05-12": true,
-      "2025-05-15": true,
-      "2025-05-18": true,
-      "2025-05-20": true,
-      "2025-05-22": true,
-      "2025-05-25": true,
-      "2025-05-28": true,
-      "2025-05-30": true,
+      "2026-03-21": true,
+      "2026-03-23": true,
+      "2026-03-25": true,
+      "2026-03-27": true,
+      "2026-03-28": true,
+      "2026-03-30": true,
     },
+    disablePastDates: false,
+  },
+};
+
+export const DisablePastDates: Story = {
+  args: {
+    withTitle: true,
+    selectedDate: new Date(),
+    onChangeDate: () => console.log("onChangeDate"),
+    markedDates: {
+      "2026-03-25": true,
+      "2026-03-28": true,
+    },
+    disablePastDates: true,
   },
 };
 
 export const Interactive: Story = {
   args: {
     withTitle: true,
-    selectedDate: new Date(2025, 4, 15),
+    selectedDate: new Date(),
     onChangeDate: () => console.log("onChangeDate"),
     markedDates: {
-      "2025-05-05": true,
-      "2025-05-10": true,
-      "2025-05-20": true,
-      "2025-05-25": true,
+      "2026-03-25": true,
+      "2026-03-28": true,
     },
+    disablePastDates: false,
   },
   render: (args) => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(

@@ -1,56 +1,163 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { TERMS_TEXT } from "@/constants/texts/auth/signup/terms";
 
+// === component ===
+import PageLoading from "@/components/layout/PageLoading";
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import Button from "@/components/common/buttons/CommonButton";
 
+import { useAlertModalStore } from "@/stores/alertModalStore";
 import { SelectAllConsentButton } from "@/components/auth/signup/SelectAllConsentButton";
 import { TermsListSection } from "@/components/auth/signup/TermsListSection";
-import { TERMS } from "@/types/termsTypes";
+import ErrorModal from "@/components/auth/signup/ErrorModal";
+
+// === constant ===
 import { ROUTES } from "@/constants/routes";
+import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
+
+// === server ===
+import type { TermsAgreeList } from "@/types/termsTypes";
+import { authKeys } from "@/api/keyFactories";
+import { getTermsList } from "@/api/queries";
+import { useSignupStore } from "@/stores/signupStore";
 
 const TermsPage = () => {
   const navigate = useNavigate();
+  const { openAlertModal } = useAlertModalStore();
 
-  // 전체 동의
-  const [isAgreeAll, setIsAgreeAll] = useState(false);
+  const setDraft = useSignupStore((s) => s.setDraft);
+
+  // === 약관 조회 관련 ===
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: authKeys.terms(),
+    queryFn: () => getTermsList(VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP),
+  });
+
+  // 약관 저장
+  const terms = useMemo(() => {
+    const list = data?.data ?? [];
+    return list.slice().sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+  }, [data?.data]);
 
   // 약관별 동의 상태 초기화
-  const [consents, setConsents] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(TERMS.map((term) => [term.id, false]))
+  const [consents, setConsents] = useState<Record<number, boolean>>(
+    () =>
+      Object.fromEntries(terms.map((term) => [term.termsNum, false])) as Record<
+        number,
+        boolean
+      >
   );
 
-  // 토글 핸들러
-  const handleToggle = (id: string) => {
+  // 에러 발생 시: 페이지 return 하지 말고 모달만 띄우기
+  useEffect(() => {
+    if (!isError) return;
+    setIsErrorModalOpen(true);
+  }, [isError]);
+
+  // consents 변수 서버 동기화
+  useEffect(() => {
+    if (terms.length === 0) return;
+
+    setConsents((prev) => {
+      const next: Record<number, boolean> = { ...prev };
+
+      for (const t of terms) {
+        if (next[t.termsNum] === undefined) {
+          next[t.termsNum] = false;
+        }
+      }
+
+      return next;
+    });
+  }, [terms]);
+
+  // 개별 요소 약관 동의 핸들러
+  const handleToggle = (id: number) => {
     setConsents((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  // 전체 동의
+  const isAgreeAll = useMemo(() => {
+    if (terms.length === 0) return false;
+    return terms.every((t) => consents[t.termsNum] === true);
+  }, [terms, consents]);
+
   // 상세 보기 핸들러
-  const handleOpenDetail = (id: string) => {
-    // 실제 서비스에서는 모달을 띄우거나 페이지 네비게이션
-    alert(`약관 전문 보기: ${id}`); // 데모용
+  const handleOpenDetail = (termsNum: number) => {
+    const found = terms.find((t) => t.termsNum === termsNum);
+    if (!found) return;
+
+    openAlertModal({
+      title: found.title,
+      content: found.contents,
+    });
   };
 
   // 전체 동의 상태 제어
   const handleToggleAll = () => {
-    const next = !isAgreeAll;
-    setIsAgreeAll(next);
-    setConsents(Object.fromEntries(TERMS.map((term) => [term.id, next])));
-  };
+    if (terms.length === 0) return;
 
-  useEffect(() => {
-    const allChecked = Object.values(consents).every(Boolean);
-    setIsAgreeAll(allChecked);
-  }, [consents]);
+    const next = !isAgreeAll;
+    const nextConsents: Record<number, boolean> = {};
+
+    for (const t of terms) {
+      nextConsents[t.termsNum] = next;
+    }
+
+    setConsents(nextConsents);
+  };
 
   // 필수 동의 약관 동의 여부 확인 함수
-  const hasUncheckedRequiredTerms = (): boolean => {
-    return TERMS.some((term) => term.required && !consents[term.id]);
+  const hasUncheckedRequiredTerms = useMemo(() => {
+    return terms.some(
+      (term) => term.essentialYn === "Y" && consents[term.termsNum] !== true
+    );
+  }, [terms, consents]);
+
+  // 다음 버튼 클릭 핸들러
+  const handleAgreeTerms = () => {
+    if (hasUncheckedRequiredTerms) {
+      openAlertModal({
+        title: "필수 약관 동의 필요",
+        content: "필수 약관에 동의해야 다음 단계로 진행할 수 있습니다.",
+      });
+      return;
+    }
+
+    const termsAgreeList: TermsAgreeList = terms.map((t) => ({
+      termsNum: t.termsNum,
+      agreeYn: consents[t.termsNum] === true ? "Y" : "N",
+    }));
+
+    setDraft({
+      termsDTO: {
+        termsType: VERIFICATION_REQUEST_TYPE.JOIN_MEMBERSHIP,
+        termsAgreeList,
+      },
+    });
+
+    // 다음 회원가입 단계로 이동
+    navigate(ROUTES.AUTH.SIGNUP.CREDENTIALS);
   };
+
+  if (isLoading) {
+    return <PageLoading message="약관을 불러오는 중입니다..." />;
+  }
 
   return (
     <div className="flex flex-col h-full">
+      <ErrorModal
+        isOpen={isErrorModalOpen}
+        message="문제가 발생하여 메인 페이지로 이동합니다."
+        onClick={() => {
+          setIsErrorModalOpen(false);
+          navigate(ROUTES.AUTH.LANDING, { replace: true });
+        }}
+      />
+
       <div className="flex flex-1 flex-col w-full px-6 items-baseline">
         <PageTitle title={TERMS_TEXT.TITLE} />
         <div className="flex flex-col w-full gap-4">
@@ -60,18 +167,19 @@ const TermsPage = () => {
             onCheckedChange={handleToggleAll}
           />
           <TermsListSection
-            terms={TERMS}
+            terms={terms}
             consents={consents}
             onToggle={handleToggle}
             onOpenDetail={handleOpenDetail}
           />
         </div>
       </div>
-      <div className="mt-auto w-full p-6">
+
+      <div className="mt-auto w-full p-6 flex justify-center">
         <Button
           label={TERMS_TEXT.NEXT_BUTTON}
-          isDisabled={hasUncheckedRequiredTerms()}
-          onClick={() => navigate(ROUTES.AUTH.SIGNUP.CREDENTIALS)}
+          isDisabled={hasUncheckedRequiredTerms}
+          onClick={handleAgreeTerms}
         />
       </div>
     </div>

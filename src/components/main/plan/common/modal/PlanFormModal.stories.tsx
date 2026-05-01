@@ -37,7 +37,10 @@ export const Create: Story = {
       address: "서울특별시 강남구",
       onClickTime: () => alert("시간 클릭"),
       onClickAddress: () => alert("주소 클릭"),
-      tags: ["여행", "친구"],
+      tags: [
+        { tagNum: 1, tagNm: "여행" },
+        { tagNum: 2, tagNm: "친구" },
+      ],
       onClickTags: () => alert("태그 클릭"),
     },
   },

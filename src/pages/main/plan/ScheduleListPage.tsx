@@ -3,11 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleViewType } from "@/components/main/plan/main/ScheduleViewToggleButton";
-import {
-  mockSchedules,
-  pastMockSchedules,
-  allSchedules,
-} from "@/mock/schedules";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
@@ -17,8 +12,21 @@ import AddScheduleButton from "@/components/main/plan/main/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+import { useConfirmModalStore } from "@/stores/confirmModalStore";
+
+// === server ===
+import { useScheduleListQuery } from "@/hooks/queries/useScheduleListQuery";
+import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
+
 const ScheduleListPage = () => {
   const navigate = useNavigate();
+
+  // === 일정 목록 조회 ===
+  const { current, past, all, isLoading, isError, refetch } =
+    useScheduleListQuery();
+  const deleteMutation = useDeleteScheduleMutation();
 
   const [viewType, setViewType] = useState<ScheduleViewType>("list");
 
@@ -26,50 +34,77 @@ const ScheduleListPage = () => {
     if (viewType === "list") {
       setViewType("calendar");
     } else setViewType("list");
+    setSelectedDate(null); // 모드 전환 시 선택된 날짜 초기화
   };
 
   // calendar 모드
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const markedDates = getMarkedDates(allSchedules);
+  const markedDates = getMarkedDates(all);
 
-  // 카드 클릭 시 상세 페이지로 이동하는 함수
+  // 카드 클릭 시 상세 페이지로 이동
   const handleOpenDetail = (scheduleNum: number) => {
-    // 여기서 URL에 scheduleNum을 박아서 이동
     navigate(`/plan/${scheduleNum}/detail`);
   };
 
+  // === 일정 삭제 ===
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
-  // 삭제할 스케줄의 ID를 저장하는 상태
-  // - 삭제 버튼 클릭 시 어떤 스케줄인지 저장
-  // - 모달에서 확인 버튼 클릭 시 이 ID로 삭제 요청
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
-  // 삭제 버튼 클릭 액션 함수
-  // scheduleNum을 받아서 삭제 대상을 추적
   const handleDeleteSchedule = (scheduleNum: number) => {
-    setDeleteTargetId(scheduleNum); // 삭제할 스케줄 ID 저장
-    setIsDeleteOpen(true); // 확인 모달 열기
+    setDeleteTargetId(scheduleNum);
+    setIsDeleteOpen(true);
   };
 
   const handleCloseDeleteModal = () => {
     setIsDeleteOpen(false);
-    setDeleteTargetId(null); // 모달 닫을 때 삭제 대상 초기화
+    setDeleteTargetId(null);
   };
 
-  // 삭제 확인 시 실행되는 함수
+  // 삭제 확인 시 API 호출
   const handleConfirmDelete = () => {
     if (deleteTargetId !== null) {
-      // TODO: 서버 연동 시 deleteTargetId로 삭제 API 호출
-      console.log(`스케줄 ${deleteTargetId} 삭제 요청`);
+      deleteMutation.mutate(deleteTargetId);
     }
     handleCloseDeleteModal();
   };
 
+  // === 일정 생성 관련 ===
+  const { draft, reset } = useScheduleDraftStore();
+  const { clearRegions } = useRegionSelectionStore();
+  const { openConfirmModal } = useConfirmModalStore();
+
+  const hasStoreDraft =
+    draft.planRegistReqDTOList.length > 0 ||
+    !!draft.scheduleNm ||
+    !!draft.startDate ||
+    !!draft.endDate ||
+    !!draft.comment ||
+    draft.scheduleTagRegistReqDTOList.length > 0 ||
+    draft.scheduleRegionRegistReqDTOList.length > 0;
+
+  const handleAddSchedule = () => {
+    if (hasStoreDraft) {
+      openConfirmModal(
+        {
+          title: "이어서 만드시겠습니까?",
+          content: "이전에 작성 중인 일정이 있습니다.\n이어서 만드시겠습니까?",
+          confirmLabel: "이어하기",
+          cancelLabel: "새로 만들기",
+        },
+        () => navigate(ROUTES.PLAN.DATE),
+        () => {
+          reset();
+          clearRegions();
+          navigate(ROUTES.PLAN.DATE);
+        }
+      );
+    } else {
+      navigate(ROUTES.PLAN.DATE);
+    }
+  };
+
   return (
-    <div
-      className="flex flex-col
-     gap-6 bg-gray-white"
-    >
+    <div className="flex flex-col gap-6 h-full">
       <DeleteScheduleModal
         isOpen={isDeleteOpen}
         onClickCancel={handleCloseDeleteModal}
@@ -77,30 +112,50 @@ const ScheduleListPage = () => {
       />
       <ScheduleListHeader viewType={viewType} toggleViewType={toggleViewType} />
       <div className="flex-1">
-        {viewType === "calendar" ? (
+        {isError ? (
+          <div className="flex flex-col items-center justify-center w-full pt-25 gap-4">
+            <p className="typo-sub-title text-gray-70">
+              일정을 불러오지 못했습니다.
+            </p>
+            <button
+              className="typo-body text-main underline"
+              onClick={() => refetch()}
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : viewType === "calendar" ? (
           <div className="flex h-full">
             <CalendarView
               selectedDate={selectedDate}
               onChangeDate={(date) => setSelectedDate(date)}
               markedDates={markedDates}
-              schedules={allSchedules}
+              schedules={all}
               onDelete={handleDeleteSchedule}
               onClickCard={handleOpenDetail}
             />
           </div>
         ) : (
-          <div className="flex w-full h-full px-6">
-            <ListView
-              schedules={mockSchedules}
-              pastSchedules={pastMockSchedules}
-              onClickCard={handleOpenDetail}
-              onDelete={handleDeleteSchedule}
-            />
+          <div className="flex w-full px-6 min-h-0 pb-[60px]">
+            {isLoading ? (
+              <div className="flex justify-center w-full pt-25">
+                <p className="typo-sub-title text-gray-70">
+                  일정을 불러오는 중...
+                </p>
+              </div>
+            ) : (
+              <ListView
+                schedules={current}
+                pastSchedules={past}
+                onClickCard={handleOpenDetail}
+                onDelete={handleDeleteSchedule}
+              />
+            )}
           </div>
         )}
       </div>
       <div className="fixed bottom-20 right-6 z-35">
-        <AddScheduleButton onAddSchedule={() => navigate(ROUTES.PLAN.DATE)} />
+        <AddScheduleButton onAddSchedule={handleAddSchedule} />
       </div>
     </div>
   );

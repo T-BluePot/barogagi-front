@@ -4,16 +4,22 @@ import { CommonInput } from "../common/CommonInput";
 import Button from "@/components/common/buttons/CommonButton";
 import CodeResendButton from "@/components/auth/verify/CodeResendButton";
 
+type VerifyCodeButtonProps = {
+  label?: string;
+  disabled?: boolean; // 선택값 (외부 조건)
+  onConfirm: (code: string) => void;
+};
+
 type VerifyCodeFormProps = {
   initialSeconds?: number;
   onExpired?: () => void;
-  onConfirm: (code: string) => void;
+  buttonProps: VerifyCodeButtonProps;
 };
 
 export const VerifyCodeForm = ({
   initialSeconds = 180,
   onExpired,
-  onConfirm,
+  buttonProps,
 }: VerifyCodeFormProps) => {
   const [code, setCode] = useState("");
   const [remainingSeconds, setRemainingSeconds] = useState(initialSeconds);
@@ -42,6 +48,10 @@ export const VerifyCodeForm = ({
     setFormattedTime(`${minutes}:${seconds}`);
   }, [remainingSeconds]);
 
+  // button props
+  const buttonLabel = buttonProps?.label ?? VERIFY_TEXT.CODE.NEXT_BUTTON;
+  const isDisabled = !code || buttonProps?.disabled === true;
+
   return (
     <div className="flex flex-col w-full gap-6">
       <div className="flex flex-col w-full">
@@ -53,7 +63,7 @@ export const VerifyCodeForm = ({
           type="tel"
         />
         <div className="flex mt-2">
-          <div className="flex grow-1 texcpt-center items-baseline">
+          <div className="flex grow text-center items-baseline">
             <span className="typo-body text-alert-red">{formattedTime}</span>
           </div>
           <CodeResendButton />
@@ -61,9 +71,9 @@ export const VerifyCodeForm = ({
       </div>
       <div className="mb-6">
         <Button
-          label={VERIFY_TEXT.CODE.NEXT_BUTTON}
-          isDisabled={!code}
-          onClick={() => onConfirm(code)}
+          label={buttonLabel}
+          isDisabled={isDisabled}
+          onClick={() => buttonProps.onConfirm(code)}
         />
       </div>
     </div>

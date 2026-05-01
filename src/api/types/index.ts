@@ -20,3 +20,6 @@ export * from "./authTypes";
 
 // Plan 관련 타입 re-export
 export * from "./planTypes";
+
+// Home 관련 타입 re-export
+export * from "./homeTypes";

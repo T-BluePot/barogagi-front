@@ -1,19 +1,36 @@
+import type React from "react";
 import ContentWrapper from "./ContentWrapper";
 import RankingList from "./RankingList";
+import EmptyContent from "@/components/common/EmptyContent";
+import type { PopularRegionDTO } from "@/api/types";
+import type { RankingItemData } from "./RankingItem";
 
-const HotPlaceSection = () => {
-  // TODO: 실제로는 API에서 가져와야 할 데이터
-  const hotPlaceRankings = [
-    { rank: 1, name: "성수", rankChange: "up" as const },
-    { rank: 2, name: "홍대", rankChange: "same" as const },
-    { rank: 3, name: "강남", rankChange: "up" as const },
-    { rank: 4, name: "이태원", rankChange: "down" as const },
-    { rank: 5, name: "명동", rankChange: "up" as const },
-  ];
+interface Props {
+  regions: PopularRegionDTO[];
+  isLoading: boolean;
+}
+
+/** API 응답 → RankingItemData 변환 */
+const toRankingItem = (region: PopularRegionDTO): RankingItemData => ({
+  rank: region.rank,
+  name: region.regionName,
+  rankChange: region.rankChange,
+});
+
+const HotPlaceSection: React.FC<Props> = ({ regions, isLoading }) => {
+  const rankings = regions.map(toRankingItem);
+
+  const renderContent = () => {
+    if (isLoading) return <EmptyContent message="불러오는 중..." />;
+    if (rankings.length === 0)
+      return <EmptyContent message="인기 지역 정보가 없습니다." />;
+
+    return <RankingList rankings={rankings} />;
+  };
 
   return (
     <ContentWrapper title="지금 인기 많은" highlightText="핫 플레이스">
-      <RankingList rankings={hotPlaceRankings} />
+      {renderContent()}
     </ContentWrapper>
   );
 };

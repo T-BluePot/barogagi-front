@@ -1,16 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
-import {
-  SelectTagConfirmModalContent,
-  type TagOption,
-} from "./content/SelectTagConfirmModalContent";
+import { SelectTagConfirmModalContent } from "./content/SelectTagConfirmModalContent";
+
+import type { TagRegistResDTO } from "@/api/types";
 
 interface SelectTagConfirmModalProps {
   isOpen: boolean;
-  tags: TagOption[];
-  initialSelectedIds?: string[];
+  tags: TagRegistResDTO[];
+  initialSelectedIds?: number[];
   maxSelection?: number;
-  onConfirm: (tags: TagOption[]) => void;
+  onConfirm: (tags: TagRegistResDTO[]) => void;
   onCancel: () => void;
 }
 
@@ -31,7 +30,7 @@ export const SelectTagConfirmModal = ({
   // 열림/닫힘 애니메이션 상태 (true면 열리는 애니메이션 재생)
   const [showAnimation, setShowAnimation] = useState(false);
   // 현재 선택된 태그 목록
-  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [selectedTags, setSelectedTags] = useState<TagRegistResDTO[]>([]);
 
   // 이전 isOpen 값을 저장하는 ref
   // ref는 값이 바뀌어도 리렌더링을 유발하지 않아서 이전 상태 추적에 적합
@@ -55,7 +54,7 @@ export const SelectTagConfirmModal = ({
       // 모달이 처음 열릴 때만 초기값 설정
       // (모달이 열린 상태에서 props가 바뀌어도 사용자 선택값을 덮어쓰지 않음)
       setShouldRender(true);
-      const initial = tags.filter((t) => initialSelectedIds.includes(t.id));
+      const initial = tags.filter((t) => initialSelectedIds.includes(t.tagNum));
       setSelectedTags(initial);
       // 다음 프레임에서 애니메이션 시작 (부드러운 트랜지션을 위해)
       rafIdRef.current = requestAnimationFrame(() => setShowAnimation(true));

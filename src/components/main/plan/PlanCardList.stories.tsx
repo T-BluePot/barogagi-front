@@ -4,7 +4,9 @@ import type { PlanData } from "./PlanCard";
 
 const mockItems: PlanData[] = [
   {
+    storeIndex: 0,
     id: 1,
+    source: "USER_CUSTOM",
     emoji: "🥓",
     title: "브런치",
     startTime: "10:00",
@@ -12,14 +14,18 @@ const mockItems: PlanData[] = [
     location: "부천시",
   },
   {
+    storeIndex: 1,
     id: 2,
+    source: "USER_CUSTOM",
     emoji: "☕",
     title: "카페",
     startTime: "12:00",
     endTime: "13:00",
   },
   {
+    storeIndex: 2,
     id: 3,
+    source: "USER_CUSTOM",
     emoji: "🎬",
     title: "영화",
     startTime: "14:00",
@@ -27,7 +33,9 @@ const mockItems: PlanData[] = [
     location: "CGV 부천",
   },
   {
+    storeIndex: 3,
     id: 4,
+    source: "USER_CUSTOM",
     emoji: "🍜",
     title: "저녁",
     location: "서울시 강남구",

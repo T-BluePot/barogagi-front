@@ -1,5 +1,5 @@
 import { SnsButtonsGroup } from "@/components/common/buttons/SnsButtonsGroup";
-import { EmailLoginButton } from "../signin/EmailLoginButton";
+import { LoginButton } from "../signin/LoginButton";
 
 export default function LoginButtonSection() {
   return (
@@ -9,7 +9,7 @@ export default function LoginButtonSection() {
         onKakaoClick={() => console.log("카카오 로그인 클릭")}
         onGoogleClick={() => console.log("구글 로그인 클릭")}
       />
-      <EmailLoginButton />
+      <LoginButton />
     </div>
   );
 }

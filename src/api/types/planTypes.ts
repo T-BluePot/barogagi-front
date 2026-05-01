@@ -1,16 +1,22 @@
+import type { PlanSource, TagType } from "@/types/api/scheduleTypes";
+
 /**
  * 일정(Schedule) 관련 API 타입 정의
  */
 
 /** 태그 정보 */
-export interface TagRegistReqDTO {
+export interface TagReqType {
+  tagType: TagType;
+  categoryNum: number | null;
+}
+export interface TagRegistResDTO {
   tagNum: number;
   tagNm: string;
 }
 
-export interface TagRegistResDTO {
+export interface TagRegistReqDTO {
   tagNum: number;
-  tagNm: string;
+  tagNm?: string;
 }
 
 /** 지역 정보 */
@@ -27,6 +33,21 @@ export interface UserAddedPlaceDTO {
   placeName: string;
   placeUrl?: string;
   addressName?: string;
+}
+
+/** 카카오 장소 검색 API 응답 (snake_case) */
+export interface KakaoPlaceDTO {
+  place_name: string;
+  place_url: string;
+  address_name: string;
+  road_address_name: string;
+  category_group_name: string;
+  distance: string;
+  id: string;
+  phone: string;
+  x: string;
+  y: string;
+  regionNum: number | null;
 }
 
 /** 세부 일정(Plan) 요청 DTO */
@@ -50,12 +71,13 @@ export interface ScheduleRegistReqDTO {
   endDate: string;
   comment?: string;
   scheduleTagRegistReqDTOList?: TagRegistReqDTO[];
+  scheduleRegionRegistReqDTOList?: RegionRegistReqDTO[];
   planRegistReqDTOList?: PlanRegistReqDTO[];
 }
 
 /** 세부 일정(Plan) 응답 DTO */
 export interface PlanRegistResDTO {
-  planSource: "AI" | "USER_PLACE" | "USER_CUSTOM";
+  planSource?: PlanSource;
   startTime: string;
   endTime: string;
   itemNum: number;
@@ -68,7 +90,7 @@ export interface PlanRegistResDTO {
   planDescription?: string;
   planAddress?: string;
   regionNm?: string;
-  regionNum: number;
+  regionNum?: number;
   planTagRegistResDTOList: TagRegistResDTO[];
 }
 
@@ -80,4 +102,71 @@ export interface ScheduleRegistResDTO {
   endDate: string;
   scheduleTagRegistResDTOList: TagRegistResDTO[];
   planRegistResDTOList: PlanRegistResDTO[];
+}
+
+/** 일정 목록 항목 DTO (GET /schedule/list 개별 항목) */
+export interface ScheduleListItemDTO {
+  scheduleNum: number;
+  scheduleNm: string;
+  startDate: string;
+  endDate: string;
+  scheduleTagRegistResDTOList: TagRegistResDTO[];
+}
+
+/** 일정 목록 조회 응답 DTO (GET /schedule/list) */
+export interface ScheduleListResDTO {
+  pastSchedules: ScheduleListItemDTO[];
+  upcomingSchedules: ScheduleListItemDTO[];
+}
+
+/** 일정 카테고리 응답 타입 */
+export interface ScheduleCategoryResponseType {
+  categoryNum: number;
+  categoryNm: string;
+}
+
+/** 일정 카테고리 상세 응답 타입 */
+export interface ScheduleCategoryItemResponseType {
+  itemNum: number;
+  itemNm: string;
+}
+
+/** 일정 상세 조회 응답 타입 */
+export interface RegionVO {
+  regionNum: number;
+  regionLevel1: string;
+  regionLevel2: string | null;
+  regionLevel3: string | null;
+  regionLevel4: string | null;
+}
+
+export interface TagDetailVO {
+  tagNum: number;
+  tagNm: string;
+  tagType: TagType;
+  categoryNum: number;
+}
+
+export interface PlanDetailVO {
+  planNum: number;
+  planNm: string;
+  planLink: string | null;
+  planDescription?: string;
+  startTime: string;
+  endTime: string;
+  itemNum: number;
+  itemNm: string;
+  categoryNum: number;
+  categoryNm: string;
+  regionVOList: RegionVO[];
+  tagDetailVOList: TagDetailVO[];
+}
+
+export interface ScheduleDetailResDTO {
+  scheduleNum: number;
+  scheduleNm: string;
+  startDate: string;
+  endDate: string;
+  radius: number;
+  planDetailVOList: PlanDetailVO[];
 }

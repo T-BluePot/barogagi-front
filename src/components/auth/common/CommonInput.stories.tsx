@@ -1,14 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { useState } from "react";
 import { CommonInput } from "./CommonInput";
 
 const meta = {
-  title: "Auth/Signup/CommonInput",
+  title: "Components/Auth/Signup/CommonInput",
   component: CommonInput,
   tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
   },
+
   argTypes: {
     label: {
       control: "text",
@@ -48,11 +50,6 @@ const meta = {
       action: "setValue", // 액션 탭에 찍힘
       table: { disable: true }, // Controls UI에서 숨김
     },
-    onClickButton: {
-      action: "onClickButton",
-      description: "좌측 버튼 전용 함수",
-      table: { disable: true },
-    },
   },
 } satisfies Meta<typeof CommonInput>;
 
@@ -65,9 +62,13 @@ export const Default: Story = {
     placeholder: "example@domain.com",
     helperText: "",
     error: false,
-    value: "",
     withButton: false,
+    value: "",
     setValue: () => {},
+  },
+  render: (args) => {
+    const [email, setEmail] = useState("");
+    return <CommonInput {...args} value={email} setValue={setEmail} />;
   },
 };
 
@@ -76,7 +77,9 @@ export const WithButton: Story = {
     ...Default.args,
     withButton: true,
     value: "test@example.com",
-    onClickButton: () => {},
+    buttonProps: {
+      label: "확인",
+    },
   },
 };
 

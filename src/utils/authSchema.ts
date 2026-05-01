@@ -5,6 +5,7 @@ import {
   PASSWORD_MESSAGES,
   PW_CONFIRM_MESSAGES,
   NICKNAME_MESSAGES,
+  PHONE_MESSAGES,
 } from "@/constants/texts/auth/signup/credentials";
 
 /**
@@ -27,9 +28,12 @@ export const idSchema = Yup.string()
   .test("no-whitespace", ID_MESSAGES.NO_WHITESPACE, (value = "") =>
     value === "" ? true : !/\s/.test(value)
   )
-  // 3. 특수문자 포함 불가
-  .test("no-special-char", ID_MESSAGES.NO_SPECIAL_CHAR, (value = "") =>
-    value === "" ? true : /^[a-z0-9]*$/.test(value)
+
+  // 3. 영문 소문자와 숫자만 허용
+  .test(
+    "allowed-characters",
+    ID_MESSAGES.ONLY_LOWERCASE_AND_NUMBER,
+    (value = "") => (value === "" ? true : /^[a-z0-9]*$/.test(value))
   )
   // 4. 숫자 반드시 포함
   .test("must-include-number", ID_MESSAGES.INVALID_FORMAT, (v = "") =>
@@ -63,11 +67,14 @@ export const passwordSchema = Yup.string()
   )
 
   // 전체 형식 검사:
-  // - 영문 + 숫자 포함
+  // - 영문 1자 이상
+  // - 숫자 1자 이상
+  // - 특수문자 1자 이상 (허용된 것만)
   // - 총 8~20자
-  // - 허용 문자만 포함되어야 함
   .test("valid-format", PASSWORD_MESSAGES.INVALID_FORMAT, (v = "") =>
-    /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@#$%^&*()]{8,20}$/.test(v)
+    /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()])[a-zA-Z0-9!@#$%^&*()]{8,20}$/.test(
+      v
+    )
   );
 
 /**
@@ -98,4 +105,21 @@ export const nicknameSchema = Yup.string()
   // 2. 길이: 공백 포함 기준 2자 이상 12자 이하
   .test("valid-length", NICKNAME_MESSAGES.INVALID_LENGTH, (v = "") =>
     v === "" ? true : v.length >= 2 && v.length <= 12
+  );
+
+/**
+ * 휴대전화 번호 유효성 검사 스키마
+ * 조건:
+ * - 숫자만 허용
+ * - 길이는 10~11자리
+ */
+export const phoneSchema = Yup.string()
+  // 1. 숫자만 허용
+  .test("only-digits", PHONE_MESSAGES.ONLY_DIGITS, (v = "") =>
+    v === "" ? true : /^\d+$/.test(v)
+  )
+
+  // 2. 길이: 10~11자리
+  .test("valid-format", PHONE_MESSAGES.INVALID_FORMAT, (v = "") =>
+    v === "" ? true : /^\d{10,11}$/.test(v)
   );

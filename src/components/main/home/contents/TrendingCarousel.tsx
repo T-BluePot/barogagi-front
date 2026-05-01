@@ -1,3 +1,4 @@
+import type React from "react";
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import TrendingCarouselItem, {

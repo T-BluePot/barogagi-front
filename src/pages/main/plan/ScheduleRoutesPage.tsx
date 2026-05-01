@@ -1,82 +1,190 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleRoutesPageProps } from "@/types/main/plan/scheduleRoutes";
 import type { PlanNoteMap } from "@/types/main/plan/bottom-modal/planFromTypes";
-import {
-  findScheduleByNum,
-  filterPlansByScheduleNum,
-  findPlanByNum,
-} from "@/utils/main/plan/filterList";
+
 import { usePlanEditStore } from "@/stores/planEditStore";
 
+import PageLoading from "@/components/layout/PageLoading";
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
+import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInputModal";
+import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 
-import { allSchedules } from "@/mock/schedules";
-import { mockPlans } from "@/mock/plans"; // 추후 실제 데이터로 변경
+// === server ===
+import { useQueryClient } from "@tanstack/react-query";
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
+import { createSchedule, saveSchedule, getScheduleDetail } from "@/api/queries";
+import { scheduleKeys } from "@/api/keyFactories";
+import type {
+  PlanRegistResDTO,
+  ScheduleRegistResDTO,
+  BaseResponse,
+  ScheduleListResDTO,
+  UserAddedPlaceDTO,
+} from "@/api/types";
+import { toCommonPlan } from "@/utils/api/planMapper";
+import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
+import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
+import type { TimeValue } from "@/utils/date";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
 
-  // --- 넘어온 화면 확인용
   const isCreate = variant === "create";
   const isDetail = variant === "detail";
 
-  const { id } = useParams<{ id: string }>(); // /plan/:id/detail 에서 사용
-  // 내 일정 페이지에서 넘어온 num 기반 필터된 plan 리스트
+  // ----- create: 일정 생성 로직 -----
+  const queryClient = useQueryClient();
+  const { buildRequest, reset } = useScheduleDraftStore();
+  const { clearRegions } = useRegionSelectionStore();
+  const updateMutation = useUpdateScheduleMutation();
+
+  // create / detail 공통 state
+  const [scheduleResult, setScheduleResult] =
+    useState<ScheduleRegistResDTO | null>(null);
+  const [planList, setPlanList] = useState<PlanRegistResDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(isCreate);
+  const [isDetailLoading, setIsDetailLoading] = useState(isDetail);
+
+  // useRef로 중복 호출 방지
+  // sessionStorage와 달리 컴포넌트 인스턴스에 묶여있어 탭 간 공유 / 이전 값 잔류 문제가 없음
+  // React StrictMode의 마운트→언마운트→재마운트 사이클에서도 정확히 1회 fetch 보장
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (!isCreate) return;
+    if (hasFetched.current) return; // 이미 호출됐으면 스킵
+    hasFetched.current = true;
+
+    setIsLoading(true);
+
+    const fetchCreateSchedule = async () => {
+      try {
+        const req = buildRequest();
+        const res = await createSchedule(req);
+        console.log("[create 응답]", JSON.stringify(res.data, null, 2));
+
+        // HTTP 200이지만 에러 코드로 내려오는 경우 처리 (catch에 안 걸림)
+        if (res.code !== "S201") {
+          toast(res.message ?? "일정 생성에 실패했습니다.");
+          navigate(-1);
+          return;
+        }
+
+        setScheduleResult(res.data);
+        setPlanList(res.data?.planRegistResDTOList ?? []);
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          toast(err.response?.data?.message ?? "일정 생성에 실패했습니다.");
+        } else if (err instanceof Error) {
+          toast(err.message);
+        } else {
+          toast("일정 생성에 실패했습니다.\n다시 시도해주세요");
+        }
+        console.error(err);
+        navigate(-1);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCreateSchedule();
+  }, []);
+
+  // ----- detail: 일정 상세 로직 -----
+  const { id } = useParams<{ id: string }>();
+  const scheduleNum = id ? Number(id) : undefined;
+
+  useEffect(() => {
+    if (!isDetail || !scheduleNum || Number.isNaN(scheduleNum)) return;
+
+    setIsDetailLoading(true);
+    let ignore = false;
+
+    const fetchDetail = async () => {
+      try {
+        const res = await getScheduleDetail(scheduleNum);
+        console.log("[detail 응답]", JSON.stringify(res.data, null, 2));
+        if (ignore) return;
+
+        if (res.code !== "S202") {
+          toast(res.message ?? "일정을 불러오지 못했습니다");
+          navigate(-1);
+          return;
+        }
+
+        // ScheduleDetailResDTO → 공통 state로 변환 후 저장
+        // detail API에 태그가 포함되지 않으므로 목록 캐시에서 복원
+        const listCache = queryClient.getQueryData<
+          BaseResponse<ScheduleListResDTO>
+        >(scheduleKeys.lists());
+        const allItems = [
+          ...(listCache?.data?.upcomingSchedules ?? []),
+          ...(listCache?.data?.pastSchedules ?? []),
+        ];
+        const cachedTags =
+          allItems.find((s) => s.scheduleNum === res.data.scheduleNum)
+            ?.scheduleTagRegistResDTOList ?? [];
+
+        const convertedPlans = res.data.planDetailVOList.map(toCommonPlan);
+        setScheduleResult({
+          scheduleNum: res.data.scheduleNum,
+          scheduleNm: res.data.scheduleNm,
+          startDate: res.data.startDate,
+          endDate: res.data.endDate,
+          scheduleTagRegistResDTOList: cachedTags,
+          planRegistResDTOList: convertedPlans,
+        });
+        setPlanList(convertedPlans);
+      } catch (err) {
+        if (ignore) return;
+        if (err instanceof AxiosError) {
+          toast(err.response?.data?.message ?? "일정을 불러오지 못했습니다");
+        } else if (err instanceof Error) {
+          toast(err.message);
+        } else {
+          toast("일정을 불러오지 못했습니다");
+        }
+        console.error(err);
+        navigate(-1);
+      } finally {
+        if (!ignore) setIsDetailLoading(false);
+      }
+    };
+
+    fetchDetail();
+    return () => {
+      ignore = true;
+    };
+  }, [scheduleNum]);
 
   // ----- 헤더 영역 -----
   const [scheduleName, setScheduleName] = useState<string>("");
-  const [scheduleDate, setScheduleDate] = useState<Date>(new Date());
+  const [scheduleDate, setScheduleDate] = useState<string>("");
 
-  const scheduleNum = id ? Number(id) : undefined;
-
-  // ----- 현재 페이지에서 사용할 plan 리스트: scheduleNum 기준 필터 -----
-  const plansForPage = filterPlansByScheduleNum(
-    isDetail,
-    mockPlans,
-    scheduleNum
-  );
-
-  // ----- 일정 이름 / 날짜 초기 세팅 -----
+  // 일정 이름 / 날짜 초기 세팅
   useEffect(() => {
-    // create 모드: 기본값 세팅
-    if (!isDetail) {
-      setScheduleName("오늘의 일정");
-      setScheduleDate(new Date());
-      return;
-    }
+    if (!scheduleResult) return;
+    setScheduleName(
+      scheduleResult.scheduleNm ?? (isCreate ? "생성된 일정" : "오늘의 일정")
+    );
+    setScheduleDate(scheduleResult.startDate ?? "");
+  }, [scheduleResult]);
 
-    // detail 모드인데 id가 없는 경우: 방어 코드
-    if (!scheduleNum || Number.isNaN(scheduleNum)) {
-      setScheduleName("오늘의 일정");
-      setScheduleDate(new Date());
-      return;
-    }
-
-    // allSchedules 에서 현재 schedule 찾기
-    const currentSchedule = findScheduleByNum(allSchedules, scheduleNum);
-
-    if (!currentSchedule) {
-      // 해당 schedule 이 없으면 기본값 사용
-      setScheduleName("오늘의 일정");
-      setScheduleDate(new Date());
-      return;
-    }
-
-    // 찾은 schedule 기반으로 이름 / 날짜 세팅
-    setScheduleName(currentSchedule.scheduleNm);
-
-    // startDate 를 Date 객체로 변환 (예: "2025-01-02")
-    setScheduleDate(new Date(currentSchedule.startDate));
-  }, [isDetail, scheduleNum]);
-
-  // ----- 일정 list 영역 -----
+  // scheduleName이 바뀔 때 scheduleResult도 동기화
+  const handleChangeScheduleName = (next: string) => {
+    setScheduleName(next);
+    setScheduleResult((prev) => (prev ? { ...prev, scheduleNm: next } : prev));
+  };
 
   // ----- 일정 삭제하기 modal -----
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
@@ -94,91 +202,198 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 일정 수정하기 bottom modal -----
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const { draft: editDraft, setDraft, clearDraft } = usePlanEditStore();
+  const { setDraft, draft: editDraft, clearDraft } = usePlanEditStore();
 
   const handleRequestEdit = (planNum: number) => {
-    const target = findPlanByNum(plansForPage, planNum);
+    const target = planList.find((p) => p.planNum === planNum);
     if (!target) return;
 
-    // 서버에서 받은 원본 데이터를 기반으로 "초기 드래프트" 생성
     setDraft({
-      planNum: target.plan.planNum, // 대표 식별자 (PK)
-
-      // Plan 섹션
+      planNum: target.planNum ?? planNum,
       plan: {
-        planNm: target.plan.planNm,
-        startTime: target.plan.startTime,
-        endTime: target.plan.endTime,
+        planNm: target.planNm ?? "",
+        startTime: target.startTime,
+        endTime: target.endTime,
       },
-
-      // Place 섹션
       place: {
-        placeNum: target.place.placeNum, // FK
-        placeNm: target.place.regionNm, // UI 표시용 장소명
-        address: target.place.address, // UI 표시용 주소
+        placeNum: null,
+        placeNm: target.regionNm ?? "",
+        address: target.planAddress ?? target.regionNm ?? "",
       },
-
-      // Tags 섹션 필요 시 아래 활성화
-      // tags: {
-      //   selectedTagNums: target.tags.map(t => t.tagNum),
-      // },
     });
 
     setIsEditModalOpen(true);
   };
 
-  // 컴포넌트 내부에서 사용할 메모 저장 변수
+  // 장소 검색 페이지에서 선택한 장소를 draft에 직접 반영하는 콜백
+  // Outlet context로 LocationSearchPage에 전달하여 store 타이밍 문제 우회
+  const handlePlaceSelect = (place: UserAddedPlaceDTO) => {
+    const currentDraft = editDraft ?? usePlanEditStore.getState().draft;
+    if (!currentDraft) return;
+    setDraft({
+      ...currentDraft,
+      place: {
+        placeNum: null,
+        placeNm: place.placeName,
+        address: place.addressName ?? place.placeName,
+      },
+    });
+    setIsEditModalOpen(true);
+  };
+
   const [planNotes, setPlanNotes] = useState<PlanNoteMap>({});
 
   const handleChangeNote = (planNum: number, nextValue: string) => {
-    setPlanNotes((prev) => ({
-      ...prev,
-      [planNum]: nextValue,
-    }));
+    setPlanNotes((prev) => ({ ...prev, [planNum]: nextValue }));
+  };
+
+  // ----- 계획 제목 수정 모달 -----
+  const [isNameModalOpen, setIsNameModalOpen] = useState<boolean>(false);
+
+  const handleEditTitleClick = () => setIsNameModalOpen(true);
+
+  const handleNameConfirm = (planNm: string) => {
+    if (editDraft) {
+      setDraft({ ...editDraft, plan: { ...editDraft.plan, planNm } });
+    }
+    setIsNameModalOpen(false);
+  };
+
+  // ----- 계획 시간 수정 모달 -----
+  const [isTimeModalOpen, setIsTimeModalOpen] = useState<boolean>(false);
+
+  const handleTimeClick = () => setIsTimeModalOpen(true);
+
+  const handleTimeConfirm = (start: TimeValue, end: TimeValue) => {
+    if (editDraft) {
+      setDraft({
+        ...editDraft,
+        plan: {
+          ...editDraft.plan,
+          startTime: timeValueToHHmm(start),
+          endTime: timeValueToHHmm(end),
+        },
+      });
+    }
+    setIsTimeModalOpen(false);
   };
 
   // ----- 일정 confirm -----
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
+
+  // ----- 일정 저장 로직 -----
+  const handleSaveSchedule = async () => {
+    if (!scheduleResult) return;
+
+    try {
+      const res = await saveSchedule(scheduleResult);
+      if (res.code !== "S204" && res.code !== "S203") {
+        toast(res.message ?? "일정 저장에 실패했습니다.");
+        return;
+      }
+      handleCloseCreateModal();
+      reset();
+      clearRegions();
+      toast("일정이 저장되었습니다");
+      navigate(ROUTES.PLAN.LIST);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        toast(err.response?.data?.message ?? "일정 저장에 실패했습니다.");
+      } else if (err instanceof Error) {
+        toast(err.message);
+      } else {
+        toast("일정 저장에 실패했습니다.\n다시 시도해주세요");
+      }
+    }
+  };
+
+  // ----- 로딩 중 -----
+  if (isCreate && isLoading) {
+    return (
+      <PageLoading message="AI가 일정을 생성하고 있어요" isHeaderDark={false} />
+    );
+  }
+
+  if (isDetail && isDetailLoading) {
+    return (
+      <PageLoading message="일정을 불러오는 중이에요" isHeaderDark={false} />
+    );
+  }
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-5">
-      {/* 일정 생성 모달 */}
       <CreateScheduleModal
         isConfirmOpen={isCreateModalOpen}
         onConfirmCancel={handleCloseCreateModal}
-        onConfirmConfirm={() => {
-          // 일정 생성 API 호출
-          handleCloseCreateModal();
-          navigate(ROUTES.PLAN.LIST);
-        }}
+        onConfirmConfirm={handleSaveSchedule}
       />
-      {/* 팝메뉴- 일정 수정 및 삭제 모달 */}
 
       {editDraft && (
         <PlanFormModal
           action={{
             isOpen: isEditModalOpen,
             onClose: () => {
-              // 서버 연동 시 변경사항 저장 로직 추가
+              // editDraft 변경사항을 planList와 scheduleResult에 반영 후 수정 API 호출
+              // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
+              if (scheduleResult) {
+                const originalPlan = planList.find(
+                  (p) => p.planNum === editDraft.planNum
+                );
+                const hasChanged =
+                  !!originalPlan &&
+                  (editDraft.plan.planNm !== (originalPlan.planNm ?? "") ||
+                    editDraft.plan.startTime !== originalPlan.startTime ||
+                    editDraft.plan.endTime !== originalPlan.endTime ||
+                    editDraft.place.placeNm !== (originalPlan.regionNm ?? "") ||
+                    editDraft.place.address !==
+                      (originalPlan.planAddress ?? originalPlan.regionNm ?? ""));
+
+                if (hasChanged) {
+                  const prevPlans = planList;
+                  const prevSchedule = scheduleResult;
+
+                  const updatedPlans = planList.map((p) =>
+                    p.planNum === editDraft.planNum
+                      ? {
+                          ...p,
+                          planNm: editDraft.plan.planNm,
+                          startTime: editDraft.plan.startTime,
+                          endTime: editDraft.plan.endTime,
+                          regionNm: editDraft.place.placeNm,
+                          planAddress: editDraft.place.address,
+                        }
+                      : p
+                  );
+                  const updatedSchedule = {
+                    ...scheduleResult,
+                    planRegistResDTOList: updatedPlans,
+                  };
+                  setPlanList(updatedPlans);
+                  setScheduleResult(updatedSchedule);
+                  updateMutation.mutate(updatedSchedule, {
+                    onError: () => {
+                      setPlanList(prevPlans);
+                      setScheduleResult(prevSchedule);
+                    },
+                  });
+                }
+              }
               setIsEditModalOpen(false);
               clearDraft();
             },
             onConfirm: () => {},
-            onClickEditTitle: () => {},
+            onClickEditTitle: handleEditTitleClick,
           }}
           info={{
             mode: "Edit",
-            // --- 일정 기본 정보 ---
             planNum: editDraft.planNum,
             planNm: editDraft.plan.planNm,
             startTime: editDraft.plan.startTime,
             endTime: editDraft.plan.endTime,
             address: editDraft.place.address,
             onClickAddress: () => navigate("search"),
-            onClickTime: () => {},
-            // --- 일정 노트 아이템 관련 ---
+            onClickTime: handleTimeClick,
             note: planNotes[editDraft.planNum],
             noteValue: planNotes[editDraft.planNum] ?? "",
             onChangeNote: (next: string) =>
@@ -186,25 +401,70 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           }}
         />
       )}
+
+      <PlanNameInputModal
+        isOpen={isNameModalOpen}
+        initialValue={editDraft?.plan.planNm}
+        onConfirm={handleNameConfirm}
+        onCancel={() => setIsNameModalOpen(false)}
+      />
+
+      <SelectTimeConfirmModal
+        isOpen={isTimeModalOpen}
+        initialStartTime={
+          editDraft?.plan.startTime
+            ? hhmmToTimeValue(editDraft.plan.startTime)
+            : undefined
+        }
+        initialEndTime={
+          editDraft?.plan.endTime
+            ? hhmmToTimeValue(editDraft.plan.endTime)
+            : undefined
+        }
+        onConfirm={handleTimeConfirm}
+        onCancel={() => setIsTimeModalOpen(false)}
+      />
+
       <DeletePlanModal
         isOpen={isDeleteModalOpen}
         onClickCancel={handleCloseDeleteModal}
         onClickConfirm={() => {
-          // TODO: deletePlanNum을 사용해서 서버 삭제 API 호출
-          console.log("삭제할 일정:", deletePlanNum);
+          if (deletePlanNum == null || !scheduleResult) {
+            handleCloseDeleteModal();
+            return;
+          }
+          // 해당 계획을 목록에서 제거 후 수정 API 호출
+          // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
+          const prevPlans = planList;
+          const prevSchedule = scheduleResult;
+
+          const updatedPlans = planList.filter(
+            (p) => p.planNum !== deletePlanNum
+          );
+          const updatedSchedule = {
+            ...scheduleResult,
+            planRegistResDTOList: updatedPlans,
+          };
+          setPlanList(updatedPlans);
+          setScheduleResult(updatedSchedule);
+          updateMutation.mutate(updatedSchedule, {
+            onError: () => {
+              setPlanList(prevPlans);
+              setScheduleResult(prevSchedule);
+            },
+          });
           handleCloseDeleteModal();
         }}
       />
-      {/* 공통 콘텐츠 영역 */}
+
       {isCreate && (
         <ScheduleRoutesContent
           header={{
             scheduleDate,
             scheduleName,
-            onChangeScheduleName: setScheduleName,
+            onChangeScheduleName: handleChangeScheduleName,
           }}
-          plans={plansForPage}
-          // isEditable false → create 모드로 동작
+          plans={planList}
           isEditable={false}
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
@@ -216,17 +476,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           header={{
             scheduleDate,
             scheduleName,
-            onChangeScheduleName: setScheduleName,
+            onChangeScheduleName: handleChangeScheduleName,
           }}
-          plans={plansForPage}
-          // isEditable true → detail 모드로 동작: popMenu 연동
+          plans={planList}
           isEditable={isDetail}
           onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
         />
       )}
-      {/* 자식 검색 라우트 */}
-      <Outlet />
+      <Outlet context={{ onPlaceSelect: handlePlaceSelect }} />
     </div>
   );
 };

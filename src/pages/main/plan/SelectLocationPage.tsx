@@ -1,33 +1,64 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
+// === constants ===
 import { ROUTES } from "@/constants/routes";
 import { SELECT_LOCATION_TEXT } from "@/constants/texts/main/plan/selectLocation";
 
-import { mockRegions } from "@/mock/regions";
-
+// === components ===
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import RegionSearchContainer from "@/components/main/plan/create/RegionSearchContainer";
 import { RegionTagContainer } from "@/components/main/plan/RegionTagContainer";
-import ButtonWithText from "@/components/common/buttons/ButtonWithText";
+import Button from "@/components/common/buttons/CommonButton";
+
+// === server ===
+import type { RegionSearchItemType } from "@/types/api/scheduleTypes";
+
+// === store ===
+import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
+import { useScheduleDraftStore } from "@/stores/scheduleStore";
 
 const SelectLocationPage = () => {
   const navigate = useNavigate();
 
+  // 사용자 입력 검색어
   const [searchText, setSearchText] = useState<string>("");
-  const [selectedRegionNums, setSelectedRegionNums] = useState<number[]>([]);
-  const hasSelection = !!selectedRegionNums.length;
 
-  // 지역 선택 처리
-  const handleSelectRegion = (regionNum: number) => {
-    setSelectedRegionNums((prev) => {
-      if (prev.length >= 3) {
-        alert(SELECT_LOCATION_TEXT.ALERT_TAG); // TODO: 토스트로 교체
-        return prev;
-      }
-      if (prev.includes(regionNum)) return prev;
-      return [...prev, regionNum];
+  // 지역 전용 store
+  const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
+  const addRegion = useRegionSelectionStore((s) => s.addRegion);
+  const removeRegionByNum = useRegionSelectionStore((s) => s.removeRegionByNum);
+
+  // 일정 등록 store
+  const setDraft = useScheduleDraftStore((s) => s.setDraft);
+
+  // regionSelectionStore 변경 후 scheduleDraftStore에도 동기화하는 헬퍼
+  const syncToDraft = (regions: RegionSearchItemType[]) => {
+    setDraft({
+      scheduleRegionRegistReqDTOList: regions.map((r) => ({
+        regionNum: r.regionNum,
+      })),
     });
+  };
+
+  const hasSelection = selectedRegions.length > 0;
+
+  const handleSelectRegion = (item: RegionSearchItemType) => {
+    const result = addRegion(item);
+    if (!result.ok) {
+      if (result.reason === "MAX") toast("최대 3개까지 선택할 수 있어요");
+      if (result.reason === "DUPLICATE") toast("이미 선택된 지역이에요");
+      return;
+    }
+    syncToDraft(result.next!);
+  };
+
+  const handleRemoveRegion = (target: RegionSearchItemType) => {
+    removeRegionByNum(target.regionNum);
+    syncToDraft(
+      selectedRegions.filter((r) => r.regionNum !== target.regionNum)
+    );
   };
 
   return (
@@ -45,13 +76,8 @@ const SelectLocationPage = () => {
                 subTitle={SELECT_LOCATION_TEXT.SUB_TITLE}
               />
               <RegionTagContainer
-                regions={mockRegions}
-                selectedRegionNums={selectedRegionNums}
-                handleRemoveRegion={(regionNum) =>
-                  setSelectedRegionNums((prev) =>
-                    prev.filter((n) => n !== regionNum)
-                  )
-                }
+                selectedRegions={selectedRegions}
+                onRemove={handleRemoveRegion}
               />
             </div>
           </div>
@@ -65,36 +91,25 @@ const SelectLocationPage = () => {
                 setValue: setSearchText,
                 onClearSearchInput: () => setSearchText(""),
               }}
-              regions={mockRegions}
-              handleSelectRegion={(regionNum) => {
-                handleSelectRegion(regionNum);
-                setSearchText("");
-              }}
+              handleSelectRegion={handleSelectRegion}
             />
           </div>
         </div>
       </div>
 
-      {/* 하단 푸터: fixed 제거, 문서 흐름 내 마지막 행으로 배치 */}
-
+      {/* 하단 푸터 */}
       <div className="mt-auto w-full p-6">
-        <ButtonWithText
-          textLabel={
-            SELECT_LOCATION_TEXT.NEXT_BUTTON.ADD_CURRENT_LOCATION_LABEL
-          }
-          onClickText={() => {
-            // TODO: 서버 연동 시 현재 위치 추가하기 로직 작성
-          }}
-          button={{
-            label: !hasSelection
+        <Button
+          type="button"
+          isDisabled={!hasSelection}
+          label={
+            !hasSelection
               ? SELECT_LOCATION_TEXT.NEXT_BUTTON.DISABLED
-              : SELECT_LOCATION_TEXT.NEXT_BUTTON.ENABLED,
-
-            isDisabled: !hasSelection,
-            onClick: () => {
-              // 추후 선택된 일정 넘기기 로직 추가
-              navigate(ROUTES.PLAN.SETTING);
-            },
+              : SELECT_LOCATION_TEXT.NEXT_BUTTON.ENABLED
+          }
+          onClick={() => {
+            // 추후 선택된 일정 넘기기 로직 추가
+            navigate(ROUTES.PLAN.SETTING);
           }}
         />
       </div>

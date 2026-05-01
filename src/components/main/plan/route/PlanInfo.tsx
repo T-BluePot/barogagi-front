@@ -2,7 +2,7 @@ import { PlanInfoItem } from "./PlanInfoItem";
 
 interface PlanInfoProps {
   timeValue: string;
-  locationValue: string;
+  locationValue?: string;
 }
 
 export const PlanInfo = ({ timeValue, locationValue }: PlanInfoProps) => {
@@ -12,7 +12,9 @@ export const PlanInfo = ({ timeValue, locationValue }: PlanInfoProps) => {
         <PlanInfoItem variant="time" value={timeValue} />
         <div className="p-1" />
       </div>
-      <PlanInfoItem variant="location" value={locationValue} />
+      {locationValue && (
+        <PlanInfoItem variant="location" value={locationValue} />
+      )}
     </div>
   );
 };

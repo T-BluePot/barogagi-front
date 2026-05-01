@@ -10,7 +10,7 @@ const meta = {
     layout: "fullscreen",
   },
   argTypes: {
-    isDarkBg: {
+    isHeaderDark: {
       control: "boolean",
       description: "배경이 어두운지 여부",
       defaultValue: false,

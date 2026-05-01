@@ -38,7 +38,7 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
   "/auth/signin": {
     type: "back",
     label: "로그인",
-    isDarkBg: true,
+    isHeaderDark: true,
   },
   "/profile": {
     type: "back",
@@ -76,7 +76,8 @@ useEffect(() => {
 interface HeaderConfig {
   type: "none" | "back" | "title" | "close" | "common";
   label?: string; // 헤더 제목
-  isDarkBg?: boolean; // 다크 배경 여부
+  isHeaderDark?: boolean; // 헤더 다크 배경 여부
+  isContentDark?: boolean; // 콘텐츠 다크 배경 여부 (미지정 시 isHeaderDark 따라감)
   rightAction?: () => void; // 우측 버튼 액션 (향후 확장)
   rightIcon?: ReactNode; // 우측 아이콘 (향후 확장)
 }

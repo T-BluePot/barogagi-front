@@ -1,107 +1,115 @@
 import { useRef } from "react";
+import { motion } from "framer-motion";
+// === components ===
 import { PlanInfo } from "./PlanInfo";
 import { TextTag } from "@/components/common/tags/TextTag";
-
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { GradientImage } from "../create/GradientImage";
+import fallbackImg from "@/assets/images/category/category_default.jpg";
+// === types ===
 import type { PlanDetailCardProps } from "@/types/main/plan/planListTypes";
 
-import { GradientImage } from "../create/GradientImage";
-
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import clsx from "clsx";
-
 const PlanDetailCard = (props: PlanDetailCardProps) => {
-  // 카드 타입
   const simple = props.mode === "create";
   const edit = props.mode === "detail";
 
-  // 일정 정보
-  const planName = props.plan.planNm;
-  const startTime = props.plan.startTime;
-  const endTime = props.plan.endTime;
+  const { plan, src, isOpen, onToggleOpen } = props;
 
-  // 장소 정보
-  const planPlace = props.place.regionNm;
-  const placeAddress = props.place.address;
-  const placeInfo = props.place.placeDescription;
-  const placeLink = props.place.planLink;
-  const src = props.src;
+  const planName = plan.planNm ?? "";
+  const startTime = plan.startTime;
+  const endTime = plan.endTime;
+  const planPlace = plan.regionNm ?? "";
+  const placeAddress = plan.planAddress ?? "";
+  const placeInfo = plan.planDescription ?? "";
+  const placeLink = plan.planLink ?? "";
+  const tagNames = (plan.planTagRegistResDTOList ?? []).map((t) => t.tagNm);
+  const planNum = plan.planNum;
+  const imageSrc = src ?? fallbackImg;
 
-  // 태그
-  const tagNames = props.tags.map((t) => t.tagNm);
-
-  // 컴포넌트 영역
-  const isOpen = props.isOpen;
-  const onToggleOpen = props.onToggleOpen;
-
-  // 메뉴 버튼에 ref 연결
   const moreButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // 메뉴 버튼 클릭 시: 이벤트 전파 막고, ref + planNum 부모로 전달
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-
-    if (simple) return; // 생성 단계에서 메뉴 클릭 이벤트 발생 가능성 방지
-
+    if (simple || planNum == null) return;
     props.onOpenCardMenu({
-      planNum: props.plan.planNum,
+      planNum,
       anchorEl: moreButtonRef.current,
     });
   };
 
-  // 지도 영역 클릭 시 이벤트 전파 차단
   const handleMapClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(placeLink, "_blank"); // 새 탭에서 장소 링크 열기
+    if (placeLink) window.open(placeLink, "_blank", "noopener,noreferrer");
   };
 
   const planTime = `${startTime} ~ ${endTime}`;
 
   return (
-    <div
-      className="flex flex-col items-baseline px-6 pt-4 bg-gray-white rounded-xl gap-4 select-none shadow-md"
-      onClick={onToggleOpen}
+    <motion.div
+      layout
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="flex flex-col items-baseline px-2 py-4 bg-gray-white rounded-xl gap-4 select-none shadow-md overflow-hidden"
+      onClick={() => {
+        if (!placeLink && !isOpen) return;
+        onToggleOpen();
+      }}
     >
-      {/* 일정 정보 영역 */}
-      <div className="flex w-full justify-between items-baseline">
-        <div className="flex flex-col justify-start items-start gap-2">
+      <motion.div
+        layout="position"
+        className="flex w-full justify-between items-baseline"
+      >
+        <div className="flex flex-col justify-start items-start gap-2 pl-3">
           <span className="typo-subtitle truncate">{planName}</span>
           <PlanInfo timeValue={planTime} locationValue={planPlace} />
+          {tagNames.length > 0 && (
+            <motion.div
+              layout="position"
+              className="flex flex-wrap w-full gap-2 mt-2"
+            >
+              {tagNames.map((tag, idx) => (
+                <TextTag key={idx} label={tag} />
+              ))}
+            </motion.div>
+          )}
         </div>
         <div>
           {edit && (
             <button
               ref={moreButtonRef}
               onClick={handleEditClick}
+              aria-label="더보기"
               className="rounded-full bg-transparent w-[24px] h-[24px] hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
             >
-              <MoreVertIcon className="text-gray-40 !text-[20px]" />
+              <MoreVertIcon className="text-gray-40 text-title-02!" />
             </button>
           )}
         </div>
-      </div>
-      {/* 일정 태그 영역 */}
-      <div className="flex flex-wrap w-full gap-2">
-        {tagNames.map((tag, idx) => (
-          <TextTag key={idx} label={tag} />
-        ))}
-      </div>
-      <div
-        className={clsx(
-          "w-full overflow-hidden transition-all duration-300 ease-in-out",
-          isOpen ? "opacity-100 h-max py-3" : "opacity-0 h-0 py-0"
-        )}
-        onClick={handleMapClick}
-      >
-        <GradientImage src={src} alt={planName}>
-          <div className="flex flex-wrap flex-col w-full items-baseline gap-1">
-            <span className="typo-tag text-gray-20">{placeAddress}</span>
-            <span className="typo-tag text-gray-white text-left">
-              {placeInfo}
-            </span>
-          </div>
-        </GradientImage>
-      </div>
-    </div>
+      </motion.div>
+
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, delay: 0.08 }}
+          className="flex px-3 w-full"
+          onClick={handleMapClick}
+        >
+          <GradientImage src={imageSrc} alt={planName}>
+            <div className="flex flex-wrap flex-col w-full items-baseline gap-1">
+              {placeAddress && (
+                <span className="typo-tag text-gray-20">{placeAddress}</span>
+              )}
+              {placeInfo && (
+                <span className="typo-tag text-gray-white text-left">
+                  {placeInfo}
+                </span>
+              )}
+            </div>
+          </GradientImage>
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 

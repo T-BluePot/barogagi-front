@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import type { ScheduleRoutesContentProps } from "@/types/main/plan/scheduleRoutes";
 import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 
@@ -74,14 +75,14 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           listItems={[
             {
               label: ROUTES_CREATE_TEXT.POP_MENU.EDIT_LABEL,
-              children: <ModeEditIcon className="!text-[16px]" />,
+              children: <ModeEditIcon className="text-[16px]!" />,
               onClickItem: handleClickEdit,
             },
             {
               status: "delete",
               label: ROUTES_CREATE_TEXT.POP_MENU.DELETE_LABEL,
               children: (
-                <DeleteOutlineIcon className="!text-[16px] !text-alert-red" />
+                <DeleteOutlineIcon className="text-[16px]! text-alert-red!" />
               ),
               onClickItem: handleClickDelete,
             },
@@ -97,41 +98,37 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           scheduleDate={scheduleDate}
         />
       </div>
-      <div className="flex flex-col flex-1 w-full min-h-0 p-6 overflow-y-auto gap-4 hide-scrollbar">
-        {plans.map((plan) => {
-          const planNum = plan.plan.planNum;
+      <motion.div
+        className="flex flex-col flex-1 w-full min-h-0 p-6 overflow-y-auto gap-4 hide-scrollbar"
+        layoutScroll
+      >
+        {plans.map((plan, index) => {
+          const planNum = plan.planNum ?? index;
           const isOpen = openPlanNum === planNum;
 
-          if (isEditable) {
-            return (
-              <PlanDetailCard
-                key={planNum}
-                plan={plan.plan}
-                place={plan.place}
-                tags={plan.tags}
-                src={plan.src}
-                isOpen={isOpen}
-                onToggleOpen={() => handleToggleOpen(planNum)}
-                mode="detail"
-                onOpenCardMenu={handleOpenCardMenu}
-              />
-            );
-          }
-
           return (
-            <PlanDetailCard
-              key={planNum}
-              plan={plan.plan}
-              place={plan.place}
-              tags={plan.tags}
-              src={plan.src}
-              isOpen={isOpen}
-              onToggleOpen={() => handleToggleOpen(planNum)}
-              mode="create"
-            />
+            // layout 애니메이션이 이 div 안에서만 일어나도록 격리
+            <div key={planNum} style={{ isolation: "isolate" }}>
+              {isEditable ? (
+                <PlanDetailCard
+                  plan={plan}
+                  isOpen={isOpen}
+                  onToggleOpen={() => handleToggleOpen(planNum)}
+                  mode="detail"
+                  onOpenCardMenu={handleOpenCardMenu}
+                />
+              ) : (
+                <PlanDetailCard
+                  plan={plan}
+                  isOpen={isOpen}
+                  onToggleOpen={() => handleToggleOpen(planNum)}
+                  mode="create"
+                />
+              )}
+            </div>
           );
         })}
-      </div>
+      </motion.div>
 
       {!isEditable && (
         <div className="mt-auto">

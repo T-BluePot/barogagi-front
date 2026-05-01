@@ -14,6 +14,7 @@ export interface CalendarProps {
   selectedDate: Date | null;
   onChangeDate: (date: Date | null) => void;
   markedDates?: Record<string, true>;
+  disablePastDates?: boolean;
 }
 
 export default function Calendar({
@@ -21,40 +22,50 @@ export default function Calendar({
   selectedDate,
   onChangeDate,
   markedDates,
+  disablePastDates = false,
 }: CalendarProps) {
+  const today = new Date();
+
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
 
+  const isSameMonth = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+
   return (
-    <div className="flex flex-col w-full items-baseline gap-8">
-      {withTitle && selectedDate && (
-        <CalendarTitle selectedDate={selectedDate} />
-      )}
+    <div className="flex flex-col w-full items-baseline gap-3">
       <DatePicker
         locale={ko}
         inline // 캘린더 유지
         dateFormat="yyyy.MM.dd" // 날짜 포맷
         selected={selectedDate} //selectedDate에 저장된 날짜 값을 표시
         onChange={onChangeDate} //날짜 값 변경
+        minDate={disablePastDates ? today : undefined}
         renderCustomHeader={({
           date,
           decreaseMonth,
           increaseMonth,
-          prevMonthButtonDisabled,
           nextMonthButtonDisabled,
         }) => {
           const year = date.getFullYear();
           const month = date.getMonth() + 1;
+
+          const prevMonthButtonDisabled =
+            disablePastDates && isSameMonth(date, today);
+
           return (
-            <div className="flex h-16 justify-center items-center gap-6">
+            <div className="flex py-3 justify-center items-center gap-6">
               <button
                 aria-label="이전 달로 이동"
                 type="button"
                 onClick={decreaseMonth}
                 disabled={prevMonthButtonDisabled}
-                className="cursor-pointer"
+                className={clsx(
+                  "cursor-pointer",
+                  prevMonthButtonDisabled && "opacity-30 cursor-not-allowed"
+                )}
               >
                 <KeyboardArrowLeftIcon />
               </button>
@@ -80,15 +91,24 @@ export default function Calendar({
             dayOfWeek === 0
               ? "text-red-500"
               : dayOfWeek === 6
-              ? "text-blue-500"
-              : "text-gray-800";
+                ? "text-blue-500"
+                : "text-gray-800";
 
           // 일정 존재 여부 체크
           const dateKey = format(date, "yyyy-MM-dd");
           const isMarked = markedDates?.[dateKey];
 
+          // 과거 날짜 판별 (오늘 날짜는 활성화)
+          const isPastDate =
+            disablePastDates && !isSameDay(date, today) && date < today;
+
           return (
-            <div className="flex flex-col justify-between items-center w-full h-full gap-2">
+            <div
+              className={clsx(
+                "flex flex-col justify-between items-center w-full h-full gap-2",
+                isPastDate && "opacity-30"
+              )}
+            >
               <div
                 className={clsx(
                   "rounded-full w-10 h-10 flex items-center justify-center",
@@ -109,6 +129,9 @@ export default function Calendar({
           );
         }}
       />
+      {withTitle && selectedDate && (
+        <CalendarTitle selectedDate={selectedDate} />
+      )}
     </div>
   );
 }
