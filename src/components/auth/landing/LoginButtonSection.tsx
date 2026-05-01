@@ -1,25 +1,25 @@
 import { SnsButtonsGroup } from "@/components/common/buttons/SnsButtonsGroup";
 import { LoginButton } from "../signin/LoginButton";
-import { API_BASE_URL } from "@/api/endpoints";
-
-/** 백엔드 Spring Security OAuth2 인가 요청 URL */
-const OAUTH_URL = {
-  NAVER: `${API_BASE_URL}/oauth2/authorization/naver`,
-  KAKAO: `${API_BASE_URL}/oauth2/authorization/kakao`,
-  GOOGLE: `${API_BASE_URL}/oauth2/authorization/google`,
-} as const;
+import { getOAuthLink } from "@/api/queries/authQueries";
+import type { OAuthProviderType } from "@/api/queries/authQueries";
 
 export default function LoginButtonSection() {
-  const handleOAuthLogin = (url: string) => {
-    window.location.href = url;
+  /** OAuth 링크 API 호출 후 해당 URL로 리다이렉트 */
+  const handleOAuthLogin = async (type: OAuthProviderType) => {
+    try {
+      const response = await getOAuthLink(type);
+      window.location.href = response.data;
+    } catch (error) {
+      console.error("[OAuth] 링크 조회 실패:", error);
+    }
   };
 
   return (
     <div className="mb-8">
       <SnsButtonsGroup
-        onNaverClick={() => handleOAuthLogin(OAUTH_URL.NAVER)}
-        onKakaoClick={() => handleOAuthLogin(OAUTH_URL.KAKAO)}
-        onGoogleClick={() => handleOAuthLogin(OAUTH_URL.GOOGLE)}
+        onNaverClick={() => handleOAuthLogin("Naver")}
+        onKakaoClick={() => handleOAuthLogin("Kakao")}
+        onGoogleClick={() => handleOAuthLogin("Google")}
       />
       <LoginButton />
     </div>
