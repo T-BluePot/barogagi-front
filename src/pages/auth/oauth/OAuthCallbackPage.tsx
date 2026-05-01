@@ -24,6 +24,8 @@ export default function OAuthCallbackPage() {
       const message =
         searchParams.get("message") || "소셜 로그인에 실패했습니다.";
 
+      console.error("[OAuth] 소셜 로그인 실패:", error, message);
+
       openAlertModal(
         { title: "로그인 실패", content: message },
         () => navigate(ROUTES.AUTH.LANDING, { replace: true })
@@ -38,6 +40,12 @@ export default function OAuthCallbackPage() {
     const refreshTokenExpiresIn = searchParams.get("refreshTokenExpiresIn");
 
     if (accessToken && refreshToken && accessTokenExpiresIn && refreshTokenExpiresIn) {
+      console.log("[OAuth] 소셜 로그인 성공");
+      console.log("[OAuth] accessToken:", accessToken.slice(0, 20) + "...");
+      console.log("[OAuth] refreshToken:", refreshToken.slice(0, 20) + "...");
+      console.log("[OAuth] accessTokenExpiresIn:", accessTokenExpiresIn, "초");
+      console.log("[OAuth] refreshTokenExpiresIn:", refreshTokenExpiresIn, "초");
+
       saveAuthTokens({
         accessToken,
         accessTokenExpiresIn: Number(accessTokenExpiresIn),
@@ -45,8 +53,12 @@ export default function OAuthCallbackPage() {
         refreshTokenExpiresIn: Number(refreshTokenExpiresIn),
       });
 
-      navigate(ROUTES.MAIN.HOME, { replace: true });
+      openAlertModal(
+        { title: "로그인 성공", content: "소셜 로그인이 완료되었습니다." },
+        () => navigate(ROUTES.MAIN.HOME, { replace: true })
+      );
     } else {
+      console.error("[OAuth] 토큰 정보 누락:", { accessToken, refreshToken, accessTokenExpiresIn, refreshTokenExpiresIn });
       // 토큰 정보가 불완전한 경우
       openAlertModal(
         { title: "로그인 실패", content: "인증 정보가 올바르지 않습니다.\n다시 시도해주세요." },
