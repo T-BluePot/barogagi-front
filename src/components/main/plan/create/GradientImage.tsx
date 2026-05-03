@@ -1,4 +1,5 @@
 import React from "react";
+import fallbackImg from "@/assets/images/category/category_default.jpg";
 
 interface GradientImageProps {
   /**
@@ -21,6 +22,9 @@ export const GradientImage = ({
         src={src}
         alt={alt}
         className="absolute inset-0 w-full h-full object-cover"
+        onError={(e) => {
+          e.currentTarget.src = fallbackImg;
+        }}
       />
 
       {/* 그라데이션 오버레이 */}
