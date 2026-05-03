@@ -23,6 +23,7 @@ export const GradientImage = ({
         alt={alt}
         className="absolute inset-0 w-full h-full object-cover"
         onError={(e) => {
+          e.currentTarget.onerror = null;
           e.currentTarget.src = fallbackImg;
         }}
       />
