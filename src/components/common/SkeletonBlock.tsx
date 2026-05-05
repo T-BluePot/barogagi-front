@@ -24,14 +24,14 @@ const SkeletonBlock = ({
   return (
     <div
       className={clsx(
-        "relative overflow-hidden bg-gray-10",
+        "relative overflow-hidden bg-gray-20",
         width,
         height,
         rounded,
         className
       )}
     >
-      <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+      <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-gray-10 to-transparent" />
     </div>
   );
 };
