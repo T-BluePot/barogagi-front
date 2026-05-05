@@ -35,6 +35,7 @@ import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
+import { useLoadingStore } from "@/stores/loadingStore";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
+  const { showLoading, hideLoading } = useLoadingStore();
 
   // create / detail 공통 state
   const [scheduleResult, setScheduleResult] =
@@ -66,6 +68,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     hasFetched.current = true;
 
     setIsLoading(true);
+    showLoading("AI가 일정을 생성하고 있어요");
 
     const fetchCreateSchedule = async () => {
       try {
@@ -94,6 +97,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         navigate(-1);
       } finally {
         setIsLoading(false);
+        hideLoading();
       }
     };
 

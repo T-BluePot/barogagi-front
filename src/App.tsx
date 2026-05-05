@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import GlobalAlertModal from "@/components/common/modal/GlobalAlertModal";
 import GlobalConfirmModal from "@/components/common/modal/GlobalConfirmModal";
+import GlobalLoading from "@/components/common/loading/GlobalLoading";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       </Layout>
       <GlobalAlertModal />
       <GlobalConfirmModal />
+      <GlobalLoading />
     </BrowserRouter>
   );
 }
