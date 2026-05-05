@@ -71,6 +71,9 @@
   --leading-tag: 16px;
   --tracking-tag: -0.025em;
 
+  /* Animation */
+  --animate-shimmer: shimmer 1.2s infinite ease-in-out;
+
   /* Font Weights */
   --font-weight-header: 700;
   --font-weight-title-01: 700;
@@ -138,6 +141,15 @@
     font-weight: var(--font-weight-tag);
     line-height: var(--leading-tag);
     letter-spacing: var(--tracking-tag);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 
