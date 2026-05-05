@@ -8,18 +8,18 @@ import { ROUTES } from "@/constants/routes";
 import { nicknameSchema } from "@/utils/authSchema";
 import { checkNickname, updateMe } from "@/api/queries";
 import { useAlertModalStore } from "@/stores/alertModalStore";
+import { getGenderLabel, type GenderType } from "@/constants/userInfo";
 
-import { PageTitle } from "@/components/auth/common/PageTitle";
-import { CommonInput } from "@/components/auth/common/CommonInput";
-import Button from "@/components/common/buttons/CommonButton";
+import ProfileLayout from "@/components/auth/signup/ProfileLayout";
 import CheckResultModal from "@/components/auth/signup/CheckResultModal";
 
 import type { NicknameCheckStatus } from "@/types/signupTypes";
 
 /**
- * OAuth 신규 회원 닉네임 설정 페이지
- * 소셜 로그인 후 닉네임이 없는 신규 회원이 닉네임을 설정하는 페이지입니다.
- * 닉네임 설정 완료 시 회원 정보 수정 API(updateMe)를 호출하여 저장합니다.
+ * OAuth 신규 회원 프로필 설정 페이지
+ * 소셜 로그인 후 닉네임이 없는 신규 회원이 프로필을 설정하는 페이지입니다.
+ * 기존 회원가입 프로필 페이지(ProfileLayout)를 재사용하되,
+ * 회원가입 대신 회원 정보 수정 API(updateMe)를 호출합니다.
  */
 const OAuthProfilePage = () => {
   const navigate = useNavigate();
@@ -29,22 +29,18 @@ const OAuthProfilePage = () => {
   const [nickName, setNickname] = useState("");
   const [error, setError] = useState("");
 
-  // 중복확인 상태
   const [checkStatus, setCheckStatus] = useState<NicknameCheckStatus>("idle");
   const [checkMessage, setCheckMessage] = useState("");
   const [lastCheckedNickname, setLastCheckedNickname] = useState("");
   const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
 
-  // 닉네임 유효성 검사
   const handleValidate = async (): Promise<boolean> => {
     setError("");
     try {
       await nicknameSchema.validate(nickName);
       return true;
     } catch (err: unknown) {
-      if (err instanceof ValidationError) {
-        setError(err.message);
-      }
+      if (err instanceof ValidationError) setError(err.message);
       return false;
     }
   };
@@ -70,7 +66,6 @@ const OAuthProfilePage = () => {
       setError("닉네임을 입력해주세요.");
       return;
     }
-
     const ok = await handleValidate();
     if (!ok) return;
 
@@ -97,20 +92,55 @@ const OAuthProfilePage = () => {
     });
   };
 
-  // === 닉네임 저장 ===
+  // === 성별 선택 ===
+  const [gender, setGender] = useState<GenderType | undefined>(undefined);
+  const [isGenderModalOpen, setIsGenderModalOpen] = useState(false);
+
+  // === 생년월일 선택 ===
+  const [userBirthYear, setUserBirthYear] = useState("");
+  const [userBirthMonth, setUserBirthMonth] = useState("");
+  const [userBirthDay, setUserBirthDay] = useState("");
+  const [isBirthModalOpen, setIsBirthModalOpen] = useState(false);
+
+  const handleChangeBirth = (value: {
+    userBirthYear: string;
+    userBirthMonth: string;
+    userBirthDay: string;
+  }) => {
+    setUserBirthYear(value.userBirthYear);
+    setUserBirthMonth(value.userBirthMonth);
+    setUserBirthDay(value.userBirthDay);
+  };
+
+  const formattedBirth =
+    userBirthYear && userBirthMonth && userBirthDay
+      ? `${userBirthYear}년 ${userBirthMonth}월 ${userBirthDay}일`
+      : undefined;
+
+  const birth =
+    userBirthYear && userBirthMonth && userBirthDay
+      ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
+      : undefined;
+
+  // === 프로필 저장 ===
   const updateMeMutation = useMutation({
-    mutationFn: () => updateMe({ nickName: nickName.trim() }),
+    mutationFn: () =>
+      updateMe({
+        nickName: nickName.trim(),
+        ...(birth && { birth }),
+        ...(gender && { gender }),
+      }),
     onSuccess: () => {
       openAlertModal(
-        { title: "설정 완료", content: "닉네임이 설정되었습니다.\n바로가기로 이동합니다." },
+        { title: "설정 완료", content: "프로필이 설정되었습니다." },
         () => navigate(ROUTES.MAIN.HOME, { replace: true })
       );
     },
     onError: (err) => {
       const message =
         err instanceof AxiosError
-          ? err.response?.data?.message || "닉네임 저장에 실패했습니다."
-          : "닉네임 저장에 실패했습니다.";
+          ? err.response?.data?.message || "프로필 저장에 실패했습니다."
+          : "프로필 저장에 실패했습니다.";
       openAlertModal({ title: "오류", content: message });
     },
   });
@@ -130,8 +160,7 @@ const OAuthProfilePage = () => {
     checkStatus === "valid" ||
     isDuplicateLocked;
 
-  const isSubmitDisabled =
-    !isNicknameVerified || updateMeMutation.isPending;
+  const isSubmitDisabled = !isNicknameVerified || updateMeMutation.isPending;
 
   return (
     <>
@@ -141,35 +170,50 @@ const OAuthProfilePage = () => {
         onClick={() => setIsCheckModalOpen(false)}
       />
 
-      <div className="flex flex-col w-full h-full">
-        <div className="flex flex-col w-full px-6">
-          <PageTitle
-            title="닉네임 설정"
-            subTitle="서비스에서 사용할 닉네임을 입력해주세요."
-          />
-          <CommonInput
-            label="닉네임"
-            placeholder="2~12자 한글, 영문, 숫자"
-            value={nickName}
-            setValue={setNickname}
-            withButton={true}
-            error={!!nickName.length && !!error.length}
-            helperText={nickName.length ? error : undefined}
-            buttonProps={{
-              disabled: isCheckDisabled,
-              onClick: onClickCheckNickname,
-            }}
-          />
-        </div>
-
-        <div className="flex flex-col items-center justify-center w-full mt-auto p-6">
-          <Button
-            label="시작하기"
-            isDisabled={isSubmitDisabled}
-            onClick={() => updateMeMutation.mutate()}
-          />
-        </div>
-      </div>
+      <ProfileLayout
+        genderProps={{
+          isGenderModalOpen,
+          handleCloseGenderModal: () => setIsGenderModalOpen(false),
+          gender,
+          setGender,
+        }}
+        birthProps={{
+          isBirthModalOpen,
+          handleCloseBirthModal: () => setIsBirthModalOpen(false),
+          userBirthYear,
+          userBirthMonth,
+          userBirthDay,
+          handleChangeBirth,
+        }}
+        skipProfileProps={{
+          isSkipModalOpen: false,
+          handleOpenSkipModal: () => {},
+          handleCloseSkipModal: () => {},
+          handleSkipProfile: () => {},
+        }}
+        pageTitle={{
+          title: "프로필 정보를 등록해주세요",
+          subTitle: "이 정보를 바탕으로 더 정확한 추천을 드릴 수 있어요",
+        }}
+        handleGoBack={() => navigate(ROUTES.AUTH.LANDING, { replace: true })}
+        nickname={nickName}
+        setNickname={setNickname}
+        isNicknameError={!!nickName.length && !!error.length}
+        nicknameHelperText={nickName.length ? error : undefined}
+        buttonProps={{
+          disabled: isCheckDisabled,
+          onClick: onClickCheckNickname,
+        }}
+        genderValue={getGenderLabel(gender)}
+        birthValue={formattedBirth}
+        handleOpenGenderModal={() => setIsGenderModalOpen(true)}
+        handleOpenBirthModal={() => setIsBirthModalOpen(true)}
+        isSkipProfile={false}
+        isDisabled={isSubmitDisabled}
+        handleSubmitProfile={() => updateMeMutation.mutate()}
+        hideSkip
+        submitLabel="시작하기"
+      />
     </>
   );
 };

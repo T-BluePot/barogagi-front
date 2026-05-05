@@ -102,6 +102,13 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     backPath: ROUTES.AUTH.SIGNIN,
   },
   [ROUTES.AUTH.SIGNUP.COMPLETE]: { type: "none", isHeaderDark: true },
+  [ROUTES.AUTH.OAUTH_CALLBACK]: { type: "none", isHeaderDark: true },
+  [ROUTES.AUTH.OAUTH_PROFILE]: {
+    type: "back",
+    label: "프로필 설정",
+    isHeaderDark: true,
+    backPath: ROUTES.AUTH.LANDING,
+  },
   // 인증 페이지들 (VERIFY는 객체이므로 개별 경로 사용)
   [ROUTES.AUTH.VERIFY.SIGNUP]: {
     type: "back",
