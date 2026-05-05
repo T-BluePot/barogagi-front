@@ -26,6 +26,18 @@ import type {
 import type { VerifyCodeType } from "@/types/signupTypes";
 import type { VerificationType } from "@/constants/verificationTypes";
 
+/** OAuth 링크 조회 */
+export type OAuthProviderType = "Google" | "Kakao" | "Naver";
+
+export const getOAuthLink = async (type: OAuthProviderType) => {
+  const environment = import.meta.env.PROD ? "PROD" : "LOCAL";
+  const response = await apiKeyHttp.get<BaseResponse<string>>(
+    ENDPOINTS.AUTH.OAUTH_LINK,
+    { params: { environment, type } }
+  );
+  return response.data;
+};
+
 /** 로그인 */
 export const login = async (userId: string, password: string) => {
   const payload: LoginRequestType = {

@@ -15,6 +15,7 @@ export const ENDPOINTS = {
     REFRESH: "/api/v1/auth/token/refresh",
     FIND_ID: "/api/v1/auth/find-user",
     RESET_PW_CONFIRM: "/api/v1/auth/password-reset/confirm",
+    OAUTH_LINK: "/api/v1/oauth-link",
   },
   USERS: {
     SIGNUP: "/api/v1/users",
