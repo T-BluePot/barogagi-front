@@ -37,8 +37,13 @@ module.exports = {
       animation: {
         "slide-left-to-right": "slideLeftToRight 3s ease-in-out infinite",
         "slide-right-to-left": "slideRightToLeft 3s ease-in-out infinite",
+        shimmer: "shimmer 1.5s infinite linear",
       },
       keyframes: {
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
         slideLeftToRight: {
           "0%": { transform: "translateX(-100%)", opacity: "0" },
           "20%": { transform: "translateX(-100%)", opacity: "0" },
