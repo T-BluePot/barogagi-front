@@ -12,8 +12,9 @@ import SignupCompletePage from "@/pages/auth/signup/SignupCompletePage";
 /* auth/signin 로직 */
 import LoginPage from "@/pages/auth/signin/LoginPage";
 
-/* OAuth 소셜 로그인 콜백 */
+/* OAuth 소셜 로그인 */
 import OAuthCallbackPage from "@/pages/auth/oauth/OAuthCallbackPage";
+import OAuthProfilePage from "@/pages/auth/oauth/OAuthProfilePage";
 
 /* auth/find 로직 */
 import AccountFindPage from "@/pages/auth/find/AccountFindPage";
@@ -27,8 +28,9 @@ export const AuthRoutes = () => (
   <Routes>
     <Route path="/" element={<AuthLandingPage />} />
     <Route path="/login" element={<LoginPage />} />
-    {/* OAuth 소셜 로그인 콜백 */}
+    {/* OAuth 소셜 로그인 */}
     <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
+    <Route path="/oauth/profile" element={<OAuthProfilePage />} />
     {/* 회원가입 로직 페이지 */}
     <Route path="/signup" element={<TermsPage />} />
     <Route path="/signup/credentials" element={<CredentialsPage />} />

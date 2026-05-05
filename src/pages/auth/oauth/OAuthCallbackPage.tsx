@@ -7,10 +7,11 @@ import { useAlertModalStore } from "@/stores/alertModalStore";
 /**
  * OAuth 소셜 로그인 콜백 페이지
  * 백엔드 OAuth2 인증 성공 후 리다이렉트되는 페이지로,
- * URL 쿼리 파라미터에서 토큰 정보를 추출하여 localStorage에 저장한 뒤 홈으로 이동합니다.
+ * URL 쿼리 파라미터에서 토큰 정보를 추출하여 localStorage에 저장합니다.
  *
- * 성공: /auth/oauth/callback?accessToken=...&refreshToken=...&accessTokenExpiresIn=...&refreshTokenExpiresIn=...
- * 실패: /auth/oauth/callback?error=ERROR_CODE&message=에러+메시지
+ * 성공(기존 회원): ...&nicknameYn=Y&nickname=xxx → 홈으로 이동
+ * 성공(신규 회원): ...&nicknameYn=N → 닉네임 설정 페이지로 이동
+ * 실패: ?resultCode=ERROR_CODE&message=에러+메시지 (토큰 없음)
  */
 export default function OAuthCallbackPage() {
   const [searchParams] = useSearchParams();
@@ -18,13 +19,19 @@ export default function OAuthCallbackPage() {
   const openAlertModal = useAlertModalStore((s) => s.openAlertModal);
 
   useEffect(() => {
-    // 에러 파라미터가 있으면 실패 처리
-    const error = searchParams.get("error");
-    if (error) {
+    // 토큰 파라미터 추출
+    const accessToken = searchParams.get("accessToken");
+    const refreshToken = searchParams.get("refreshToken");
+    const accessTokenExpiresIn = searchParams.get("accessTokenExpiresIn");
+    const refreshTokenExpiresIn = searchParams.get("refreshTokenExpiresIn");
+
+    // 토큰이 없으면 실패 처리
+    if (!accessToken || !refreshToken || !accessTokenExpiresIn || !refreshTokenExpiresIn) {
       const message =
         searchParams.get("message") || "소셜 로그인에 실패했습니다.";
+      const resultCode = searchParams.get("resultCode");
 
-      console.error("[OAuth] 소셜 로그인 실패:", error, message);
+      console.error("[OAuth] 소셜 로그인 실패:", resultCode, message);
 
       openAlertModal(
         { title: "로그인 실패", content: message },
@@ -33,36 +40,34 @@ export default function OAuthCallbackPage() {
       return;
     }
 
-    // 토큰 파라미터 추출
-    const accessToken = searchParams.get("accessToken");
-    const refreshToken = searchParams.get("refreshToken");
-    const accessTokenExpiresIn = searchParams.get("accessTokenExpiresIn");
-    const refreshTokenExpiresIn = searchParams.get("refreshTokenExpiresIn");
+    // 토큰 저장
+    console.log("[OAuth] 소셜 로그인 성공");
+    console.log("[OAuth] accessToken:", accessToken.slice(0, 20) + "...");
+    console.log("[OAuth] refreshToken:", refreshToken.slice(0, 20) + "...");
+    console.log("[OAuth] accessTokenExpiresIn:", accessTokenExpiresIn, "초");
+    console.log("[OAuth] refreshTokenExpiresIn:", refreshTokenExpiresIn, "초");
 
-    if (accessToken && refreshToken && accessTokenExpiresIn && refreshTokenExpiresIn) {
-      console.log("[OAuth] 소셜 로그인 성공");
-      console.log("[OAuth] accessToken:", accessToken.slice(0, 20) + "...");
-      console.log("[OAuth] refreshToken:", refreshToken.slice(0, 20) + "...");
-      console.log("[OAuth] accessTokenExpiresIn:", accessTokenExpiresIn, "초");
-      console.log("[OAuth] refreshTokenExpiresIn:", refreshTokenExpiresIn, "초");
+    saveAuthTokens({
+      accessToken,
+      accessTokenExpiresIn: Number(accessTokenExpiresIn),
+      refreshToken,
+      refreshTokenExpiresIn: Number(refreshTokenExpiresIn),
+    });
 
-      saveAuthTokens({
-        accessToken,
-        accessTokenExpiresIn: Number(accessTokenExpiresIn),
-        refreshToken,
-        refreshTokenExpiresIn: Number(refreshTokenExpiresIn),
-      });
+    // 신규/기존 회원 분기
+    const nicknameYn = searchParams.get("nicknameYn");
+    const nickname = searchParams.get("nickname");
 
+    if (nicknameYn === "N" || !nickname) {
+      // 신규 회원: 닉네임 미설정 → 닉네임 입력 페이지로
+      console.log("[OAuth] 신규 회원 — 닉네임 설정 필요");
+      navigate(ROUTES.AUTH.OAUTH_PROFILE, { replace: true });
+    } else {
+      // 기존 회원: 닉네임 있음 → 홈으로
+      console.log("[OAuth] 기존 회원 — nickname:", nickname);
       openAlertModal(
         { title: "로그인 성공", content: "소셜 로그인이 완료되었습니다." },
         () => navigate(ROUTES.MAIN.HOME, { replace: true })
-      );
-    } else {
-      console.error("[OAuth] 토큰 정보 누락:", { accessToken, refreshToken, accessTokenExpiresIn, refreshTokenExpiresIn });
-      // 토큰 정보가 불완전한 경우
-      openAlertModal(
-        { title: "로그인 실패", content: "인증 정보가 올바르지 않습니다.\n다시 시도해주세요." },
-        () => navigate(ROUTES.AUTH.LANDING, { replace: true })
       );
     }
   }, [searchParams, navigate, openAlertModal]);
