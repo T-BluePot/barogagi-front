@@ -9,7 +9,7 @@ import type { PlanNoteMap } from "@/types/main/plan/bottom-modal/planFromTypes";
 
 import { usePlanEditStore } from "@/stores/planEditStore";
 
-import PageLoading from "@/components/layout/PageLoading";
+import SkeletonScheduleRoutesContent from "@/components/main/plan/route/SkeletonScheduleRoutesContent";
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
@@ -313,15 +313,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
-    return (
-      <PageLoading message="AI가 일정을 생성하고 있어요" isHeaderDark={false} />
-    );
+    return <SkeletonScheduleRoutesContent />;
   }
 
   if (isDetail && isDetailLoading) {
-    return (
-      <PageLoading message="일정을 불러오는 중이에요" isHeaderDark={false} />
-    );
+    return <SkeletonScheduleRoutesContent />;
   }
 
   return (
