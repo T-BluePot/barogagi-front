@@ -11,6 +11,8 @@ import ListView from "@/components/main/plan/main/ListView";
 import AddScheduleButton from "@/components/main/plan/main/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
+import SkeletonCalendar from "@/components/main/plan/SkeletonCalendar";
+import SkeletonListView from "@/components/main/plan/main/SkeletonListView";
 
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
@@ -136,13 +138,12 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex w-full px-6 min-h-0 pb-[60px]">
+          <div className="flex flex-col w-full px-6 min-h-0 pb-15 gap-6">
             {isLoading ? (
-              <div className="flex justify-center w-full pt-25">
-                <p className="typo-sub-title text-gray-70">
-                  일정을 불러오는 중...
-                </p>
-              </div>
+              <>
+                <SkeletonCalendar />
+                <SkeletonListView />
+              </>
             ) : (
               <ListView
                 schedules={current}

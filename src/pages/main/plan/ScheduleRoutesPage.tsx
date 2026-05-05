@@ -9,7 +9,7 @@ import type { PlanNoteMap } from "@/types/main/plan/bottom-modal/planFromTypes";
 
 import { usePlanEditStore } from "@/stores/planEditStore";
 
-import PageLoading from "@/components/layout/PageLoading";
+import SkeletonScheduleRoutesContent from "@/components/main/plan/route/SkeletonScheduleRoutesContent";
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
@@ -35,6 +35,7 @@ import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
+import { useLoadingStore } from "@/stores/loadingStore";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
+  const { showLoading, hideLoading } = useLoadingStore();
 
   // create / detail 공통 state
   const [scheduleResult, setScheduleResult] =
@@ -66,6 +68,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     hasFetched.current = true;
 
     setIsLoading(true);
+    showLoading("AI가 일정을 생성하고 있어요");
 
     const fetchCreateSchedule = async () => {
       try {
@@ -94,6 +97,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         navigate(-1);
       } finally {
         setIsLoading(false);
+        hideLoading();
       }
     };
 
@@ -292,6 +296,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         toast(res.message ?? "일정 저장에 실패했습니다.");
         return;
       }
+      await queryClient.invalidateQueries({
+        queryKey: scheduleKeys.lists(),
+      });
       handleCloseCreateModal();
       reset();
       clearRegions();
@@ -310,15 +317,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
-    return (
-      <PageLoading message="AI가 일정을 생성하고 있어요" isHeaderDark={false} />
-    );
+    return <SkeletonScheduleRoutesContent />;
   }
 
   if (isDetail && isDetailLoading) {
-    return (
-      <PageLoading message="일정을 불러오는 중이에요" isHeaderDark={false} />
-    );
+    return <SkeletonScheduleRoutesContent />;
   }
 
   return (

@@ -1,6 +1,7 @@
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import { ScheduleCard } from "../../plan/main/ScheduleCard";
+import SkeletonScheduleCard from "../../plan/main/SkeletonScheduleCard";
 import ContentWrapper from "./ContentWrapper";
 import EmptyContent from "@/components/common/EmptyContent";
 import type { HomeScheduleResponseDTO } from "@/api/types";
@@ -49,7 +50,7 @@ const UpcomingScheduleSection: React.FC<Props> = ({
   };
 
   const renderContent = () => {
-    if (isLoading) return <EmptyContent message="불러오는 중..." />;
+    if (isLoading) return <SkeletonScheduleCard />;
     if (!hasSchedule)
       return <EmptyContent message="다가오는 일정이 없습니다." />;
 
