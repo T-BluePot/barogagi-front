@@ -292,6 +292,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         toast(res.message ?? "일정 저장에 실패했습니다.");
         return;
       }
+      await queryClient.invalidateQueries({
+        queryKey: scheduleKeys.lists(),
+      });
       handleCloseCreateModal();
       reset();
       clearRegions();
