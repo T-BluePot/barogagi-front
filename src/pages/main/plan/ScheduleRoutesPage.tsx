@@ -35,7 +35,6 @@ import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
-import { useDebugStore } from "@/stores/debugStore"; // [임시] 디버그
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
@@ -48,8 +47,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
-
-  const { forceLoading } = useDebugStore(); // [임시] 디버그
 
   // create / detail 공통 state
   const [scheduleResult, setScheduleResult] =
@@ -315,7 +312,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   };
 
   // ----- 로딩 중 -----
-  if (forceLoading || (isCreate && isLoading)) {
+  if (isCreate && isLoading) {
     return <SkeletonScheduleRoutesContent />;
   }
 

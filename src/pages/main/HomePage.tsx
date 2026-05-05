@@ -11,10 +11,8 @@ import { homeKeys } from "@/api/keyFactories";
 import { authKeys } from "@/api/keyFactories";
 import type { TagInfoDTO, PopularRegionDTO, BaseResponse } from "@/api/types";
 import type { UserData } from "@/types/profileTypes";
-import { useDebugStore } from "@/stores/debugStore"; // [임시] 디버그
 
 const HomePage = () => {
-  const { forceLoading } = useDebugStore(); // [임시] 디버그
   const { data: scheduleData, isLoading: isScheduleLoading } = useQuery({
     queryKey: homeKeys.mySchedules(),
     queryFn: getMySchedulesSummary,
@@ -47,11 +45,11 @@ const HomePage = () => {
       <HomeGreetingSection userName={userData?.nickName} />
       <HomeContentsSection
         scheduleData={scheduleData ?? null}
-        isScheduleLoading={forceLoading || isScheduleLoading}
+        isScheduleLoading={isScheduleLoading}
         popularTags={popularTags}
-        isTagsLoading={forceLoading || isTagsLoading}
+        isTagsLoading={isTagsLoading}
         popularRegions={popularRegions}
-        isRegionsLoading={forceLoading || isRegionsLoading}
+        isRegionsLoading={isRegionsLoading}
       />
     </div>
   );

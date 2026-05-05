@@ -21,16 +21,13 @@ import { useConfirmModalStore } from "@/stores/confirmModalStore";
 // === server ===
 import { useScheduleListQuery } from "@/hooks/queries/useScheduleListQuery";
 import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
-import { useDebugStore } from "@/stores/debugStore"; // [임시] 디버그
 
 const ScheduleListPage = () => {
   const navigate = useNavigate();
-  const { forceLoading } = useDebugStore(); // [임시] 디버그
 
   // === 일정 목록 조회 ===
-  const { current, past, all, isLoading: _isLoading, isError, refetch } =
+  const { current, past, all, isLoading, isError, refetch } =
     useScheduleListQuery();
-  const isLoading = forceLoading || _isLoading; // [임시] 디버그
   const deleteMutation = useDeleteScheduleMutation();
 
   const [viewType, setViewType] = useState<ScheduleViewType>("list");
