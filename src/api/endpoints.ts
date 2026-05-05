@@ -37,6 +37,7 @@ export const ENDPOINTS = {
     SAVE: "/api/v1/schedule/save", // 일정 저장 (최종 등록)
     UPDATE: "/api/v1/schedule/", // PUT
     DELETE: "/api/v1/schedule/", // DELETE
+    IMAGE_PROXY: "/api/v1/schedule/image/proxy",
   },
 
   /** 메인 홈 */
