@@ -41,7 +41,7 @@ export interface VerifyCodeType {
 }
 
 /** 닉네임 중복확인 상태 */
-export type NicknameCheckStatus = "idle" | "valid" | "duplicate";
+export type NicknameCheckStatus = "idle" | "valid" | "duplicate" | "error";
 
 /** 회원 가입 에러 상태 */
 export type SignupErrorState = {

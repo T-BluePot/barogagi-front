@@ -79,8 +79,16 @@ const OAuthProfilePage = () => {
       },
       onError: (err) => {
         if (nickName.trim() !== trimmed) return;
-        setLastCheckedNickname(trimmed);
-        setCheckStatus("duplicate");
+        const isDuplicate =
+          err instanceof AxiosError && err.response?.status === 409;
+
+        if (isDuplicate) {
+          setLastCheckedNickname(trimmed);
+          setCheckStatus("duplicate");
+        } else {
+          setCheckStatus("error");
+        }
+
         const fallback = "닉네임 중복 확인에 실패했습니다.";
         setCheckMessage(
           err instanceof AxiosError
