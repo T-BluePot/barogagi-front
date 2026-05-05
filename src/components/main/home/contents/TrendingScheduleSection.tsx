@@ -1,6 +1,7 @@
 import type React from "react";
 import ContentWrapper from "./ContentWrapper";
 import TrendingCarousel from "./TrendingCarousel";
+import SkeletonTrendingCarousel from "./SkeletonTrendingCarousel";
 import EmptyContent from "@/components/common/EmptyContent";
 import type { TagInfoDTO } from "@/api/types";
 import type { TrendingItem } from "./TrendingCarouselItem";
@@ -20,7 +21,7 @@ const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
   }));
 
   const renderContent = () => {
-    if (isLoading) return <EmptyContent message="불러오는 중..." />;
+    if (isLoading) return <SkeletonTrendingCarousel />;
     if (items.length === 0)
       return <EmptyContent message="인기 있는 일정이 없습니다." />;
 
