@@ -54,10 +54,9 @@ export default function OAuthCallbackPage() {
       console.log("[OAuth] 신규 회원 — 닉네임 설정 필요");
       navigate(ROUTES.AUTH.OAUTH_PROFILE, { replace: true });
     } else {
-      // 기존 회원 → 홈 이동 후 성공 모달
+      // 기존 회원 → 홈 이동
       console.log("[OAuth] 기존 회원 — nickname:", nickname);
       navigate(ROUTES.MAIN.HOME, { replace: true });
-      openAlertModal({ title: "로그인 성공", content: "소셜 로그인이 완료되었습니다." });
     }
   }, [searchParams, navigate, openAlertModal]);
 

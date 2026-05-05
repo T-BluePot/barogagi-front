@@ -132,7 +132,6 @@ const OAuthProfilePage = () => {
       }),
     onSuccess: () => {
       navigate(ROUTES.MAIN.HOME, { replace: true });
-      openAlertModal({ title: "설정 완료", content: "프로필이 설정되었습니다." });
     },
     onError: (err) => {
       const message =
