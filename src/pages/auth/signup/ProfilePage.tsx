@@ -70,7 +70,7 @@ const ProfilePage = () => {
     setError("");
 
     try {
-      await nicknameSchema.validate(nickName);
+      await nicknameSchema.validate(nickName.trim());
       return true; // 유효
     } catch (err: unknown) {
       if (err instanceof ValidationError) {

@@ -37,7 +37,7 @@ const OAuthProfilePage = () => {
   const handleValidate = async (): Promise<boolean> => {
     setError("");
     try {
-      await nicknameSchema.validate(nickName);
+      await nicknameSchema.validate(nickName.trim());
       return true;
     } catch (err: unknown) {
       if (err instanceof ValidationError) setError(err.message);
