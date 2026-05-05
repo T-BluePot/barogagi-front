@@ -3,15 +3,19 @@ import type { ProfileUserInfoProps } from "@/types/profileTypes";
 import { PROFILE_PAGE_TEXT } from "@/constants/texts/main/profile";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 
+/** OAuth 사용자의 경우 "provider=kakao12345" 형태 → "kakao12345"로 정리 */
+const stripProvider = (id: string) => id.replace(/^provider=/, "");
+
 const ProfileUserInfo = ({ nickname, userId }: ProfileUserInfoProps) => {
   const { openAlertModal } = useAlertModalStore();
+  const displayId = userId ? stripProvider(userId) : "";
 
   const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // prevent triggering parent click (navigation)
-    if (!userId) return;
+    e.stopPropagation();
+    if (!displayId) return;
 
     try {
-      await window.navigator.clipboard.writeText(userId);
+      await window.navigator.clipboard.writeText(displayId);
       openAlertModal({
         title: PROFILE_PAGE_TEXT.COPY_SUCCESS,
         buttonLabel: PROFILE_PAGE_TEXT.ALERT_BUTTON_LABEL,
@@ -29,10 +33,10 @@ const ProfileUserInfo = ({ nickname, userId }: ProfileUserInfoProps) => {
       <span className="text-title-02 font-bold text-main break-all line-clamp-1">
         {nickname}
       </span>
-      {userId && (
+      {displayId && (
         <div className="flex items-center gap-1 mt-0.5">
           <span className="text-body text-gray-white truncate max-w-[150px]">
-            {userId}
+            {displayId}
           </span>
           <button
             type="button"
