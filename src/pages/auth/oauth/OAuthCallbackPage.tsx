@@ -35,9 +35,6 @@ export default function OAuthCallbackPage() {
     }
 
     // 토큰 저장
-    console.log("[OAuth] 소셜 로그인 성공");
-    console.log("[OAuth] accessToken:", accessToken.slice(0, 20) + "...");
-
     saveAuthTokens({
       accessToken,
       accessTokenExpiresIn: Number(accessTokenExpiresIn),
@@ -48,14 +45,13 @@ export default function OAuthCallbackPage() {
     // 신규/기존 회원 분기
     const nicknameYn = searchParams.get("nicknameYn");
     const nickname = searchParams.get("nickname");
+    const isNewUser = nicknameYn === "N" || !nickname;
 
-    if (nicknameYn === "N" || !nickname) {
-      // 신규 회원 → 프로필 설정 페이지
-      console.log("[OAuth] 신규 회원 — 닉네임 설정 필요");
+    console.log("[OAuth] 인증 성공 — 신규회원:", isNewUser);
+
+    if (isNewUser) {
       navigate(ROUTES.AUTH.OAUTH_PROFILE, { replace: true });
     } else {
-      // 기존 회원 → 홈 이동
-      console.log("[OAuth] 기존 회원 — nickname:", nickname);
       navigate(ROUTES.MAIN.HOME, { replace: true });
     }
   }, [searchParams, navigate, openAlertModal]);
