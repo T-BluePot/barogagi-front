@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import SkeletonBlock from "./SkeletonBlock";
 
 const meta: Meta<typeof SkeletonBlock> = {
-  title: "Components/Common/SkeletonBlock",
+  title: "Components/Common/Loading/SkeletonBlock",
   component: SkeletonBlock,
   parameters: {
     layout: "centered",

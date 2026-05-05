@@ -1,4 +1,4 @@
-import SkeletonBlock from "@/components/common/SkeletonBlock";
+import SkeletonBlock from "@/components/common/loading/SkeletonBlock";
 
 /**
  * ScheduleCard 스켈레톤

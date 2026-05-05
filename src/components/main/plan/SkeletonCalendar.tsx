@@ -1,4 +1,4 @@
-import SkeletonBlock from "@/components/common/SkeletonBlock";
+import SkeletonBlock from "@/components/common/loading/SkeletonBlock";
 
 /**
  * Calendar 스켈레톤
