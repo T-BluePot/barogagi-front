@@ -14,7 +14,7 @@ interface Props {
 /** API 응답 → RankingItemData 변환 */
 const toRankingItem = (region: PopularRegionDTO): RankingItemData => {
   // regionLevel3(구/군) 또는 regionLevel4(동)이 있으면 표시
-  const name = region.regionLevel4 || region.regionLevel3 || region.regionLevel1;
+  const name = region.regionLevel4 || region.regionLevel3 || region.regionLevel2 || region.regionLevel1;
   return {
     rank: region.rankNo,
     name,
