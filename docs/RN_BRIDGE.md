@@ -240,6 +240,19 @@ WebView는 "새 탭" 개념이 없어, `window.open(url, '_blank')` 호출 시 �
 
 ```ts
 export const openExternal = (url: string): void => {
+  // javascript:/data:/file: 등 위험 스킴 차단 — http(s)만 허용
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    console.error("[openExternal] 잘못된 URL", url);
+    return;
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    console.error("[openExternal] 허용되지 않은 스킴", parsed.protocol);
+    return;
+  }
+
   if (window.BarogagiApp) {
     void window.BarogagiApp.openExternal(url);
     return;
@@ -262,7 +275,7 @@ export const openExternal = (url: string): void => {
 ```ts
 // §7의 핸들러에 추가
 case 'openExternal':
-  Linking.openURL(payload.url);
+  await Linking.openURL(payload.url);
   break;
 ```
 
@@ -275,8 +288,17 @@ const APP_HOST = "your-domain.com"; // 실제 호스트로 교체
 
 const shouldAllowNavigation = (req) => {
   const url = req.url;
-  if (url.startsWith("about:") || url.includes(APP_HOST)) return true;
-  Linking.openURL(url);
+  if (url.startsWith("about:")) return true;
+  try {
+    const { host, protocol } = new URL(url);
+    const isHttp = protocol === "http:" || protocol === "https:";
+    // includes() 금지: "your-domain.com.evil.com" 우회 방지 — 호스트 정확 일치/서브도메인만 허용
+    const isAppHost = host === APP_HOST || host.endsWith(`.${APP_HOST}`);
+    if (isHttp && isAppHost) return true;
+  } catch {
+    // 잘못된 URL → 차단
+  }
+  void Linking.openURL(url);
   return false;
 };
 ```
@@ -503,7 +525,13 @@ const initialInjection = () => `
 
 ```ts
 const handleWebMessage = async (event) => {
-  const { id, method, payload } = JSON.parse(event.nativeEvent.data);
+  let id, method, payload;
+  try {
+    ({ id, method, payload } = JSON.parse(event.nativeEvent.data));
+  } catch {
+    // 잘못된 JSON → id를 모르므로 응답 불가. 웹 측은 timeout으로 회수 (체크리스트 참고)
+    return;
+  }
 
   // HARDWARE_BACK 같은 RN→웹 메시지가 echo 되는 케이스 방어
   if (method === undefined) return;
@@ -521,7 +549,7 @@ const handleWebMessage = async (event) => {
         await storageDel(payload.ns, payload.key);
         break;
       case "openExternal":
-        Linking.openURL(payload.url);
+        await Linking.openURL(payload.url);
         break;
       case "exitApp":
         BackHandler.exitApp();
