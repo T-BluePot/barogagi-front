@@ -9,5 +9,7 @@ import { setAuthTokens } from "@/lib/auth/tokenCache";
  * - 영속 저장소 쓰기는 비동기. 강제 종료 등 극단 케이스에서 영속화 누락 가능 (수용 가능 위험)
  */
 export const saveAuthTokens = (bundle: AuthTokenBundle): void => {
-  void setAuthTokens(bundle);
+  void setAuthTokens(bundle).catch((err) => {
+    console.error("[tokenStorage] saveAuthTokens 실패", err);
+  });
 };
