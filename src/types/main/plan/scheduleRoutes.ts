@@ -13,6 +13,7 @@ interface ContentHeaderProps {
   scheduleDate: string;
   scheduleName: string;
   onChangeScheduleName: (next: string) => void;
+  onCommitScheduleName?: (finalName: string) => void;
 }
 
 // 팝메뉴: 편집 액션 콜백 묶음

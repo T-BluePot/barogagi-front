@@ -19,6 +19,13 @@ export const ROUTES_CREATE_TEXT = {
       CANCEL_LABEL: "취소",
       CONFIRM_LABEL: "확인",
     },
+    LAST_PLAN_DELETE_MODAL: {
+      TITLE: "마지막 계획이에요",
+      CONTENT:
+        "이 계획을 삭제하면 일정 전체가 함께 삭제돼요.\n그래도 삭제하시겠어요?",
+      CANCEL_LABEL: "취소",
+      CONFIRM_LABEL: "일정 삭제",
+    },
   },
   FOOTER_BUTTON_LABEL: "일정 완성하기",
 };
