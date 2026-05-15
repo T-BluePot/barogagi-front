@@ -1,11 +1,15 @@
 import { Sheet } from "react-modal-sheet";
 import type { BottomModalLayoutProps } from "@/types/BottomModalTypes";
+import { useNativeBack } from "@/utils/nativeBackHandler";
 
 export const BottomModalLayout = ({
   isOpen,
   onClose,
   children,
 }: BottomModalLayoutProps) => {
+  // 하드웨어 백 버튼: 모달이 열려있는 동안 닫기 동작으로 가로챔
+  useNativeBack(isOpen, onClose);
+
   return (
     <Sheet
       isOpen={isOpen}
