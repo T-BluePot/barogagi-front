@@ -63,7 +63,7 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
 
       // 같은 요청은 1번만 재시도
       if (originalRequest._retry) {
-        handleLogout();
+        await handleLogout();
         return Promise.reject(error);
       }
       originalRequest._retry = true;
@@ -102,7 +102,7 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
         // 중요: "그 인스턴스"로 재시도 (http 고정 X)
         return instance(originalRequest);
       } catch (e) {
-        handleLogout();
+        await handleLogout();
         return Promise.reject(e);
       }
     }
