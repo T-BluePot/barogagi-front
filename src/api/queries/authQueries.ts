@@ -4,6 +4,7 @@
 
 import { http, apiKeyHttp, refreshHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
+import { getRefreshToken } from "@/lib/auth/tokenCache";
 
 // === request body type ===
 import type {
@@ -198,7 +199,7 @@ export const getWithdrawalReasons = async () => {
 
 /** 회원 탈퇴 */
 export const withdrawMe = async (data: WithdrawRequestDTO) => {
-  const refreshToken = localStorage.getItem("refreshToken");
+  const refreshToken = getRefreshToken();
   if (!refreshToken) {
     throw new Error("refreshToken이 없습니다.");
   }
