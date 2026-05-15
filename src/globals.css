@@ -85,6 +85,29 @@
   --font-weight-tag: 300;
 }
 
+/* Safe Area Utilities
+ * - env(safe-area-inset-*): 표준 (Android 15 edge-to-edge / iOS notch)
+ * - var(--sai-*): RN WebView가 inject하는 fallback (WebView 138+에서 env가 0 반환되는 회귀 대응)
+ * - max()로 둘 중 큰 값 사용
+ */
+@layer utilities {
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top, 0px), var(--sai-top, 0px));
+  }
+  .pb-safe {
+    padding-bottom: max(
+      env(safe-area-inset-bottom, 0px),
+      var(--sai-bottom, 0px)
+    );
+  }
+  .pl-safe {
+    padding-left: max(env(safe-area-inset-left, 0px), var(--sai-left, 0px));
+  }
+  .pr-safe {
+    padding-right: max(env(safe-area-inset-right, 0px), var(--sai-right, 0px));
+  }
+}
+
 /* Typo Settings */
 @layer utilities {
   .typo-header {
