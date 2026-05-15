@@ -184,10 +184,30 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setScheduleDate(scheduleResult.startDate ?? "");
   }, [scheduleResult]);
 
-  // scheduleName이 바뀔 때 scheduleResult도 동기화
+  // 입력 중에는 로컬 state만 갱신 (실시간 표시용)
   const handleChangeScheduleName = (next: string) => {
     setScheduleName(next);
-    setScheduleResult((prev) => (prev ? { ...prev, scheduleNm: next } : prev));
+  };
+
+  // 포커스 아웃 시점에 변경분이 있으면 scheduleResult 갱신 + detail에서만 서버 반영
+  // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
+  const handleCommitScheduleName = (finalName: string) => {
+    if (!scheduleResult) return;
+    if (finalName === (scheduleResult.scheduleNm ?? "")) return;
+
+    const prevSchedule = scheduleResult;
+    const updatedSchedule = { ...scheduleResult, scheduleNm: finalName };
+    setScheduleResult(updatedSchedule);
+    setScheduleName(finalName);
+
+    if (isDetail) {
+      updateMutation.mutate(updatedSchedule, {
+        onError: () => {
+          setScheduleResult(prevSchedule);
+          setScheduleName(prevSchedule.scheduleNm ?? "");
+        },
+      });
+    }
   };
 
   // ----- 일정 삭제하기 modal -----
@@ -466,6 +486,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             scheduleDate,
             scheduleName,
             onChangeScheduleName: handleChangeScheduleName,
+            onCommitScheduleName: handleCommitScheduleName,
           }}
           plans={planList}
           isEditable={false}
@@ -480,6 +501,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             scheduleDate,
             scheduleName,
             onChangeScheduleName: handleChangeScheduleName,
+            onCommitScheduleName: handleCommitScheduleName,
           }}
           plans={planList}
           isEditable={isDetail}
