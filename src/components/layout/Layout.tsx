@@ -122,7 +122,7 @@ export const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div
-      className={`h-screen flex flex-col ${
+      className={`h-screen flex flex-col pt-safe ${
         isHeaderDark ? "bg-gray-black" : "bg-white"
       }`}
     >
