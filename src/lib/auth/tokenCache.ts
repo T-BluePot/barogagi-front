@@ -91,12 +91,23 @@ export const bootstrapTokens = async (): Promise<void> => {
         s.getItem(STORAGE_KEYS.accessTokenExpiry),
         s.getItem(STORAGE_KEYS.refreshTokenExpiry),
       ]);
-    if (accessToken && refreshToken) {
+    // 만료 시각이 누락/파싱 실패한 토큰은 더미값(0)으로 채우지 않고 캐시 미생성.
+    // → cache=null 유지 = 로그아웃 상태로 시작 (bootstrap 실패와 동일한 안전 동작)
+    const accessExpiry = Number(accessTokenExpiry);
+    const refreshExpiry = Number(refreshTokenExpiry);
+    if (
+      accessToken &&
+      refreshToken &&
+      accessTokenExpiry &&
+      refreshTokenExpiry &&
+      Number.isFinite(accessExpiry) &&
+      Number.isFinite(refreshExpiry)
+    ) {
       cache = {
         accessToken,
         refreshToken,
-        accessTokenExpiry: Number(accessTokenExpiry) || 0,
-        refreshTokenExpiry: Number(refreshTokenExpiry) || 0,
+        accessTokenExpiry: accessExpiry,
+        refreshTokenExpiry: refreshExpiry,
       };
     }
   } catch (err) {
