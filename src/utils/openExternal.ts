@@ -8,6 +8,19 @@
  * 외부 링크는 반드시 이 유틸을 통해 열어야 함.
  */
 export const openExternal = (url: string): void => {
+  // javascript:/data:/file: 등 위험 스킴 차단 — http(s)만 허용
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    console.error("[openExternal] 잘못된 URL", url);
+    return;
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    console.error("[openExternal] 허용되지 않은 스킴", parsed.protocol);
+    return;
+  }
+
   if (window.BarogagiApp) {
     void window.BarogagiApp.openExternal(url);
     return;
