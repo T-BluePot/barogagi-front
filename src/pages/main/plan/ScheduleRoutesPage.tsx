@@ -15,6 +15,7 @@ import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesCo
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
+import DeleteLastPlanScheduleModal from "@/components/main/plan/create/DeleteLastPlanScheduleModal";
 import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInputModal";
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 
@@ -33,6 +34,7 @@ import type {
 } from "@/api/types";
 import { toCommonPlan } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
+import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
 import { useLoadingStore } from "@/stores/loadingStore";
@@ -48,6 +50,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const { buildRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
+  const deleteScheduleMutation = useDeleteScheduleMutation();
   const { showLoading, hideLoading } = useLoadingStore();
 
   // create / detail 공통 state
@@ -213,6 +216,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 일정 삭제하기 modal -----
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [deletePlanNum, setDeletePlanNum] = useState<number | null>(null);
+  // 마지막 plan 삭제 시도 → 일정 자체 삭제 확인 모달
+  const [isLastPlanDeleteModalOpen, setIsLastPlanDeleteModalOpen] =
+    useState<boolean>(false);
 
   const handleRequestDelete = (planNum: number) => {
     setDeletePlanNum(planNum);
@@ -222,6 +228,19 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const handleCloseDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setDeletePlanNum(null);
+  };
+
+  const handleConfirmDeleteSchedule = () => {
+    if (!scheduleResult) {
+      setIsLastPlanDeleteModalOpen(false);
+      return;
+    }
+    deleteScheduleMutation.mutate(scheduleResult.scheduleNum, {
+      onSuccess: () => {
+        setIsLastPlanDeleteModalOpen(false);
+        navigate(ROUTES.PLAN.LIST);
+      },
+    });
   };
 
   // ----- 일정 수정하기 bottom modal -----
@@ -456,6 +475,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             handleCloseDeleteModal();
             return;
           }
+          // 마지막 계획이면 일정 자체가 삭제되므로 별도 확인 모달로 분기
+          if (planList.length <= 1) {
+            handleCloseDeleteModal();
+            setIsLastPlanDeleteModalOpen(true);
+            return;
+          }
           // 해당 계획을 목록에서 제거 후 수정 API 호출
           // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
           const prevPlans = planList;
@@ -478,6 +503,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           });
           handleCloseDeleteModal();
         }}
+      />
+
+      <DeleteLastPlanScheduleModal
+        isOpen={isLastPlanDeleteModalOpen}
+        onClickCancel={() => setIsLastPlanDeleteModalOpen(false)}
+        onClickConfirm={handleConfirmDeleteSchedule}
       />
 
       {isCreate && (
