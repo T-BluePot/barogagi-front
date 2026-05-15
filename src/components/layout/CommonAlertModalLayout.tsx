@@ -1,5 +1,6 @@
 import { useEffect } from "react"; // useState 제거
 import type { CommonAlertModalLayoutPropsType } from "@/types/modalTypes";
+import { useNativeBack } from "@/utils/nativeBackHandler";
 
 export default function CommonAlertModalLayout({
   isVisible, // 부모로부터 애니메이션 상태를 직접 받음
@@ -7,6 +8,13 @@ export default function CommonAlertModalLayout({
   onCloseComplete,
   children,
 }: CommonAlertModalLayoutPropsType) {
+  // 하드웨어 백 버튼: 모달이 보이는 동안 닫기 동작으로 가로챔
+  // onClick이 정의된 경우에만 활성화 (없으면 다음 단계 — 라우터 뒤로가기 — 로 위임)
+  useNativeBack(
+    isVisible && !!buttonInfo.onClick,
+    buttonInfo.onClick ?? (() => {})
+  );
+
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     if (!isVisible) {
