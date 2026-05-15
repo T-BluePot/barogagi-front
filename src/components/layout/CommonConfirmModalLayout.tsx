@@ -39,9 +39,14 @@ export default function CommonConfirmModalLayout({
       onClick={cancelButtonInfo.onClick} // 배경 클릭 시 취소 액션 실행
     >
       <div
-        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center transform transition-all duration-300 flex flex-col ${
-          // 모달 컨테이너 등장 트랜지션 (default/warning 공통)
-          isVisible ? "scale-100" : "scale-95"
+        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center flex flex-col ${
+          isWarning
+            ? // warning은 keyframe이 opacity/scale/blur를 함께 제어 (오버레이 진해진 후 등장)
+              "animate-warning-modal-in"
+            : // default는 기존 scale 트랜지션 유지
+              `transform transition-all duration-300 ${
+                isVisible ? "scale-100" : "scale-95"
+              }`
         }`}
         onClick={(e) => e.stopPropagation()} // 모달 내용 클릭 시 이벤트 전파 중지
       >
