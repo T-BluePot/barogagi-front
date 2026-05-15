@@ -73,6 +73,9 @@
 
   /* Animation */
   --animate-shimmer: shimmer 1.2s infinite ease-in-out;
+  --animate-warning-overlay-in: warning-overlay-in 0.9s ease-out forwards;
+  /* 오버레이가 어느 정도 짙어진 뒤(0.3s delay) 모달이 흐릿→선명, 살짝 커지며 등장 */
+  --animate-warning-modal-in: warning-modal-in 0.6s ease-out 0.3s both;
 
   /* Font Weights */
   --font-weight-header: 700;
@@ -150,6 +153,33 @@
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* 경고 모달 오버레이가 단계적으로 진해지며 등장 (한 번만 재생, 최종 색상 유지) */
+@keyframes warning-overlay-in {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  40% {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* 경고 모달 컨테이너가 흐릿한 상태에서 선명·확대되며 등장 */
+@keyframes warning-modal-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
   }
 }
 
