@@ -33,7 +33,7 @@ export const CalendarView = ({
   const hasSchedules = filteredSchedules.length > 0;
 
   return (
-    <div className="flex flex-col w-full flex-1 min-h-0 bg-gray-5 overflow-y-auto hide-scrollbar">
+    <div className="flex flex-col w-full h-full bg-gray-5 overflow-y-auto hide-scrollbar">
       <div className="flex-none">
         <Calendar {...props} />
       </div>

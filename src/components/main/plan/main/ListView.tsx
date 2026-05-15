@@ -15,7 +15,7 @@ const ListView = ({
 }: ListViewProps) => {
   const hasPast = pastSchedules && pastSchedules.length > 0;
   return (
-    <div className="flex flex-col w-full flex-1 min-h-0 pb-6 gap-4 overflow-y-scroll hide-scrollbar">
+    <div className="flex flex-col w-full h-full pb-6 gap-4 overflow-y-scroll hide-scrollbar">
       <ScheduleList
         schedules={schedules}
         onClickCard={onClickCard}
