@@ -50,12 +50,12 @@
 
 **store별 namespace 매핑** (이미 적용됨):
 
-| Store | 키 | Namespace | 파일 |
-|---|---|---|---|
-| `useSignupStore` | `signup:draft` | `session` | [src/stores/signupStore.ts](../src/stores/signupStore.ts) |
-| `useScheduleDraftStore` | `schedule:create:draft` | `session` | [src/stores/scheduleStore.ts](../src/stores/scheduleStore.ts) |
-| `useRegionSelectionStore` | `plan:create:selected-regions` | `session` | [src/stores/regionSelectionStore.ts](../src/stores/regionSelectionStore.ts) |
-| `useUserPlaceStore` | `user-place` | `persistent` | [src/stores/userPlaceStore.ts](../src/stores/userPlaceStore.ts) |
+| Store                     | 키                             | Namespace    | 파일                                                                        |
+| ------------------------- | ------------------------------ | ------------ | --------------------------------------------------------------------------- |
+| `useSignupStore`          | `signup:draft`                 | `session`    | [src/stores/signupStore.ts](../src/stores/signupStore.ts)                   |
+| `useScheduleDraftStore`   | `schedule:create:draft`        | `session`    | [src/stores/scheduleStore.ts](../src/stores/scheduleStore.ts)               |
+| `useRegionSelectionStore` | `plan:create:selected-regions` | `session`    | [src/stores/regionSelectionStore.ts](../src/stores/regionSelectionStore.ts) |
+| `useUserPlaceStore`       | `user-place`                   | `persistent` | [src/stores/userPlaceStore.ts](../src/stores/userPlaceStore.ts)             |
 
 웹 측은 `getPersistStorage("session" | "persistent")`을 zustand persist storage로 넘기는 구조.
 
@@ -77,26 +77,32 @@ window.BarogagiApp = {
 namespace별 백엔드 매핑:
 
 ```ts
-import EncryptedStorage from 'react-native-encrypted-storage';
-import { MMKV } from 'react-native-mmkv';
+import EncryptedStorage from "react-native-encrypted-storage";
+import { MMKV } from "react-native-mmkv";
 
-const persistent = new MMKV({ id: 'barogagi-persistent' });
+const persistent = new MMKV({ id: "barogagi-persistent" });
 const session = new Map<string, string>(); // 반드시 in-memory. 앱 재시작 시 자동 소멸
 
 async function storageGet(ns, key) {
-  if (ns === 'secure')     return await EncryptedStorage.getItem(key);
-  if (ns === 'persistent') return persistent.getString(key) ?? null;
-  if (ns === 'session')    return session.get(key) ?? null;
+  if (ns === "secure") return await EncryptedStorage.getItem(key);
+  if (ns === "persistent") return persistent.getString(key) ?? null;
+  if (ns === "session") return session.get(key) ?? null;
 }
 async function storageSet(ns, key, value) {
-  if (ns === 'secure')     return await EncryptedStorage.setItem(key, value);
-  if (ns === 'persistent') return persistent.set(key, value);
-  if (ns === 'session')    { session.set(key, value); return; }
+  if (ns === "secure") return await EncryptedStorage.setItem(key, value);
+  if (ns === "persistent") return persistent.set(key, value);
+  if (ns === "session") {
+    session.set(key, value);
+    return;
+  }
 }
 async function storageDel(ns, key) {
-  if (ns === 'secure')     return await EncryptedStorage.removeItem(key);
-  if (ns === 'persistent') return persistent.delete(key);
-  if (ns === 'session')    { session.delete(key); return; }
+  if (ns === "secure") return await EncryptedStorage.removeItem(key);
+  if (ns === "persistent") return persistent.delete(key);
+  if (ns === "session") {
+    session.delete(key);
+    return;
+  }
 }
 ```
 
@@ -141,19 +147,20 @@ bootstrapTokens(): Promise<void>
 
 **연동된 지점들** (모두 cache 함수로 통합 완료):
 
-| 파일 | 용도 |
-|---|---|
-| [src/main.tsx](../src/main.tsx) | 부팅 시 `bootstrapTokens()` 후 React 트리 마운트 |
-| [src/lib/auth/tokenStorage.ts](../src/lib/auth/tokenStorage.ts) | `saveAuthTokens` → `tokenCache.setAuthTokens` 위임 |
-| [src/api/axiosInterceptors.ts](../src/api/axiosInterceptors.ts) | accessToken/refreshToken 동기 read |
-| [src/components/route/PrivateRoute.tsx](../src/components/route/PrivateRoute.tsx) | `isLoggedIn()` 라우트 가드 |
-| [src/routes/RootRedirect.tsx](../src/routes/RootRedirect.tsx) | `isLoggedIn()` 분기 |
-| [src/routes/MainRoutes.tsx](../src/routes/MainRoutes.tsx) | `isLoggedIn()` 분기 |
-| [src/api/queries/authQueries.ts](../src/api/queries/authQueries.ts) | 회원 탈퇴 시 refreshToken read |
-| [src/utils/auth/handleLogout.ts](../src/utils/auth/handleLogout.ts) | `clearAuthTokens` |
-| [src/pages/main/profile/ProfilePage.tsx](../src/pages/main/profile/ProfilePage.tsx) | `clearAuthTokens` |
+| 파일                                                                                | 용도                                               |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [src/main.tsx](../src/main.tsx)                                                     | 부팅 시 `bootstrapTokens()` 후 React 트리 마운트   |
+| [src/lib/auth/tokenStorage.ts](../src/lib/auth/tokenStorage.ts)                     | `saveAuthTokens` → `tokenCache.setAuthTokens` 위임 |
+| [src/api/axiosInterceptors.ts](../src/api/axiosInterceptors.ts)                     | accessToken/refreshToken 동기 read                 |
+| [src/components/route/PrivateRoute.tsx](../src/components/route/PrivateRoute.tsx)   | `isLoggedIn()` 라우트 가드                         |
+| [src/routes/RootRedirect.tsx](../src/routes/RootRedirect.tsx)                       | `isLoggedIn()` 분기                                |
+| [src/routes/MainRoutes.tsx](../src/routes/MainRoutes.tsx)                           | `isLoggedIn()` 분기                                |
+| [src/api/queries/authQueries.ts](../src/api/queries/authQueries.ts)                 | 회원 탈퇴 시 refreshToken read                     |
+| [src/utils/auth/handleLogout.ts](../src/utils/auth/handleLogout.ts)                 | `clearAuthTokens`                                  |
+| [src/pages/main/profile/ProfilePage.tsx](../src/pages/main/profile/ProfilePage.tsx) | `clearAuthTokens`                                  |
 
 저장 키 (RN 측이 알아야 할 정보):
+
 - `accessToken`, `refreshToken` (string)
 - `accessTokenExpiry`, `refreshTokenExpiry` (number를 string으로 직렬화한 timestamp)
 
@@ -162,6 +169,7 @@ bootstrapTokens(): Promise<void>
 §1의 `secure` namespace 구현만 되어 있으면 **추가 작업 없음**. 토큰은 `secure` namespace 위에 자동으로 올라감.
 
 다만 **부팅 응답 시간 영향**에 유의:
+
 - 앱이 켜지면 웹이 즉시 `getData('secure', 'accessToken')` 등 4개를 한 번에 호출함
 - 이 RPC가 응답하기 전엔 React 트리가 마운트되지 않음 (white screen)
 - → `secure` storage 응답이 빨라야 함 (수십 ms 이내 권장)
@@ -180,6 +188,7 @@ bootstrapTokens(): Promise<void>
 ### 문제
 
 기본값으로 WebView를 띄우면:
+
 - localStorage 비활성화 (`domStorageEnabled` 기본 false)
 - 끌어당김 효과(over-scroll bounce)로 네이티브감 깨짐
 - `window.open` 호출 시 새 WebView가 띄워질 수 있음
@@ -194,21 +203,17 @@ bootstrapTokens(): Promise<void>
 ```tsx
 <WebView
   ref={webViewRef}
-  source={{ uri: 'https://your-domain' }}
-
+  source={{ uri: "https://your-domain" }}
   // 데이터 영속성
   domStorageEnabled={true}
   thirdPartyCookiesEnabled={true}
-
   // 스크롤/줌 — 네이티브 느낌
   overScrollMode="never"
   scalesPageToFit={false}
   setSupportMultipleWindows={false}
-
   // 통신
   onMessage={handleWebMessage}
   injectedJavaScriptBeforeContentLoaded={initialInjection()}
-
   // 외부 링크 가로채기
   onShouldStartLoadWithRequest={shouldAllowNavigation}
 />
@@ -246,6 +251,7 @@ export const openExternal = (url: string): void => {
 브릿지가 있으면 네이티브 위임, 없으면 브라우저 새 탭 fallback.
 
 **적용된 지점**:
+
 - [src/components/main/plan/search/LocationListItem.tsx](../src/components/main/plan/search/LocationListItem.tsx)
 - [src/components/main/plan/route/PlanDetailCard.tsx](../src/components/main/plan/route/PlanDetailCard.tsx)
 
@@ -265,11 +271,11 @@ case 'openExternal':
 웹이 실수로 외부 URL로 navigate 했을 때도 시스템 브라우저로 위임:
 
 ```ts
-const APP_HOST = 'your-domain.com'; // 실제 호스트로 교체
+const APP_HOST = "your-domain.com"; // 실제 호스트로 교체
 
 const shouldAllowNavigation = (req) => {
   const url = req.url;
-  if (url.startsWith('about:') || url.includes(APP_HOST)) return true;
+  if (url.startsWith("about:") || url.includes(APP_HOST)) return true;
   Linking.openURL(url);
   return false;
 };
@@ -296,6 +302,7 @@ const shouldAllowNavigation = (req) => {
 **파일**: [`src/utils/nativeBackHandler.ts`](../src/utils/nativeBackHandler.ts) (신설)
 
 처리 우선순위:
+
 1. 등록된 핸들러 stack 최상단 (열려있는 모달의 `onClose`)
 2. `window.history.back()` (라우터 뒤로가기)
 3. `window.BarogagiApp.exitApp()` (앱 종료 위임)
@@ -311,6 +318,7 @@ useNativeBack(isOpen, onClose);
 `useNativeBack` 훅은 ref 패턴으로 안정화 + optional `onBack` 가드 — 매 렌더마다 push/pop이 반복되지 않음.
 
 **적용된 모달들** (모두 백 버튼 자동 닫기 동작):
+
 - [src/components/layout/BottomModalLayout.tsx](../src/components/layout/BottomModalLayout.tsx) → 이를 사용하는 모든 BottomModal (PlanFormModal, DeletePlanModal, CreateScheduleModal, SelectBirthBottomModal, AddLocationModal 등 10+개)
 - [src/components/layout/FullScreenModalLayout.tsx](../src/components/layout/FullScreenModalLayout.tsx)
 - [src/components/layout/CommonAlertModalLayout.tsx](../src/components/layout/CommonAlertModalLayout.tsx)
@@ -324,7 +332,7 @@ useNativeBack(isOpen, onClose);
 
 ```ts
 useEffect(() => {
-  const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+  const sub = BackHandler.addEventListener("hardwareBackPress", () => {
     webViewRef.current?.injectJavaScript(`
       window.dispatchEvent(new MessageEvent('message', {
         data: JSON.stringify({ type: 'HARDWARE_BACK' })
@@ -369,15 +377,24 @@ case 'exitApp':
 **2. `src/globals.css`에 utility class 4종 추가**:
 
 ```css
-.pt-safe { padding-top:    max(env(safe-area-inset-top,    0px), var(--sai-top,    0px)); }
-.pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px)); }
-.pl-safe { padding-left:   max(env(safe-area-inset-left,   0px), var(--sai-left,   0px)); }
-.pr-safe { padding-right:  max(env(safe-area-inset-right,  0px), var(--sai-right,  0px)); }
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), var(--sai-top, 0px));
+}
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px));
+}
+.pl-safe {
+  padding-left: max(env(safe-area-inset-left, 0px), var(--sai-left, 0px));
+}
+.pr-safe {
+  padding-right: max(env(safe-area-inset-right, 0px), var(--sai-right, 0px));
+}
 ```
 
 `env()`가 정상 동작하면 그 값, 안 되면 RN이 inject한 CSS 변수 fallback. `max()`로 둘 중 큰 값.
 
 **3. 적용 지점**:
+
 - [src/components/layout/Layout.tsx](../src/components/layout/Layout.tsx) — 상단 헤더 영역 `pt-safe`
 - [src/components/common/tab-bar/BottomTabBar.tsx](../src/components/common/tab-bar/BottomTabBar.tsx) — 하단 탭바 `pb-safe`
 - [src/components/layout/TabLayout.tsx](../src/components/layout/TabLayout.tsx) — main 콘텐츠 padding-bottom calc 보정
@@ -387,7 +404,7 @@ case 'exitApp':
 `react-native-safe-area-context`의 `useSafeAreaInsets`로 inset을 읽고, 변할 때마다 WebView에 CSS 변수로 inject:
 
 ```tsx
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const insets = useSafeAreaInsets();
 
@@ -423,17 +440,23 @@ useEffect(() => {
 **웹 → RN** (`postMessage`):
 
 ```json
-{ "id": 1, "method": "saveData", "payload": { "ns": "secure", "key": "accessToken", "value": "..." } }
+{
+  "id": 1,
+  "method": "saveData",
+  "payload": { "ns": "secure", "key": "accessToken", "value": "..." }
+}
 ```
 
 **RN → 웹** (`injectJavaScript`로 `window.__bridgeResolve` 호출):
 
 성공:
+
 ```js
 window.__bridgeResolve(1, true, null);
 ```
 
 에러:
+
 ```js
 window.__bridgeResolve(1, false, "에러 메시지");
 ```
@@ -488,12 +511,23 @@ const handleWebMessage = async (event) => {
   try {
     let result = null;
     switch (method) {
-      case 'getData':      result = await storageGet(payload.ns, payload.key); break;
-      case 'saveData':     await storageSet(payload.ns, payload.key, payload.value); break;
-      case 'deleteData':   await storageDel(payload.ns, payload.key); break;
-      case 'openExternal': Linking.openURL(payload.url); break;
-      case 'exitApp':      BackHandler.exitApp(); break;
-      default:             throw new Error(`Unknown method: ${method}`);
+      case "getData":
+        result = await storageGet(payload.ns, payload.key);
+        break;
+      case "saveData":
+        await storageSet(payload.ns, payload.key, payload.value);
+        break;
+      case "deleteData":
+        await storageDel(payload.ns, payload.key);
+        break;
+      case "openExternal":
+        Linking.openURL(payload.url);
+        break;
+      case "exitApp":
+        BackHandler.exitApp();
+        break;
+      default:
+        throw new Error(`Unknown method: ${method}`);
     }
     webViewRef.current?.injectJavaScript(
       `window.__bridgeResolve(${id}, true, ${JSON.stringify(result)}); true;`
@@ -520,8 +554,8 @@ const handleWebMessage = async (event) => {
 
 ```json
 {
-  "react-native-webview":           "^13.x",
-  "react-native-mmkv":              "^3.x",
+  "react-native-webview": "^13.x",
+  "react-native-mmkv": "^3.x",
   "react-native-encrypted-storage": "^4.x",
   "react-native-safe-area-context": "^4.x"
 }
@@ -534,37 +568,44 @@ const handleWebMessage = async (event) => {
 전체 작업 진행 상황을 한눈에:
 
 ### 환경
+
 - [ ] §8 라이브러리 4종 설치
 - [ ] 앱 루트가 `<SafeAreaProvider>`로 감싸짐
 
 ### WebView 설정 (§3)
+
 - [ ] `domStorageEnabled={true}`
 - [ ] `setSupportMultipleWindows={false}`
 - [ ] `onMessage` 등록
 - [ ] `injectedJavaScriptBeforeContentLoaded`로 `window.BarogagiApp` 초기화
 
 ### Storage (§1, §2)
+
 - [ ] `secure` / `persistent` / `session` namespace 매핑 구현
 - [ ] `session`은 반드시 in-memory `Map`
 - [ ] `secure`는 EncryptedSharedPreferences (토큰 4종이 이 위에 올라감)
 - [ ] 부팅 직후 `secure.getData` 응답 빠른지 확인 (white screen 최소화)
 
 ### 외부 링크 (§4)
+
 - [ ] `openExternal` RPC 처리
 - [ ] `onShouldStartLoadWithRequest`로 외부 호스트 가로채기
 - [ ] `APP_HOST` 상수 운영 도메인으로 설정
 
 ### 하드웨어 백 (§5)
+
 - [ ] `BackHandler` 등록 + `return true`
 - [ ] `HARDWARE_BACK` 메시지 dispatch
 - [ ] `exitApp` RPC 처리
 
 ### Safe Area (§6)
+
 - [ ] `useSafeAreaInsets`로 `--sai-*` CSS 변수 inject
 - [ ] inset 변경 시 재주입
 - [ ] `onLoadEnd`에서도 재주입
 
 ### RPC 프로토콜 (§7)
+
 - [ ] 모든 응답이 `window.__bridgeResolve(id, ok, value)` 형식
 - [ ] 에러 발생 시에도 응답 전송 (timeout 방지)
 
@@ -586,7 +627,7 @@ iOS WKWebView는 **앱 재시작 시 localStorage를 비우는 알려진 동작*
 
 ```ts
 // iOS에서도 react-native-encrypted-storage가 Keychain을 백엔드로 사용
-import EncryptedStorage from 'react-native-encrypted-storage';
+import EncryptedStorage from "react-native-encrypted-storage";
 // 코드는 Android와 동일
 ```
 
@@ -603,9 +644,9 @@ iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제�
 ```tsx
 <WebView
   // ...
-  allowsBackForwardNavigationGestures={false}  // iOS 좌측 스와이프 → goBack 비활성 (필요 시)
-  allowsLinkPreview={false}                    // 길게 눌러서 미리보기 비활성
-  bounces={false}                              // iOS 끌어당김 효과 차단
+  allowsBackForwardNavigationGestures={false} // iOS 좌측 스와이프 → goBack 비활성 (필요 시)
+  allowsLinkPreview={false} // 길게 눌러서 미리보기 비활성
+  bounces={false} // iOS 끌어당김 효과 차단
 />
 ```
 
@@ -613,7 +654,7 @@ iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제�
 
 ## 변경 이력
 
-| 날짜 | 내용 | 작성자 |
-|---|---|---|
-| 2026-05-15 | 최초 작성 (Android-only 기준) | barogagi-front 팀 |
+| 날짜       | 내용                                                                                                                                         | 작성자            |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| 2026-05-15 | 최초 작성 (Android-only 기준)                                                                                                                | barogagi-front 팀 |
 | 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | barogagi-front 팀 |
