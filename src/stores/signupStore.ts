@@ -138,7 +138,7 @@ export const useSignupStore = create<SignupState>()(
     }),
     {
       name: "signup:draft",
-      storage: createJSONStorage(getPersistStorage),
+      storage: createJSONStorage(() => getPersistStorage("session")),
       partialize: (state) => {
         const draft = { ...state.draft };
         delete draft.password;

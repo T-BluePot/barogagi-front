@@ -352,7 +352,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
     }),
     {
       name: "schedule:create:draft",
-      storage: createJSONStorage(getPersistStorage),
+      storage: createJSONStorage(() => getPersistStorage("session")),
       partialize: (state) => ({
         draft: state.draft,
         editingPlanIndex: state.editingPlanIndex,
