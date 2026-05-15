@@ -237,11 +237,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     }
     // 중복 클릭으로 mutate가 여러 번 호출되는 것을 방지
     if (deleteScheduleMutation.isPending) return;
+    // 토스트는 useDeleteScheduleMutation 훅 내부 onError/onSuccess가 처리하므로 여기선 생략
+    // 성공/실패 무관하게 모달은 정리, 성공 시에만 목록으로 이동
     deleteScheduleMutation.mutate(scheduleResult.scheduleNum, {
-      onSuccess: () => {
-        setIsLastPlanDeleteModalOpen(false);
-        navigate(ROUTES.PLAN.LIST);
-      },
+      onSuccess: () => navigate(ROUTES.PLAN.LIST),
+      onSettled: () => setIsLastPlanDeleteModalOpen(false),
     });
   };
 
