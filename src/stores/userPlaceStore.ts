@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { UserAddedPlaceDTO } from "@/api/types";
+import { getPersistStorage } from "@/utils/bridgeStorage";
 
 const MAX_RECENT = 5;
 
@@ -38,7 +39,7 @@ export const useUserPlaceStore = create<UserPlaceState>()(
     }),
     {
       name: "user-place",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => getPersistStorage("persistent")),
       partialize: (state) => ({ recentPlaces: state.recentPlaces }), // place는 영속 불필요
     }
   )
