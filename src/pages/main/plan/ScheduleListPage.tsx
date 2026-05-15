@@ -155,7 +155,7 @@ const ScheduleListPage = () => {
           </div>
         )}
       </div>
-      <div className="fixed bottom-20 right-6 z-35">
+      <div className="fixed bottom-[calc(5rem+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] right-6 z-35">
         <AddScheduleButton onAddSchedule={handleAddSchedule} />
       </div>
     </div>
