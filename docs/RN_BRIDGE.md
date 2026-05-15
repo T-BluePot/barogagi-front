@@ -2,12 +2,15 @@
 
 이 문서는 **barogagi-front 웹앱(Vite + React)** 을 React Native WebView로 감싸기 위한 양측(웹/RN) 작업 명세입니다.
 
-각 항목은 다음 구조로 정리됩니다:
-
-> **문제** → **웹(barogagi-front)에서 한 작업** → **RN에서 해야 할 일** → **RN 측 현재 상태 체크 / 수정 가이드**
-
 > 타깃 플랫폼: **Android only** (현 단계)
-> OAuth 로그인 흐름은 백엔드와 별도 합의되어 본 문서 범위 외.
+> OAuth 로그인 흐름은 백엔드와 별도 합의되어 본 문서 범위 외
+> iOS 확장 시 고려 사항은 **부록 A** 참고
+
+각 섹션은 다음 구조로 정리됩니다:
+
+> **문제** → **웹(barogagi-front)에서 완료한 작업** → **RN에서 해야 할 일** → **RN 측 체크리스트**
+
+웹 측 작업은 **이미 완료**되어 `feat/rn-webview-bridge` 브랜치에 반영되어 있습니다.
 
 ---
 
@@ -19,38 +22,46 @@
   - **웹 → RN**: `window.ReactNativeWebView.postMessage(JSON.stringify(...))`
   - **RN → 웹**: `webViewRef.current.injectJavaScript('...')`
 - 웹 코드는 `window.BarogagiApp`이라는 글로벌 객체가 존재한다고 가정하고 호출합니다. **이 객체는 RN 측에서 inject 해줘야 합니다.**
+- 모든 메서드 호출은 **RPC 프로토콜**(§7)을 따릅니다.
 
 ---
 
-## 1. Storage (zustand persist · 인증 토큰 · 최근 검색)
+## 1. zustand Persist Storage (회원가입 draft, 일정 draft 등)
 
 ### 문제
 
-1. **iOS WKWebView는 앱 재시작 시 localStorage를 비우는 알려진 이슈**가 있어, 토큰 영속이 보장되지 않음. (현 단계는 Android only이므로 critical은 아니지만, 향후 iOS 확장을 위해 동일 인터페이스로 통일)
-2. Android WebView는 localStorage를 유지하지만, 사용자가 앱 데이터를 지우거나 시스템이 저장공간을 정리하면 날아감. 토큰 같은 민감 데이터는 **EncryptedSharedPreferences**에 두는 게 안전함.
-3. **세션 단위(앱 종료 시 자동 삭제)** vs **영속 단위** vs **보안 영속 단위**를 구분할 정책이 웹 단독으론 불가능. 네이티브 위임이 필요함.
+- 회원가입/일정 생성 도중 페이지가 새로고침되어도 입력 진행 상태가 유지되어야 함.
+- 동시에 **앱을 완전히 종료했다 다시 켜면 draft는 사라져야 함** (이전 세션 잔존 UX 버그 방지).
+- 영속 단위(앱 종료해도 유지)와 세션 단위(앱 종료 시 자동 삭제)를 웹 단독으론 구분 불가. 네이티브 위임이 필요.
 
-### 웹에서 한 작업
+### 웹에서 완료한 작업
 
-- `src/utils/bridgeStorage.ts`를 RPC 패턴으로 재설계. 모든 storage 호출이 `requestId` 기반으로 RN 응답을 기다림.
+**파일**: [`src/utils/bridgeStorage.ts`](../src/utils/bridgeStorage.ts)
+
+- RN 브릿지에 위임하는 RPC 패턴 zustand storage 어댑터 구현
 - **3종 namespace 도입**:
   - `secure` — 토큰 (EncryptedSharedPreferences)
   - `persistent` — 영속 데이터 (MMKV)
-  - `session` — 임시 draft류 (in-memory, 앱 종료 시 자동 삭제)
-- 토큰 접근 7개 지점을 추상화 레이어로 통일하여 `secure` namespace 경유.
-- zustand store별 namespace 매핑:
+  - `session` — 임시 draft류 (in-memory, 앱 종료 시 자동 소멸)
+- 브릿지 없는 환경(브라우저 직접 접속)에서는 fallback:
+  - `session` → `sessionStorage` (탭 종료 시 휘발)
+  - `secure` / `persistent` → `localStorage`
+- try-catch + console.error로 브릿지 실패 시에도 앱이 멈추지 않음
 
-  | Store | Namespace | 비고 |
-  |---|---|---|
-  | `signupStore` (`signup:draft`) | `session` | 회원가입 임시 |
-  | `scheduleStore` (`schedule:create:draft`) | `session` | 일정 생성 임시 |
-  | `regionSelectionStore` (`plan:create:selected-regions`) | `session` | 임시 선택 |
-  | `userPlaceStore` (`user-place`) | `persistent` | 최근 검색 영속 |
-  | 인증 토큰 4종 | `secure` | 보안 영속 |
+**store별 namespace 매핑** (이미 적용됨):
 
-### RN에서 해야 할 일 (필수)
+| Store | 키 | Namespace | 파일 |
+|---|---|---|---|
+| `useSignupStore` | `signup:draft` | `session` | [src/stores/signupStore.ts](../src/stores/signupStore.ts) |
+| `useScheduleDraftStore` | `schedule:create:draft` | `session` | [src/stores/scheduleStore.ts](../src/stores/scheduleStore.ts) |
+| `useRegionSelectionStore` | `plan:create:selected-regions` | `session` | [src/stores/regionSelectionStore.ts](../src/stores/regionSelectionStore.ts) |
+| `useUserPlaceStore` | `user-place` | `persistent` | [src/stores/userPlaceStore.ts](../src/stores/userPlaceStore.ts) |
 
-`window.BarogagiApp`에 다음 storage 메서드 3개를 노출. **모든 메서드는 비동기. 응답은 RPC 프로토콜(아래 §6) 준수.**
+웹 측은 `getPersistStorage("session" | "persistent")`을 zustand persist storage로 넘기는 구조.
+
+### RN에서 해야 할 일
+
+`window.BarogagiApp`에 storage 메서드 3개를 노출. 모든 메서드는 비동기, 응답은 RPC 프로토콜(§7) 준수.
 
 ```ts
 type Namespace = 'secure' | 'persistent' | 'session';
@@ -59,7 +70,7 @@ window.BarogagiApp = {
   getData(namespace: Namespace, key: string): Promise<string | null>;
   saveData(namespace: Namespace, key: string, value: string): Promise<void>;
   deleteData(namespace: Namespace, key: string): Promise<void>;
-  // ... (다른 메서드는 §3, §4)
+  // ... 외부 링크/앱 종료는 §4, §5
 };
 ```
 
@@ -70,7 +81,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { MMKV } from 'react-native-mmkv';
 
 const persistent = new MMKV({ id: 'barogagi-persistent' });
-const session = new Map<string, string>(); // 앱 재시작 시 자동 소멸
+const session = new Map<string, string>(); // 반드시 in-memory. 앱 재시작 시 자동 소멸
 
 async function storageGet(ns, key) {
   if (ns === 'secure')     return await EncryptedStorage.getItem(key);
@@ -89,20 +100,82 @@ async function storageDel(ns, key) {
 }
 ```
 
-### RN 측 현재 상태 체크리스트
+### RN 측 체크리스트
 
-- [ ] `react-native-mmkv` 설치 여부 확인
-- [ ] `react-native-encrypted-storage` 설치 여부 확인
-- [ ] `window.BarogagiApp.getData / saveData / deleteData` inject 구현 여부
-- [ ] 3종 namespace 분기 구현 여부
-- [ ] **session namespace는 in-memory `Map`으로 구현되어야 함** (절대 영속 저장소에 매핑하지 말 것 — 회원가입/일정 생성 도중 강제종료 시 잔존 draft가 다음 실행에 보이는 UX 버그 발생)
-- [ ] 응답이 §6 RPC 프로토콜을 따르는지 (requestId echo, success/error)
-
-만약 위 항목 중 미구현이 있으면 §6의 RPC 핸들러 + 위 storage 매핑 코드를 그대로 적용.
+- [ ] `react-native-mmkv` 설치
+- [ ] `react-native-encrypted-storage` 설치
+- [ ] `window.BarogagiApp.getData / saveData / deleteData` inject 구현
+- [ ] 3종 namespace 분기 구현
+- [ ] **`session` namespace는 반드시 in-memory `Map`** — 절대 영속 저장소에 매핑하지 말 것
+- [ ] 응답이 §7 RPC 프로토콜 준수
 
 ---
 
-## 2. WebView 기본 props
+## 2. 인증 토큰 (별도 추상화 레이어)
+
+### 문제
+
+- 토큰 4종(`accessToken`, `refreshToken`, `accessTokenExpiry`, `refreshTokenExpiry`)은 보안이 더 중요해 **EncryptedSharedPreferences**에 저장 필요.
+- 단, **axios 인터셉터와 라우트 가드는 동기적으로 토큰을 읽어야** 함 (request마다 매번, 라우팅 결정 시 즉시). 비동기 storage API를 그대로 쓸 수 없음.
+- 따라서 **in-memory cache + 영속 저장소 양방향 동기화** 패턴이 필요.
+
+### 웹에서 완료한 작업
+
+**파일**: [`src/lib/auth/tokenCache.ts`](../src/lib/auth/tokenCache.ts) (신설)
+
+토큰 추상화 레이어 도입:
+
+```ts
+// 동기 read (axios 인터셉터, 라우트 가드용)
+getAccessToken(): string | null
+getRefreshToken(): string | null
+isLoggedIn(): boolean
+
+// async write/clear (cache + 영속 저장소 동시 갱신)
+setAuthTokens(bundle): Promise<void>
+clearAuthTokens(): Promise<void>
+
+// 앱 부팅 시 1회 호출 — 영속 저장소 → 캐시 hydration
+bootstrapTokens(): Promise<void>
+```
+
+**연동된 지점들** (모두 cache 함수로 통합 완료):
+
+| 파일 | 용도 |
+|---|---|
+| [src/main.tsx](../src/main.tsx) | 부팅 시 `bootstrapTokens()` 후 React 트리 마운트 |
+| [src/lib/auth/tokenStorage.ts](../src/lib/auth/tokenStorage.ts) | `saveAuthTokens` → `tokenCache.setAuthTokens` 위임 |
+| [src/api/axiosInterceptors.ts](../src/api/axiosInterceptors.ts) | accessToken/refreshToken 동기 read |
+| [src/components/route/PrivateRoute.tsx](../src/components/route/PrivateRoute.tsx) | `isLoggedIn()` 라우트 가드 |
+| [src/routes/RootRedirect.tsx](../src/routes/RootRedirect.tsx) | `isLoggedIn()` 분기 |
+| [src/routes/MainRoutes.tsx](../src/routes/MainRoutes.tsx) | `isLoggedIn()` 분기 |
+| [src/api/queries/authQueries.ts](../src/api/queries/authQueries.ts) | 회원 탈퇴 시 refreshToken read |
+| [src/utils/auth/handleLogout.ts](../src/utils/auth/handleLogout.ts) | `clearAuthTokens` |
+| [src/pages/main/profile/ProfilePage.tsx](../src/pages/main/profile/ProfilePage.tsx) | `clearAuthTokens` |
+
+저장 키 (RN 측이 알아야 할 정보):
+- `accessToken`, `refreshToken` (string)
+- `accessTokenExpiry`, `refreshTokenExpiry` (number를 string으로 직렬화한 timestamp)
+
+### RN에서 해야 할 일
+
+§1의 `secure` namespace 구현만 되어 있으면 **추가 작업 없음**. 토큰은 `secure` namespace 위에 자동으로 올라감.
+
+다만 **부팅 응답 시간 영향**에 유의:
+- 앱이 켜지면 웹이 즉시 `getData('secure', 'accessToken')` 등 4개를 한 번에 호출함
+- 이 RPC가 응답하기 전엔 React 트리가 마운트되지 않음 (white screen)
+- → `secure` storage 응답이 빨라야 함 (수십 ms 이내 권장)
+
+### RN 측 체크리스트
+
+- [ ] §1의 `secure` namespace가 EncryptedSharedPreferences에 매핑되어 있는가
+- [ ] 부팅 직후 storage 응답이 빠른가 (병목 시 white screen 길어짐)
+- [ ] 다음 4개 key가 동일 namespace에서 일관되게 처리되는가:
+  - `accessToken`, `refreshToken`, `accessTokenExpiry`, `refreshTokenExpiry`
+
+---
+
+## 3. WebView 기본 props
 
 ### 문제
 
@@ -112,11 +185,11 @@ async function storageDel(ns, key) {
 - `window.open` 호출 시 새 WebView가 띄워질 수 있음
 - 줌 가능
 
-### 웹에서 한 작업
+### 웹에서 완료한 작업
 
-특별한 작업 없음. WebView prop 설정으로 해결되는 영역.
+특별한 작업 없음. WebView prop 설정만으로 해결되는 영역.
 
-### RN에서 해야 할 일 (필수)
+### RN에서 해야 할 일
 
 ```tsx
 <WebView
@@ -141,42 +214,53 @@ async function storageDel(ns, key) {
 />
 ```
 
-### RN 측 현재 상태 체크리스트
+### RN 측 체크리스트
 
-- [ ] `domStorageEnabled={true}` 설정되어 있는가
+- [ ] `domStorageEnabled={true}`
 - [ ] `setSupportMultipleWindows={false}` (없으면 `window.open`이 새 WebView 띄움)
-- [ ] `onMessage` 핸들러 등록되어 있는가 (없으면 웹의 `postMessage`가 작동 안 함)
-- [ ] `injectedJavaScriptBeforeContentLoaded`로 `window.BarogagiApp` 초기화 (`injectedJavaScript`가 아닌 `BeforeContentLoaded` — 페이지 스크립트보다 먼저 실행되어야 함)
+- [ ] `onMessage` 핸들러 등록 (없으면 웹의 `postMessage`가 작동 안 함)
+- [ ] `injectedJavaScriptBeforeContentLoaded`로 `window.BarogagiApp` 초기화 — **`injectedJavaScript`가 아닌 `BeforeContentLoaded`** (페이지 스크립트보다 먼저 실행되어야 함)
 
 ---
 
-## 3. 외부 링크 (카카오맵 등)
+## 4. 외부 링크 (카카오맵 등)
 
 ### 문제
 
-웹 코드에서 `window.open(url, '_blank')` 호출 시 WebView는 새 탭 개념이 없어 무시되거나 같은 화면에서 열려 사용자가 앱에서 빠져나가게 됨.
+WebView는 "새 탭" 개념이 없어, `window.open(url, '_blank')` 호출 시 무시되거나 같은 화면에서 열려 사용자가 앱에서 빠져나가게 됨.
 
-### 웹에서 한 작업
+### 웹에서 완료한 작업
 
-다음 파일에서 `window.open(...)`을 `window.BarogagiApp.openExternal(url)`로 교체:
-
-- `src/components/main/plan/search/LocationListItem.tsx`
-- `src/components/main/plan/route/PlanDetailCard.tsx`
-
-브릿지가 없는 환경(브라우저 직접 접속)에서는 `window.open` fallback.
-
-### RN에서 해야 할 일 (필수)
-
-#### 3-A. `openExternal` RPC 메서드 노출
+**파일**: [`src/utils/openExternal.ts`](../src/utils/openExternal.ts) (신설)
 
 ```ts
-// §6의 핸들러에 추가
+export const openExternal = (url: string): void => {
+  if (window.BarogagiApp) {
+    void window.BarogagiApp.openExternal(url);
+    return;
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+```
+
+브릿지가 있으면 네이티브 위임, 없으면 브라우저 새 탭 fallback.
+
+**적용된 지점**:
+- [src/components/main/plan/search/LocationListItem.tsx](../src/components/main/plan/search/LocationListItem.tsx)
+- [src/components/main/plan/route/PlanDetailCard.tsx](../src/components/main/plan/route/PlanDetailCard.tsx)
+
+### RN에서 해야 할 일
+
+#### 4-A. `openExternal` RPC 메서드 노출
+
+```ts
+// §7의 핸들러에 추가
 case 'openExternal':
   Linking.openURL(payload.url);
   break;
 ```
 
-#### 3-B. 외부 도메인 접근 자체를 가로채기 (안전망)
+#### 4-B. 외부 도메인 접근 자체를 가로채기 (안전망)
 
 웹이 실수로 외부 URL로 navigate 했을 때도 시스템 브라우저로 위임:
 
@@ -191,36 +275,52 @@ const shouldAllowNavigation = (req) => {
 };
 ```
 
-### RN 측 현재 상태 체크리스트
+### RN 측 체크리스트
 
-- [ ] `window.BarogagiApp.openExternal` RPC 케이스 처리되어 있는가
-- [ ] `onShouldStartLoadWithRequest`로 외부 호스트 가로채기가 있는가
-- [ ] `APP_HOST` 상수가 실제 운영 도메인으로 설정되어 있는가
+- [ ] `window.BarogagiApp.openExternal` RPC 케이스 처리
+- [ ] `onShouldStartLoadWithRequest`로 외부 호스트 가로채기
+- [ ] `APP_HOST` 상수가 실제 운영 도메인으로 설정
 
 ---
 
-## 4. Android 하드웨어 백 버튼
+## 5. Android 하드웨어 백 버튼
 
 ### 문제
 
-Android 하드웨어 백 버튼은 RN 레벨에서 잡힘. WebView는 자동으로 SPA의 history.back을 호출해주지 않음. 또한 SPA + WebView 조합에서 `onNavigationStateChange`가 React Router 변경을 감지하지 못하는 알려진 이슈가 있어, 단순히 `webView.goBack()`을 호출하면 의도와 다르게 동작함.
+- Android 하드웨어 백 버튼이 눌리면 기본적으로 **앱이 종료**됨.
+- SPA + WebView 조합에서 `onNavigationStateChange`가 React Router 변경을 감지하지 못하는 알려진 이슈가 있어, 단순히 `webView.goBack()`을 호출하면 의도와 다르게 동작함.
+- 모달이 열려있을 때 백 버튼은 **모달부터 닫혀야** 한다는 UX 요구.
 
-웹 측의 모달/바텀시트가 열려있을 때 백 버튼이 모달 닫기로 동작해야 하는 UX 요구도 있음.
+### 웹에서 완료한 작업
 
-### 웹에서 한 작업
-
-`src/utils/nativeBackHandler.ts`를 신설하여 RN으로부터 `HARDWARE_BACK` 메시지를 수신.
+**파일**: [`src/utils/nativeBackHandler.ts`](../src/utils/nativeBackHandler.ts) (신설)
 
 처리 우선순위:
-1. 열려있는 모달/바텀시트가 있으면 → 닫고 종료
-2. React Router history에 뒤로 갈 페이지가 있으면 → `navigate(-1)`
-3. 아무것도 없으면 → `window.BarogagiApp.exitApp()` 호출하여 앱 종료 위임
+1. 등록된 핸들러 stack 최상단 (열려있는 모달의 `onClose`)
+2. `window.history.back()` (라우터 뒤로가기)
+3. `window.BarogagiApp.exitApp()` (앱 종료 위임)
 
-처리 결과를 RN에 알려서 RN이 `BackHandler` 이벤트를 swallow 할지 결정.
+```ts
+// 앱 부팅 시 1회 — main.tsx에서 호출 완료
+initNativeBackHandler();
 
-### RN에서 해야 할 일 (필수)
+// 모달에서 사용
+useNativeBack(isOpen, onClose);
+```
 
-#### 4-A. BackHandler에서 웹으로 신호 전달
+`useNativeBack` 훅은 ref 패턴으로 안정화 + optional `onBack` 가드 — 매 렌더마다 push/pop이 반복되지 않음.
+
+**적용된 모달들** (모두 백 버튼 자동 닫기 동작):
+- [src/components/layout/BottomModalLayout.tsx](../src/components/layout/BottomModalLayout.tsx) → 이를 사용하는 모든 BottomModal (PlanFormModal, DeletePlanModal, CreateScheduleModal, SelectBirthBottomModal, AddLocationModal 등 10+개)
+- [src/components/layout/FullScreenModalLayout.tsx](../src/components/layout/FullScreenModalLayout.tsx)
+- [src/components/layout/CommonAlertModalLayout.tsx](../src/components/layout/CommonAlertModalLayout.tsx)
+- [src/components/layout/CommonConfirmModalLayout.tsx](../src/components/layout/CommonConfirmModalLayout.tsx)
+- [src/components/common/modal/GlobalAlertModal.tsx](../src/components/common/modal/GlobalAlertModal.tsx)
+- [src/components/common/modal/GlobalConfirmModal.tsx](../src/components/common/modal/GlobalConfirmModal.tsx)
+
+### RN에서 해야 할 일
+
+#### 5-A. BackHandler에서 웹으로 신호 전달
 
 ```ts
 useEffect(() => {
@@ -237,7 +337,7 @@ useEffect(() => {
 }, []);
 ```
 
-#### 4-B. `exitApp` RPC 메서드
+#### 5-B. `exitApp` RPC 메서드
 
 ```ts
 case 'exitApp':
@@ -245,36 +345,44 @@ case 'exitApp':
   break;
 ```
 
-### RN 측 현재 상태 체크리스트
+### RN 측 체크리스트
 
-- [ ] `BackHandler.addEventListener('hardwareBackPress', ...)` 등록되어 있는가
-- [ ] 핸들러가 `return true`로 기본 동작을 막는가 (`return false`면 앱이 즉시 종료되어 웹 처리 기회를 놓침)
-- [ ] `injectJavaScript`로 `HARDWARE_BACK` 메시지를 dispatch 하는가
-- [ ] `window.BarogagiApp.exitApp` RPC 케이스 처리되어 있는가
+- [ ] `BackHandler.addEventListener('hardwareBackPress', ...)` 등록
+- [ ] 핸들러가 **`return true`**로 기본 동작 차단 (`return false`면 앱이 즉시 종료되어 웹 처리 기회를 놓침)
+- [ ] `injectJavaScript`로 `HARDWARE_BACK` 메시지 dispatch
+- [ ] `window.BarogagiApp.exitApp` RPC 케이스 처리
 
 ---
 
-## 5. Edge-to-Edge / Safe Area Inset
+## 6. Edge-to-Edge / Safe Area Inset
 
 ### 문제
 
 - **Android 15부터 edge-to-edge가 강제**되어, 시스템 UI 영역(상단 상태바·하단 제스처 바) 위에 콘텐츠가 깔림.
-- 웹에서 `padding: env(safe-area-inset-top)` 등으로 회피하려 하지만, **WebView 138+에서 `env(safe-area-inset-*)`가 0을 반환하는 회귀**가 있음 (react-native-webview 이슈 #3828).
-- 따라서 RN에서 직접 inset 값을 측정해 CSS 변수로 inject 하는 우회가 필요.
+- 웹의 `env(safe-area-inset-*)`이 WebView 138+에서 0을 반환하는 회귀 존재 (react-native-webview #3828).
+- 따라서 RN에서 직접 inset 값을 측정해 CSS 변수로 inject 하는 우회 필요.
 
-### 웹에서 한 작업
+### 웹에서 완료한 작업
 
-- `index.html`의 viewport meta에 `viewport-fit=cover` 추가.
-- 헤더/탭바 등 시스템 UI에 닿는 컴포넌트들의 CSS를 다음 패턴으로 변경:
+**1. `index.html` viewport meta**: `viewport-fit=cover` 추가됨
 
-  ```css
-  padding-top:    env(safe-area-inset-top,    var(--sai-top,    0px));
-  padding-bottom: env(safe-area-inset-bottom, var(--sai-bottom, 0px));
-  ```
+**2. `src/globals.css`에 utility class 4종 추가**:
 
-  → `env()`가 정상 동작하면 그 값을 쓰고, 0/undefined면 RN이 inject한 CSS 변수 fallback.
+```css
+.pt-safe { padding-top:    max(env(safe-area-inset-top,    0px), var(--sai-top,    0px)); }
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px)); }
+.pl-safe { padding-left:   max(env(safe-area-inset-left,   0px), var(--sai-left,   0px)); }
+.pr-safe { padding-right:  max(env(safe-area-inset-right,  0px), var(--sai-right,  0px)); }
+```
 
-### RN에서 해야 할 일 (필수)
+`env()`가 정상 동작하면 그 값, 안 되면 RN이 inject한 CSS 변수 fallback. `max()`로 둘 중 큰 값.
+
+**3. 적용 지점**:
+- [src/components/layout/Layout.tsx](../src/components/layout/Layout.tsx) — 상단 헤더 영역 `pt-safe`
+- [src/components/common/tab-bar/BottomTabBar.tsx](../src/components/common/tab-bar/BottomTabBar.tsx) — 하단 탭바 `pb-safe`
+- [src/components/layout/TabLayout.tsx](../src/components/layout/TabLayout.tsx) — main 콘텐츠 padding-bottom calc 보정
+
+### RN에서 해야 할 일
 
 `react-native-safe-area-context`의 `useSafeAreaInsets`로 inset을 읽고, 변할 때마다 WebView에 CSS 변수로 inject:
 
@@ -296,19 +404,19 @@ useEffect(() => {
 
 또한 페이지 로드 직후에도 한 번 주입되도록 `onLoadEnd`에서 동일 코드 호출.
 
-### RN 측 현재 상태 체크리스트
+### RN 측 체크리스트
 
-- [ ] `react-native-safe-area-context` 설치 여부 확인
-- [ ] 앱 루트가 `<SafeAreaProvider>`로 감싸져 있는가
-- [ ] WebView에 `--sai-*` CSS 변수가 inject 되는가 (Chrome DevTools로 WebView를 원격 디버깅하여 `document.documentElement.style`에서 확인 가능)
-- [ ] inset 변경 시(회전 등) 재주입 되는가
-- [ ] `onLoadEnd`에서도 inject 되는가 (페이지 새로고침 시 변수 유지 위함)
+- [ ] `react-native-safe-area-context` 설치
+- [ ] 앱 루트가 `<SafeAreaProvider>`로 감싸짐
+- [ ] WebView에 `--sai-*` CSS 변수가 inject 됨 (Chrome DevTools 원격 디버깅으로 `document.documentElement.style`에서 확인 가능)
+- [ ] inset 변경 시(회전 등) 재주입
+- [ ] `onLoadEnd`에서도 재주입 (새로고침 시 변수 유지)
 
 ---
 
-## 6. RPC 통신 프로토콜 (공통)
+## 7. RPC 통신 프로토콜 (공통)
 
-§1, §3, §4의 모든 메서드가 따르는 단일 RPC 규약.
+§1, §2, §4, §5의 모든 메서드가 따르는 단일 RPC 규약. **웹 측 클라이언트 코드는 이미 구현됨** (`window.BarogagiApp` 호출 코드는 RN이 inject한 스크립트가 RPC로 변환).
 
 ### 메시지 포맷
 
@@ -318,19 +426,19 @@ useEffect(() => {
 { "id": 1, "method": "saveData", "payload": { "ns": "secure", "key": "accessToken", "value": "..." } }
 ```
 
-**RN → 웹** (`injectJavaScript`):
+**RN → 웹** (`injectJavaScript`로 `window.__bridgeResolve` 호출):
 
-```json
-{ "__bridgeResponse": true, "id": 1, "ok": true, "value": null }
+성공:
+```js
+window.__bridgeResolve(1, true, null);
 ```
 
-또는 에러:
-
-```json
-{ "__bridgeResponse": true, "id": 1, "ok": false, "value": "에러 메시지" }
+에러:
+```js
+window.__bridgeResolve(1, false, "에러 메시지");
 ```
 
-### 웹 측 inject 스크립트 (참고용 — 웹 코드에 이미 포함됨)
+### RN이 inject할 초기 스크립트
 
 ```ts
 const initialInjection = () => `
@@ -374,7 +482,7 @@ const initialInjection = () => `
 const handleWebMessage = async (event) => {
   const { id, method, payload } = JSON.parse(event.nativeEvent.data);
 
-  // HARDWARE_BACK 같은 RN→웹 메시지가 웹→RN으로 echo 되는 케이스 방어
+  // HARDWARE_BACK 같은 RN→웹 메시지가 echo 되는 케이스 방어
   if (method === undefined) return;
 
   try {
@@ -398,17 +506,17 @@ const handleWebMessage = async (event) => {
 };
 ```
 
-### RN 측 현재 상태 체크리스트
+### RN 측 체크리스트
 
-- [ ] `onMessage` 핸들러가 `id`, `method`, `payload` 구조를 파싱하는가
-- [ ] 각 method별 분기가 모두 구현되어 있는가 (위 5개)
-- [ ] 응답 시 `window.__bridgeResolve(id, ok, value)`를 호출하는가 (이게 빠지면 웹 측 Promise가 3초 후 timeout)
-- [ ] 응답 value를 `JSON.stringify`로 직렬화하는가 (escape 안 하면 따옴표 깨짐)
-- [ ] 에러 발생 시에도 응답이 가는가 (안 가면 timeout)
+- [ ] `onMessage` 핸들러가 `id`, `method`, `payload` 구조 파싱
+- [ ] 5개 method 모두 분기 구현 (`getData`, `saveData`, `deleteData`, `openExternal`, `exitApp`)
+- [ ] 응답 시 **반드시 `window.__bridgeResolve(id, ok, value)` 호출** (빠지면 웹 측 Promise가 3초 후 timeout)
+- [ ] 응답 value를 `JSON.stringify`로 직렬화
+- [ ] 에러 발생 시에도 응답 전송 (안 보내면 timeout)
 
 ---
 
-## 7. 권장 라이브러리 (Android 우선)
+## 8. 권장 라이브러리 (Android 우선)
 
 ```json
 {
@@ -421,42 +529,85 @@ const handleWebMessage = async (event) => {
 
 ---
 
-## 8. 통합 체크리스트 (RN 측)
+## 9. 통합 체크리스트 (RN 측 전체)
 
 전체 작업 진행 상황을 한눈에:
 
 ### 환경
-- [ ] 위 §7 라이브러리 4종 설치
+- [ ] §8 라이브러리 4종 설치
 - [ ] 앱 루트가 `<SafeAreaProvider>`로 감싸짐
 
-### WebView 설정 (§2)
+### WebView 설정 (§3)
 - [ ] `domStorageEnabled={true}`
 - [ ] `setSupportMultipleWindows={false}`
 - [ ] `onMessage` 등록
 - [ ] `injectedJavaScriptBeforeContentLoaded`로 `window.BarogagiApp` 초기화
 
-### Storage (§1)
+### Storage (§1, §2)
 - [ ] `secure` / `persistent` / `session` namespace 매핑 구현
 - [ ] `session`은 반드시 in-memory `Map`
+- [ ] `secure`는 EncryptedSharedPreferences (토큰 4종이 이 위에 올라감)
+- [ ] 부팅 직후 `secure.getData` 응답 빠른지 확인 (white screen 최소화)
 
-### 외부 링크 (§3)
+### 외부 링크 (§4)
 - [ ] `openExternal` RPC 처리
 - [ ] `onShouldStartLoadWithRequest`로 외부 호스트 가로채기
 - [ ] `APP_HOST` 상수 운영 도메인으로 설정
 
-### 하드웨어 백 (§4)
+### 하드웨어 백 (§5)
 - [ ] `BackHandler` 등록 + `return true`
 - [ ] `HARDWARE_BACK` 메시지 dispatch
 - [ ] `exitApp` RPC 처리
 
-### Safe Area (§5)
+### Safe Area (§6)
 - [ ] `useSafeAreaInsets`로 `--sai-*` CSS 변수 inject
 - [ ] inset 변경 시 재주입
 - [ ] `onLoadEnd`에서도 재주입
 
-### RPC 프로토콜 (§6)
+### RPC 프로토콜 (§7)
 - [ ] 모든 응답이 `window.__bridgeResolve(id, ok, value)` 형식
 - [ ] 에러 발생 시에도 응답 전송 (timeout 방지)
+
+---
+
+## 부록 A. iOS 확장 시 고려 사항
+
+> 현 단계는 Android 전용이지만, 향후 iOS 확장 시 알아둘 점.
+
+### A-1. iOS WKWebView의 localStorage 자동 삭제 이슈
+
+iOS WKWebView는 **앱 재시작 시 localStorage를 비우는 알려진 동작**이 있음 (react-native-webview #3572). 만약 토큰을 localStorage에 직접 저장했다면 iOS 앱이 재실행될 때마다 로그아웃 발생.
+
+→ 이미 §2의 `tokenCache` + `secure` namespace 구조로 자동 대응됨. iOS 확장 시에도 토큰은 Keychain에 매핑되어 영속됨.
+
+### A-2. iOS Keychain 매핑
+
+`secure` namespace를 iOS에선 `react-native-keychain` 또는 `react-native-encrypted-storage`(iOS 백엔드는 Keychain) 사용:
+
+```ts
+// iOS에서도 react-native-encrypted-storage가 Keychain을 백엔드로 사용
+import EncryptedStorage from 'react-native-encrypted-storage';
+// 코드는 Android와 동일
+```
+
+### A-3. iOS Safe Area (notch / Dynamic Island)
+
+iOS는 notch/Dynamic Island가 있어 safe area inset이 Android보다 더 큼. §6의 CSS 변수 inject 구조가 그대로 동작 — RN의 `useSafeAreaInsets`가 플랫폼별로 알아서 반환.
+
+### A-4. iOS 백 제스처
+
+iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제스처를 사용. WebView 자체에서 처리되므로 RN의 `BackHandler` 로직은 iOS에서 무시됨 (성공적으로 cross-platform).
+
+### A-5. iOS-specific WebView props
+
+```tsx
+<WebView
+  // ...
+  allowsBackForwardNavigationGestures={false}  // iOS 좌측 스와이프 → goBack 비활성 (필요 시)
+  allowsLinkPreview={false}                    // 길게 눌러서 미리보기 비활성
+  bounces={false}                              // iOS 끌어당김 효과 차단
+/>
+```
 
 ---
 
@@ -465,3 +616,4 @@ const handleWebMessage = async (event) => {
 | 날짜 | 내용 | 작성자 |
 |---|---|---|
 | 2026-05-15 | 최초 작성 (Android-only 기준) | barogagi-front 팀 |
+| 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | barogagi-front 팀 |
