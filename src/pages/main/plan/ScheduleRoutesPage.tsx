@@ -192,6 +192,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setScheduleName(next);
   };
 
+  // 빠른 연속 commit 시 stale 롤백을 무시하기 위한 토큰
+  // 더 새로운 commit이 끼어든 뒤 이전 mutation이 늦게 실패해도 UI를 잘못 되돌리지 않게 함
+  const scheduleNameCommitTokenRef = useRef(0);
+
   // 포커스 아웃 시점에 변경분이 있으면 scheduleResult 갱신 + detail에서만 서버 반영
   // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
   const handleCommitScheduleName = (finalName: string) => {
@@ -204,8 +208,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setScheduleName(finalName);
 
     if (isDetail) {
+      const myToken = ++scheduleNameCommitTokenRef.current;
       updateMutation.mutate(updatedSchedule, {
         onError: () => {
+          // 더 새로운 commit이 이미 발사됐으면 이 onError의 롤백은 stale이므로 무시
+          if (myToken !== scheduleNameCommitTokenRef.current) return;
           setScheduleResult(prevSchedule);
           setScheduleName(prevSchedule.scheduleNm ?? "");
         },
