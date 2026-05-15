@@ -10,6 +10,8 @@ import fallbackImg from "@/assets/images/category/category_default.jpg";
 import type { PlanDetailCardProps } from "@/types/main/plan/planListTypes";
 // === api ===
 import { API_BASE_URL, ENDPOINTS } from "@/api/endpoints";
+// === utils ===
+import { openExternal } from "@/utils/openExternal";
 
 const PlanDetailCard = (props: PlanDetailCardProps) => {
   const simple = props.mode === "create";
@@ -45,7 +47,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
 
   const handleMapClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (placeLink) window.open(placeLink, "_blank", "noopener,noreferrer");
+    if (placeLink) openExternal(placeLink);
   };
 
   const planTime = `${startTime} ~ ${endTime}`;
