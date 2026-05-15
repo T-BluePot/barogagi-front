@@ -19,7 +19,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   const { header, plans } = props;
   // ----- 헤더 영역 -----
-  const { scheduleDate, scheduleName, onChangeScheduleName } = header;
+  const { scheduleDate, scheduleName, onChangeScheduleName, onCommitScheduleName } =
+    header;
   const [editMode, setEditMode] = useState<boolean>(false);
 
   // ----- 리스트 영역 -----
@@ -95,6 +96,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           setEditMode={setEditMode}
           scheduleName={scheduleName}
           setScheduleName={onChangeScheduleName}
+          onCommitScheduleName={onCommitScheduleName}
           scheduleDate={scheduleDate}
         />
       </div>
