@@ -8,13 +8,15 @@ interface InfoHeaderProps {
   setEditMode: (mode: boolean) => void;
 
   scheduleName: string; // 일정명
-  setScheduleName: (name: string) => void; // 일정명 변경 함수
+  setScheduleName: (name: string) => void; // 일정명 변경 함수 (실시간)
+  onCommitScheduleName?: (finalName: string) => void; // 포커스 아웃 시 확정 콜백
   scheduleDate: string; // 일정 날짜
 }
 
 const ScheduleRouteInfoHeader = ({
   scheduleName,
   setScheduleName,
+  onCommitScheduleName,
   scheduleDate,
   editMode,
   setEditMode,
@@ -47,6 +49,7 @@ const ScheduleRouteInfoHeader = ({
             scheduleName={scheduleName}
             setScheduleName={setScheduleName}
             setEditMode={setEditMode}
+            onCommit={onCommitScheduleName}
           />
         )}
       </div>
