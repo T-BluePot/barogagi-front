@@ -73,6 +73,7 @@
 
   /* Animation */
   --animate-shimmer: shimmer 1.2s infinite ease-in-out;
+  --animate-warning-overlay-in: warning-overlay-in 1.2s ease-out forwards;
 
   /* Font Weights */
   --font-weight-header: 700;
@@ -150,6 +151,19 @@
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* 경고 모달 오버레이가 단계적으로 진해지며 등장 (한 번만 재생, 최종 색상 유지) */
+@keyframes warning-overlay-in {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  40% {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.7);
   }
 }
 
