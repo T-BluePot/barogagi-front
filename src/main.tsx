@@ -8,6 +8,9 @@ import App from "./App.tsx";
 // === http & interceptor ===
 import "@/api/http.ts";
 import { queryClient } from "./lib/queryClient";
+import { initNativeBackHandler } from "@/utils/nativeBackHandler";
+
+initNativeBackHandler();
 
 import "react-datepicker/dist/react-datepicker.css";
 import "./components/main/plan/calendar.css";
