@@ -127,7 +127,7 @@ const ScheduleListPage = () => {
             </button>
           </div>
         ) : viewType === "calendar" ? (
-          <div className="flex h-full min-h-0 pb-15">
+          <div className="flex flex-col h-full min-h-0 pb-15">
             <CalendarView
               selectedDate={selectedDate}
               onChangeDate={(date) => setSelectedDate(date)}
