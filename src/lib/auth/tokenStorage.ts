@@ -1,18 +1,13 @@
 import type { AuthTokenBundle } from "@/types/tokenTypes";
+import { setAuthTokens } from "@/lib/auth/tokenCache";
 
-export const saveAuthTokens = (bundle: AuthTokenBundle) => {
-  const now = Date.now();
-
-  localStorage.setItem("accessToken", bundle.accessToken);
-  // 서버에서 내려준 accessTokenExpiresIn(초 단위 남은 유효 시간)을
-  // 현재 시각(Date.now()) 기준의 "만료 시각(timestamp)"으로 변환하여 저장
-  localStorage.setItem(
-    "accessTokenExpiry",
-    String(now + bundle.accessTokenExpiresIn * 1000)
-  );
-  localStorage.setItem("refreshToken", bundle.refreshToken);
-  localStorage.setItem(
-    "refreshTokenExpiry",
-    String(now + bundle.refreshTokenExpiresIn * 1000)
-  );
+/**
+ * 인증 토큰 저장. 호출자(useLoginMutation, axiosInterceptors, OAuthCallbackPage)는
+ * 동기 인터페이스를 기대하므로 Promise를 반환하지 않고 fire-and-forget 으로 위임.
+ *
+ * - 메모리 캐시는 setAuthTokens 내부에서 즉시 동기 갱신됨 → 후속 read는 항상 정상 값
+ * - 영속 저장소 쓰기는 비동기. 강제 종료 등 극단 케이스에서 영속화 누락 가능 (수용 가능 위험)
+ */
+export const saveAuthTokens = (bundle: AuthTokenBundle): void => {
+  void setAuthTokens(bundle);
 };
