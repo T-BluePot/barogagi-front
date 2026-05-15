@@ -235,6 +235,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       setIsLastPlanDeleteModalOpen(false);
       return;
     }
+    // 중복 클릭으로 mutate가 여러 번 호출되는 것을 방지
+    if (deleteScheduleMutation.isPending) return;
     deleteScheduleMutation.mutate(scheduleResult.scheduleNum, {
       onSuccess: () => {
         setIsLastPlanDeleteModalOpen(false);
