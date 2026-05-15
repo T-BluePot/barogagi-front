@@ -27,6 +27,11 @@ bootstrapTokens().finally(() => {
         <Toaster
           position="bottom-center"
           reverseOrder={false}
+          // bottom-center 토스트가 폰 하단바(제스처 바)에 가리지 않도록 safe-area 만큼 올림
+          containerStyle={{
+            bottom:
+              "calc(24px + max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px)))",
+          }}
           toastOptions={{
             style: {
               fontFamily:
