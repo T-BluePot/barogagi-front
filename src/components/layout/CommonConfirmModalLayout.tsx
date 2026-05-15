@@ -15,7 +15,7 @@ export default function CommonConfirmModalLayout({
   // onClick이 정의된 경우에만 활성화 (없으면 다음 단계 — 라우터 뒤로가기 — 로 위임)
   useNativeBack(
     isVisible && !!cancelButtonInfo.onClick,
-    cancelButtonInfo.onClick ?? (() => {})
+    cancelButtonInfo.onClick
   );
 
   const isWarning = severity === "warning";

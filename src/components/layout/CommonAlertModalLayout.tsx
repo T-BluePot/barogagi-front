@@ -10,10 +10,7 @@ export default function CommonAlertModalLayout({
 }: CommonAlertModalLayoutPropsType) {
   // 하드웨어 백 버튼: 모달이 보이는 동안 닫기 동작으로 가로챔
   // onClick이 정의된 경우에만 활성화 (없으면 다음 단계 — 라우터 뒤로가기 — 로 위임)
-  useNativeBack(
-    isVisible && !!buttonInfo.onClick,
-    buttonInfo.onClick ?? (() => {})
-  );
+  useNativeBack(isVisible && !!buttonInfo.onClick, buttonInfo.onClick);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
