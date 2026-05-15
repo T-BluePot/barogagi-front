@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * RN 하드웨어 백 버튼 핸들러
@@ -62,14 +62,25 @@ export const initNativeBackHandler = (): void => {
  */
 export const useNativeBack = (
   isActive: boolean,
-  onBack: BackHandler
+  onBack: BackHandler | undefined
 ): void => {
+  // onBack은 매 렌더마다 새 reference일 수 있으므로 ref로 latest 값 보관.
+  // 등록/해제는 isActive(+ onBack 존재 여부) 변화에만 반응 → 모달이 열려있는 동안 push/pop이 반복되지 않음.
+  const onBackRef = useRef(onBack);
   useEffect(() => {
-    if (!isActive) return;
-    handlerStack.push(onBack);
+    onBackRef.current = onBack;
+  }, [onBack]);
+
+  // onBack이 undefined면 등록하지 않음 → router back fallback이 자연스럽게 동작.
+  const enabled = isActive && !!onBack;
+
+  useEffect(() => {
+    if (!enabled) return;
+    const handler: BackHandler = () => onBackRef.current?.();
+    handlerStack.push(handler);
     return () => {
-      const idx = handlerStack.lastIndexOf(onBack);
+      const idx = handlerStack.lastIndexOf(handler);
       if (idx >= 0) handlerStack.splice(idx, 1);
     };
-  }, [isActive, onBack]);
+  }, [enabled]);
 };
