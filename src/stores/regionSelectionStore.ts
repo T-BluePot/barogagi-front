@@ -69,7 +69,7 @@ export const useRegionSelectionStore = create<RegionSelectionStore>()(
     }),
     {
       name: "plan:create:selected-regions",
-      storage: createJSONStorage(getPersistStorage),
+      storage: createJSONStorage(() => getPersistStorage("session")),
       partialize: (state) => ({ selectedRegions: state.selectedRegions }),
     }
   )

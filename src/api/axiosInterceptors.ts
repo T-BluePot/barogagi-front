@@ -9,6 +9,7 @@ import { ENDPOINTS } from "./endpoints";
 
 import { refresh } from "./queries";
 import { saveAuthTokens } from "@/lib/auth/tokenStorage";
+import { getAccessToken, getRefreshToken } from "@/lib/auth/tokenCache";
 import { handleLogout } from "@/utils/auth/handleLogout";
 
 let refreshInFlight: Promise<string> | null = null;
@@ -19,7 +20,7 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
   // Request: accessToken 자동 주입
   instance.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem("accessToken");
+      const token = getAccessToken();
       if (token) {
         config.headers = config.headers ?? {};
         config.headers.Authorization = `Bearer ${token}`;
@@ -62,13 +63,13 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
 
       // 같은 요청은 1번만 재시도
       if (originalRequest._retry) {
-        handleLogout();
+        await handleLogout();
         return Promise.reject(error);
       }
       originalRequest._retry = true;
 
       try {
-        const storedRefreshToken = localStorage.getItem("refreshToken");
+        const storedRefreshToken = getRefreshToken();
         if (!storedRefreshToken) {
           throw new Error("refreshToken이 없습니다.");
         }
@@ -101,7 +102,7 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
         // 중요: "그 인스턴스"로 재시도 (http 고정 X)
         return instance(originalRequest);
       } catch (e) {
-        handleLogout();
+        await handleLogout();
         return Promise.reject(e);
       }
     }

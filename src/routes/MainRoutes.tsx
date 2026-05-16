@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import TabLayout from "@/components/layout/TabLayout";
 import { ROUTES } from "@/constants/routes";
 import PrivateRoute from "@/components/route/PrivateRoute";
+import { isLoggedIn } from "@/lib/auth/tokenCache";
 
 /* 메인 페이지 */
 // 일정 생성 탭
@@ -25,10 +26,9 @@ import ProfileEditPage from "@/pages/main/profile/ProfileEditPage";
  * - accessToken 없음 → /auth (로그인 랜딩)
  */
 const RootRedirect = () => {
-  const isLoggedIn = !!localStorage.getItem("accessToken");
   return (
     <Navigate
-      to={isLoggedIn ? ROUTES.MAIN.HOME : ROUTES.AUTH.LANDING}
+      to={isLoggedIn() ? ROUTES.MAIN.HOME : ROUTES.AUTH.LANDING}
       replace
     />
   );

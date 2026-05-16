@@ -122,13 +122,13 @@ export const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div
-      className={`h-screen flex flex-col ${
+      className={`h-screen flex flex-col pt-safe pb-safe ${
         isHeaderDark ? "bg-gray-black" : "bg-white"
       }`}
     >
       {renderHeader()}
       <main
-        className={`flex-1 h-0 overflow-auto ${
+        className={`flex-1 min-h-0 overflow-auto ${
           isContentDark === false && isHeaderDark
             ? "bg-white rounded-t-2xl"
             : ""

@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { isLoggedIn } from "@/lib/auth/tokenCache";
 
 /**
  * 루트 진입 시 토큰 유무로 랜딩 분기
@@ -8,11 +9,7 @@ import { ROUTES } from "@/constants/routes";
  */
 
 export function RootRedirect() {
-  // localStorage 기반 로그인 여부 판단
-  const accessToken = localStorage.getItem("accessToken");
-  const isLoggedIn = Boolean(accessToken);
-
-  return isLoggedIn ? (
+  return isLoggedIn() ? (
     <Navigate to={ROUTES.MAIN.HOME} replace />
   ) : (
     <Navigate to={ROUTES.AUTH.LANDING} replace />
