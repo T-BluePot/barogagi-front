@@ -1,5 +1,6 @@
 import CommonConfirmModal from "@/components/common/modal/common-modal/CommonConfirmModal";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
+import { useNativeBack } from "@/utils/nativeBackHandler";
 
 /**
  * 전역 확인 모달
@@ -8,6 +9,9 @@ import { useConfirmModalStore } from "@/stores/confirmModalStore";
 const GlobalConfirmModal = () => {
   const { isOpen, modalContent, closeConfirmModal, confirmModal } =
     useConfirmModalStore();
+
+  // 하드웨어 백 → 취소(닫기) 동작 (확인이 아니라)
+  useNativeBack(isOpen && !!modalContent, closeConfirmModal);
 
   if (!modalContent) return null;
 

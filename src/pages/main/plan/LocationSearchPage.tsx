@@ -67,7 +67,7 @@ const LocationSearchPage = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[500]">
+    <div className="fixed inset-0 z-[500] pt-safe pb-safe bg-gray-white">
       <div className="flex flex-col w-full h-full overflow-hidden bg-gray-white">
         <div className="shrink-0 sticky top-0 z-10">
           <SearchBackHeader

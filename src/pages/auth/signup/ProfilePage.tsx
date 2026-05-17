@@ -70,7 +70,7 @@ const ProfilePage = () => {
     setError("");
 
     try {
-      await nicknameSchema.validate(nickName);
+      await nicknameSchema.validate(nickName.trim());
       return true; // 유효
     } catch (err: unknown) {
       if (err instanceof ValidationError) {
@@ -120,8 +120,15 @@ const ProfilePage = () => {
       onError: (error) => {
         if (nickName.trim() !== requestedNickname) return;
 
-        setLastCheckedNickname(requestedNickname);
-        setCheckStatus("duplicate");
+        const isDuplicate =
+          error instanceof AxiosError && error.response?.status === 409;
+
+        if (isDuplicate) {
+          setLastCheckedNickname(requestedNickname);
+          setCheckStatus("duplicate");
+        } else {
+          setCheckStatus("error");
+        }
 
         const fallback = "닉네임 중복 확인에 실패했습니다.";
 

@@ -4,6 +4,7 @@
 
 import { http, apiKeyHttp, refreshHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
+import { getRefreshToken } from "@/lib/auth/tokenCache";
 
 // === request body type ===
 import type {
@@ -25,6 +26,18 @@ import type {
 // === data type ===
 import type { VerifyCodeType } from "@/types/signupTypes";
 import type { VerificationType } from "@/constants/verificationTypes";
+
+/** OAuth 링크 조회 */
+export type OAuthProviderType = "Google" | "Kakao" | "Naver";
+
+export const getOAuthLink = async (type: OAuthProviderType) => {
+  const environment = import.meta.env.PROD ? "PROD" : "LOCAL";
+  const response = await apiKeyHttp.get<BaseResponse<string>>(
+    ENDPOINTS.AUTH.OAUTH_LINK,
+    { params: { environment, type } }
+  );
+  return response.data;
+};
 
 /** 로그인 */
 export const login = async (userId: string, password: string) => {
@@ -186,7 +199,7 @@ export const getWithdrawalReasons = async () => {
 
 /** 회원 탈퇴 */
 export const withdrawMe = async (data: WithdrawRequestDTO) => {
-  const refreshToken = localStorage.getItem("refreshToken");
+  const refreshToken = getRefreshToken();
   if (!refreshToken) {
     throw new Error("refreshToken이 없습니다.");
   }

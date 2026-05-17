@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { CloseHeader } from "../common/headers/CloseHeader";
+import { useNativeBack } from "@/utils/nativeBackHandler";
 
 type FullScreenModalLayoutProps = {
   children?: ReactNode;
@@ -12,9 +13,12 @@ const FullScreenModalLayout = ({
   onClose,
   backgroundColor = "bg-gray-black",
 }: FullScreenModalLayoutProps) => {
+  // 하드웨어 백 버튼: 이 컴포넌트가 마운트되어 있는 동안 닫기 동작으로 가로챔
+  useNativeBack(true, onClose);
+
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col w-full min-h-screen ${backgroundColor}`}
+      className={`fixed inset-0 z-50 flex flex-col w-full min-h-screen pt-safe pb-safe ${backgroundColor}`}
     >
       {/* 닫기 버튼 */}
       <CloseHeader onClick={onClose} isHeaderDark={true} />

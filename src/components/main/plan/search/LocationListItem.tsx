@@ -7,6 +7,7 @@ import { LocationIcon } from "./LocationIcon";
 import type { UserAddedPlaceDTO } from "@/api/types";
 // 타입: EditPlanDraft["place"] + 핸들러 공통 타입
 import type { OnSelectPlace } from "@/types/main/plan/bottom-modal/planFromTypes";
+import { openExternal } from "@/utils/openExternal";
 
 interface ModalProps {
   // 확인 클릭 시 이 아이템의 location 전체를 부모로 전달
@@ -29,7 +30,7 @@ const LocationListItem = ({
   // --- 장소 URL 이동 로직
   const handleCardClick = () => {
     if (!location.placeUrl) return;
-    window.open(location.placeUrl, "_blank", "noopener,noreferrer");
+    openExternal(location.placeUrl);
   };
 
   return (

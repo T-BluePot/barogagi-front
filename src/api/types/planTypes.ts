@@ -91,6 +91,8 @@ export interface PlanRegistResDTO {
   planAddress?: string;
   regionNm?: string;
   regionNum?: number;
+  imageLink?: string;
+  imageUrl?: string;
   planTagRegistResDTOList: TagRegistResDTO[];
 }
 
@@ -158,6 +160,7 @@ export interface PlanDetailVO {
   itemNm: string;
   categoryNum: number;
   categoryNm: string;
+  imageLink?: string | null;
   regionVOList: RegionVO[];
   tagDetailVOList: TagDetailVO[];
 }

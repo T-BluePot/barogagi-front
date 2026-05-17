@@ -15,6 +15,7 @@ export const ENDPOINTS = {
     REFRESH: "/api/v1/auth/token/refresh",
     FIND_ID: "/api/v1/auth/find-user",
     RESET_PW_CONFIRM: "/api/v1/auth/password-reset/confirm",
+    OAUTH_LINK: "/api/v1/oauth-link",
   },
   USERS: {
     SIGNUP: "/api/v1/users",
@@ -37,6 +38,7 @@ export const ENDPOINTS = {
     SAVE: "/api/v1/schedule/save", // 일정 저장 (최종 등록)
     UPDATE: "/api/v1/schedule/", // PUT
     DELETE: "/api/v1/schedule/", // DELETE
+    IMAGE_PROXY: "/api/v1/schedule/image/proxy",
   },
 
   /** 메인 홈 */

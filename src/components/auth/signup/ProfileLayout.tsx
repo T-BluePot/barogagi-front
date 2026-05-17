@@ -43,6 +43,9 @@ type ProfileLayoutProps = {
 
   isDisabled: boolean;
   handleSubmitProfile: () => void;
+
+  hideSkip?: boolean;
+  submitLabel?: string;
 };
 
 const ProfileLayout = ({
@@ -66,6 +69,9 @@ const ProfileLayout = ({
   // 프로필 설정
   isDisabled,
   handleSubmitProfile,
+
+  hideSkip = false,
+  submitLabel,
 }: ProfileLayoutProps) => {
   return (
     <div className="flex flex-col w-full h-full">
@@ -104,15 +110,17 @@ const ProfileLayout = ({
       </div>
 
       <div className="flex flex-col items-center justify-center w-full mt-auto  gap-4 p-6">
-        <CheckBoxButton
-          label={PROFILE_TEXT.CHECK_LABEL}
-          labelColor="gray"
-          gap="tight"
-          isChecked={isSkipProfile}
-          onCheckedChange={skipProfileProps.handleOpenSkipModal}
-        />
+        {!hideSkip && (
+          <CheckBoxButton
+            label={PROFILE_TEXT.CHECK_LABEL}
+            labelColor="gray"
+            gap="tight"
+            isChecked={isSkipProfile}
+            onCheckedChange={skipProfileProps.handleOpenSkipModal}
+          />
+        )}
         <Button
-          label={PROFILE_TEXT.NEXT_BUTTON}
+          label={submitLabel ?? PROFILE_TEXT.NEXT_BUTTON}
           isDisabled={isDisabled}
           onClick={handleSubmitProfile}
         />

@@ -32,7 +32,7 @@ export const ScheduleList = ({
           );
         })
       ) : (
-        <div className="flex justify-center pt-25">
+        <div className="flex justify-center py-25">
           <p className="typo-sub-title text-gray-70">
             아직 생성된 일정이 없습니다
           </p>
