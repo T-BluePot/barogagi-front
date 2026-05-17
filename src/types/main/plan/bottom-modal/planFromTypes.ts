@@ -84,6 +84,7 @@ export interface EditPlanDraft {
     placeNum: number | null; // PLACE_NUM, 아직 선택 안 했으면 null
     placeNm: string; // UI 표시용 장소 이름 (regionNm)
     address: string; // UI 표시용 전체 주소
+    placeUrl?: string; // 카카오 장소 URL → 서버 planLink (장소 식별 키)
   };
 
   /**
