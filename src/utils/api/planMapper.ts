@@ -8,6 +8,7 @@ export const toCommonPlan = (vo: PlanDetailVO): PlanRegistResDTO => ({
   planNm: vo.planNm,
   planLink: vo.planLink ?? undefined,
   planDescription: vo.planDescription,
+  planAddress: vo.planAddress,
   startTime: vo.startTime,
   endTime: vo.endTime,
   itemNum: vo.itemNum,

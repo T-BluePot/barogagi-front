@@ -22,7 +22,8 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const planName = plan.planNm ?? "";
   const startTime = plan.startTime;
   const endTime = plan.endTime;
-  const planPlace = plan.regionNm ?? "";
+  // regionNm 우선, 비면 planAddress로 폴백 (카카오 수정 장소는 regionVOList 미해소로 regionNm이 빔)
+  const planPlace = plan.regionNm || plan.planAddress || "";
   const placeAddress = plan.planAddress ?? "";
   const placeInfo = plan.planDescription ?? "";
   const placeLink = plan.planLink ?? "";
