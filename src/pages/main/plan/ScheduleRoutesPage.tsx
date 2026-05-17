@@ -271,6 +271,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         placeNum: null,
         placeNm: target.regionNm ?? "",
         address: target.planAddress ?? target.regionNm ?? "",
+        placeUrl: target.planLink ?? "",
       },
     });
 
@@ -288,6 +289,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         placeNum: null,
         placeNm: place.placeName,
         address: place.addressName ?? place.placeName,
+        placeUrl: place.placeUrl ?? "",
       },
     });
     setIsEditModalOpen(true);
@@ -397,6 +399,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                     editDraft.plan.startTime !== originalPlan.startTime ||
                     editDraft.plan.endTime !== originalPlan.endTime ||
                     editDraft.place.placeNm !== (originalPlan.regionNm ?? "") ||
+                    editDraft.place.placeUrl !==
+                      (originalPlan.planLink ?? "") ||
                     editDraft.place.address !==
                       (originalPlan.planAddress ?? originalPlan.regionNm ?? ""));
 
@@ -412,6 +416,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                           startTime: editDraft.plan.startTime,
                           endTime: editDraft.plan.endTime,
                           regionNm: editDraft.place.placeNm,
+                          planLink: editDraft.place.placeUrl,
                           planAddress: editDraft.place.address,
                         }
                       : p
