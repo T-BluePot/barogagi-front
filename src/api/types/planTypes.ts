@@ -154,6 +154,7 @@ export interface PlanDetailVO {
   planNm: string;
   planLink: string | null;
   planDescription?: string;
+  planAddress?: string; // 서버가 상세 응답에 내려주는 지번주소 (regionVOList 미해소 시 표시용)
   startTime: string;
   endTime: string;
   itemNum: number;
