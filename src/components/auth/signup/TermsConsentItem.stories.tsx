@@ -100,7 +100,7 @@ export const OptionalChecked: Story = {
 export const LongLabel: Story = {
   args: {
     termsNum: 1,
-    title: "바로가기 서비스 이용약관 및 개인정보 처리방침 동의 (필수)",
+    title: "핏플 서비스 이용약관 및 개인정보 처리방침 동의 (필수)",
     isConsented: false,
   },
   decorators: [
