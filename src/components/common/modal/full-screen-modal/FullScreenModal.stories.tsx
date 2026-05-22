@@ -29,7 +29,7 @@ export const WithHighlight = {
       onClose={() => console.log("onClose")}
       onButtonClick={() => console.log("onButtonClick")}
       title="회원가입 완료"
-      content="바로가기 서비스에 성공적으로 가입되었습니다"
+      content="핏플 서비스에 성공적으로 가입되었습니다"
       highlightText="user@example.com"
       buttonLabel="시작하기"
     />

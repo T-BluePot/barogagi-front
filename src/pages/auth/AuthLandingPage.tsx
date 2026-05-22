@@ -1,5 +1,5 @@
 import LoginButtonSection from "@/components/auth/landing/LoginButtonSection";
-import BarogagiLogo from "@/assets/icons/barogagi.svg";
+import FitplLogo from "@/assets/icons/fitpl.svg";
 import "@/components/auth/landing/LogoAnimations.css";
 
 const AuthLandingPage = () => {
@@ -14,12 +14,14 @@ const AuthLandingPage = () => {
           <div className="w-1/2 h-full bg-main animate-slide-left-to-right"></div>
         </div>
 
-        {/* 메인 로고 */}
-        <img src={BarogagiLogo} alt="Barogagi Logo" />
-        {/* 서브 타이틀 */}
-        <p className="text-gray-400 typo-subtitle tracking-tight pt-1">
-          고민없이 바로가는 만남!
-        </p>
+        <div className="flex flex-col justify-center gap-1">
+          {/* 메인 로고 */}
+          <img src={FitplLogo} alt="Fitpl Logo" />
+          {/* 서브 타이틀 */}
+          <p className="text-gray-30 typo-subtitle tracking-tight pt-1">
+            내 일정에 딱! fit 한 선택
+          </p>
+        </div>
 
         {/* 하단 라인 - 오른쪽에서 왼쪽으로 */}
         <div className="w-full h-1 mt-6 relative overflow-hidden">
