@@ -17,7 +17,7 @@ const SignupCompletePage = () => {
   });
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gray-black">
+    <div className="flex flex-col w-full h-full bg-gray-black">
       <div className="flex flex-col flex-1 justify-center items-center gap-4">
         <span className="typo-title-01 text-white whitespace-pre-line">
           {COMPLETE_TEXT.TITLE}
