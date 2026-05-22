@@ -1,6 +1,6 @@
 # RN WebView 연동 명세서
 
-이 문서는 **barogagi-front 웹앱(Vite + React)** 을 React Native WebView로 감싸기 위한 양측(웹/RN) 작업 명세입니다.
+이 문서는 **fitpl-front 웹앱(Vite + React)** 을 React Native WebView로 감싸기 위한 양측(웹/RN) 작업 명세입니다.
 
 > 타깃 플랫폼: **Android only** (현 단계)
 > OAuth 로그인 흐름은 백엔드와 별도 합의되어 본 문서 범위 외
@@ -8,7 +8,7 @@
 
 각 섹션은 다음 구조로 정리됩니다:
 
-> **문제** → **웹(barogagi-front)에서 완료한 작업** → **RN에서 해야 할 일** → **RN 측 체크리스트**
+> **문제** → **웹(fitpl-front)에서 완료한 작업** → **RN에서 해야 할 일** → **RN 측 체크리스트**
 
 웹 측 작업은 **이미 완료**되어 `feat/rn-webview-bridge` 브랜치에 반영되어 있습니다.
 
@@ -16,7 +16,7 @@
 
 ## 0. 배경
 
-- 이 앱은 기존 웹앱(`barogagi-front`)을 React Native WebView로 감싼 하이브리드 앱입니다.
+- 이 앱은 기존 웹앱(`fitpl-front`)을 React Native WebView로 감싼 하이브리드 앱입니다.
 - 사용자에게는 네이티브 앱처럼 보이지만, 실제 화면은 모두 WebView 내부의 웹 페이지가 렌더링합니다.
 - 웹 ↔ RN 통신은 다음 두 채널로 이뤄집니다:
   - **웹 → RN**: `window.ReactNativeWebView.postMessage(JSON.stringify(...))`
@@ -80,7 +80,7 @@ namespace별 백엔드 매핑:
 import EncryptedStorage from "react-native-encrypted-storage";
 import { MMKV } from "react-native-mmkv";
 
-const persistent = new MMKV({ id: "barogagi-persistent" });
+const persistent = new MMKV({ id: "fitpl-persistent" });
 const session = new Map<string, string>(); // 반드시 in-memory. 앱 재시작 시 자동 소멸
 
 async function storageGet(ns, key) {
@@ -684,5 +684,5 @@ iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제�
 
 | 날짜       | 내용                                                                                                                                         | 작성자            |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| 2026-05-15 | 최초 작성 (Android-only 기준)                                                                                                                | barogagi-front 팀 |
-| 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | barogagi-front 팀 |
+| 2026-05-15 | 최초 작성 (Android-only 기준)                                                                                                                | fitpl-front 팀 |
+| 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | fitpl-front 팀 |
