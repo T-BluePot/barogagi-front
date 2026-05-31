@@ -25,6 +25,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "es-hangul": "^2.3.5",
+    "firebase": "^12.14.0",
     "framer-motion": "^12.23.22",
     "react": "^19.1.0",
     "react-datepicker": "^8.4.0",
