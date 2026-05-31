@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { saveAuthTokens } from "@/lib/auth/tokenStorage";
+import { syncFcmToken } from "@/utils/fcm";
 import { ROUTES } from "@/constants/routes";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 
@@ -41,6 +42,9 @@ export default function OAuthCallbackPage() {
       refreshToken,
       refreshTokenExpiresIn: Number(refreshTokenExpiresIn),
     });
+
+    // 인증 완료 후 FCM 토큰 발급/동기화 (fire-and-forget)
+    void syncFcmToken();
 
     // 신규/기존 회원 분기
     const nicknameYn = searchParams.get("nicknameYn");
