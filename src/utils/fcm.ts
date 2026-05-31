@@ -7,11 +7,12 @@
  *   1) RN 브릿지: window.BarogagiApp.getFcmToken() — 실기기 환경
  *   2) 브라우저 fallback: import.meta.env.VITE_FCM_TEST_TOKEN — 브릿지 없는 dev 환경 테스트용
  *
- * 서버 등록 API 연동은 다음 단계 — 현재는 발급 + fcmStore 저장까지만 수행한다.
+ * 발급된 토큰은 fcmStore에 저장하고, 서버(POST /api/v1/push/token)에 등록한다.
  * 브릿지 명세는 docs/RN_BRIDGE.md 참고.
  */
 
 import { useFcmStore } from "@/stores/fcmStore";
+import { registerPushToken } from "@/api/queries";
 
 /** 네이티브 브릿지가 FCM 토큰 발급을 지원하는지 (RN 미구현 단계 방어) */
 const isBridgeFcmAvailable = (): boolean =>
@@ -42,10 +43,25 @@ export const issueFcmToken = async (): Promise<string | null> => {
 };
 
 /**
- * FCM 토큰을 발급해 fcmStore에 동기화한다.
+ * FCM 토큰 등록에 함께 전송할 단말 정보를 산출한다.
+ *
+ * 정책상 deviceType/appVersion은 브릿지가 아닌 클라이언트가 자체 결정한다.
+ * 이 앱은 웹 클라이언트(WebView/브라우저)이므로 deviceType은 "WEB" 고정.
+ * appVersion은 빌드 시 주입되는 VITE_APP_VERSION을 사용한다.
+ *
+ * NOTE: 서버 스펙상 appVersion은 필수 string이므로 env가 비면 빈 문자열로 전송된다.
+ *       정확한 버전 추적을 위해 빌드 시 VITE_APP_VERSION 주입을 권장한다.
+ */
+const getFcmDeviceInfo = (): { deviceType: string; appVersion: string } => ({
+  deviceType: "WEB",
+  appVersion: import.meta.env.VITE_APP_VERSION ?? "",
+});
+
+/**
+ * FCM 토큰을 발급해 fcmStore에 저장하고 서버에 등록한다.
  * 로그인 완료 직후 fire-and-forget으로 호출한다 (인증된 사용자 대상).
  *
- * 발급 → store 저장까지만 수행하며, 서버 등록은 다음 단계에서 이 함수 안에 추가한다.
+ * 등록 실패해도 throw하지 않는다 — 로그인 플로우를 막지 않기 위함.
  */
 export const syncFcmToken = async (): Promise<void> => {
   const store = useFcmStore.getState();
@@ -58,7 +74,19 @@ export const syncFcmToken = async (): Promise<void> => {
 
   store.setToken(token);
 
-  // TODO(다음 단계): 서버 등록 API 연동
-  //   - store.registeredToken과 비교해 미등록/토큰 변경 시에만 등록 요청
-  //   - 요청 전 store.setStatus("registering"), 성공 시 store.markRegistered(token)
+  // 이미 같은 토큰이 등록돼 있으면 중복 등록 skip
+  if (store.registeredToken === token) {
+    return;
+  }
+
+  const { deviceType, appVersion } = getFcmDeviceInfo();
+
+  try {
+    store.setStatus("registering");
+    await registerPushToken({ fcmToken: token, deviceType, appVersion });
+    store.markRegistered(token);
+  } catch (err) {
+    console.error("[fcm] 서버 토큰 등록 실패", err);
+    store.setStatus("error");
+  }
 };
