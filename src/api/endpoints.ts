@@ -77,4 +77,9 @@ export const ENDPOINTS = {
   ITEM: {
     LIST: "/api/v1/item/",
   },
+
+  /** 푸시 알림 (Push) */
+  PUSH: {
+    TOKEN: "/api/v1/push/token", // FCM 토큰 등록
+  },
 } as const;
