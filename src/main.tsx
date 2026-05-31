@@ -10,8 +10,11 @@ import "@/api/http.ts";
 import { queryClient } from "./lib/queryClient";
 import { initNativeBackHandler } from "@/utils/nativeBackHandler";
 import { bootstrapTokens } from "@/lib/auth/tokenCache";
+import { initMobileDebugConsole } from "@/lib/mobileDebugConsole";
 
 initNativeBackHandler();
+// 모바일에서 console 로그를 확인하기 위한 디버그 콘솔(개발 모드 또는 ?debug 쿼리)
+void initMobileDebugConsole();
 
 import "react-datepicker/dist/react-datepicker.css";
 import "./components/main/plan/calendar.css";
