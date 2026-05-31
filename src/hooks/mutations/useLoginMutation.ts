@@ -7,6 +7,7 @@ import { ROUTES } from "@/constants/routes";
 import { login } from "@/api/queries";
 import type { LoginRequestType } from "@/api/types";
 import { saveAuthTokens } from "@/lib/auth/tokenStorage";
+import { syncFcmToken } from "@/utils/fcm";
 
 export type LoginInputType = Pick<LoginRequestType, "userId" | "password">;
 
@@ -20,6 +21,9 @@ export const useLoginMutation = () => {
     onSuccess: (response) => {
       const tokenBundle = response.data;
       saveAuthTokens(tokenBundle);
+
+      // 인증 완료 후 FCM 토큰 발급/동기화 (fire-and-forget)
+      void syncFcmToken();
 
       navigate(ROUTES.MAIN.HOME);
     },

@@ -28,6 +28,10 @@ declare global {
       // === 외부 링크 / 앱 종료 ===
       openExternal(url: string): Promise<void>;
       exitApp(): Promise<void>;
+      // === 푸시 알림(FCM) ===
+      // 네이티브가 발급/캐싱한 FCM 토큰을 반환. 권한 거부·미발급 시 null.
+      // RN 측 미구현 단계가 있을 수 있어 optional — 존재 여부를 확인 후 호출한다.
+      getFcmToken?(): Promise<string | null>;
     };
   }
 }
