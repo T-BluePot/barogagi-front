@@ -65,10 +65,12 @@ const issueFirebaseToken = async (): Promise<string | null> => {
       `/firebase-messaging-sw.js?${buildSwConfigQuery()}`,
       { scope: "/" }
     );
-    return await getToken(messaging, {
+    const firebaseToken = await getToken(messaging, {
       vapidKey,
       serviceWorkerRegistration,
     });
+    console.log("[fcm] Firebase 토큰 발급", { source: "firebase", token: firebaseToken });
+    return firebaseToken;
   } catch (err) {
     console.error("[fcm] Firebase 토큰 발급 실패", err);
     return null;
@@ -88,7 +90,9 @@ const issueFirebaseToken = async (): Promise<string | null> => {
 export const issueFcmToken = async (): Promise<string | null> => {
   if (isBridgeFcmAvailable()) {
     try {
-      return await window.BarogagiApp!.getFcmToken!();
+      const bridgeToken = await window.BarogagiApp!.getFcmToken!();
+      console.log("[fcm] 브릿지 토큰 발급", { source: "bridge", token: bridgeToken });
+      return bridgeToken;
     } catch (err) {
       console.error("[fcm] 브릿지 토큰 발급 실패", err);
       return null;
@@ -97,7 +101,10 @@ export const issueFcmToken = async (): Promise<string | null> => {
 
   // 브릿지 없는 환경(브라우저 직접 접속) — 테스트 토큰 override 우선
   const testToken = import.meta.env.VITE_FCM_TEST_TOKEN;
-  if (testToken && testToken.length > 0) return testToken;
+  if (testToken && testToken.length > 0) {
+    console.log("[fcm] 테스트 토큰 사용", { source: "test-env", token: testToken });
+    return testToken;
+  }
 
   // 테스트 토큰도 없으면 Firebase 웹 SDK로 실제 발급 시도
   return issueFirebaseToken();
@@ -137,6 +144,7 @@ export const syncFcmToken = async (): Promise<void> => {
 
   // 이미 같은 토큰이 등록돼 있으면 중복 등록 skip
   if (store.registeredToken === token) {
+    console.log("[fcm] 이미 등록된 토큰 — 서버 등록 skip", { token });
     return;
   }
 
@@ -146,6 +154,7 @@ export const syncFcmToken = async (): Promise<void> => {
     store.setStatus("registering");
     await registerPushToken({ fcmToken: token, deviceType, appVersion });
     store.markRegistered(token);
+    console.log("[fcm] 서버 토큰 등록 완료", { token, deviceType, appVersion });
   } catch (err) {
     console.error("[fcm] 서버 토큰 등록 실패", err);
     store.setStatus("error");
