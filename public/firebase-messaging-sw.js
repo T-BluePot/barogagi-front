@@ -37,12 +37,17 @@ if (firebaseConfig.apiKey && firebaseConfig.projectId) {
   const messaging = firebase.messaging();
 
   // 백그라운드 푸시 수신 → 시스템 알림 표시
+  //
+  // payload.notification이 있으면 FCM SDK가 자동으로 알림을 띄우므로,
+  // 여기서 또 showNotification을 호출하면 알림이 2번 뜬다(중복).
+  // → notification 페이로드가 없는 data-only 메시지에 한해서만 직접 표시한다.
   messaging.onBackgroundMessage((payload) => {
-    const notification = payload.notification || {};
-    const title = notification.title || "알림";
-    self.registration.showNotification(title, {
-      body: notification.body,
-      icon: notification.icon || "/vite.svg",
+    if (payload.notification) return;
+
+    const data = payload.data || {};
+    self.registration.showNotification(data.title || "알림", {
+      body: data.body,
+      icon: data.icon || "/vite.svg",
     });
   });
 }
