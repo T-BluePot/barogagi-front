@@ -17,7 +17,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-full bg-gray-10 pb-10">
+    <div className="flex flex-col w-full h-full bg-gray-black text-white overflow-y-auto pb-10">
       <SettingsSection title={SETTINGS_PAGE_TEXT.NOTIFICATION_SECTION.TITLE}>
         {NOTIFICATION_SETTINGS.map((config) => {
           // 서버가 내려주지 않은 항목은 기본 ON (백엔드의 기본값 정책과 동일)

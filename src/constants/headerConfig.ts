@@ -208,6 +208,7 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   [ROUTES.MAIN.SETTINGS]: {
     type: "back",
     label: "설정",
+    isHeaderDark: true,
     backPath: ROUTES.MAIN.PROFILE,
   },
   [ROUTES.MAIN.CHAT]: {
