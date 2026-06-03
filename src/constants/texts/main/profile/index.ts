@@ -4,6 +4,10 @@ export const PROFILE_PAGE_TEXT = {
   COPY_SUCCESS: "아이디가 복사되었습니다.",
   COPY_FAIL: "클립보드 복사에 실패했습니다.",
   ALERT_BUTTON_LABEL: "확인",
+  SETTINGS_SECTION: {
+    TITLE: "설정",
+    NOTIFICATION: "알림 설정",
+  },
   MENU_SECTION: {
     TITLE: "계정 관리",
     LOGOUT: "로그아웃",

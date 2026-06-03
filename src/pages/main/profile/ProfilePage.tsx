@@ -80,6 +80,14 @@ const ProfilePage = () => {
         />
       </div>
 
+      {/* 설정 메뉴 섹션 */}
+      <ProfileMenuSection title={PROFILE_PAGE_TEXT.SETTINGS_SECTION.TITLE}>
+        <ProfileMenuItem
+          label={PROFILE_PAGE_TEXT.SETTINGS_SECTION.NOTIFICATION}
+          onClick={() => navigate(ROUTES.MAIN.SETTINGS)}
+        />
+      </ProfileMenuSection>
+
       {/* 계정 관리 메뉴 섹션 */}
       <ProfileMenuSection title={PROFILE_PAGE_TEXT.MENU_SECTION.TITLE}>
         <ProfileMenuItem
