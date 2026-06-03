@@ -8,7 +8,7 @@ interface Props {
 const HomeGreetingSection = ({ userName }: Props) => {
   return (
     <div className="flex flex-col w-full px-6 items-baseline bg-gray-black">
-      <PageTitle type="home" title={HOME_GREETING(userName ?? "바로가기")} />
+      <PageTitle type="home" title={HOME_GREETING(userName ?? "핏플")} />
     </div>
   );
 };

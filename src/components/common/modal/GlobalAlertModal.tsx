@@ -1,5 +1,6 @@
 import CommonAlertModal from "@/components/common/modal/common-modal/CommonAlertModal";
 import { useAlertModalStore } from "@/stores/alertModalStore";
+import { useNativeBack } from "@/utils/nativeBackHandler";
 
 /**
  * 전역 알림 모달
@@ -7,6 +8,9 @@ import { useAlertModalStore } from "@/stores/alertModalStore";
  */
 const GlobalAlertModal = () => {
   const { isOpen, modalContent, closeAlertModal } = useAlertModalStore();
+
+  // 하드웨어 백 → 알림 닫기
+  useNativeBack(isOpen && !!modalContent, closeAlertModal);
 
   if (!modalContent) return null;
 

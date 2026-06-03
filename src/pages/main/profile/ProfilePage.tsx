@@ -14,6 +14,7 @@ import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 import type { BaseResponse } from "@/api/types";
 import type { UserData } from "@/types/profileTypes";
+import { clearAuthTokens } from "@/lib/auth/tokenCache";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const ProfilePage = () => {
   // 로그아웃 처리
   const handleLogout = () => {
     // TODO: API 로그아웃 호출 (서버 쿠키 등 정리 필요 시)
-    localStorage.removeItem("accessToken");
+    void clearAuthTokens();
     navigate(ROUTES.AUTH.SIGNIN, { replace: true });
   };
 
@@ -43,10 +44,7 @@ const ProfilePage = () => {
       const response = await withdrawMe({ reasonNo, withdrawReason });
 
       if (response.code === "D200") {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("accessTokenExpiry");
-        localStorage.removeItem("refreshTokenExpiry");
+        void clearAuthTokens();
 
         setIsWithdrawalModalOpen(false);
         openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.SUCCESS_MESSAGE });
@@ -81,6 +79,14 @@ const ProfilePage = () => {
           userId={userData?.userId || ""}
         />
       </div>
+
+      {/* 설정 메뉴 섹션 */}
+      <ProfileMenuSection title={PROFILE_PAGE_TEXT.SETTINGS_SECTION.TITLE}>
+        <ProfileMenuItem
+          label={PROFILE_PAGE_TEXT.SETTINGS_SECTION.NOTIFICATION}
+          onClick={() => navigate(ROUTES.MAIN.SETTINGS)}
+        />
+      </ProfileMenuSection>
 
       {/* 계정 관리 메뉴 섹션 */}
       <ProfileMenuSection title={PROFILE_PAGE_TEXT.MENU_SECTION.TITLE}>

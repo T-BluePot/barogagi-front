@@ -8,6 +8,7 @@ const CommonConfirmModal = ({
   confirmButtonInfo,
   cancelButtonInfo,
   modalContent,
+  severity,
 }: CommonConfirmModalPropsType) => {
   // shouldRenderLayout: 모달 레이아웃 컴포넌트 자체를 DOM에 렌더링할지 여부 (사라지는 애니메이션 후 제거)
   const [shouldRenderLayout, setShouldRenderLayout] = useState(isOpen);
@@ -45,6 +46,7 @@ const CommonConfirmModal = ({
       isVisible={showAnimation} // Layout의 애니메이션 상태 제어
       confirmButtonInfo={confirmButtonInfo}
       cancelButtonInfo={cancelButtonInfo}
+      severity={severity}
       onCloseComplete={() => setShouldRenderLayout(false)} // Layout의 애니메이션 완료 후 레이아웃 제거
     >
       <CommonModalContent

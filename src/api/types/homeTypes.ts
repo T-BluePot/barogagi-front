@@ -42,16 +42,18 @@ export interface PopularTagResponseDTO {
   tagInfoList: TagInfoDTO[];
 }
 
-/** 인기 지역 정보 */
+/** 인기 지역 API 원본 응답 아이템 */
 export interface PopularRegionDTO {
-  rank: number;
-  regionName: string;
-  rankChange?: "up" | "down" | "same";
+  regionLevel1: string;
+  regionLevel2: string;
+  regionLevel3: string;
+  regionLevel4: string;
+  rankNo: number;
 }
 
 /** GET /api/v1/home/regions/popular 응답 타입 */
 export interface PopularRegionResponseDTO {
-  resultCode: string;
+  code: string;
   message: string;
   data: PopularRegionDTO[];
 }

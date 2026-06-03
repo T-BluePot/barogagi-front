@@ -6,3 +6,5 @@ export * from "./authQueries";
 export * from "./planQueries";
 export * from "./homeQueries";
 export * from "./commonQueries";
+export * from "./pushQueries";
+export * from "./settingsQueries";

@@ -1,5 +1,6 @@
 import { useEffect } from "react"; // useState 제거
 import type { CommonConfirmModalLayoutPropsType } from "@/types/modalTypes";
+import { useNativeBack } from "@/utils/nativeBackHandler";
 
 export default function CommonConfirmModalLayout({
   isVisible, // 부모로부터 애니메이션 상태를 직접 받음
@@ -8,7 +9,16 @@ export default function CommonConfirmModalLayout({
   onCloseComplete,
   children,
   contentClassName,
+  severity = "default",
 }: CommonConfirmModalLayoutPropsType) {
+  // 하드웨어 백 버튼: 모달이 보이는 동안 취소 동작으로 가로챔
+  // onClick이 정의된 경우에만 활성화 (없으면 다음 단계 — 라우터 뒤로가기 — 로 위임)
+  useNativeBack(
+    isVisible && !!cancelButtonInfo.onClick,
+    cancelButtonInfo.onClick
+  );
+
+  const isWarning = severity === "warning";
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     if (!isVisible) {
@@ -28,14 +38,23 @@ export default function CommonConfirmModalLayout({
       className={`fixed inset-0 flex items-center justify-center z-[200] transition-opacity duration-300 ${
         // 배경 투명도 애니메이션
         isVisible ? "opacity-100" : "opacity-0" // isVisible 상태에 따른 투명도 변경
+      } ${
+        // warning은 등장 시 오버레이가 단계적으로 짙어지는 keyframe 애니메이션 적용
+        isWarning ? "animate-warning-overlay-in" : ""
       }`}
-      style={{ background: "rgba(0,0,0,0.4)" }} // 더 투명한 배경
+      // default일 때만 inline 배경. warning은 keyframe이 background-color를 제어
+      style={isWarning ? undefined : { background: "rgba(0,0,0,0.4)" }}
       onClick={cancelButtonInfo.onClick} // 배경 클릭 시 취소 액션 실행
     >
       <div
-        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center transform transition-all duration-300 flex flex-col ${
-          // 모달 컨테이너 애니메이션
-          isVisible ? "scale-100" : "scale-95" // isVisible 상태에 따른 크기 변경
+        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center flex flex-col ${
+          isWarning
+            ? // warning은 keyframe이 opacity/scale/blur를 함께 제어 (오버레이 진해진 후 등장)
+              "animate-warning-modal-in"
+            : // default는 기존 scale 트랜지션 유지
+              `transform transition-all duration-300 ${
+                isVisible ? "scale-100" : "scale-95"
+              }`
         }`}
         onClick={(e) => e.stopPropagation()} // 모달 내용 클릭 시 이벤트 전파 중지
       >
@@ -53,9 +72,13 @@ export default function CommonConfirmModalLayout({
           >
             {cancelButtonInfo.label}
           </button>
-          {/* 확인 버튼 */}
+          {/* 확인 버튼 — variant === "destructive"이면 빨강 강조 */}
           <button
-            className="flex-1 px-4 py-3 typo-tag text-blue-600 font-semibold rounded-br-2xl hover:bg-gray-10 transition cursor-pointer"
+            className={`flex-1 px-4 py-3 typo-tag font-semibold rounded-br-2xl hover:bg-gray-10 transition cursor-pointer ${
+              confirmButtonInfo.variant === "destructive"
+                ? "text-alert-red"
+                : "text-blue-600"
+            }`}
             onClick={confirmButtonInfo.onClick}
           >
             {confirmButtonInfo.label}

@@ -33,6 +33,8 @@ export const ROUTES = {
       COMPLETE: "/auth/signup/complete",
     },
     FIND_ACCOUNT: "/auth/find",
+    OAUTH_CALLBACK: "/auth/oauth/callback", // OAuth 소셜 로그인 콜백
+    OAUTH_PROFILE: "/auth/oauth/profile", // OAuth 신규 회원 닉네임 설정
     FIND_RESULT: "/auth/find/result", // 아이디 찾기 결과 페이지
     FIND_RESET_PASSWORD: "/auth/find/reset-password", // 비밀번호 재설정 페이지
     // 아이디/비밀번호 찾기 → 바로 인증번호 입력 페이지로 이동

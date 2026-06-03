@@ -71,6 +71,12 @@
   --leading-tag: 16px;
   --tracking-tag: -0.025em;
 
+  /* Animation */
+  --animate-shimmer: shimmer 1.2s infinite ease-in-out;
+  --animate-warning-overlay-in: warning-overlay-in 0.9s ease-out forwards;
+  /* 오버레이가 어느 정도 짙어진 뒤(0.3s delay) 모달이 흐릿→선명, 살짝 커지며 등장 */
+  --animate-warning-modal-in: warning-modal-in 0.6s ease-out 0.3s both;
+
   /* Font Weights */
   --font-weight-header: 700;
   --font-weight-title-01: 700;
@@ -80,6 +86,29 @@
   --font-weight-caption: 500;
   --font-weight-description: 500;
   --font-weight-tag: 300;
+}
+
+/* Safe Area Utilities
+ * - env(safe-area-inset-*): 표준 (Android 15 edge-to-edge / iOS notch)
+ * - var(--sai-*): RN WebView가 inject하는 fallback (WebView 138+에서 env가 0 반환되는 회귀 대응)
+ * - max()로 둘 중 큰 값 사용
+ */
+@layer utilities {
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top, 0px), var(--sai-top, 0px));
+  }
+  .pb-safe {
+    padding-bottom: max(
+      env(safe-area-inset-bottom, 0px),
+      var(--sai-bottom, 0px)
+    );
+  }
+  .pl-safe {
+    padding-left: max(env(safe-area-inset-left, 0px), var(--sai-left, 0px));
+  }
+  .pr-safe {
+    padding-right: max(env(safe-area-inset-right, 0px), var(--sai-right, 0px));
+  }
 }
 
 /* Typo Settings */
@@ -138,6 +167,42 @@
     font-weight: var(--font-weight-tag);
     line-height: var(--leading-tag);
     letter-spacing: var(--tracking-tag);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 경고 모달 오버레이가 단계적으로 진해지며 등장 (한 번만 재생, 최종 색상 유지) */
+@keyframes warning-overlay-in {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  40% {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* 경고 모달 컨테이너가 흐릿한 상태에서 선명·확대되며 등장 */
+@keyframes warning-modal-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
   }
 }
 

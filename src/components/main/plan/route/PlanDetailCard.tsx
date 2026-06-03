@@ -8,6 +8,10 @@ import { GradientImage } from "../create/GradientImage";
 import fallbackImg from "@/assets/images/category/category_default.jpg";
 // === types ===
 import type { PlanDetailCardProps } from "@/types/main/plan/planListTypes";
+// === api ===
+import { API_BASE_URL, ENDPOINTS } from "@/api/endpoints";
+// === utils ===
+import { openExternal } from "@/utils/openExternal";
 
 const PlanDetailCard = (props: PlanDetailCardProps) => {
   const simple = props.mode === "create";
@@ -18,13 +22,18 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const planName = plan.planNm ?? "";
   const startTime = plan.startTime;
   const endTime = plan.endTime;
-  const planPlace = plan.regionNm ?? "";
+  // regionNm 우선, 비면 planAddress로 폴백 (카카오 수정 장소는 regionVOList 미해소로 regionNm이 빔)
+  const planPlace = plan.regionNm || plan.planAddress || "";
   const placeAddress = plan.planAddress ?? "";
   const placeInfo = plan.planDescription ?? "";
   const placeLink = plan.planLink ?? "";
   const tagNames = (plan.planTagRegistResDTOList ?? []).map((t) => t.tagNm);
   const planNum = plan.planNum;
-  const imageSrc = src ?? fallbackImg;
+  const imageSource = plan.imageLink ?? plan.imageUrl;
+  const proxyImageUrl = imageSource
+    ? `${API_BASE_URL}${ENDPOINTS.SCHEDULE.IMAGE_PROXY}?url=${encodeURIComponent(imageSource)}`
+    : undefined;
+  const imageSrc = src ?? proxyImageUrl ?? fallbackImg;
 
   const moreButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -39,7 +48,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
 
   const handleMapClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (placeLink) window.open(placeLink, "_blank", "noopener,noreferrer");
+    if (placeLink) openExternal(placeLink);
   };
 
   const planTime = `${startTime} ~ ${endTime}`;

@@ -11,6 +11,7 @@ interface ScheduleTitleInputProps {
   scheduleName: string;
   setScheduleName: (name: string) => void;
   setEditMode: (mode: boolean) => void;
+  onCommit?: (finalName: string) => void;
   placeholder?: string;
   size?: SizeType;
 }
@@ -19,6 +20,7 @@ const ScheduleTitleInput = ({
   scheduleName,
   setScheduleName,
   setEditMode,
+  onCommit,
   placeholder = ROUTES_CREATE_TEXT.HEADER.SCHEDULE_NAME_PLACEHOLDER,
   size = "normal",
 }: ScheduleTitleInputProps) => {
@@ -49,6 +51,7 @@ const ScheduleTitleInput = ({
 
         setScheduleName(finalName);
         setEditMode(false);
+        onCommit?.(finalName);
       }}
     >
       <input

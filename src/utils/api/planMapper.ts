@@ -8,6 +8,7 @@ export const toCommonPlan = (vo: PlanDetailVO): PlanRegistResDTO => ({
   planNm: vo.planNm,
   planLink: vo.planLink ?? undefined,
   planDescription: vo.planDescription,
+  planAddress: vo.planAddress,
   startTime: vo.startTime,
   endTime: vo.endTime,
   itemNum: vo.itemNum,
@@ -17,6 +18,7 @@ export const toCommonPlan = (vo: PlanDetailVO): PlanRegistResDTO => ({
   regionNum: vo.regionVOList[0]?.regionNum,
   regionNm:
     vo.regionVOList[0]?.regionLevel4 ?? vo.regionVOList[0]?.regionLevel3 ?? "",
+  imageLink: vo.imageLink ?? undefined,
   planTagRegistResDTOList: vo.tagDetailVOList.map(({ tagNum, tagNm }) => ({
     tagNum,
     tagNm,

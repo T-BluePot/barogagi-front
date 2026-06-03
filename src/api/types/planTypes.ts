@@ -91,6 +91,8 @@ export interface PlanRegistResDTO {
   planAddress?: string;
   regionNm?: string;
   regionNum?: number;
+  imageLink?: string;
+  imageUrl?: string;
   planTagRegistResDTOList: TagRegistResDTO[];
 }
 
@@ -152,12 +154,14 @@ export interface PlanDetailVO {
   planNm: string;
   planLink: string | null;
   planDescription?: string;
+  planAddress?: string; // 서버가 상세 응답에 내려주는 지번주소 (regionVOList 미해소 시 표시용)
   startTime: string;
   endTime: string;
   itemNum: number;
   itemNm: string;
   categoryNum: number;
   categoryNm: string;
+  imageLink?: string | null;
   regionVOList: RegionVO[];
   tagDetailVOList: TagDetailVO[];
 }

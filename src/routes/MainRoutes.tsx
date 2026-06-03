@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import TabLayout from "@/components/layout/TabLayout";
 import { ROUTES } from "@/constants/routes";
 import PrivateRoute from "@/components/route/PrivateRoute";
+import { isLoggedIn } from "@/lib/auth/tokenCache";
 
 /* 메인 페이지 */
 // 일정 생성 탭
@@ -18,6 +19,7 @@ import HomePage from "@/pages/main/HomePage";
 
 import ProfilePage from "@/pages/main/profile/ProfilePage";
 import ProfileEditPage from "@/pages/main/profile/ProfileEditPage";
+import SettingsPage from "@/pages/main/settings/SettingsPage";
 
 /**
  * 루트 경로(/) 및 미정의 경로 진입 시 로그인 여부에 따라 리다이렉트
@@ -25,10 +27,9 @@ import ProfileEditPage from "@/pages/main/profile/ProfileEditPage";
  * - accessToken 없음 → /auth (로그인 랜딩)
  */
 const RootRedirect = () => {
-  const isLoggedIn = !!localStorage.getItem("accessToken");
   return (
     <Navigate
-      to={isLoggedIn ? ROUTES.MAIN.HOME : ROUTES.AUTH.LANDING}
+      to={isLoggedIn() ? ROUTES.MAIN.HOME : ROUTES.AUTH.LANDING}
       replace
     />
   );
@@ -49,6 +50,7 @@ export const MainRoutes = () => (
       </Route>
 
       <Route path={ROUTES.MAIN.PROFILE_EDIT} element={<ProfileEditPage />} />
+      <Route path={ROUTES.MAIN.SETTINGS} element={<SettingsPage />} />
       <Route path={ROUTES.PLAN.DATE} element={<SelectDatePage />} />
       <Route path={ROUTES.PLAN.LOCATION} element={<SelectLocationPage />} />
       <Route path={ROUTES.PLAN.SETTING} element={<PlanSettingPage />}>
@@ -67,7 +69,6 @@ export const MainRoutes = () => (
       </Route>
 
       {/* TODO: 페이지 구현 후 Route 등록 예정 */}
-      {/* <Route path={ROUTES.MAIN.SETTINGS} element={<SettingsPage />} /> */}
       {/* <Route path={ROUTES.MAIN.CHAT} element={<ChatPage />} /> */}
       {/* <Route path={ROUTES.MAIN.NOTIFICATION} element={<NotificationPage />} /> */}
     </Route>
