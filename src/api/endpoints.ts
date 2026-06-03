@@ -82,4 +82,12 @@ export const ENDPOINTS = {
   PUSH: {
     TOKEN: "/api/v1/push/token", // FCM 토큰 등록
   },
+
+  /** 앱 설정 (Settings) */
+  SETTINGS: {
+    LIST: "/api/v1/settings", // 설정 목록 조회
+    // 설정 수정 (PATCH) - settingType, value 를 path 로 전달
+    UPDATE: (settingType: string, value: string) =>
+      `/api/v1/settings/${settingType}/${value}`,
+  },
 } as const;
