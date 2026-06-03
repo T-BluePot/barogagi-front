@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useMutationState,
+  useQueryClient,
+} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 
@@ -19,11 +23,12 @@ interface UpdateSettingVariables {
  *   → 서로 다른 항목을 동시에 토글해도 성공한 다른 항목을 덮어쓰지 않음
  * - 동시 토글 시 마지막 mutation 에서만 서버와 동기화하여 불필요한 재조회/레이스 방지
  * - HTTP 200 이지만 BaseResponse.code 가 성공(S202)이 아닌 경우를 검증
+ * - isUpdatingByType(type): 해당 설정이 현재 변경 처리 중인지 (동시 토글 시 행별로 정확)
  */
 export const useUpdateSettingMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  const mutation = useMutation({
     // 동시성 게이팅(onSettled)에서 설정 관련 mutation 만 셀 수 있도록 키 부여
     mutationKey: settingsKeys.all,
     mutationFn: async ({ type, isOn }: UpdateSettingVariables) => {
@@ -76,4 +81,19 @@ export const useUpdateSettingMutation = () => {
       }
     },
   });
+
+  // 현재 진행 중(pending)인 설정 mutation 들의 대상 type 집합
+  // - 단일 observer 의 variables 는 마지막 호출만 반영하므로,
+  //   동시 토글 시 행별 정확한 비활성화를 위해 mutation cache 에서 직접 도출
+  const pendingTypes = useMutationState({
+    filters: { mutationKey: settingsKeys.all, status: "pending" },
+    select: (m) => (m.state.variables as UpdateSettingVariables | undefined)?.type,
+  });
+  const pendingTypeSet = new Set(
+    pendingTypes.filter((type): type is SettingType => Boolean(type))
+  );
+
+  const isUpdatingByType = (type: SettingType) => pendingTypeSet.has(type);
+
+  return { ...mutation, isUpdatingByType };
 };
