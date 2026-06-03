@@ -33,7 +33,8 @@ const SettingsPage = () => {
               label={config.label}
               description={config.description}
               checked={checked}
-              disabled={isLoading || isUpdatingThis}
+              // 로드 실패 시 baseline 을 신뢰할 수 없으므로 조작 차단
+              disabled={isLoading || isError || isUpdatingThis}
               onChange={(next) => handleToggle(config.type, next)}
             />
           );
