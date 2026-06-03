@@ -19,34 +19,38 @@ const SettingsPage = () => {
   return (
     <div className="flex flex-col w-full h-full bg-gray-black text-white overflow-y-auto pb-10">
       <SettingsSection title={SETTINGS_PAGE_TEXT.NOTIFICATION_SECTION.TITLE}>
-        {NOTIFICATION_SETTINGS.map((config) => {
-          // 서버가 내려주지 않은 항목은 기본 ON (백엔드의 기본값 정책과 동일)
-          const checked = settings?.[config.type] ?? true;
+        {/* 조회 완료 전에는 상태만 노출, 성공(데이터 존재) 후에만 토글 렌더
+            → 로딩/실패 중 가짜 ON 표시 방지 */}
+        {isLoading && (
+          <p className="typo-caption text-gray-30 px-6 py-4">
+            {SETTINGS_PAGE_TEXT.LOADING}
+          </p>
+        )}
 
-          return (
-            <SettingsToggleItem
-              key={config.type}
-              label={config.label}
-              description={config.description}
-              checked={checked}
-              // 로드 실패 시 baseline 을 신뢰할 수 없으므로 조작 차단,
-              // 해당 항목이 변경 처리 중이면 행별로 정확히 비활성화
-              disabled={
-                isLoading ||
-                isError ||
-                updateSetting.isUpdatingByType(config.type)
-              }
-              onChange={(next) => handleToggle(config.type, next)}
-            />
-          );
-        })}
+        {isError && (
+          <p className="typo-caption text-alert-red px-6 py-4">
+            {SETTINGS_PAGE_TEXT.ERROR}
+          </p>
+        )}
+
+        {settings &&
+          NOTIFICATION_SETTINGS.map((config) => {
+            // 서버가 내려주지 않은 항목만 기본 ON (백엔드의 기본값 정책과 동일)
+            const checked = settings[config.type] ?? true;
+
+            return (
+              <SettingsToggleItem
+                key={config.type}
+                label={config.label}
+                description={config.description}
+                checked={checked}
+                // 백그라운드 조회 실패 시 또는 해당 항목 변경 처리 중이면 조작 차단
+                disabled={isError || updateSetting.isUpdatingByType(config.type)}
+                onChange={(next) => handleToggle(config.type, next)}
+              />
+            );
+          })}
       </SettingsSection>
-
-      {isError && (
-        <p className="typo-caption text-alert-red px-6 mt-3 text-center">
-          {SETTINGS_PAGE_TEXT.ERROR}
-        </p>
-      )}
     </div>
   );
 };

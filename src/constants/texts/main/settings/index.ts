@@ -5,6 +5,7 @@ export const SETTINGS_PAGE_TEXT = {
   NOTIFICATION_SECTION: {
     TITLE: "알림",
   },
+  LOADING: "설정을 불러오는 중...",
   ERROR: "설정을 불러오지 못했습니다.",
 };
 
