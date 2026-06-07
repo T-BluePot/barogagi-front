@@ -25,7 +25,7 @@ export const useLoginMutation = () => {
       // 인증 완료 후 FCM 토큰 발급/동기화 (fire-and-forget)
       void syncFcmToken();
 
-      navigate(ROUTES.MAIN.HOME);
+      navigate(ROUTES.MAIN.HOME, { replace: true });
     },
 
     onError: () => {
