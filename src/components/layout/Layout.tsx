@@ -12,6 +12,7 @@ import CommonConfirmModal from "../common/modal/common-modal/CommonConfirmModal"
 // === others ===
 import { useHeaderConfig } from "@/hooks/useHeaderConfig";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
+import { useHardwareBackExit } from "@/hooks/useHardwareBackExit";
 import { useNavigate } from "react-router-dom";
 
 interface LayoutProps {
@@ -19,6 +20,7 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children }: LayoutProps) => {
+  useHardwareBackExit(); // 메인 하드웨어 백 더블탭 종료
   const headerConfig = useHeaderConfig();
   const navigate = useNavigate();
   const { goBack, goToLanding, goToProfile } = useAppNavigation();
