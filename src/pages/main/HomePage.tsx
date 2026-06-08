@@ -40,9 +40,23 @@ const HomePage = () => {
     ? regionsData.data
     : [];
 
+  // 인사 문구 결정용: 다가오는 일정 존재 여부 / 인기 지역명(1순위)
+  const hasUpcomingSchedule = scheduleData?.userInfoResponseDTO != null;
+  const topRegion = popularRegions[0];
+  const popularRegionName = topRegion
+    ? topRegion.regionLevel4 ||
+      topRegion.regionLevel3 ||
+      topRegion.regionLevel2 ||
+      topRegion.regionLevel1
+    : undefined;
+
   return (
     <div className="flex flex-col h-full">
-      <HomeGreetingSection userName={userData?.nickName} />
+      <HomeGreetingSection
+        userName={userData?.nickName}
+        hasUpcomingSchedule={hasUpcomingSchedule}
+        popularRegionName={popularRegionName}
+      />
       <HomeContentsSection
         scheduleData={scheduleData ?? null}
         isScheduleLoading={isScheduleLoading}
