@@ -152,6 +152,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           planRegistResDTOList: convertedPlans,
         });
         setPlanList(convertedPlans);
+
+        // 서버가 내려준 메모를 로컬 입력 state로 복원 (없으면 빈 맵)
+        const initialNotes: PlanNoteMap = {};
+        convertedPlans.forEach((p) => {
+          if (p.planNum != null && p.planMemo != null) {
+            initialNotes[p.planNum] = p.planMemo;
+          }
+        });
+        setPlanNotes(initialNotes);
       } catch (err) {
         if (ignore) return;
         if (err instanceof AxiosError) {
@@ -299,6 +308,44 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   const handleChangeNote = (planNum: number, nextValue: string) => {
     setPlanNotes((prev) => ({ ...prev, [planNum]: nextValue }));
+  };
+
+  // 빠른 연속 commit 시 stale 롤백을 무시하기 위한 토큰 (scheduleName과 동일 패턴)
+  const noteCommitTokenRef = useRef(0);
+
+  // 메모 입력 확정(포커스 아웃 / 모바일 자판 확인) 시점에 변경분이 있으면
+  // 해당 plan의 planMemo를 갱신하고 detail에서만 서버에 반영
+  // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
+  const handleCommitNote = (planNum: number, nextValue: string) => {
+    if (!scheduleResult) return;
+    const target = planList.find((p) => p.planNum === planNum);
+    if (!target) return;
+    if (nextValue === (target.planMemo ?? "")) return;
+
+    const prevPlans = planList;
+    const prevSchedule = scheduleResult;
+
+    const updatedPlans = planList.map((p) =>
+      p.planNum === planNum ? { ...p, planMemo: nextValue } : p
+    );
+    const updatedSchedule = {
+      ...scheduleResult,
+      planRegistResDTOList: updatedPlans,
+    };
+    setPlanList(updatedPlans);
+    setScheduleResult(updatedSchedule);
+
+    if (isDetail) {
+      const myToken = ++noteCommitTokenRef.current;
+      updateMutation.mutate(updatedSchedule, {
+        onError: () => {
+          // 더 새로운 commit이 이미 발사됐으면 이 롤백은 stale이므로 무시
+          if (myToken !== noteCommitTokenRef.current) return;
+          setPlanList(prevPlans);
+          setScheduleResult(prevSchedule);
+        },
+      });
+    }
   };
 
   // ----- 계획 제목 수정 모달 -----
@@ -454,6 +501,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             noteValue: planNotes[editDraft.planNum] ?? "",
             onChangeNote: (next: string) =>
               handleChangeNote(editDraft.planNum, next),
+            onCommitNote: (next: string) =>
+              handleCommitNote(editDraft.planNum, next),
           }}
         />
       )}
