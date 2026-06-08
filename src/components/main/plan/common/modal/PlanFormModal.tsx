@@ -58,6 +58,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
           label={info.note}
           value={info.noteValue}
           onChange={info.onChangeNote}
+          onCommit={info.onCommitNote}
         />
       )}
     </BottomModalLayout>

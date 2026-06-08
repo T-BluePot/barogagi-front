@@ -56,6 +56,8 @@ interface EditModalInfo extends ModalBaseInfo {
   note?: string;
   noteValue: string;
   onChangeNote: (note: string) => void;
+  // 포커스 아웃 / 모바일 자판 확인 시점에 메모를 서버에 반영
+  onCommitNote?: (note: string) => void;
 }
 
 /**

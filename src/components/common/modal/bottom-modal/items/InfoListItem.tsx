@@ -41,6 +41,7 @@ interface InputInfoItemProps {
 
   value?: string; // input에 바인딩할 값
   onChange?: (next: string) => void; // input 값 변경 핸들러
+  onCommit?: (next: string) => void; // 입력 확정(blur / 모바일 자판 확인) 핸들러
 }
 
 export const InputInfoItem = ({
@@ -48,6 +49,7 @@ export const InputInfoItem = ({
   label,
   value,
   onChange,
+  onCommit,
 }: InputInfoItemProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -63,9 +65,18 @@ export const InputInfoItem = ({
     setIsEditing(true);
   };
 
-  // 입력 종료 (blur)
-  const handleExitEdit = () => {
+  // 입력 종료 (blur) → 변경분 확정
+  const handleExitEdit = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsEditing(false);
+    onCommit?.(e.target.value);
+  };
+
+  // 모바일 자판의 확인(엔터) → blur 유발 → handleExitEdit에서 commit
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
   };
 
   return (
@@ -86,6 +97,7 @@ export const InputInfoItem = ({
           onChange={(e) => onChange?.(e.target.value)}
           maxLength={40}
           onBlur={handleExitEdit}
+          onKeyDown={handleKeyDown}
           autoFocus
         />
       )}
