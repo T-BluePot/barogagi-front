@@ -89,6 +89,8 @@ export interface PlanRegistResDTO {
   planLink?: string;
   planDescription?: string;
   planAddress?: string;
+  /** 사용자가 입력한 메모 (일정 수정 시에만 전송, 생성에는 없음) */
+  planMemo?: string;
   regionNm?: string;
   regionNum?: number;
   imageLink?: string;
@@ -155,6 +157,7 @@ export interface PlanDetailVO {
   planLink: string | null;
   planDescription?: string;
   planAddress?: string; // 서버가 상세 응답에 내려주는 지번주소 (regionVOList 미해소 시 표시용)
+  planMemo?: string; // 사용자가 입력한 메모 (서버가 내려주면 복원용)
   startTime: string;
   endTime: string;
   itemNum: number;
