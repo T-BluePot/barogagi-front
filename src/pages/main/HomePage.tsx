@@ -56,6 +56,7 @@ const HomePage = () => {
         userName={userData?.nickName}
         hasUpcomingSchedule={hasUpcomingSchedule}
         popularRegionName={popularRegionName}
+        isLoading={isScheduleLoading || isRegionsLoading}
       />
       <HomeContentsSection
         scheduleData={scheduleData ?? null}

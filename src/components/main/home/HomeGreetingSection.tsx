@@ -5,12 +5,14 @@ interface Props {
   userName?: string;
   hasUpcomingSchedule: boolean;
   popularRegionName?: string;
+  isLoading?: boolean;
 }
 
 const HomeGreetingSection = ({
   userName,
   hasUpcomingSchedule,
   popularRegionName,
+  isLoading,
 }: Props) => {
   return (
     <div className="flex flex-col w-full px-6 items-baseline bg-gray-black">
@@ -20,6 +22,7 @@ const HomeGreetingSection = ({
           userName: userName ?? "핏플",
           hasUpcomingSchedule,
           popularRegionName,
+          isLoading,
         })}
       />
     </div>
