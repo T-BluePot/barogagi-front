@@ -310,44 +310,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setPlanNotes((prev) => ({ ...prev, [planNum]: nextValue }));
   };
 
-  // 빠른 연속 commit 시 stale 롤백을 무시하기 위한 토큰 (scheduleName과 동일 패턴)
-  const noteCommitTokenRef = useRef(0);
-
-  // 메모 입력 확정(포커스 아웃 / 모바일 자판 확인) 시점에 변경분이 있으면
-  // 해당 plan의 planMemo를 갱신하고 detail에서만 서버에 반영
-  // 옵티미스틱 업데이트: 실패 시 이전 상태로 롤백
-  const handleCommitNote = (planNum: number, nextValue: string) => {
-    if (!scheduleResult) return;
-    const target = planList.find((p) => p.planNum === planNum);
-    if (!target) return;
-    if (nextValue === (target.planMemo ?? "")) return;
-
-    const prevPlans = planList;
-    const prevSchedule = scheduleResult;
-
-    const updatedPlans = planList.map((p) =>
-      p.planNum === planNum ? { ...p, planMemo: nextValue } : p
-    );
-    const updatedSchedule = {
-      ...scheduleResult,
-      planRegistResDTOList: updatedPlans,
-    };
-    setPlanList(updatedPlans);
-    setScheduleResult(updatedSchedule);
-
-    if (isDetail) {
-      const myToken = ++noteCommitTokenRef.current;
-      updateMutation.mutate(updatedSchedule, {
-        onError: () => {
-          // 더 새로운 commit이 이미 발사됐으면 이 롤백은 stale이므로 무시
-          if (myToken !== noteCommitTokenRef.current) return;
-          setPlanList(prevPlans);
-          setScheduleResult(prevSchedule);
-        },
-      });
-    }
-  };
-
   // ----- 계획 제목 수정 모달 -----
   const [isNameModalOpen, setIsNameModalOpen] = useState<boolean>(false);
 
@@ -440,6 +402,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                 const originalPlan = planList.find(
                   (p) => p.planNum === editDraft.planNum
                 );
+                // 메모: 입력값과 원본을 빈 문자열 기준으로 비교 (지움도 변경으로 인식)
+                const nextMemo = planNotes[editDraft.planNum] ?? "";
+                const memoChanged =
+                  !!originalPlan && nextMemo !== (originalPlan.planMemo ?? "");
                 const hasChanged =
                   !!originalPlan &&
                   (editDraft.plan.planNm !== (originalPlan.planNm ?? "") ||
@@ -449,7 +415,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                     editDraft.place.placeUrl !==
                       (originalPlan.planLink ?? "") ||
                     editDraft.place.address !==
-                      (originalPlan.planAddress ?? originalPlan.regionNm ?? ""));
+                      (originalPlan.planAddress ?? originalPlan.regionNm ?? "") ||
+                    memoChanged);
 
                 if (hasChanged) {
                   const prevPlans = planList;
@@ -465,6 +432,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                           regionNm: editDraft.place.placeNm,
                           planLink: editDraft.place.placeUrl,
                           planAddress: editDraft.place.address,
+                          // 지운 경우 ""로 전송해 서버가 메모 없음을 명확히 인식하도록 함
+                          planMemo: nextMemo,
                         }
                       : p
                   );
@@ -501,8 +470,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             noteValue: planNotes[editDraft.planNum] ?? "",
             onChangeNote: (next: string) =>
               handleChangeNote(editDraft.planNum, next),
-            onCommitNote: (next: string) =>
-              handleCommitNote(editDraft.planNum, next),
           }}
         />
       )}
