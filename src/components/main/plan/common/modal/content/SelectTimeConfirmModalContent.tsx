@@ -22,6 +22,25 @@ const MINUTES = Array.from({ length: 60 }, (_, i) =>
   String(i).padStart(2, "0")
 );
 
+const pad2 = (v: string) => v.padStart(2, "0");
+
+/**
+ * 시(時)가 11↔12 경계를 넘으면 오전/오후를 자동 전환한다.
+ * (오전11 → 오후12, 오후11 → 오전12 처럼 정오/자정을 지나는 지점에서 뒤집힘)
+ */
+const applyHourChange = (time: TimeValue, newHour: string): TimeValue => {
+  const prev = pad2(time.hour);
+  const next = pad2(newHour);
+  const crossesNoon =
+    (prev === "11" && next === "12") || (prev === "12" && next === "11");
+  const period = crossesNoon
+    ? time.period === "오전"
+      ? "오후"
+      : "오전"
+    : time.period;
+  return { ...time, hour: newHour, period };
+};
+
 export const SelectTimeConfirmModalContent = ({
   initialStartTime = DEFAULT_START_TIME,
   initialEndTime = DEFAULT_END_TIME,
@@ -31,13 +50,19 @@ export const SelectTimeConfirmModalContent = ({
   const [endTime, setEndTime] = useState<TimeValue>(initialEndTime);
 
   const handleStartTimeChange = (field: keyof TimeValue, value: string) => {
-    const newStartTime = { ...startTime, [field]: value };
+    const newStartTime =
+      field === "hour"
+        ? applyHourChange(startTime, value)
+        : { ...startTime, [field]: value };
     setStartTime(newStartTime);
     onChangeTime?.(newStartTime, endTime);
   };
 
   const handleEndTimeChange = (field: keyof TimeValue, value: string) => {
-    const newEndTime = { ...endTime, [field]: value };
+    const newEndTime =
+      field === "hour"
+        ? applyHourChange(endTime, value)
+        : { ...endTime, [field]: value };
     setEndTime(newEndTime);
     onChangeTime?.(startTime, newEndTime);
   };
