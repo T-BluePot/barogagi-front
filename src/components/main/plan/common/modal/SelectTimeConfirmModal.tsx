@@ -13,10 +13,15 @@ interface SelectTimeConfirmModalProps {
   onCancel: () => void;
 }
 
-// props로 시간이 전달되지 않았을 때 사용할 기본값
-const DEFAULT_TIME: TimeValue = {
+// props로 시간이 전달되지 않았을 때 사용할 기본값 (시작 오전 9시 / 종료 오전 10시)
+const DEFAULT_START_TIME: TimeValue = {
   period: "오전",
-  hour: "07",
+  hour: "09",
+  minute: "00",
+};
+const DEFAULT_END_TIME: TimeValue = {
+  period: "오전",
+  hour: "10",
   minute: "00",
 };
 
@@ -26,8 +31,8 @@ const DEFAULT_TIME: TimeValue = {
  */
 export const SelectTimeConfirmModal = ({
   isOpen,
-  initialStartTime = DEFAULT_TIME,
-  initialEndTime = DEFAULT_TIME,
+  initialStartTime = DEFAULT_START_TIME,
+  initialEndTime = DEFAULT_END_TIME,
   onConfirm,
   onCancel,
 }: SelectTimeConfirmModalProps) => {
