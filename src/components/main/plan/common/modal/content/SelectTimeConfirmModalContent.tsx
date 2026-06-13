@@ -1,6 +1,7 @@
-import { useState } from "react";
 import { validateHourInput, validateMinuteInput } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
+import { useState } from "react";
+import { ScrollableTimeField } from "./ScrollableTimeField";
 
 interface SelectTimeConfirmModalContentProps {
   initialStartTime?: TimeValue;
@@ -11,6 +12,15 @@ interface SelectTimeConfirmModalContentProps {
 /** props로 시간이 전달되지 않았을 때 사용할 기본값 (시작 오전 9시 / 종료 오전 10시) */
 const DEFAULT_START_TIME: TimeValue = { period: "오전", hour: "09", minute: "00" };
 const DEFAULT_END_TIME: TimeValue = { period: "오전", hour: "10", minute: "00" };
+
+const PERIODS = ["오전", "오후"];
+// 스크롤 이동/검증 모두 2자리 0패딩 문자열 기준
+const HOURS = Array.from({ length: 12 }, (_, i) =>
+  String(i + 1).padStart(2, "0")
+);
+const MINUTES = Array.from({ length: 60 }, (_, i) =>
+  String(i).padStart(2, "0")
+);
 
 export const SelectTimeConfirmModalContent = ({
   initialStartTime = DEFAULT_START_TIME,
@@ -32,16 +42,6 @@ export const SelectTimeConfirmModalContent = ({
     onChangeTime?.(startTime, newEndTime);
   };
 
-  const togglePeriod = (type: "start" | "end") => {
-    if (type === "start") {
-      const newPeriod = startTime.period === "오전" ? "오후" : "오전";
-      handleStartTimeChange("period", newPeriod);
-    } else {
-      const newPeriod = endTime.period === "오전" ? "오후" : "오전";
-      handleEndTimeChange("period", newPeriod);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center gap-4 py-4">
       {/* 타이틀 */}
@@ -50,40 +50,31 @@ export const SelectTimeConfirmModalContent = ({
       </h2>
 
       {/* 시작 시간 */}
-      <div className="flex items-center justify-center gap-4 bg-gray-5 rounded-xl px-6 py-4 w-full">
-        <button
-          type="button"
-          onClick={() => togglePeriod("start")}
-          className="typo-title text-gray-black min-w-15 cursor-pointer"
-        >
-          {startTime.period}
-        </button>
-        <input
-          type="text"
-          value={startTime.hour}
-          onChange={(e) => {
-            const validated = validateHourInput(e.target.value);
-            if (validated !== null) {
-              handleStartTimeChange("hour", validated);
-            }
-          }}
-          className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
-          maxLength={2}
-          placeholder="00"
+      <div className="flex items-center justify-center gap-4 bg-gray-5 rounded-xl px-6 py-3 w-full">
+        <ScrollableTimeField
+          value={startTime.period}
+          items={PERIODS}
+          wrap={false}
+          ariaLabel="시작 오전 오후"
+          widthClass="w-15"
+          onChange={(v) => handleStartTimeChange("period", v)}
         />
-        <span className="typo-title text-gray-black">:</span>
-        <input
-          type="text"
+        <ScrollableTimeField
+          value={startTime.hour}
+          items={HOURS}
+          editable
+          validate={validateHourInput}
+          ariaLabel="시작 시"
+          onChange={(v) => handleStartTimeChange("hour", v)}
+        />
+        <span className="text-[18px] font-semibold text-gray-black">:</span>
+        <ScrollableTimeField
           value={startTime.minute}
-          onChange={(e) => {
-            const validated = validateMinuteInput(e.target.value);
-            if (validated !== null) {
-              handleStartTimeChange("minute", validated);
-            }
-          }}
-          className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
-          maxLength={2}
-          placeholder="00"
+          items={MINUTES}
+          editable
+          validate={validateMinuteInput}
+          ariaLabel="시작 분"
+          onChange={(v) => handleStartTimeChange("minute", v)}
         />
       </div>
 
@@ -91,40 +82,31 @@ export const SelectTimeConfirmModalContent = ({
       <span className="typo-body text-gray-60">부터</span>
 
       {/* 종료 시간 */}
-      <div className="flex items-center justify-center gap-4 bg-gray-5 rounded-xl px-6 py-4 w-full">
-        <button
-          type="button"
-          onClick={() => togglePeriod("end")}
-          className="typo-title text-gray-black min-w-15 cursor-pointer"
-        >
-          {endTime.period}
-        </button>
-        <input
-          type="text"
-          value={endTime.hour}
-          onChange={(e) => {
-            const validated = validateHourInput(e.target.value);
-            if (validated !== null) {
-              handleEndTimeChange("hour", validated);
-            }
-          }}
-          className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
-          maxLength={2}
-          placeholder="00"
+      <div className="flex items-center justify-center gap-4 bg-gray-5 rounded-xl px-6 py-3 w-full">
+        <ScrollableTimeField
+          value={endTime.period}
+          items={PERIODS}
+          wrap={false}
+          ariaLabel="종료 오전 오후"
+          widthClass="w-15"
+          onChange={(v) => handleEndTimeChange("period", v)}
         />
-        <span className="typo-title text-gray-black">:</span>
-        <input
-          type="text"
+        <ScrollableTimeField
+          value={endTime.hour}
+          items={HOURS}
+          editable
+          validate={validateHourInput}
+          ariaLabel="종료 시"
+          onChange={(v) => handleEndTimeChange("hour", v)}
+        />
+        <span className="text-[18px] font-semibold text-gray-black">:</span>
+        <ScrollableTimeField
           value={endTime.minute}
-          onChange={(e) => {
-            const validated = validateMinuteInput(e.target.value);
-            if (validated !== null) {
-              handleEndTimeChange("minute", validated);
-            }
-          }}
-          className="typo-title text-gray-black w-12 text-center bg-transparent outline-none"
-          maxLength={2}
-          placeholder="00"
+          items={MINUTES}
+          editable
+          validate={validateMinuteInput}
+          ariaLabel="종료 분"
+          onChange={(v) => handleEndTimeChange("minute", v)}
         />
       </div>
     </div>
