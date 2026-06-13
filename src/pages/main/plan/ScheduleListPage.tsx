@@ -75,17 +75,12 @@ const ScheduleListPage = () => {
   const { clearRegions } = useRegionSelectionStore();
   const { openConfirmModal } = useConfirmModalStore();
 
-  const hasStoreDraft =
-    draft.planRegistReqDTOList.length > 0 ||
-    !!draft.scheduleNm ||
-    !!draft.startDate ||
-    !!draft.endDate ||
-    !!draft.comment ||
-    draft.scheduleTagRegistReqDTOList.length > 0 ||
-    draft.scheduleRegionRegistReqDTOList.length > 0;
+  // 이어하기(resume) 대상은 "두 번째 지역 선택 단계에서 지역을 고른 시점"부터.
+  // 날짜만 정한 첫 페이지 이탈은 이어하기 대상이 아님 → 항상 새로 시작.
+  const hasResumableDraft = draft.scheduleRegionRegistReqDTOList.length > 0;
 
   const handleAddSchedule = () => {
-    if (hasStoreDraft) {
+    if (hasResumableDraft) {
       openConfirmModal(
         {
           title: "이어서 만드시겠습니까?",
@@ -101,6 +96,9 @@ const ScheduleListPage = () => {
         }
       );
     } else {
+      // 지역 선택 전 단계(날짜 등)는 저장/복원하지 않고 깨끗한 상태로 시작
+      reset();
+      clearRegions();
       navigate(ROUTES.PLAN.DATE);
     }
   };

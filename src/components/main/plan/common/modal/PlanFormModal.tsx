@@ -41,16 +41,18 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
         }}
         onClick={info.onClickTime}
       />
-      <CommonInfoItem
-        placeholder="장소 추가"
-        label={place}
-        icon={{
-          state: place ? "default" : "placeholder",
-          type: "key",
-          name: "Place",
-        }}
-        onClick={info.onClickAddress}
-      />
+      {!info.hideAddress && (
+        <CommonInfoItem
+          placeholder="장소 추가"
+          label={place}
+          icon={{
+            state: place ? "default" : "placeholder",
+            type: "key",
+            name: "Place",
+          }}
+          onClick={info.onClickAddress}
+        />
+      )}
       {create && <TagInfoItem tags={info.tags} onClick={info.onClickTags} />}
       {edit && (
         <InputInfoItem
