@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
+import { enforceTimeOrder } from "@/utils/date";
 import {
   SelectTimeConfirmModalContent,
   type TimeValue,
@@ -106,7 +107,9 @@ export const SelectTimeConfirmModal = ({
   };
 
   const handleConfirm = () => {
-    onConfirm(startTime, endTime);
+    // settle 보정 전에 확인을 눌러도 항상 종료 > 시작이 보장되도록 최종 보정
+    const { start, end } = enforceTimeOrder(startTime, endTime, "start");
+    onConfirm(start, end);
   };
 
   if (!shouldRender) return null;

@@ -92,3 +92,59 @@ export const hhmmToTimeValue = (timeStr: string): TimeValue => {
   if (hour === 0) hour = 12;
   return { period, hour: String(hour).padStart(2, "0"), minute };
 };
+
+// === 시작/종료 시간 순서 보정 ===
+
+/** 하루의 마지막 분 (23:59) */
+const MAX_MINUTES = 24 * 60 - 1;
+
+/** TimeValue → 당일 누적 분 (0~1439) */
+const timeValueToMinutes = (t: TimeValue): number => {
+  const [hour, minute] = timeValueToHHmm(t).split(":").map(Number);
+  return hour * 60 + minute;
+};
+
+/** 당일 누적 분 → TimeValue (0~1439 범위로 클램프) */
+const minutesToTimeValue = (minutes: number): TimeValue => {
+  const clamped = Math.min(MAX_MINUTES, Math.max(0, minutes));
+  const hour = Math.floor(clamped / 60);
+  const minute = clamped % 60;
+  return hhmmToTimeValue(
+    `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+  );
+};
+
+export interface TimeRange {
+  start: TimeValue;
+  end: TimeValue;
+}
+
+/**
+ * 종료 시간이 시작 시간보다 앞서지 않도록(종료 > 시작) 보정한다.
+ * - 이미 종료 > 시작이면 그대로 반환
+ * - editedField "start": 종료 = 시작 + 1시간 (당일을 넘기면 종료=23:59, 시작은 23:58로 클램프)
+ * - editedField "end":   시작 = 종료 - 1시간 (자정 이전이면 시작=00:00, 종료는 00:01로 클램프)
+ * - 양 끝 모두 최소 1분 간격을 유지 (시작 = 종료 불허)
+ */
+export const enforceTimeOrder = (
+  start: TimeValue,
+  end: TimeValue,
+  editedField: "start" | "end"
+): TimeRange => {
+  const startMin = timeValueToMinutes(start);
+  const endMin = timeValueToMinutes(end);
+
+  if (endMin > startMin) return { start, end };
+
+  if (editedField === "start") {
+    const newEnd = Math.min(startMin + 60, MAX_MINUTES);
+    // 시작이 하루 끝이라 1시간을 못 더하면 시작을 한 칸 내려 1분 간격 확보
+    const newStart = newEnd <= startMin ? newEnd - 1 : startMin;
+    return { start: minutesToTimeValue(newStart), end: minutesToTimeValue(newEnd) };
+  }
+
+  const newStart = Math.max(endMin - 60, 0);
+  // 종료가 자정이라 1시간을 못 빼면 종료를 한 칸 올려 1분 간격 확보
+  const newEnd = newStart >= endMin ? newStart + 1 : endMin;
+  return { start: minutesToTimeValue(newStart), end: minutesToTimeValue(newEnd) };
+};
