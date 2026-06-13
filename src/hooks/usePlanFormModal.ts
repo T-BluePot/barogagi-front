@@ -64,6 +64,9 @@ export const usePlanFormModal = (
   const { openConfirmModal } = useConfirmModalStore();
   const { openAlertModal } = useAlertModalStore();
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
+  // 지역이 1개뿐이면 블록마다 지역을 고를 이유가 없으므로(이미 확정)
+  // 해당 지역을 자동 할당하고 선택 UI는 숨긴다. 2개 이상이면 다시 선택 가능.
+  const singleRegion = selectedRegions.length === 1 ? selectedRegions[0] : null;
   const { validatePlanTime } = usePlanTimeValidation(items);
   const {
     addAIPlan,
@@ -98,6 +101,13 @@ export const usePlanFormModal = (
       planNm: selected.option.itemNm,
       categoryNum,
       itemNum: selected.option.itemNum,
+      // 지역이 1개면 선택 단계 없이 해당 지역을 바로 채워둔다
+      ...(singleRegion
+        ? {
+            address: singleRegion.regionNm,
+            regionRegistReqDTOList: [{ regionNum: singleRegion.regionNum }],
+          }
+        : {}),
     });
     setIsCategoryOpen(false);
     setIsPlanFormOpen(true);
@@ -464,6 +474,8 @@ export const usePlanFormModal = (
     }
 
     if (target.source === "AI") {
+      // 지역이 1개뿐이면 변경할 이유가 없으므로 지역 선택 모달을 열지 않음
+      if (singleRegion) return;
       setRegionTargetId(id);
       setIsRegionOpen(true);
     } else {
@@ -621,6 +633,8 @@ export const usePlanFormModal = (
           onClickTime: handlePlanFormTimeClick,
           onClickAddress: handlePlanFormAddressClick,
           onClickTags: handlePlanFormTagsClick,
+          // 지역이 1개뿐이면 지역(장소) 선택 항목 자체를 숨김
+          hideAddress: !!singleRegion,
         }
       : {
           mode: "UserCustom" as const,
