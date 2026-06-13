@@ -3,7 +3,7 @@
 이 문서는 **fitpl-front 웹앱(Vite + React)** 을 React Native WebView로 감싸기 위한 양측(웹/RN) 작업 명세입니다.
 
 > 타깃 플랫폼: **Android only** (현 단계)
-> OAuth 로그인 흐름은 백엔드와 별도 합의되어 본 문서 범위 외
+> OAuth 소셜 로그인(인앱 Custom Tab) 흐름은 **§10** 참고
 > iOS 확장 시 고려 사항은 **부록 A** 참고
 
 각 섹션은 다음 구조로 정리됩니다:
@@ -680,9 +680,89 @@ iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제�
 
 ---
 
+## 10. OAuth 소셜 로그인 (인앱 Custom Tab)
+
+### 문제
+
+- 웹이 로그인 버튼에서 `window.location.href = authorizeUrl`로 **페이지 이동**하면, WebView가 외부 호스트(`nid.naver.com` 등)로 navigate → §4-B `shouldAllowNavigation`이 외부로 판정 → **시스템 크롬으로 새어나감**.
+- 그러면 OAuth가 앱 밖(외부 크롬)에서 진행되고, 끝나고 돌아오는 `barogagiapp://` 콜백 딥링크를 앱이 잡기 어려워짐(콜백 유실).
+- 구글은 WebView 내장(embedded) OAuth를 `disallowed_useragent`로 차단하기도 해, WebView 직접 로딩도 답이 아님.
+
+→ 해법: 외부 크롬이 아니라 **인앱 Custom Tab**(`InAppBrowser.openAuth`)으로 열고, `redirectUrl` 딥링크를 직접 리슨해 콜백 URL을 promise로 돌려준다.
+
+### 웹에서 완료한 작업
+
+**파일**:
+- [`src/utils/auth/startOAuthLogin.ts`](../src/utils/auth/startOAuthLogin.ts) (신설)
+- [`src/components/auth/landing/LoginButtonSection.tsx`](../src/components/auth/landing/LoginButtonSection.tsx)
+- [`src/utils/bridgeStorage.ts`](../src/utils/bridgeStorage.ts) — `loginWithOAuth` 타입 추가
+
+로그인 버튼 → `getOAuthLink(type)`로 authorize URL 조회 후:
+
+```ts
+// 네이티브 앱: 인앱 Custom Tab으로 열고 콜백 URL을 받아 쿼리스트링만 추출
+if (typeof window.BarogagiApp?.loginWithOAuth === "function") {
+  const callbackUrl = await window.BarogagiApp.loginWithOAuth(authorizeUrl);
+  if (!callbackUrl) return;                  // 사용자가 닫음(취소)
+  const q = callbackUrl.indexOf("?");
+  const search = q >= 0 ? callbackUrl.slice(q) : ""; // ? 없으면 빈 문자열 (실구현과 동일)
+  navigate(`/auth/oauth/callback${search}`); // 기존 콜백 페이지가 토큰 처리·분기
+}
+// 브라우저: 표준 window.location.href 리다이렉트 (fallback)
+```
+
+- 받은 콜백 파라미터는 **기존 웹 콜백 페이지**([`OAuthCallbackPage`](../src/pages/auth/oauth/OAuthCallbackPage.tsx))가 그대로 처리 → 토큰 저장·FCM 동기화·신규/기존 회원 분기 로직 일원화.
+- 웹은 콜백 **host(`auth`/`oauth`)를 보지 않고 쿼리스트링만** 읽음 → 백엔드/앱의 host 합의와 무관하게 동작.
+
+### RN에서 해야 할 일
+
+`window.BarogagiApp`에 `loginWithOAuth` 메서드 노출:
+
+```ts
+loginWithOAuth(authorizeUrl: string): Promise<string | null>;
+```
+
+```ts
+import InAppBrowser from "react-native-inappbrowser-reborn";
+
+const REDIRECT_SCHEME = "barogagiapp://oauth/callback"; // ⚠️ 백엔드 302 타깃과 정확히 일치(scheme+host+path)
+
+async function loginWithOAuth(authorizeUrl: string): Promise<string | null> {
+  if (!(await InAppBrowser.isAvailable())) {
+    // Custom Tab 불가 단말 → 외부 브라우저 fallback (딥링크가 앱으로 돌아오도록 매니페스트 intent-filter 필요)
+    Linking.openURL(authorizeUrl);
+    return null;
+  }
+  const result = await InAppBrowser.openAuth(authorizeUrl, REDIRECT_SCHEME, {
+    ephemeralWebSession: false,
+    showTitle: false,
+    enableUrlBarHiding: true,
+    enableDefaultShare: false,
+  });
+  // 성공: 콜백 딥링크 URL을 그대로 반환 → 웹이 쿼리스트링 파싱
+  if (result.type === "success" && result.url) return result.url;
+  return null; // cancel/dismiss
+}
+```
+
+⚠️ **주의 — 이 메서드는 §7의 3초 timeout RPC를 쓰면 안 됨.** 사용자가 OAuth 화면에서 로그인하는 동안 수 초~수십 초가 걸리므로, `rpc()`의 3초 timeout에 걸려 끊긴다. `getData` 등과 **별도 분기**로 처리하거나, `loginWithOAuth` 전용으로 timeout 없이(또는 충분히 길게) 구현할 것.
+
+### RN 측 체크리스트
+
+- [ ] `react-native-inappbrowser-reborn` 설치 + **네이티브 모듈이므로 앱 재빌드**(JS 리로드만으론 미반영)
+- [ ] `window.BarogagiApp.loginWithOAuth` inject (§7 injection 스크립트에 추가)
+- [ ] **3초 timeout 우회** — 일반 RPC와 다른 경로로 처리
+- [ ] `openAuth`의 `redirectUrl`이 **백엔드 302 타깃과 scheme+host+path 정확히 일치** (현재 합의값: `barogagiapp://oauth/callback`)
+- [ ] AndroidManifest intent-filter(`scheme=barogagiapp`, `host=oauth`)가 동일 값으로 등록
+- [ ] `result.type === 'success'`일 때 `result.url`을 통째로 반환 (웹이 토큰 파싱)
+- [ ] cancel/dismiss 시 `null` 반환 (웹은 아무 동작 안 함)
+
+---
+
 ## 변경 이력
 
 | 날짜       | 내용                                                                                                                                         | 작성자            |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
 | 2026-05-15 | 최초 작성 (Android-only 기준)                                                                                                                | fitpl-front 팀 |
 | 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | fitpl-front 팀 |
+| 2026-06-13 | OAuth 소셜 로그인 인앱 Custom Tab 흐름 추가(§10): 웹 `loginWithOAuth` 브릿지 호출 전환. RN `openAuth` 구현 명세·3초 timeout 우회 주의 명시         | fitpl-front 팀 |
