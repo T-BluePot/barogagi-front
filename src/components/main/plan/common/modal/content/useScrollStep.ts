@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface UseScrollStepParams {
   /** 순환/이동에 사용할 값 목록 (현재 값과 동일한 포맷이어야 함) */
@@ -28,9 +28,17 @@ export const useScrollStep = ({
 }: UseScrollStepParams) => {
   const lastYRef = useRef(0);
   const accRef = useRef(0);
+  // 한 번의 드래그 이벤트에서 여러 칸을 이동할 때, 직전 step의 결과를 이어받기 위해
+  // 현재 인덱스를 ref로 들고 있는다 (클로저의 value는 리렌더 전까지 갱신되지 않으므로).
+  const indexRef = useRef(items.indexOf(value));
+
+  // 외부에서 value가 바뀌면(리렌더 후) 인덱스를 다시 맞춰준다.
+  useEffect(() => {
+    indexRef.current = items.indexOf(value);
+  }, [items, value]);
 
   const step = (dir: 1 | -1) => {
-    const index = items.indexOf(value);
+    const index = indexRef.current;
     if (index === -1) return;
     let next = index + dir;
     if (wrap) {
@@ -38,7 +46,10 @@ export const useScrollStep = ({
     } else {
       next = Math.min(items.length - 1, Math.max(0, next));
     }
-    if (next !== index) onChange(items[next]);
+    if (next !== index) {
+      indexRef.current = next;
+      onChange(items[next]);
+    }
   };
 
   return {
