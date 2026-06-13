@@ -63,9 +63,17 @@ export const InputInfoItem = ({
     setIsEditing(true);
   };
 
-  // 입력 종료 (blur)
+  // 입력 종료 (blur). 실제 메모 저장은 모달 닫힘 시점에 일괄 처리됨
   const handleExitEdit = () => {
     setIsEditing(false);
+  };
+
+  // 모바일 자판의 확인(엔터) → blur 유발 → 입력 모드 종료
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
   };
 
   return (
@@ -86,6 +94,7 @@ export const InputInfoItem = ({
           onChange={(e) => onChange?.(e.target.value)}
           maxLength={40}
           onBlur={handleExitEdit}
+          onKeyDown={handleKeyDown}
           autoFocus
         />
       )}

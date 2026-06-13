@@ -152,6 +152,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           planRegistResDTOList: convertedPlans,
         });
         setPlanList(convertedPlans);
+
+        // 서버가 내려준 메모를 로컬 입력 state로 복원 (없으면 빈 맵)
+        const initialNotes: PlanNoteMap = {};
+        convertedPlans.forEach((p) => {
+          if (p.planNum != null && p.planMemo != null) {
+            initialNotes[p.planNum] = p.planMemo;
+          }
+        });
+        setPlanNotes(initialNotes);
       } catch (err) {
         if (ignore) return;
         if (err instanceof AxiosError) {
@@ -393,6 +402,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                 const originalPlan = planList.find(
                   (p) => p.planNum === editDraft.planNum
                 );
+                // 메모: 입력값과 원본을 빈 문자열 기준으로 비교 (지움도 변경으로 인식)
+                const nextMemo = planNotes[editDraft.planNum] ?? "";
+                const memoChanged =
+                  !!originalPlan && nextMemo !== (originalPlan.planMemo ?? "");
                 const hasChanged =
                   !!originalPlan &&
                   (editDraft.plan.planNm !== (originalPlan.planNm ?? "") ||
@@ -402,7 +415,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                     editDraft.place.placeUrl !==
                       (originalPlan.planLink ?? "") ||
                     editDraft.place.address !==
-                      (originalPlan.planAddress ?? originalPlan.regionNm ?? ""));
+                      (originalPlan.planAddress ?? originalPlan.regionNm ?? "") ||
+                    memoChanged);
 
                 if (hasChanged) {
                   const prevPlans = planList;
@@ -418,6 +432,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
                           regionNm: editDraft.place.placeNm,
                           planLink: editDraft.place.placeUrl,
                           planAddress: editDraft.place.address,
+                          // 지운 경우 ""로 전송해 서버가 메모 없음을 명확히 인식하도록 함
+                          planMemo: nextMemo,
                         }
                       : p
                   );
