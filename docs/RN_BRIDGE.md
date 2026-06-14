@@ -181,25 +181,6 @@ bootstrapTokens(): Promise<void>
 - [ ] 다음 4개 key가 동일 namespace에서 일관되게 처리되는가:
   - `accessToken`, `refreshToken`, `accessTokenExpiry`, `refreshTokenExpiry`
 
-### 트러블슈팅: 앱 재시작 시 로그인 풀림 (#87)
-
-**증상**: 로그인 후 앱을 완전히 종료했다 재실행하면 로그아웃됨. 세션 중에는 정상이고, 브라우저에서는 재현되지 않음(앱에서만).
-
-**원인**: 부팅 시 웹이 `bootstrapTokens()`로 `secure` 저장소에서 토큰을 복원하는데, 그 시점에 `window.BarogagiApp`이 아직 주입되지 않으면 웹이 localStorage로 fallback → 네이티브 보안 저장소에 저장된 토큰을 읽지 못함.
-
-**웹 측 보강(완료)**: 앱 환경(`window.ReactNativeWebView` 존재)에서 `window.BarogagiApp` 주입을 최대 2초 대기한 뒤 읽도록 `waitForBridge()`를 적용 ([src/utils/bridgeStorage.ts](../src/utils/bridgeStorage.ts), [src/lib/auth/tokenCache.ts](../src/lib/auth/tokenCache.ts) `bootstrapTokens`).
-
-**RN 측 확인 필요**:
-
-- [ ] `window.BarogagiApp`을 **`injectedJavaScriptBeforeContentLoaded`** 로 주입하는가 (페이지 스크립트보다 먼저). `injectedJavaScript`(콘텐츠 로드 후)로 주입하면 부팅 복원이 매번 실패할 수 있음.
-- [ ] `secure` namespace가 **EncryptedSharedPreferences(영속)** 에 매핑되어 있는가. 실수로 in-memory(`session`처럼)에 매핑하면 재시작 시 토큰이 사라짐.
-- [ ] 부팅 직후 `getData('secure', ...)` RPC가 정상 응답하는가 (`onMessage` 핸들러·`__bridgeResolve` 준비 완료 시점인지).
-
-**진단 로그**: 앱 부팅 시 콘솔의 `[tokenCache] bootstrap` 로그로 원인 구분 가능 —
-
-- `isNativeApp: true, bridgeReady: false` → 브릿지 주입 지연 (웹 보강으로 대기 처리됨)
-- `bridgeReady: true, hasStoredTokens: false` → 네이티브 `secure`에 토큰이 없음 → 위 영속 매핑 점검 필요
-
 ---
 
 ## 3. WebView 기본 props
@@ -723,7 +704,8 @@ iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제�
 if (typeof window.BarogagiApp?.loginWithOAuth === "function") {
   const callbackUrl = await window.BarogagiApp.loginWithOAuth(authorizeUrl);
   if (!callbackUrl) return;                  // 사용자가 닫음(취소)
-  const search = callbackUrl.slice(callbackUrl.indexOf("?"));
+  const q = callbackUrl.indexOf("?");
+  const search = q >= 0 ? callbackUrl.slice(q) : ""; // ? 없으면 빈 문자열 (실구현과 동일)
   navigate(`/auth/oauth/callback${search}`); // 기존 콜백 페이지가 토큰 처리·분기
 }
 // 브라우저: 표준 window.location.href 리다이렉트 (fallback)
