@@ -16,6 +16,11 @@ export type StorageNamespace = "secure" | "persistent" | "session";
 
 declare global {
   interface Window {
+    // react-native-webview가 항상 주입하는 메시지 채널.
+    // 브릿지(BarogagiApp)보다 먼저 동기적으로 존재하므로 "앱(WebView) 환경" 판별에 사용.
+    ReactNativeWebView?: {
+      postMessage(message: string): void;
+    };
     BarogagiApp?: {
       // === Storage ===
       getData(namespace: StorageNamespace, key: string): Promise<string | null>;
@@ -44,6 +49,47 @@ declare global {
 
 const isBridgeAvailable = (): boolean =>
   typeof window !== "undefined" && !!window.BarogagiApp;
+
+/**
+ * 앱(WebView) 환경 여부.
+ * - react-native-webview가 주입하는 window.ReactNativeWebView 존재로 판별
+ * - 이 값은 BarogagiApp 브릿지보다 먼저 동기적으로 존재한다
+ */
+export const isNativeApp = (): boolean =>
+  typeof window !== "undefined" && !!window.ReactNativeWebView;
+
+/**
+ * RN 브릿지(window.BarogagiApp) 주입을 기다린다.
+ *
+ * 앱 부팅 직후에는 BarogagiApp 주입이 페이지 스크립트보다 늦을 수 있다.
+ * 이때 secure 저장소 접근이 곧바로 브라우저 fallback(localStorage)으로 빠지면,
+ * 네이티브 보안 저장소에 저장된 토큰을 읽지 못해 로그인이 풀린다.
+ * → 앱 환경에서는 브릿지가 준비될 때까지 짧게 대기한다.
+ *
+ * - 이미 사용 가능: 즉시 true
+ * - 브라우저(앱 아님): 즉시 false (대기 불필요)
+ * - 앱이지만 미주입: timeoutMs까지 polling 후 결과 반환
+ */
+export const waitForBridge = (
+  timeoutMs = 2000,
+  intervalMs = 50
+): Promise<boolean> => {
+  if (isBridgeAvailable()) return Promise.resolve(true);
+  if (!isNativeApp()) return Promise.resolve(false);
+
+  return new Promise((resolve) => {
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (isBridgeAvailable()) {
+        clearInterval(timer);
+        resolve(true);
+      } else if (Date.now() - start >= timeoutMs) {
+        clearInterval(timer);
+        resolve(false);
+      }
+    }, intervalMs);
+  });
+};
 
 /** RN 브릿지에 위임하는 zustand storage 어댑터 */
 const createBridgeStorage = (namespace: StorageNamespace): StateStorage => ({
