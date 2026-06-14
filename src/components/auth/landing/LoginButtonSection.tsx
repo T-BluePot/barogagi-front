@@ -3,7 +3,10 @@ import { LoginButton } from "../signin/LoginButton";
 import { getOAuthLink } from "@/api/queries/authQueries";
 import type { OAuthProviderType } from "@/api/queries/authQueries";
 import { useAlertModalStore } from "@/stores/alertModalStore";
-import { startOAuthLogin } from "@/utils/auth/startOAuthLogin";
+import {
+  startOAuthLogin,
+  OAuthBridgeUnsupportedError,
+} from "@/utils/auth/startOAuthLogin";
 import { ROUTES } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
@@ -26,12 +29,15 @@ export default function LoginButtonSection() {
       // 네이티브: 받은 콜백 파라미터를 기존 OAuth 콜백 페이지가 처리(토큰 저장·분기)
       navigate(`${ROUTES.AUTH.OAUTH_CALLBACK}${search}`, { replace: true });
     } catch (error) {
-      console.error("[OAuth] 링크 조회 실패:", error);
+      console.error("[OAuth] 로그인 실패:", error);
 
       const message =
-        error instanceof AxiosError
-          ? error.response?.data?.message || "소셜 로그인 연결에 실패했습니다."
-          : "소셜 로그인 연결에 실패했습니다.";
+        error instanceof OAuthBridgeUnsupportedError
+          ? error.message
+          : error instanceof AxiosError
+            ? error.response?.data?.message ||
+              "소셜 로그인 연결에 실패했습니다."
+            : "소셜 로그인 연결에 실패했습니다.";
 
       openAlertModal({ title: "로그인 오류", content: message });
     }

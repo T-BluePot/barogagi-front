@@ -723,7 +723,8 @@ iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제�
 if (typeof window.BarogagiApp?.loginWithOAuth === "function") {
   const callbackUrl = await window.BarogagiApp.loginWithOAuth(authorizeUrl);
   if (!callbackUrl) return;                  // 사용자가 닫음(취소)
-  const search = callbackUrl.slice(callbackUrl.indexOf("?"));
+  const q = callbackUrl.indexOf("?");
+  const search = q >= 0 ? callbackUrl.slice(q) : ""; // ? 없으면 빈 문자열 (실구현과 동일)
   navigate(`/auth/oauth/callback${search}`); // 기존 콜백 페이지가 토큰 처리·분기
 }
 // 브라우저: 표준 window.location.href 리다이렉트 (fallback)
