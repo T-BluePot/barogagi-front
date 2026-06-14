@@ -32,6 +32,12 @@ declare global {
       // 네이티브가 발급/캐싱한 FCM 토큰을 반환. 권한 거부·미발급 시 null.
       // RN 측 미구현 단계가 있을 수 있어 optional — 존재 여부를 확인 후 호출한다.
       getFcmToken?(): Promise<string | null>;
+      // === OAuth 소셜 로그인 (인앱 Custom Tab) ===
+      // authorizeUrl을 InAppBrowser.openAuth로 인앱 Custom Tab에 띄우고(외부 크롬 X),
+      // barogagiapp:// 딥링크로 돌아온 콜백 URL 전체를 반환. 사용자가 닫으면 null.
+      // ⚠️ 일반 RPC(3초 timeout) 아님 — 사용자가 로그인할 때까지 기다려야 하므로 RN 측 별도 처리.
+      // 브릿지 명세는 docs/RN_BRIDGE.md §10 참고.
+      loginWithOAuth?(authorizeUrl: string): Promise<string | null>;
     };
   }
 }
