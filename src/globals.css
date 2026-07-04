@@ -24,6 +24,17 @@
   --color-main-disable: #d6ff96;
   --color-alert-red: #ff3b38;
 
+  /* Sunset Peach - 리디자인 강조색 (홈/탭바) */
+  --color-peach: #ff8a65;
+  --color-peach-hover: #ff986f;
+  --color-peach-active: #ff7b4e;
+  --color-peach-light: #fff3ee;
+  --color-peach-border: #ffd6c9;
+  --color-peach-text: #e96a47;
+
+  /* Motion - 리디자인 공통 이징 */
+  --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
+
   /* Gray Scale */
   --color-gray-black: #1e1e1e;
   --color-gray-90: #333333;
