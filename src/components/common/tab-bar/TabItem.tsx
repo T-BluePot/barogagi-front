@@ -33,11 +33,17 @@ export const TabItem = ({
       }`}
       aria-current={isActive ? "page" : undefined}
     >
-      {variant === "home" && (
-        <svg {...iconProps}>
-          <path d="M3 11l9-8 9 8M5 9.5V21h14V9.5" />
-        </svg>
-      )}
+      {/* 홈 활성 아이콘은 지붕/몸통 패스가 겹치면 fill 구멍(흰 선)이 생겨 단일 실루엣 패스 사용 */}
+      {variant === "home" &&
+        (isActive ? (
+          <svg {...iconProps}>
+            <path d="M12 3L3 11h2v10h14V11h2L12 3z" />
+          </svg>
+        ) : (
+          <svg {...iconProps}>
+            <path d="M3 11l9-8 9 8M5 9.5V21h14V9.5" />
+          </svg>
+        ))}
       {variant === "plan" && (
         <svg {...iconProps}>
           <rect x="3" y="5" width="18" height="16" rx="2" />
