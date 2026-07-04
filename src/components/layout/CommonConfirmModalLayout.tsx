@@ -47,7 +47,7 @@ export default function CommonConfirmModalLayout({
       onClick={cancelButtonInfo.onClick} // 배경 클릭 시 취소 액션 실행
     >
       <div
-        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center flex flex-col ${
+        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[min(90vw,calc(var(--app-max-width)-32px))] max-h-[80vh] text-center flex flex-col ${
           isWarning
             ? // warning은 keyframe이 opacity/scale/blur를 함께 제어 (오버레이 진해진 후 등장)
               "animate-warning-modal-in"

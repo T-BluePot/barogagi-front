@@ -17,6 +17,9 @@ export const BottomModalLayout = ({
       detent="content-height"
       style={{
         zIndex: 100, // 추후 연동될 다른 페이지 및 모달들과 조정을 위함
+        // 웹 브라우저에서 시트가 모바일 프레임 폭을 넘지 않도록 제한
+        maxWidth: "var(--app-max-width)",
+        margin: "0 auto",
       }}
     >
       <Sheet.Container>

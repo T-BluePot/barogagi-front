@@ -18,7 +18,7 @@ const FullScreenModalLayout = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col w-full min-h-screen pt-safe pb-safe ${backgroundColor}`}
+      className={`fixed inset-0 z-50 mx-auto flex w-full max-w-(--app-max-width) flex-col min-h-screen pt-safe pb-safe ${backgroundColor}`}
     >
       {/* 닫기 버튼 */}
       <CloseHeader onClick={onClose} isHeaderDark={true} />

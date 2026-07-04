@@ -13,7 +13,7 @@ const CreateScheduleFab = () => {
       type="button"
       aria-label="새 일정 만들기"
       onClick={startScheduleCreation}
-      className="fixed right-6 bottom-[calc(104px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-peach text-white shadow-[0_10px_24px_rgba(255,138,101,0.55)] transition-colors duration-120 ease-fitpl active:bg-peach-active"
+      className="fixed right-[max(24px,calc(50vw-var(--app-max-width)/2+24px))] bottom-[calc(104px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-peach text-white shadow-[0_10px_24px_rgba(255,138,101,0.55)] transition-colors duration-120 ease-fitpl active:bg-peach-active"
     >
       <svg
         width={24}

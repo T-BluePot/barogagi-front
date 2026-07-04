@@ -35,6 +35,9 @@
   /* Motion - 리디자인 공통 이징 */
   --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
 
+  /* Layout - 웹 브라우저에서 앱 전체를 모바일 폭으로 제한하는 프레임 */
+  --app-max-width: 430px;
+
   /* Gray Scale */
   --color-gray-black: #1e1e1e;
   --color-gray-90: #333333;
@@ -226,6 +229,16 @@ body {
   box-sizing: border-box;
   overflow-x: hidden;
   overscroll-behavior-x: contain;
+  /* 모바일 프레임 바깥 영역 (넓은 브라우저에서만 보임) */
+  background-color: #f5f5f7;
+}
+
+/* 웹 브라우저에서 모바일 레이아웃이 깨지지 않도록 앱 전체 폭 제한.
+ * fixed 요소는 뷰포트 기준이라 이 제한을 받지 않으므로,
+ * 각 fixed 요소(탭바·FAB·모달·시트)가 --app-max-width를 개별 적용한다. */
+#root {
+  max-width: var(--app-max-width);
+  margin-inline: auto;
 }
 
 h1,
