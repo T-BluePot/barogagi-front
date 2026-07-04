@@ -19,8 +19,8 @@ const TextButton = ({
 
   const variantStyles = {
     default: `text-gray-50 hover:text-black break-words`,
-    main: `text-main-dark hover:main-disable  break-words`,
-    "main-underline": `text-main-dark hover:main-disable text-sm underline break-words`,
+    main: `text-peach-text hover:opacity-85  break-words`,
+    "main-underline": `text-peach-text hover:opacity-85 text-sm underline break-words`,
   };
 
   const typoStyle = variantStyles[variant];

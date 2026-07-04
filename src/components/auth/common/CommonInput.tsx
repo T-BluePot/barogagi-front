@@ -71,8 +71,8 @@ export const CommonInput = ({
             "& .MuiFilledInput-root": {
               minHeight: 60,
               "&:before": { borderBottomColor: "#676767" },
-              "&:hover:before": { borderBottomColor: "#8ed71b" },
-              "&.Mui-focused:after": { borderBottomColor: "#bafd4f" },
+              "&:hover:before": { borderBottomColor: "var(--color-main-dark)" },
+              "&.Mui-focused:after": { borderBottomColor: "var(--color-main)" },
             },
           },
         },
@@ -117,14 +117,14 @@ export const CommonInput = ({
             color: "#676767", // 기본 상태 레이블 색상
 
             "&.Mui-focused": {
-              color: "#bafd4f", // 포커스 상태에서 색상 변경
+              color: "var(--color-main)", // 포커스 상태에서 색상 변경
             },
           },
         },
         formHelperText: {
           sx: {
             fontFamily: "Pretendard Variable",
-            color: "#bafd4f",
+            color: "var(--color-main)",
 
             "&.Mui-error": {
               color: "#ff3b38", // 에러 상태에서 색상 변경

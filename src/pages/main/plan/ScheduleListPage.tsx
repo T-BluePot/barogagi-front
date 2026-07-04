@@ -80,7 +80,7 @@ const ScheduleListPage = () => {
               일정을 불러오지 못했습니다.
             </p>
             <button
-              className="typo-body text-main underline"
+              className="typo-body text-peach-text underline"
               onClick={() => refetch()}
             >
               다시 시도

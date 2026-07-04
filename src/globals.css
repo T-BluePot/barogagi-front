@@ -18,10 +18,10 @@
 }
 
 @theme {
-  /* Color Scale */
-  --color-main: #bafd4f;
-  --color-main-dark: #8ed71b;
-  --color-main-disable: #d6ff96;
+  /* Color Scale - 메인 컬러는 Sunset Peach 팔레트의 별칭 (구 라임 #bafd4f 폐기) */
+  --color-main: #ff8a65;
+  --color-main-dark: #ff7b4e;
+  --color-main-disable: #ffd6c9;
   --color-alert-red: #ff3b38;
 
   /* Sunset Peach - 리디자인 강조색 (홈/탭바) */
