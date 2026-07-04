@@ -15,8 +15,9 @@ export interface HomeGreetingParts {
   tail: string;
 }
 
-/** 인사말 아래 서브 카피 */
-export const HOME_GREETING_SUB = "고민없이 바로가는 만남 :)";
+/** 인사말 아래 서브 카피 (디자인 레퍼런스 카피) */
+export const HOME_GREETING_SUB =
+  "고민없이 바로가는 만남 · 날씨도 좋고, 거리도 가까워요";
 
 /**
  * 홈 인사 문구
@@ -42,7 +43,7 @@ export const HOME_GREETING = ({
     return {
       lead: `${userName}님,\n오늘 `,
       highlight: `${popularRegionName} 데이트 코스`,
-      tail: " 어떠세요?",
+      tail: "가 있어요!",
     };
   }
   return {

@@ -66,9 +66,9 @@ const HeroCourseCard = ({ regions }: Props) => {
         </p>
 
         <div className="mt-3 flex gap-1.5">
-          <Chip label={`# ${region}`} tone="onPeach" />
-          <Chip label="# 데이트" tone="onPeach" />
-          <Chip label="AI 추천" tone="onPeach" />
+          <Chip label={`# ${region}`} tone="onPeach" size="sm" />
+          <Chip label="# 데이트" tone="onPeach" size="sm" />
+          <Chip label="AI 추천" tone="onPeach" size="sm" />
         </div>
       </div>
     </article>

@@ -35,8 +35,9 @@
   /* Motion - 리디자인 공통 이징 */
   --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
 
-  /* Layout - 웹 브라우저에서 앱 전체를 모바일 폭으로 제한하는 프레임 */
-  --app-max-width: 430px;
+  /* Layout - 웹 브라우저에서 앱 전체를 모바일 폭으로 제한하는 프레임
+   * DESIGN.md 폼팩터(iPhone 13 mini, 375 × 812) 기준 — 디자인 레퍼런스와 1:1 비율 */
+  --app-max-width: 375px;
 
   /* Gray Scale */
   --color-gray-black: #1e1e1e;
