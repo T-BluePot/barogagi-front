@@ -114,14 +114,14 @@ export const LoginForm = () => {
             className="typo-tag"
             onClick={() => navigate(`${ROUTES.AUTH.FIND_ACCOUNT}?tab=id`)}
           />
-          <span className="text-white">|</span>
+          <span className="text-gray-20">|</span>
           <TextButton
             label="비밀번호 재설정"
             variant="main"
             className="typo-tag"
             onClick={() => navigate(`${ROUTES.AUTH.FIND_ACCOUNT}?tab=password`)}
           />
-          <span className="text-white">|</span>
+          <span className="text-gray-20">|</span>
           <TextButton
             label="회원가입"
             variant="main"

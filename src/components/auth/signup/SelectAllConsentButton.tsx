@@ -7,7 +7,7 @@ export const SelectAllConsentButton = ({
   onCheckedChange,
 }: Pick<CheckBoxButtonProps, "label" | "isChecked" | "onCheckedChange">) => {
   return (
-    <div className="flex w-full h-14 items-center border-b border-gray-80">
+    <div className="flex w-full h-14 items-center border-b border-gray-20">
       <CheckBoxButton
         size="large"
         label={label}

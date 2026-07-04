@@ -29,8 +29,8 @@ export const CheckBoxButton = ({
 
   const labelClass = clsx(
     "typo-body",
-    labelColor === "white" && "text-white",
-    labelColor === "gray" && "text-gray-40"
+    labelColor === "white" && "text-gray-black",
+    labelColor === "gray" && "text-gray-50"
   );
 
   return (

@@ -71,7 +71,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-black text-white overflow-y-auto pb-20">
+    <div className="flex flex-col w-full h-full bg-white text-gray-black overflow-y-auto pb-20">
       {/* 프로필 정보 섹션 */}
       <div className="mt-4">
         <ProfileInfoSection

@@ -30,18 +30,18 @@ const ProfileUserInfo = ({ nickname, userId }: ProfileUserInfoProps) => {
 
   return (
     <div className="flex flex-col items-start">
-      <span className="text-title-02 font-bold text-main break-all line-clamp-1">
+      <span className="text-title-02 font-bold text-peach-text break-all line-clamp-1">
         {nickname}
       </span>
       {displayId && (
         <div className="flex items-center gap-1 mt-0.5">
-          <span className="text-body text-gray-white truncate max-w-[150px]">
+          <span className="text-body text-gray-50 truncate max-w-[150px]">
             {displayId}
           </span>
           <button
             type="button"
             onClick={handleCopy}
-            className="p-1 hover:bg-white/10 rounded-full transition-colors"
+            className="p-1 hover:bg-peach-light rounded-full transition-colors"
             aria-label="아이디 복사"
           >
             <DocumentDuplicateIcon className="w-4 h-4 text-gray-300" />

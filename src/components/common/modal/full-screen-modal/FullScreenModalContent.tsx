@@ -4,7 +4,7 @@ type FullScreenModalContentProps = {
   title?: string;
   content?: string;
   buttonLabel?: string;
-  highlightText?: string; // 강조할 텍스트 (녹색으로 표시)
+  highlightText?: string; // 강조할 텍스트 (peach 강조색으로 표시)
   onButtonClick: () => void;
 };
 
@@ -29,14 +29,14 @@ const FullScreenModalContent = ({
           <div className="flex flex-col items-center text-center space-y-6">
             {/* 제목은 항상 표시 (기본값 포함) */}
             <div>
-              <h1 className="typo-title-01 text-white whitespace-pre-line">
+              <h1 className="typo-title-01 text-gray-black whitespace-pre-line">
                 {displayTitle}
               </h1>
 
               {/* 강조 텍스트 (아이디) */}
               {highlightText && (
                 <div className="mt-4">
-                  <span className="typo-title-01 text-main">
+                  <span className="typo-title-01 text-peach-text">
                     {highlightText}
                   </span>
                 </div>
@@ -45,14 +45,14 @@ const FullScreenModalContent = ({
 
             {/* 내용이 있을 때만 표시 */}
             {displayContent && (
-              <p className="typo-body text-gray-30 whitespace-pre-line leading-relaxed max-w-md">
+              <p className="typo-body text-gray-70 whitespace-pre-line leading-relaxed max-w-md">
                 {displayContent}
               </p>
             )}
 
             {/* 아무 내용도 없을 때 기본 메시지 */}
             {!hasContent && (
-              <p className="typo-body text-gray-30">
+              <p className="typo-body text-gray-50">
                 내용을 불러오는 중입니다...
               </p>
             )}
@@ -61,7 +61,7 @@ const FullScreenModalContent = ({
       </div>
 
       {/* 하단 고정 버튼 영역 */}
-      <div className="flex-none px-6 pb-6 pt-4 bg-gray-black">
+      <div className="flex-none px-6 pb-6 pt-4 bg-white">
         <div className="w-full max-w-sm mx-auto">
           <CommonButton
             label={buttonLabel}

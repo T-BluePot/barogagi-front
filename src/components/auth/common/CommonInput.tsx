@@ -70,7 +70,7 @@ export const CommonInput = ({
           sx: {
             "& .MuiFilledInput-root": {
               minHeight: 60,
-              "&:before": { borderBottomColor: "#676767" },
+              "&:before": { borderBottomColor: "#dddddd" },
               "&:hover:before": { borderBottomColor: "var(--color-main-dark)" },
               "&.Mui-focused:after": { borderBottomColor: "var(--color-main)" },
             },
@@ -79,7 +79,7 @@ export const CommonInput = ({
         input: {
           sx: {
             fontFamily: "Pretendard Variable",
-            color: "#ffffff",
+            color: "#1d1d1f",
           },
           endAdornment: withButton ? (
             <InputAdornment position="end">
