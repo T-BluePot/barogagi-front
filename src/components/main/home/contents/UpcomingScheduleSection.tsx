@@ -66,7 +66,20 @@ const UpcomingScheduleSection: React.FC<Props> = ({
     <section className="mb-8 w-full">
       <SectionHeader
         title="나의 일정"
-        actionLabel="+ 추가"
+        actionIcon={
+          <svg
+            width={22}
+            height={22}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.2}
+            strokeLinecap="round"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        }
+        actionAriaLabel="일정 추가"
         onAction={startScheduleCreation}
       />
       {renderContent()}
