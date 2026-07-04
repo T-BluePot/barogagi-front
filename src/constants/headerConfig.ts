@@ -191,7 +191,7 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
   // 메인 앱 라우트들
   [ROUTES.MAIN.HOME]: {
     type: "common",
-    isHeaderDark: true,
+    isHeaderDark: false,
     isContentDark: false,
   },
   [ROUTES.MAIN.PROFILE]: {

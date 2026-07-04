@@ -8,6 +8,16 @@ interface HomeGreetingParams {
   isLoading?: boolean;
 }
 
+/** 인사 타이틀을 강조 구간 기준으로 분리한 구조 (highlight만 코랄로 렌더링) */
+export interface HomeGreetingParts {
+  lead: string;
+  highlight?: string;
+  tail: string;
+}
+
+/** 인사말 아래 서브 카피 */
+export const HOME_GREETING_SUB = "고민없이 바로가는 만남 :)";
+
 /**
  * 홈 인사 문구
  * 0. 로딩 중 → 기본 문구 (확정 전 깜빡임 방지)
@@ -20,12 +30,24 @@ export const HOME_GREETING = ({
   hasUpcomingSchedule,
   popularRegionName,
   isLoading,
-}: HomeGreetingParams) => {
+}: HomeGreetingParams): HomeGreetingParts => {
   if (!isLoading && hasUpcomingSchedule) {
-    return `${userName}님,\n곧 다가오는 일정이 있어요!`;
+    return {
+      lead: `${userName}님,\n곧 `,
+      highlight: "다가오는 일정",
+      tail: "이 있어요!",
+    };
   }
   if (!isLoading && popularRegionName) {
-    return `${userName}님,\n${popularRegionName}에서 하루 어떠세요?`;
+    return {
+      lead: `${userName}님,\n오늘 `,
+      highlight: `${popularRegionName} 데이트 코스`,
+      tail: " 어떠세요?",
+    };
   }
-  return `${userName}님,\n특별한 일정을 만들어보세요!`;
+  return {
+    lead: `${userName}님,\n`,
+    highlight: "특별한 일정",
+    tail: "을 만들어보세요!",
+  };
 };
