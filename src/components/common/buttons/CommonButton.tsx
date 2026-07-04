@@ -17,7 +17,7 @@ const Button = ({
   const baseStyle = `px-4 py-3 rounded-full w-full max-w-xl flex items-center justify-center typo-body focus:outline-none cursor-pointer transition-colors duration-200 ${
     isDisabled
       ? "bg-main-disable text-gray-50 cursor-not-allowed"
-      : "bg-main text-black hover:bg-main-dark"
+      : "bg-main text-white hover:bg-main-dark"
   }`;
 
   return (
