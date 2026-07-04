@@ -2,7 +2,7 @@ import type React from "react";
 import { useNavigate } from "react-router-dom";
 import { ScheduleCard } from "../../plan/main/ScheduleCard";
 import SkeletonScheduleCard from "../../plan/main/SkeletonScheduleCard";
-import ContentWrapper from "./ContentWrapper";
+import SectionHeader from "@/components/common/SectionHeader";
 import EmptyContent from "@/components/common/EmptyContent";
 import type { HomeScheduleResponseDTO } from "@/api/types";
 import type { Schedule } from "@/types/scheduleTypes";
@@ -64,14 +64,14 @@ const UpcomingScheduleSection: React.FC<Props> = ({
   };
 
   return (
-    <ContentWrapper
-      title="곧 다가오는"
-      highlightText="일정"
-      onClick={handleTitleClick}
-      isArrowVisible={true}
-    >
+    <section className="mb-8 w-full">
+      <SectionHeader
+        title="나의 일정"
+        actionLabel="전체보기"
+        onAction={handleTitleClick}
+      />
       {renderContent()}
-    </ContentWrapper>
+    </section>
   );
 };
 

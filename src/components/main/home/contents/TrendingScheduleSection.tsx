@@ -1,37 +1,38 @@
 import type React from "react";
-import ContentWrapper from "./ContentWrapper";
-import TrendingCarousel from "./TrendingCarousel";
-import SkeletonTrendingCarousel from "./SkeletonTrendingCarousel";
+
+import SectionHeader from "@/components/common/SectionHeader";
+import Chip from "@/components/common/Chip";
 import EmptyContent from "@/components/common/EmptyContent";
+import SkeletonBlock from "@/components/common/loading/SkeletonBlock";
 import type { TagInfoDTO } from "@/api/types";
-import type { TrendingItem } from "./TrendingCarouselItem";
 
 interface Props {
   tags: TagInfoDTO[];
   isLoading: boolean;
 }
 
+/** 지금 인기 있는 태그 — 칩 가로 스크롤 */
 const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
-  // API 태그 → TrendingCarouselItem 변환
-  const items: TrendingItem[] = tags.map((tag) => ({
-    id: tag.tagNum,
-    title: tag.tagNm,
-    subtitle: tag.tagType,
-    imageUrl: "",
-  }));
-
   const renderContent = () => {
-    if (isLoading) return <SkeletonTrendingCarousel />;
-    if (items.length === 0)
+    if (isLoading)
+      return <SkeletonBlock width="w-full" height="h-8" rounded="rounded-full" />;
+    if (tags.length === 0)
       return <EmptyContent message="인기 있는 일정이 없습니다." />;
 
-    return <TrendingCarousel items={items} />;
+    return (
+      <div className="hide-scrollbar -mx-6 flex gap-2 overflow-x-auto px-6">
+        {tags.map((tag) => (
+          <Chip key={tag.tagNum} label={`# ${tag.tagNm}`} />
+        ))}
+      </div>
+    );
   };
 
   return (
-    <ContentWrapper title="지금 인기 있는" highlightText="일정">
+    <section className="mb-8 w-full">
+      <SectionHeader title="지금 인기 있는 태그" />
       {renderContent()}
-    </ContentWrapper>
+    </section>
   );
 };
 
