@@ -7,13 +7,10 @@ import { getMarkedDates } from "@/utils/getMarkedDates";
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
 import { CalendarView } from "@/components/main/plan/CalendarView";
 import ListView from "@/components/main/plan/main/ListView";
-import AddScheduleButton from "@/components/main/plan/main/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 import SkeletonCalendar from "@/components/main/plan/SkeletonCalendar";
 import SkeletonListView from "@/components/main/plan/main/SkeletonListView";
-
-import { useStartScheduleCreation } from "@/hooks/useStartScheduleCreation";
 
 // === server ===
 import { useScheduleListQuery } from "@/hooks/queries/useScheduleListQuery";
@@ -67,12 +64,6 @@ const ScheduleListPage = () => {
     handleCloseDeleteModal();
   };
 
-  // === 일정 생성 관련 ===
-  const { startScheduleCreation } = useStartScheduleCreation();
-
-  const handleAddSchedule = () => {
-    startScheduleCreation();
-  };
 
   return (
     <div className="flex flex-col gap-6 h-full">
@@ -123,9 +114,6 @@ const ScheduleListPage = () => {
             )}
           </div>
         )}
-      </div>
-      <div className="fixed bottom-[calc(5rem+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] right-6 z-35">
-        <AddScheduleButton onAddSchedule={handleAddSchedule} />
       </div>
     </div>
   );
