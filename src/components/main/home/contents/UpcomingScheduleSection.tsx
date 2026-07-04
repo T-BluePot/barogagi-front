@@ -63,7 +63,7 @@ const UpcomingScheduleSection: React.FC<Props> = ({
   };
 
   return (
-    <section className="mb-8 w-full">
+    <section className="w-full">
       <SectionHeader
         title="나의 일정"
         actionIcon={

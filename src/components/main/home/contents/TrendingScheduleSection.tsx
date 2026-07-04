@@ -20,7 +20,7 @@ const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
       return <EmptyContent message="인기 있는 일정이 없습니다." />;
 
     return (
-      <div className="hide-scrollbar -mx-6 flex gap-2 overflow-x-auto px-6">
+      <div className="hide-scrollbar -mx-5.5 flex gap-2 overflow-x-auto px-5.5">
         {tags.map((tag) => (
           <Chip key={tag.tagNum} label={`# ${tag.tagNm}`} />
         ))}
@@ -29,7 +29,7 @@ const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
   };
 
   return (
-    <section className="mb-8 w-full">
+    <section className="w-full">
       <SectionHeader title="지금 인기 있는 태그" />
       {renderContent()}
     </section>

@@ -36,7 +36,7 @@ const HotPlaceSection: React.FC<Props> = ({ regions, isLoading }) => {
       return <EmptyContent message="인기 지역 정보가 없습니다." />;
 
     return (
-      <div className="hide-scrollbar -mx-6 flex gap-3 overflow-x-auto px-6">
+      <div className="hide-scrollbar -mx-5.5 flex gap-3 overflow-x-auto px-5.5 pt-0.5 pb-1">
         {places.map((place) => (
           <HotPlaceCard key={`${place.rank}-${place.name}`} place={place} />
         ))}
@@ -45,7 +45,7 @@ const HotPlaceSection: React.FC<Props> = ({ regions, isLoading }) => {
   };
 
   return (
-    <section className="mb-8 w-full">
+    <section className="w-full">
       <SectionHeader title="오늘의 핫플레이스" />
       {renderContent()}
     </section>

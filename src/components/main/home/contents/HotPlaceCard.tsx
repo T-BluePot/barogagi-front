@@ -36,7 +36,7 @@ const HotPlaceCard = ({ place }: { place: HotPlaceData }) => {
         {place.name}
       </p>
       {place.area && (
-        <p className="mt-0.5 text-[11px] font-medium text-gray-50">
+        <p className="mt-[3px] text-[11px] font-medium text-gray-50">
           {place.area}
         </p>
       )}
