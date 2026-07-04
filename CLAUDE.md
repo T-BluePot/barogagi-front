@@ -56,3 +56,18 @@ src/hooks/mutations/    # React Query 변경 훅
 - `gap`이 있는 flex 컨테이너에서 `h-0`으로 숨기는 요소는 gap이 여전히 적용됨
   → 토글 요소는 gap 컨테이너 **바깥**에 배치하거나 별도 패딩으로 처리
 - 토글(열기/닫기) 조건: `planLink`가 없으면 카드 열지 않음
+
+---
+
+## 디자인 시스템 (필수 참조)
+
+UI/스타일 작업(컴포넌트·페이지·색상·타이포·모션) 전에 반드시 아래 문서를 읽고 따른다.
+
+| 문서 | 역할 |
+|------|------|
+| `.claude/design/DESIGN.md` | **핏플 팀 디자인 시스템 — 최우선 준수.** Sunset Peach 컬러, 타이포, 4px 그리드, 라운드/그림자, 모션, 카피 규칙의 단일 기준 |
+| `.claude/design/DESIGN-apple.md` | Apple 디자인 분석 — **참고용.** 글라스모피즘(backdrop blur), 타이포 감각 등 특정 질감을 차용할 때만 참조 |
+
+- 우선순위: **사용자 명시 요청 > DESIGN.md > DESIGN-apple.md**
+- 두 문서가 충돌하면 DESIGN.md를 따르고, 사용자가 Apple 스타일을 명시적으로 요청한 부분만 예외로 한다.
+- DESIGN.md의 토큰은 `src/globals.css`의 `@theme`(`--color-peach*`, `--ease-fitpl`)으로 관리한다 — 컴포넌트에 임의 hex 인라인 금지.
