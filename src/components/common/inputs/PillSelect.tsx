@@ -32,7 +32,7 @@ const PillSelect = ({
         value={value}
         aria-label={ariaLabel}
         onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
-        className="appearance-none bg-transparent py-1.5 pl-3 pr-7 text-[11px] font-semibold text-inherit outline-none"
+        className="appearance-none rounded-full bg-transparent py-1.5 pl-3 pr-7 text-[11px] font-semibold text-inherit outline-hidden focus-visible:ring-2 focus-visible:ring-current"
       >
         {options.map((option) => (
           <option key={option} value={option} className="text-gray-black">

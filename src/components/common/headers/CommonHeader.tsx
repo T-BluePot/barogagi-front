@@ -78,7 +78,8 @@ export const CommonHeader = ({ onClick }: CommonHeaderProps) => {
           onClick={onClick}
           className="flex h-9 w-9 items-center justify-center rounded-full border border-peach-border bg-peach-light text-[13px] font-semibold text-peach-text"
         >
-          {nickName?.charAt(0) ?? "핏"}
+          {/* 빈 문자열 닉네임도 폴백되도록 ??가 아닌 || 사용 */}
+          {nickName?.charAt(0) || "핏"}
         </button>
       </div>
     </header>
