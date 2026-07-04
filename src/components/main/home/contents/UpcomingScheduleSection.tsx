@@ -4,6 +4,7 @@ import { ScheduleCard } from "../../plan/main/ScheduleCard";
 import SkeletonScheduleCard from "../../plan/main/SkeletonScheduleCard";
 import SectionHeader from "@/components/common/SectionHeader";
 import EmptyContent from "@/components/common/EmptyContent";
+import { useStartScheduleCreation } from "@/hooks/useStartScheduleCreation";
 import type { HomeScheduleResponseDTO } from "@/api/types";
 import type { Schedule } from "@/types/scheduleTypes";
 import { getRoutePath } from "@/constants/routes";
@@ -39,14 +40,12 @@ const UpcomingScheduleSection: React.FC<Props> = ({
   const navigate = useNavigate();
   const hasSchedule = scheduleData?.userInfoResponseDTO != null;
 
+  const { startScheduleCreation } = useStartScheduleCreation();
+
   const handleEdit = () => {
     if (!scheduleData?.userInfoResponseDTO) return;
     const scheduleNum = scheduleData.userInfoResponseDTO.scheduleNum;
     navigate(getRoutePath.plan.detail(String(scheduleNum)));
-  };
-
-  const handleTitleClick = () => {
-    navigate(getRoutePath.plan.list());
   };
 
   const renderContent = () => {
@@ -67,8 +66,8 @@ const UpcomingScheduleSection: React.FC<Props> = ({
     <section className="mb-8 w-full">
       <SectionHeader
         title="나의 일정"
-        actionLabel="전체보기"
-        onAction={handleTitleClick}
+        actionLabel="+ 추가"
+        onAction={startScheduleCreation}
       />
       {renderContent()}
     </section>

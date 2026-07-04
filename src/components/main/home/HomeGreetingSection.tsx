@@ -28,13 +28,13 @@ const HomeGreetingSection = ({
   });
 
   return (
-    <section className="w-full bg-white px-6 pt-3">
+    <section className="w-full bg-white px-6 pt-3.5 text-left">
       <h1 className="text-2xl font-bold leading-[1.28] tracking-[-0.03em] whitespace-pre-line text-gray-black">
         {lead}
         {highlight && <span className="text-peach-text">{highlight}</span>}
         {tail}
       </h1>
-      <p className="mt-2 mb-4 text-[13px] font-medium text-gray-50">
+      <p className="mt-2 mb-4 text-[13px] font-medium tracking-[-0.02em] text-gray-50">
         {HOME_GREETING_SUB}
       </p>
     </section>

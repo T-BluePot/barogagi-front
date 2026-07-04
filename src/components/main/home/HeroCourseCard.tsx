@@ -36,7 +36,7 @@ const HeroCourseCard = ({ regions }: Props) => {
   const region = selectedRegion ?? options[0];
 
   return (
-    <article className="relative w-full rounded-[20px] bg-peach px-5 py-4.5 text-white shadow-[0_8px_24px_rgba(255,138,101,0.30)]">
+    <article className="relative w-full rounded-[20px] bg-[linear-gradient(135deg,#FF9A72,#FF7B4E)] px-5 py-4.5 text-left text-white shadow-[0_10px_26px_rgba(255,123,78,0.34)]">
       {/* 카드 전체 탭 영역 (셀렉트만 위에서 별도 인터랙션) */}
       <button
         type="button"
@@ -45,7 +45,7 @@ const HeroCourseCard = ({ regions }: Props) => {
         className="absolute inset-0 rounded-[20px]"
       />
 
-      <div className="pointer-events-none relative flex flex-col gap-3">
+      <div className="pointer-events-none relative">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-semibold tracking-[0.05em] uppercase opacity-90">
             오늘의 추천 코스
@@ -61,11 +61,11 @@ const HeroCourseCard = ({ regions }: Props) => {
           </span>
         </div>
 
-        <p className="text-[19px] font-bold leading-[1.32] tracking-[-0.02em] whitespace-pre-line">
+        <p className="mt-2 text-[19px] font-bold leading-[1.32] tracking-[-0.02em] whitespace-pre-line">
           {`${region} 맞춤 코스,\nAI로 바로 만들어보세요!`}
         </p>
 
-        <div className="flex gap-1.5">
+        <div className="mt-3 flex gap-1.5">
           <Chip label={`# ${region}`} tone="onPeach" />
           <Chip label="# 데이트" tone="onPeach" />
           <Chip label="AI 추천" tone="onPeach" />

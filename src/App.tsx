@@ -1,4 +1,3 @@
-import "./App.css";
 import { RootRedirect } from "./routes/RootRedirect";
 import { AuthRoutes } from "@/routes/AuthRoutes";
 import { MainRoutes } from "@/routes/MainRoutes";
