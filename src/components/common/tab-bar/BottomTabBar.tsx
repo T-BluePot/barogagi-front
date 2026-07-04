@@ -3,36 +3,36 @@ import { NavLink } from "react-router-dom";
 import { TabItem } from "./TabItem";
 import { TAB_CONFIG, type TabVariant } from "@/constants/tabs";
 
+/**
+ * 플로팅 글라스(frosted) 하단 탭바
+ * - DESIGN.md 지오메트리: 좌우 16px, bottom 24px(+safe-area), 높이 68px, pill
+ * - 글라스모피즘은 DESIGN-apple.md 참조: 반투명 화이트 + blur(20px) saturate(180%)
+ *   + 상단 1px 화이트 하이라이트 (사용자 요청으로 DESIGN.md frosted blur 금지의 예외)
+ * - 탭은 flex:1 균등 분배, 활성 표시는 컬러 변화만 (TabItem 담당)
+ */
 const BottomTabBar = () => {
   const tabs = Object.keys(TAB_CONFIG) as TabVariant[];
   return (
     <nav
       aria-label="Tabs"
-      className="fixed bottom-0 left-0 right-0 z-30"
+      className="fixed inset-x-0 mx-auto w-[calc(100%-32px)] max-w-[calc(var(--app-max-width)-32px)] bottom-[calc(24px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 h-17 rounded-full bg-white/75 px-2 backdrop-blur-[20px] backdrop-saturate-[1.8] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_12px_32px_rgba(0,0,0,0.10),0_0_0_1px_rgba(0,0,0,0.04)]"
     >
-      {/* 배경/모서리/그림자는 wrapper가 담당. nav 자체엔 배경 없음(콘텐츠 안 가림).
-          safe-area 영역도 wrapper 배경(검정)으로 자연스럽게 이어지도록 안쪽에 pb-safe spacer */}
-      <div className="rounded-t-[40px] bg-gray-black shadow-[0_-8px_20px_rgba(0,0,0,0.12)]">
-        <ul className="flex w-full h-[60px] justify-around items-center">
-          {tabs.map((tab) => {
-            const { path, ariaLabel } = TAB_CONFIG[tab];
-            return (
-              <li key={path} className="flex-1">
-                <NavLink
-                  to={path}
-                  aria-label={ariaLabel}
-                  className="flex justify-center"
-                >
-                  {({ isActive }) => (
-                    <TabItem variant={tab} isActive={isActive} />
-                  )}
-                </NavLink>
-              </li>
-            );
-          })}
-        </ul>
-        <div className="pb-safe" />
-      </div>
+      <ul className="flex h-full items-center">
+        {tabs.map((tab) => {
+          const { path, ariaLabel } = TAB_CONFIG[tab];
+          return (
+            <li key={path} className="flex-1">
+              <NavLink
+                to={path}
+                aria-label={ariaLabel}
+                className="flex justify-center"
+              >
+                {({ isActive }) => <TabItem variant={tab} isActive={isActive} />}
+              </NavLink>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 };

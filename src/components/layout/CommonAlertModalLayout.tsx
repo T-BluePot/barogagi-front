@@ -36,7 +36,7 @@ export default function CommonAlertModalLayout({
       onClick={buttonInfo.onClick} // 배경 클릭 시 모달 닫기 (이벤트 전파 중지 필요)
     >
       <div
-        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[90vw] max-h-[80vh] text-center transform transition-all duration-300 flex flex-col ${
+        className={`bg-white rounded-2xl shadow-lg min-w-[280px] max-w-[min(90vw,calc(var(--app-max-width)-32px))] max-h-[80vh] text-center transform transition-all duration-300 flex flex-col ${
           // 모달 컨테이너 애니메이션
           isVisible ? "scale-100" : "scale-95" // isVisible 상태에 따른 크기 변경
         }`}
