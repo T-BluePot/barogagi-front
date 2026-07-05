@@ -7,11 +7,11 @@
 export const BUTTON_COLOR = {
   /** 채움(primary): 코랄 배경 + 흰 글자 */
   filled: "bg-main text-white hover:bg-main-dark",
-  /** 비활성: DESIGN.md 레시피 — 라이트 피치 배경 + 연회색 글자 */
-  filledDisabled: "bg-peach-light text-gray-30 cursor-not-allowed",
+  /** 비활성: DESIGN.md 레시피 — 라이트 피치 배경 + 회색 글자(가독성 위해 gray-40) */
+  filledDisabled: "bg-peach-light text-gray-40 cursor-not-allowed",
   /** 아웃라인(보조): 흰 배경 + 피치 보더/글자 */
   outlined:
     "bg-white border border-peach-border text-peach-text hover:bg-peach-light",
   outlinedDisabled:
-    "bg-white border border-main-disable text-gray-30 cursor-not-allowed",
+    "bg-white border border-main-disable text-gray-40 cursor-not-allowed",
 } as const;
