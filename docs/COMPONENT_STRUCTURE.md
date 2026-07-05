@@ -3,8 +3,9 @@
 핏플(Fitpl) 프론트엔드의 `src/` 디렉토리와 `src/components/` 구성 가이드입니다.
 새 컴포넌트를 어디에 만들지, 기존 컴포넌트를 어디서 찾을지의 기준을 제공합니다.
 
-> 이 문서는 **폴더 구조·배치 규칙**을 다룹니다. 헤더 자동 렌더링 시스템은
-> [`src/components/layout/README.md`](../src/components/layout/README.md), 프로젝트 소개는 루트 [`README.md`](../README.md)를 참고하세요.
+> 이 문서는 **폴더 구조·배치 규칙**과 핵심 시스템(레이아웃·헤더·모달)을 다룹니다.
+> 프로젝트 소개는 루트 [`README.md`](../README.md)를 참고하세요.
+> (구 `src/components/layout/README.md`의 헤더 관리 시스템 문서를 §2-4로 흡수했습니다.)
 
 ---
 
@@ -91,6 +92,41 @@ common/modal/
   `*Modal.tsx`는 렌더링 여부·콘텐츠를 조립합니다. Layout은 반드시 대응 모달과 **같은 폴더**에 둡니다.
 - 전역 모달은 store(`stores/*ModalStore.ts`)로 열고 닫습니다. 배경 클릭/하드웨어 백은
   취소 콜백을 실행하지 않고 **닫기만** 합니다(오작동 방지).
+
+### 2-4. 헤더 관리 시스템 (구 `layout/README.md`)
+
+라우트별 헤더를 **설정만으로 자동 렌더링**하는 시스템.
+
+**구성**
+- `MainLayout` (`layout/MainLayout.tsx`) — 현재 경로에 맞는 헤더를 자동 렌더링하고 모든 페이지를 감쌈.
+- `useHeaderConfig` (`hooks/useHeaderConfig.ts`) — 현재 경로를 헤더 설정과 매칭(동적 라우트 지원). 설정 원본은 `constants/headerConfig.ts`.
+
+**헤더 타입**
+
+| 타입 | 설명 | 예 |
+|------|------|----|
+| `none` | 헤더 없음 | 랜딩·풀스크린 |
+| `back` | 뒤로가기 버튼 | 상세·폼 페이지 |
+| `title` | 제목만 표시 | 프로필·설정 |
+| `close` | 닫기 버튼 | 모달성 페이지 |
+| `common` | 로고+알림+프로필 아바타 | 홈 |
+
+**`HeaderConfig` 인터페이스**
+
+```typescript
+interface HeaderConfig {
+  type: "none" | "back" | "title" | "close" | "common";
+  label?: string;          // 헤더 제목
+  isHeaderDark?: boolean;  // 헤더 다크 배경 여부
+  isContentDark?: boolean; // 콘텐츠 다크 배경 (미지정 시 isHeaderDark 따라감)
+  // backPath / closePath 등 경로별 확장 필드
+}
+```
+
+> 라이트 테마 전환 이후 `headerConfig.ts`의 모든 라우트는 `isHeaderDark: false`. 다크 배경
+> 분기 메커니즘(`MainLayout`의 `isHeaderDark ? bg-gray-black : bg-white`)은 확장을 위해 보존만 되어 있음.
+
+**새 페이지 추가 시**: `constants/routes.ts`에 경로 → `constants/headerConfig.ts`에 헤더 설정 → `routes/*.tsx`에 `<Route>` → `pages/*.tsx` 작성. 설정만으로 헤더가 자동 적용됩니다.
 
 ---
 
