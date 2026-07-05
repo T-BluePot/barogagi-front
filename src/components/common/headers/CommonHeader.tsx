@@ -30,7 +30,7 @@ export const CommonHeader = ({ onClick }: CommonHeaderProps) => {
 
   return (
     // 레퍼런스 앱바 리듬: 위 4px / 아래 14px (아래 여백이 인사말과의 간격 역할)
-    <header className="flex w-full items-center justify-between bg-white px-5.5 pt-1 pb-3.5 select-none">
+    <header className="flex w-full items-center justify-between bg-white px-5.5 py-3.5 select-none">
       {/* fitpl 워드마크 */}
       <span className="flex items-center text-[23px] font-extrabold italic tracking-[-0.04em] text-peach">
         fitpl
