@@ -1,6 +1,7 @@
+import RotatingText from "@/components/common/RotatingText";
 import {
   HOME_GREETING,
-  HOME_GREETING_SUB,
+  HOME_GREETING_SUBS,
 } from "@/constants/texts/main/home/headerText";
 
 interface Props {
@@ -34,9 +35,10 @@ const HomeGreetingSection = ({
         {highlight && <span className="text-peach-text">{highlight}</span>}
         {tail}
       </h1>
-      <p className="mt-2 mb-4 text-[13px] font-medium tracking-[-0.02em] text-gray-50">
-        {HOME_GREETING_SUB}
-      </p>
+      <RotatingText
+        items={HOME_GREETING_SUBS}
+        className="mt-2 mb-4 text-[13px] font-medium tracking-[-0.02em] text-gray-50"
+      />
     </section>
   );
 };
