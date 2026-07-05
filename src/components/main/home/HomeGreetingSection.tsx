@@ -1,5 +1,8 @@
-import { PageTitle } from "@/components/auth/common/PageTitle";
-import { HOME_GREETING } from "@/constants/texts/main/home/headerText";
+import RotatingText from "@/components/common/RotatingText";
+import {
+  HOME_GREETING,
+  HOME_GREETING_SUBS,
+} from "@/constants/texts/main/home/headerText";
 
 interface Props {
   userName?: string;
@@ -8,24 +11,35 @@ interface Props {
   isLoading?: boolean;
 }
 
+/**
+ * 홈 인사말 섹션 (화이트 배경)
+ * - 타이틀 24px 700, 강조 구간만 코랄(#E96A47)
+ */
 const HomeGreetingSection = ({
   userName,
   hasUpcomingSchedule,
   popularRegionName,
   isLoading,
 }: Props) => {
+  const { lead, highlight, tail } = HOME_GREETING({
+    userName: userName ?? "핏플",
+    hasUpcomingSchedule,
+    popularRegionName,
+    isLoading,
+  });
+
   return (
-    <div className="flex flex-col w-full px-6 items-baseline bg-gray-black">
-      <PageTitle
-        type="home"
-        title={HOME_GREETING({
-          userName: userName ?? "핏플",
-          hasUpcomingSchedule,
-          popularRegionName,
-          isLoading,
-        })}
+    <section className="w-full bg-white px-5.5 text-left">
+      <h1 className="text-2xl font-bold leading-[1.28] tracking-[-0.03em] whitespace-pre-line text-gray-black">
+        {lead}
+        {highlight && <span className="text-peach-text">{highlight}</span>}
+        {tail}
+      </h1>
+      <RotatingText
+        items={HOME_GREETING_SUBS}
+        className="mt-2 mb-4 text-[13px] font-medium tracking-[-0.02em] text-gray-50"
       />
-    </div>
+    </section>
   );
 };
 

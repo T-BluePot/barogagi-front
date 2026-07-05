@@ -1,11 +1,11 @@
 import { useStartScheduleCreation } from "@/hooks/useStartScheduleCreation";
 
 /**
- * 새 일정 생성 FAB (플로팅 액션 버튼)
- * - DESIGN.md 레시피: 56px 원, peach 배경, 글로우 섀도, 탭바 위 오른쪽(bottom 104px / right 24px)
+ * 새 일정 생성 플로팅 액션 버튼
+ * - 56px 원, peach 배경, 탭바 위 오른쪽(bottom 104px / right 24px)
  * - 프레스 시 배경만 peach-active로 전환 (120ms, 스케일/바운스 금지)
  */
-const CreateScheduleFab = () => {
+const CreateScheduleActionButton = () => {
   const { startScheduleCreation } = useStartScheduleCreation();
 
   return (
@@ -13,7 +13,7 @@ const CreateScheduleFab = () => {
       type="button"
       aria-label="새 일정 만들기"
       onClick={startScheduleCreation}
-      className="fixed right-[max(24px,calc(50vw-var(--app-max-width)/2+24px))] bottom-[calc(104px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-peach text-white shadow-[0_10px_24px_rgba(255,138,101,0.55)] transition-colors duration-120 ease-fitpl active:bg-peach-active"
+      className="fixed right-[max(24px,calc(50vw-var(--app-max-width)/2+24px))] bottom-[calc(104px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-peach text-white shadow-[0_2px_10px_var(--tw-shadow-color,rgba(255,138,101,0.45))] transition-colors duration-120 ease-fitpl active:bg-peach-active"
     >
       <svg
         width={24}
@@ -30,4 +30,4 @@ const CreateScheduleFab = () => {
   );
 };
 
-export default CreateScheduleFab;
+export default CreateScheduleActionButton;

@@ -1,6 +1,6 @@
 import type { ConfirmBottomModalProps } from "@/types/BottomModalTypes";
 
-import { BottomModalLayout } from "@/components/layout/BottomModalLayout";
+import { BottomModalLayout } from "@/components/common/modal/bottom-modal/BottomModalLayout";
 import { BottomModalHeader } from "./BottomModalHeader";
 import { BottomModalDeleteButton } from "./BottomModalDeleteButton";
 

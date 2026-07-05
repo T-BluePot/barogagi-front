@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import FullScreenModalLayout from "@/components/layout/FullScreenModalLayout";
+import FullScreenModalLayout from "./FullScreenModalLayout";
 import FullScreenModalContent from "./FullScreenModalContent";
 
 type Props = {

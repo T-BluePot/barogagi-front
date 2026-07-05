@@ -4,7 +4,7 @@
  * 관련 파일
  * routes.ts (현재) → 경로 문자열 정의
  * headerConfig.ts  → 경로별 헤더 설정
- * useHeaderConfig  → 현재 경로 매칭 → Layout.tsx에서 헤더 렌더링
+ * useHeaderConfig  → 현재 경로 매칭 → MainLayout.tsx에서 헤더 렌더링
  *
  * 새 페이지 추가 순서
  * 1. routes.ts → 경로 추가

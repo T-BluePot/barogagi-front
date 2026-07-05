@@ -134,7 +134,7 @@ const ProfileEditPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col w-full h-full bg-gray-black text-white items-center justify-center">
+      <div className="flex flex-col w-full h-full bg-white text-gray-black items-center justify-center">
         <span className="typo-body text-gray-50">
           {PROFILE_EDIT_TEXT.LOADING}
         </span>
@@ -143,7 +143,7 @@ const ProfileEditPage = () => {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-black text-white">
+    <div className="flex flex-col w-full h-full bg-white text-gray-black">
       {/* 성별 선택 모달 */}
       <SelectGenderBottomModal
         isGenderModalOpen={isGenderModalOpen}

@@ -17,13 +17,13 @@ export const PageTitle = ({
   });
 
   const titleClass = clsx("text-left whitespace-pre-line", {
-    "typo-title-01 text-white": type === "auth" || type === "home",
+    "typo-title-01 text-gray-black": type === "auth" || type === "home",
     "typo-title-02 text-gray-black": type === "main",
   });
 
   const subTitleClass = clsx(
     "text-left whitespace-pre-line",
-    type === "auth" ? "typo-body text-gray-20" : "typo-description text-gray-80"
+    type === "auth" ? "typo-body text-gray-70" : "typo-description text-gray-80"
   );
   return (
     <div className={containerClass}>

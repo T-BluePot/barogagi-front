@@ -59,8 +59,6 @@ const HomePage = () => {
         isLoading={isScheduleLoading || isRegionsLoading}
       />
       <HomeContentsSection
-        scheduleData={scheduleData ?? null}
-        isScheduleLoading={isScheduleLoading}
         popularTags={popularTags}
         isTagsLoading={isTagsLoading}
         popularRegions={popularRegions}

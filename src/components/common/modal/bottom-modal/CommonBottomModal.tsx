@@ -1,4 +1,4 @@
-import { BottomModalLayout } from "@/components/layout/BottomModalLayout";
+import { BottomModalLayout } from "@/components/common/modal/bottom-modal/BottomModalLayout";
 import { BottomModalHeader } from "./BottomModalHeader";
 import type { CommonBottomModalProps } from "@/types/BottomModalTypes";
 

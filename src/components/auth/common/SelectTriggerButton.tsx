@@ -18,7 +18,7 @@ export const SelectTriggerButton = ({
 
   const containerClass = clsx(
     "flex w-full h-[60px] items-center justify-between border-b transition-colors duration-300 focus:outline-none",
-    isFocused ? " border-main" : " border-gray-60"
+    isFocused ? " border-main" : " border-gray-20"
   );
   return (
     <button
@@ -32,18 +32,18 @@ export const SelectTriggerButton = ({
           <span
             className={clsx(
               "typo-tag",
-              isFocused ? " text-main" : " text-gray-60"
+              isFocused ? " text-peach-text" : " text-gray-50"
             )}
           >
             {label}
           </span>
-          <span className="typo-body text-white">{value}</span>
+          <span className="typo-body text-gray-black">{value}</span>
         </div>
       ) : (
         <span
           className={clsx(
             "px-3 typo-body",
-            isFocused ? " text-main" : " text-gray-60"
+            isFocused ? " text-peach-text" : " text-gray-50"
           )}
         >
           {label}

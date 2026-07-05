@@ -66,8 +66,8 @@ const FindIdResultPage = () => {
 
   if (!result) {
     return (
-      <div className="flex flex-col w-full h-full bg-gray-black items-center justify-center">
-        <div className="text-white">로딩 중...</div>
+      <div className="flex flex-col w-full h-full bg-white items-center justify-center">
+        <div className="text-gray-70">로딩 중...</div>
       </div>
     );
   }

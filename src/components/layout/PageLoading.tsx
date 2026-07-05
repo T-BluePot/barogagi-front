@@ -8,14 +8,14 @@ interface PageLoadingPropsType {
 
 export default function PageLoading({
   message,
-  isHeaderDark = true,
+  isHeaderDark = false,
 }: PageLoadingPropsType) {
   return (
     <div className="flex flex-col h-full justify-center items-center">
       <div
         className={clsx(
           "flex flex-row gap-2 px-4 py-3 rounded-lg items-center",
-          isHeaderDark ? "bg-gray-white" : "bg-gray-black"
+          isHeaderDark ? "bg-gray-white" : "bg-peach-light"
         )}
       >
         <CircularProgress
@@ -23,13 +23,13 @@ export default function PageLoading({
           sx={{
             color: isHeaderDark
               ? `var(--color-gray-black)`
-              : `var(--color-gray-white)`,
+              : `var(--color-main)`,
           }}
         />
         <p
           className={clsx(
             "typo-body",
-            isHeaderDark ? "text-gray-black" : "text-gray-white"
+            isHeaderDark ? "text-gray-black" : "text-gray-black"
           )}
         >
           {message}

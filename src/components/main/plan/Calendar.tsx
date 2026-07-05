@@ -116,7 +116,7 @@ export default function Calendar({
                 )}
               >
                 <div className="flex flex-col justify-center items-center">
-                  <span className={clsx(colorClass)}>{day}</span>
+                  <span className={clsx(isSelected ? "text-white" : colorClass)}>{day}</span>
                 </div>
               </div>
               <div
