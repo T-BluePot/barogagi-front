@@ -14,7 +14,7 @@ const SmallButton = ({
   onClick,
 }: Props) => {
   const baseStyle =
-    "flex items-center justify-center px-3 py-2 cursor-pointer transition-colors duration-200 focus:outline-none rounded-lg typo-description";
+    "flex items-center justify-center px-3 py-2 transition-colors duration-200 focus:outline-none rounded-lg typo-description";
 
   // 색상은 buttonStyles의 공통 팔레트만 사용 (CommonButton과 동일 세트)
   const typeStyles = {

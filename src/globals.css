@@ -259,6 +259,14 @@
   p {
     margin: 0;
   }
+
+  /* Tailwind v4는 버튼 기본 커서가 default — 클릭 가능한 요소는 포인터로 복원.
+   * 비활성(disabled) 버튼은 제외되어 cursor-not-allowed 등이 그대로 적용된다. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 .react-modal-sheet-backdrop {
