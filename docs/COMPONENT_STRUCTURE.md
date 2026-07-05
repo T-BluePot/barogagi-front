@@ -133,6 +133,12 @@ interface HeaderConfig {
 ## 3. 컨벤션
 
 - **파일명**: 컴포넌트는 PascalCase(`ScheduleCard.tsx`). 폴더는 kebab-case(`tab-bar/`).
+- **`Common*` vs `Global*` 접두어** — 의도적으로 구분되는 2계층이다(혼용 금지):
+  | 접두어 | 의미 | 예 |
+  |--------|------|----|
+  | `Common*` | **재사용 프리미티브.** props로 어디서든 인스턴스화하는 공용 UI. | `CommonButton`, `CommonAlertModal`, `CommonPillSelectBox` |
+  | `Global*` | **앱 전역 싱글턴.** `App.tsx`에 1회 마운트, Zustand store로 제어. 보통 대응 `Common*`을 감싼다. | `GlobalAlertModal`(→`CommonAlertModal`), `GlobalConfirmModal`, `GlobalLoading` |
+  > `Global*`을 `Common*`으로 통일하지 않는다 — 이름이 충돌(`GlobalAlertModal`↔`CommonAlertModal`)하고 "store로 제어되는 단일 인스턴스"라는 역할 정보가 사라진다. 새 전역 오버레이는 `Global*` + `*Store`로, 재사용 조각은 `Common*`으로 만든다.
 - **스켈레톤**: 원본과 **같은 폴더**에 `Skeleton` 접두어로 생성(`SkeletonScheduleCard.tsx`).
 - **Storybook**: 컴포넌트와 같은 폴더에 `*.stories.tsx` 공존.
 - **데이터 매핑**: 서버 DTO(`api/types/`) → UI 타입(`types/`) 변환은 `utils/api/` 매퍼에서.
