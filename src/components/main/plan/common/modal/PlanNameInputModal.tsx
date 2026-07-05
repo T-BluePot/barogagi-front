@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
+import CommonConfirmModalLayout from "@/components/common/modal/common-modal/CommonConfirmModalLayout";
 import ScheduleTitleInput from "../ScheduleTitleInput";
 
 export interface PlanNameInputModalProps {

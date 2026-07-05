@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
+import CommonConfirmModalLayout from "@/components/common/modal/common-modal/CommonConfirmModalLayout";
 import CommonSelectBox from "@/components/common/inputs/CommonSelectBox";
 import CommonTextarea from "@/components/common/inputs/CommonTextarea";
 import { WITHDRAWAL_MODAL_TEXT } from "@/constants/texts/main/profile/withdrawal";

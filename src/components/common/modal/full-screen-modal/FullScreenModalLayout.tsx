@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CloseHeader } from "../common/headers/CloseHeader";
+import { CloseHeader } from "@/components/common/headers/CloseHeader";
 import { useNativeBack } from "@/utils/nativeBackHandler";
 
 type FullScreenModalLayoutProps = {
