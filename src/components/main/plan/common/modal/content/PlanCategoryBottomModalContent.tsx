@@ -123,7 +123,7 @@ export const PlanCategoryBottomModalContent = ({
             onClick={() => handleClickCategoryTab(category)}
             className={`shrink-0 px-4 py-2 rounded-full typo-body transition-colors ${
               selectedCategory?.categoryNum === category.categoryNum
-                ? "bg-main text-gray-black"
+                ? "bg-main text-white"
                 : "bg-gray-10 text-gray-60"
             }`}
           >

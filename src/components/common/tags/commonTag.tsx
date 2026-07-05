@@ -38,7 +38,7 @@ export const CommonTag = ({
   const textClass = clsx(
     size === "default"
       ? isActive
-        ? "text-gray-black typo-description"
+        ? "text-white typo-description"
         : "text-gray-40 typo-description"
       : "text-gray-black typo-tag"
   );
@@ -50,7 +50,7 @@ export const CommonTag = ({
       {hasHash && <span className={textClass}>#</span>}
       <span className={textClass}>{label}</span>
       {size === "default" && isActive && (
-        <XMarkIcon className="h-4 w-4 text-gray-black" />
+        <XMarkIcon className="h-4 w-4 text-white" />
       )}
     </button>
   );
