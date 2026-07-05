@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import BottomTabBar from "../common/tab-bar/BottomTabBar";
-import CreateScheduleFab from "../common/fab/CreateScheduleFab";
+import CreateScheduleActionButton from "../common/fab/CreateScheduleActionButton";
 
 const TabLayout = () => {
   return (
@@ -9,8 +9,8 @@ const TabLayout = () => {
       <main className="flex-1 min-h-0 pb-[calc(92px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))]">
         <Outlet />
       </main>
-      {/* 새 일정 생성 FAB (탭바 위 오른쪽) */}
-      <CreateScheduleFab />
+      {/* 새 일정 생성 플로팅 액션 버튼 (탭바 위 오른쪽) */}
+      <CreateScheduleActionButton />
       {/* 하단 탭 바 */}
       <BottomTabBar />
     </div>
