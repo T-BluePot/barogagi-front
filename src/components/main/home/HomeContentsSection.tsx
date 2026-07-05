@@ -2,16 +2,10 @@ import type React from "react";
 import HeroCourseCard from "./HeroCourseCard";
 import HotPlaceSection from "./contents/HotPlaceSection";
 import TrendingScheduleSection from "./contents/TrendingScheduleSection";
-import UpcomingScheduleSection from "./contents/UpcomingScheduleSection";
-import type {
-  HomeScheduleResponseDTO,
-  TagInfoDTO,
-  PopularRegionDTO,
-} from "@/api/types";
+import MyScheduleSection from "./contents/MyScheduleSection";
+import type { TagInfoDTO, PopularRegionDTO } from "@/api/types";
 
 type Props = {
-  scheduleData: HomeScheduleResponseDTO | null;
-  isScheduleLoading: boolean;
   popularTags: TagInfoDTO[];
   isTagsLoading: boolean;
   popularRegions: PopularRegionDTO[];
@@ -19,8 +13,6 @@ type Props = {
 };
 
 const HomeContentsSection: React.FC<Props> = ({
-  scheduleData,
-  isScheduleLoading,
   popularTags,
   isTagsLoading,
   popularRegions,
@@ -32,14 +24,9 @@ const HomeContentsSection: React.FC<Props> = ({
       <HeroCourseCard regions={popularRegions} />
       {/* 섹션 간 간격은 레퍼런스 리듬(18px)으로 부모 gap에서 일괄 관리 */}
       <div className="mt-5 flex w-full flex-col gap-4.5">
-        <HotPlaceSection
-          regions={popularRegions}
-          isLoading={isRegionsLoading}
-        />
-        <UpcomingScheduleSection
-          scheduleData={scheduleData}
-          isLoading={isScheduleLoading}
-        />
+        <HotPlaceSection regions={popularRegions} isLoading={isRegionsLoading} />
+        {/* 나의 일정: 자체적으로 일정 목록 조회 (plan 탭과 캐시 공유) */}
+        <MyScheduleSection />
         <TrendingScheduleSection tags={popularTags} isLoading={isTagsLoading} />
       </div>
     </div>
