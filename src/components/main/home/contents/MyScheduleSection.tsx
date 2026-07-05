@@ -37,8 +37,8 @@ const ADD_ICON = (
 );
 
 /**
- * 홈 "나의 일정" 섹션
- * - 일정 목록 API에서 가장 가까운 다가오는 일정 1건을 카드로 표시
+ * 홈 "나의 일정" 섹션 (메인 최하단 — 목록이 아래로 늘어나는 영역)
+ * - 일정 목록 API의 다가오는 일정을 가까운 순으로 세로 나열
  * - 일정이 없으면 예시(mock) 일정을 보여주고 탭 시 일정 생성 플로우로 유도
  * - 카드는 일정 탭의 ScheduleCard를 그대로 재사용 (카드 리디자인은 일정 담당자 몫)
  */
@@ -47,17 +47,17 @@ const MyScheduleSection = () => {
   const { current, isLoading, isError } = useScheduleListQuery();
   const { startScheduleCreation } = useStartScheduleCreation();
 
-  // 가장 가까운 다가오는 일정 (YYYY-MM-DD라 문자열 정렬 = 날짜 오름차순)
-  const nearest = [...current].sort((a, b) =>
+  // 다가오는 일정을 가까운 순으로 (YYYY-MM-DD라 문자열 정렬 = 날짜 오름차순)
+  const upcoming = [...current].sort((a, b) =>
     a.startDate.localeCompare(b.startDate)
-  )[0];
+  );
 
   const renderContent = () => {
     if (isLoading) return <SkeletonScheduleCard />;
     if (isError) return <EmptyContent message="일정을 불러오지 못했습니다." />;
 
     // 일정 없음 → 예시 mock 카드 (탭 시 생성 플로우)
-    if (!nearest) {
+    if (upcoming.length === 0) {
       return (
         <ScheduleCard
           schedule={MOCK_SCHEDULE}
@@ -67,14 +67,20 @@ const MyScheduleSection = () => {
       );
     }
 
+    // 다가오는 일정 세로 스택 (레퍼런스 §6: gap 10px)
     return (
-      <ScheduleCard
-        schedule={nearest}
-        onClickCard={() =>
-          navigate(getRoutePath.plan.detail(String(nearest.scheduleNum)))
-        }
-        isDeleteDisabled
-      />
+      <div className="flex flex-col gap-2.5">
+        {upcoming.map((schedule) => (
+          <ScheduleCard
+            key={schedule.scheduleNum}
+            schedule={schedule}
+            onClickCard={() =>
+              navigate(getRoutePath.plan.detail(String(schedule.scheduleNum)))
+            }
+            isDeleteDisabled
+          />
+        ))}
+      </div>
     );
   };
 

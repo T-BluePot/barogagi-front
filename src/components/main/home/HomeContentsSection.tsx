@@ -25,9 +25,10 @@ const HomeContentsSection: React.FC<Props> = ({
       {/* 섹션 간 간격은 레퍼런스 리듬(18px)으로 부모 gap에서 일괄 관리 */}
       <div className="mt-5 flex w-full flex-col gap-4.5">
         <HotPlaceSection regions={popularRegions} isLoading={isRegionsLoading} />
-        {/* 나의 일정: 자체적으로 일정 목록 조회 (plan 탭과 캐시 공유) */}
-        <MyScheduleSection />
         <TrendingScheduleSection tags={popularTags} isLoading={isTagsLoading} />
+        {/* 나의 일정: 목록이 아래로 늘어나므로 메인 최하단에 배치.
+            자체적으로 일정 목록 조회 (plan 탭과 캐시 공유) */}
+        <MyScheduleSection />
       </div>
     </div>
   );
