@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react";
 
-interface PillSelectProps {
+interface CommonPillSelectBoxProps {
   value: string;
   options: string[];
   onChange: (value: string) => void;
@@ -19,13 +19,13 @@ const TONE_CLASS = {
  * pill 형태의 컴팩트 셀렉트 공통 컴포넌트
  * - 네이티브 <select>를 스타일링해 접근성/키보드 동작을 그대로 유지
  */
-const PillSelect = ({
+const CommonPillSelectBox = ({
   value,
   options,
   onChange,
   ariaLabel,
   tone = "light",
-}: PillSelectProps) => {
+}: CommonPillSelectBoxProps) => {
   return (
     <span className={`relative inline-flex items-center ${TONE_CLASS[tone]} rounded-full`}>
       <select
@@ -58,4 +58,4 @@ const PillSelect = ({
   );
 };
 
-export default PillSelect;
+export default CommonPillSelectBox;

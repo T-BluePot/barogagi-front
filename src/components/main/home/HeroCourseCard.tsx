@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import Chip from "@/components/common/Chip";
-import PillSelect from "@/components/common/inputs/PillSelect";
+import CommonPillSelectBox from "@/components/common/inputs/CommonPillSelectBox";
 import { useStartScheduleCreation } from "@/hooks/useStartScheduleCreation";
 import type { PopularRegionDTO } from "@/api/types";
 
@@ -51,7 +51,7 @@ const HeroCourseCard = ({ regions }: Props) => {
             오늘의 추천 코스
           </span>
           <span className="pointer-events-auto">
-            <PillSelect
+            <CommonPillSelectBox
               value={region}
               options={options}
               onChange={setSelectedRegion}
