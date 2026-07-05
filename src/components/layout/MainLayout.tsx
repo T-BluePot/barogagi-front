@@ -15,11 +15,11 @@ import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useHardwareBackExit } from "@/hooks/useHardwareBackExit";
 import { useNavigate } from "react-router-dom";
 
-interface LayoutProps {
+interface MainLayoutProps {
   children: ReactNode;
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export const MainLayout = ({ children }: MainLayoutProps) => {
   useHardwareBackExit(); // 메인 하드웨어 백 더블탭 종료
   const headerConfig = useHeaderConfig();
   const navigate = useNavigate();

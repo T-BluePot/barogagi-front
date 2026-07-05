@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import BottomTabBar from "../common/tab-bar/BottomTabBar";
 import CreateScheduleActionButton from "../common/fab/CreateScheduleActionButton";
 
-const TabLayout = () => {
+const TabBarLayout = () => {
   return (
     <div className="min-h-0 flex flex-col h-full">
       {/* 페이지 콘텐츠 (플로팅 탭바 높이 68px + bottom 24px 만큼 하단 여백 확보) */}
@@ -17,4 +17,4 @@ const TabLayout = () => {
   );
 };
 
-export default TabLayout;
+export default TabBarLayout;

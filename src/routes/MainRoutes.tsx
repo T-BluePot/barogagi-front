@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import TabLayout from "@/components/layout/TabLayout";
+import TabBarLayout from "@/components/layout/TabBarLayout";
 import { ROUTES } from "@/constants/routes";
 import PrivateRoute from "@/components/route/PrivateRoute";
 import { isLoggedIn } from "@/lib/auth/tokenCache";
@@ -43,7 +43,7 @@ export const MainRoutes = () => (
     {/* 인증 필요 라우트 (PrivateRoute 가드) */}
     <Route element={<PrivateRoute />}>
       {/* Bottom Tab 페이지 */}
-      <Route element={<TabLayout />}>
+      <Route element={<TabBarLayout />}>
         <Route path={ROUTES.MAIN.HOME} element={<HomePage />} />
         <Route path={ROUTES.PLAN.LIST} element={<ScheduleListPage />} />
         <Route path={ROUTES.MAIN.PROFILE} element={<ProfilePage />} />

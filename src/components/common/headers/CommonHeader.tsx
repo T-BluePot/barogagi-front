@@ -8,7 +8,7 @@ import type { BaseResponse } from "@/api/types";
 import type { UserData } from "@/types/profileTypes";
 
 interface CommonHeaderProps {
-  onClick: () => void; // 아바타 클릭 → 프로필 이동 (Layout에서 주입)
+  onClick: () => void; // 아바타 클릭 → 프로필 이동 (MainLayout에서 주입)
 }
 
 /**
