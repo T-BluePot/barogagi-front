@@ -46,7 +46,7 @@ const StyleReferenceSection = ({
       <div className="flex w-full flex-col gap-6">
         {/* 연령대 (다중 선택) */}
         <div className="flex flex-col gap-2">
-          <p className="typo-subtitle text-gray-black">
+          <p className="typo-caption text-gray-70">
             {SCHEDULE_STYLE_TEXT.AGE_LABEL}{" "}
             <span className="typo-caption text-gray-40">
               ({SCHEDULE_STYLE_TEXT.AGE_HINT})
@@ -68,18 +68,22 @@ const StyleReferenceSection = ({
 
         {/* 인원수 (스테퍼) */}
         <div className="flex flex-col gap-2">
-          <p className="typo-subtitle text-gray-black">
+          <p className="typo-caption text-gray-70">
             {SCHEDULE_STYLE_TEXT.PEOPLE_LABEL}
           </p>
           <div className="flex items-center justify-between bg-gray-5 rounded-xl px-4 py-3">
-            <span className="typo-body text-gray-black tabular-nums">
+            <span
+              className={`typo-body tabular-nums ${
+                people === 0 ? "text-gray-30" : "text-gray-black"
+              }`}
+            >
               {people}명
             </span>
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 aria-label="인원수 줄이기"
-                disabled={people <= 1}
+                disabled={people <= 0}
                 onClick={() => onChangePeople(-1)}
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-10 text-gray-60 transition-colors active:bg-gray-20 disabled:opacity-40"
               >
@@ -100,7 +104,7 @@ const StyleReferenceSection = ({
 
         {/* 목적 */}
         <div className="flex flex-col gap-2">
-          <p className="typo-subtitle text-gray-black">
+          <p className="typo-caption text-gray-70">
             {SCHEDULE_STYLE_TEXT.PURPOSE_LABEL}
           </p>
           <TextInput
@@ -115,7 +119,7 @@ const StyleReferenceSection = ({
 
         {/* 추가사항 (자유 입력) */}
         <div className="flex flex-col gap-2">
-          <p className="typo-subtitle text-gray-black">
+          <p className="typo-caption text-gray-70">
             {SCHEDULE_STYLE_TEXT.NOTE_LABEL}
           </p>
           <TextInput
