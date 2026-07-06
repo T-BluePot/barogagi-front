@@ -32,7 +32,7 @@ import type {
   ScheduleListResDTO,
   UserAddedPlaceDTO,
 } from "@/api/types";
-import { toCommonPlan } from "@/utils/api/planMapper";
+import { toCommonPlan, toUserPlaceReq, toAIReq } from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
 import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
@@ -389,6 +389,54 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     }
   };
 
+  // ----- 일정 다시 만들기 (재생성) -----
+  // 체크(유지)된 계획은 USER_PLACE로 고정하고, 나머지는 AI 슬롯으로 재추천 요청
+  const isRegeneratingRef = useRef(false);
+
+  const handleRegenerate = async () => {
+    if (isRegeneratingRef.current) return;
+    isRegeneratingRef.current = true;
+    showLoading("AI가 일정을 다시 생성하고 있어요");
+    try {
+      const req = buildRequest();
+      req.scheduleNm = scheduleName || req.scheduleNm;
+      req.planRegistReqDTOList = planList.map((p, i) =>
+        keptIndexes.has(i) ? toUserPlaceReq(p) : toAIReq(p)
+      );
+      const res = await createSchedule(req);
+      if (res.code !== "S201") {
+        toast(res.message ?? "일정 재생성에 실패했습니다.");
+        return;
+      }
+      const nextPlans = res.data?.planRegistResDTOList ?? [];
+      setScheduleResult(res.data);
+      setPlanList(nextPlans);
+      // 유지(USER_PLACE/USER_CUSTOM)로 돌아온 계획은 체크 상태 복원
+      setKeptIndexes(
+        new Set(
+          nextPlans
+            .map((p, i) =>
+              p.planSource === "USER_PLACE" || p.planSource === "USER_CUSTOM"
+                ? i
+                : -1
+            )
+            .filter((i) => i >= 0)
+        )
+      );
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        toast(err.response?.data?.message ?? "일정 재생성에 실패했습니다.");
+      } else if (err instanceof Error) {
+        toast(err.message);
+      } else {
+        toast("일정 재생성에 실패했습니다.\n다시 시도해주세요");
+      }
+    } finally {
+      isRegeneratingRef.current = false;
+      hideLoading();
+    }
+  };
+
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
     return <SkeletonScheduleRoutesContent />;
@@ -568,6 +616,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           isEditable={false}
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
+            onRegenerate: handleRegenerate,
+            keptCount: keptIndexes.size,
           }}
           keptIndexes={keptIndexes}
           onToggleKept={toggleKept}

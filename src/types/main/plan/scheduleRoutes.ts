@@ -25,6 +25,8 @@ interface EditActionsProps {
 // create 화면에서만 쓰는 푸터 액션
 interface CreateFooterProps {
   onClickConfirm: () => void; // 예: 생성 완료 버튼 클릭
+  onRegenerate: () => void; // "다시 만들기" — 체크된 계획은 유지하고 재생성
+  keptCount: number; // "유지" 체크된 계획 개수 (안내 문구용)
 }
 
 // 공통 부분

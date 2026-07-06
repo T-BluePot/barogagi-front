@@ -1,4 +1,8 @@
-import type { PlanRegistResDTO, PlanDetailVO } from "@/api/types";
+import type {
+  PlanRegistResDTO,
+  PlanRegistReqDTO,
+  PlanDetailVO,
+} from "@/api/types";
 /**
  * 일정 관련 타입 변환 함수 모음
  */
@@ -23,5 +27,34 @@ export const toCommonPlan = (vo: PlanDetailVO): PlanRegistResDTO => ({
   planTagRegistResDTOList: vo.tagDetailVOList.map(({ tagNum, tagNm }) => ({
     tagNum,
     tagNm,
+  })),
+});
+
+/** 재생성: 체크된(유지) 계획 → USER_PLACE 요청 DTO (AI가 건드리지 않음) */
+export const toUserPlaceReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
+  isUserAdded: "Y",
+  isRandomCategory: "N",
+  startTime: plan.startTime,
+  endTime: plan.endTime,
+  planNm: plan.planNm,
+  userAddedPlaceDTO: {
+    placeName: plan.planNm ?? plan.regionNm ?? "",
+    placeUrl: plan.planLink,
+    addressName: plan.planAddress ?? plan.regionNm,
+  },
+});
+
+/** 재생성: 미체크 계획 → AI 슬롯 요청 DTO (AI가 재추천) */
+export const toAIReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
+  isUserAdded: "N",
+  isRandomCategory: "N",
+  startTime: plan.startTime,
+  endTime: plan.endTime,
+  itemNum: plan.itemNum,
+  categoryNum: plan.categoryNum,
+  regionRegistReqDTOList:
+    plan.regionNum != null ? [{ regionNum: plan.regionNum }] : [],
+  planTagRegistReqDTOList: (plan.planTagRegistResDTOList ?? []).map((t) => ({
+    tagNum: t.tagNum,
   })),
 });

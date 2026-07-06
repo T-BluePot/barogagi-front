@@ -138,7 +138,11 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
 
       {!isEditable && (
         <div className="mt-auto">
-          <RoutesCreateFooter onConfirm={props.footer.onClickConfirm} />
+          <RoutesCreateFooter
+            onConfirm={props.footer.onClickConfirm}
+            onRegenerate={props.footer.onRegenerate}
+            keptCount={props.footer.keptCount}
+          />
         </div>
       )}
     </div>
