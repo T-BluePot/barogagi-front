@@ -12,6 +12,7 @@ import { usePlanEditStore } from "@/stores/planEditStore";
 
 import SkeletonScheduleRoutesContent from "@/components/main/plan/route/SkeletonScheduleRoutesContent";
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
+import ScheduleInfoBottomSheet from "@/components/main/plan/route/ScheduleInfoBottomSheet";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
@@ -39,6 +40,7 @@ import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMu
 import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
+import { getScheduleMemo, setScheduleMemo } from "@/utils/scheduleMemoStorage";
 import { useLoadingStore } from "@/stores/loadingStore";
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
@@ -244,6 +246,28 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         },
       });
     }
+  };
+
+  // ----- 일정 정보 바텀시트 (detail 전용: 이름 + 일정 메모) -----
+  // 일정 레벨 메모는 서버 필드가 없어 브릿지 로컬 저장(scheduleMemoStorage) 사용
+  const [scheduleMemo, setScheduleMemoState] = useState<string>("");
+  const [isInfoSheetOpen, setIsInfoSheetOpen] = useState(false);
+
+  // detail 진입 시 로컬 저장된 일정 메모 로드
+  useEffect(() => {
+    if (isDetail && scheduleNum && !Number.isNaN(scheduleNum)) {
+      getScheduleMemo(scheduleNum).then(setScheduleMemoState);
+    }
+  }, [isDetail, scheduleNum]);
+
+  // 시트 "저장하기": 이름은 기존 옵티미스틱 커밋 재사용, 메모는 로컬 저장
+  const handleSaveInfo = (name: string, memo: string) => {
+    if (name && name !== scheduleName) handleCommitScheduleName(name);
+    if (scheduleNum && !Number.isNaN(scheduleNum)) {
+      setScheduleMemo(scheduleNum, memo);
+    }
+    setScheduleMemoState(memo);
+    setIsInfoSheetOpen(false);
   };
 
   // ----- 일정 삭제하기 modal -----
@@ -732,6 +756,14 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         onClickConfirm={handleConfirmDeleteSchedule}
       />
 
+      <ScheduleInfoBottomSheet
+        isOpen={isInfoSheetOpen}
+        initialName={scheduleName}
+        initialMemo={scheduleMemo}
+        onClose={() => setIsInfoSheetOpen(false)}
+        onSave={handleSaveInfo}
+      />
+
       {isCreate && (
         <ScheduleRoutesContent
           header={{
@@ -769,6 +801,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           onCommitNote={handleCommitNote}
           onReorder={handleReorder}
           onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
+          onOpenInfoSheet={() => setIsInfoSheetOpen(true)}
+          scheduleMemo={scheduleMemo}
         />
       )}
       <Outlet context={{ onPlaceSelect: handlePlaceSelect }} />

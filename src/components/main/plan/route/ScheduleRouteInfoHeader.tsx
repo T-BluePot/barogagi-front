@@ -20,6 +20,9 @@ interface InfoHeaderProps {
 
   onEnterReorder?: () => void; // kebab "목록 편집" → 순서 변경 모드 진입
   onDeleteSchedule?: () => void; // kebab "일정 삭제" → 일정 삭제 확인 모달
+
+  // detail 전용: 제목 탭 시 인라인 편집 대신 일정 정보 바텀시트 오픈
+  onOpenInfoSheet?: () => void;
 }
 
 const ScheduleRouteInfoHeader = ({
@@ -31,6 +34,7 @@ const ScheduleRouteInfoHeader = ({
   setEditMode,
   onEnterReorder,
   onDeleteSchedule,
+  onOpenInfoSheet,
 }: InfoHeaderProps) => {
   // ----- kebab(더보기) 메뉴 — 일정명 편집(editMode)과 독립 -----
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -89,7 +93,12 @@ const ScheduleRouteInfoHeader = ({
           <button
             className="cursor-pointer"
             onClick={() => {
-              setEditMode(true);
+              // detail: 일정 정보 바텀시트 / create: 기존 인라인 편집
+              if (onOpenInfoSheet) {
+                onOpenInfoSheet();
+              } else {
+                setEditMode(true);
+              }
             }}
           >
             <div className="flex flex-row items-end gap-1 px-1 py-2">

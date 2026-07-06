@@ -57,6 +57,8 @@ interface ScheduleRoutesContentDetail
   onAddPlan?: () => void; // 리스트 하단 "계획 추가하기" 타일 탭
   onReorder?: (from: number, to: number) => void; // 순서 변경 모드에서 드래그 완료 시 (시간 재계산 없음)
   onDeleteSchedule?: () => void; // 헤더 kebab "일정 삭제" → 일정 삭제 확인 모달
+  onOpenInfoSheet?: () => void; // 헤더 제목/메모 라인 탭 → 일정 정보 바텀시트 오픈
+  scheduleMemo?: string; // 일정 레벨 메모 — 서버 필드가 없어 브릿지 로컬 저장
 }
 
 // 최종 Props 유니온

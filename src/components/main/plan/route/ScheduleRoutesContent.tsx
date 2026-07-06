@@ -186,7 +186,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           ]}
         />
       )}
-      <div className="flex w-full p-6 bg-gray-white">
+      <div className="flex flex-col w-full p-6 bg-gray-white">
         <ScheduleRouteInfoHeader
           editMode={editMode}
           setEditMode={setEditMode}
@@ -196,7 +196,26 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           scheduleDate={scheduleDate}
           onEnterReorder={isEditable ? () => setReorderMode(true) : undefined}
           onDeleteSchedule={isEditable ? props.onDeleteSchedule : undefined}
+          onOpenInfoSheet={isEditable ? props.onOpenInfoSheet : undefined}
         />
+        {/* 일정 메모 라인 (detail 전용) — 탭하면 일정 정보 바텀시트 오픈 */}
+        {isEditable && props.onOpenInfoSheet && (
+          <button
+            type="button"
+            onClick={props.onOpenInfoSheet}
+            className="text-left w-full px-1 mt-1"
+          >
+            {props.scheduleMemo ? (
+              <span className="typo-caption text-gray-60">
+                {props.scheduleMemo}
+              </span>
+            ) : (
+              <span className="typo-caption text-gray-40">
+                이 일정에 대한 메모
+              </span>
+            )}
+          </button>
+        )}
       </div>
       {/* 순서 변경 모드 종료 툴바 (detail 전용) — 진입은 헤더 kebab "목록 편집" */}
       {isEditable && reorderMode && (
