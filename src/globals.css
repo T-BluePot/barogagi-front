@@ -32,6 +32,9 @@
   --color-peach-border: #ffd6c9;
   --color-peach-text: #e96a47;
 
+  /* Accent - 보조 강조색 (타임라인 인덱스 배지 등, peach와 대비되는 인디고 블루) */
+  --color-accent: #666cfb;
+
   /* Motion - 리디자인 공통 이징 */
   --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
 
