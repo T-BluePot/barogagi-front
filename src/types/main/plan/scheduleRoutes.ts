@@ -56,8 +56,8 @@ interface ScheduleRoutesContentDetail
   onCommitNote?: (planNum: number) => void; // 인라인 메모 blur 시 커밋
   onAddPlan?: () => void; // 리스트 하단 "계획 추가하기" 타일 탭
   onReorder?: (from: number, to: number) => void; // 순서 변경 모드에서 드래그 완료 시 (시간 재계산 없음)
-  onReorderCommit?: () => void; // 순서 변경 모드 "완료" 탭 — 누적 변경분을 한 번만 저장
-  onDeleteSchedule?: () => void; // 헤더 kebab "일정 삭제" → 일정 삭제 확인 모달
+  reorderMode?: boolean; // 순서 변경 모드 여부 — 앱 헤더 kebab이 진입시키므로 페이지 소유 상태
+  onExitReorder?: () => void; // 순서 변경 모드 "완료" 탭 — 모드 종료 + 누적 변경분 저장
   onOpenInfoSheet?: () => void; // 헤더 제목/메모 라인 탭 → 일정 정보 바텀시트 오픈
   scheduleMemo?: string; // 일정 레벨 메모 — 서버 필드가 없어 브릿지 로컬 저장
 }

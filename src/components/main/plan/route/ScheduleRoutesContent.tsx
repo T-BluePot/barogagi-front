@@ -108,9 +108,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   const isEditable = props.isEditable === true; // 카드(plan) 편집 여부
 
   // ----- 순서 변경 모드 (detail 전용) -----
-  // 일정명 편집(editMode)과는 독립된 상태 — 켜지면 카드에 드래그 핸들 표시
-  const [reorderMode, setReorderMode] = useState<boolean>(false);
-
+  // 앱 헤더 kebab이 진입시키므로 페이지가 소유한 상태를 props.reorderMode로 받음
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -194,8 +192,6 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           setScheduleName={onChangeScheduleName}
           onCommitScheduleName={onCommitScheduleName}
           scheduleDate={scheduleDate}
-          onEnterReorder={isEditable ? () => setReorderMode(true) : undefined}
-          onDeleteSchedule={isEditable ? props.onDeleteSchedule : undefined}
           onOpenInfoSheet={isEditable ? props.onOpenInfoSheet : undefined}
         />
         {/* 일정 메모 라인 (detail 전용) — 탭하면 일정 정보 바텀시트 오픈 */}
@@ -221,7 +217,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
         className="flex flex-col flex-1 w-full min-h-0 p-6 overflow-y-auto gap-4 hide-scrollbar"
         layoutScroll
       >
-        {isEditable && reorderMode ? (
+        {isEditable && props.reorderMode ? (
           // 순서 변경 모드: 핸들 드래그로 재정렬 (시간은 각 계획에 고정)
           <DndContext
             sensors={sensors}
@@ -281,13 +277,10 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
 
         {/* 하단 액션: 순서 변경 모드에선 "완료"(일괄 저장), 평상시엔 "계획 추가하기" */}
         {isEditable &&
-          (reorderMode ? (
+          (props.reorderMode ? (
             <CommonButton
               label="완료"
-              onClick={() => {
-                setReorderMode(false);
-                props.onReorderCommit?.();
-              }}
+              onClick={() => props.onExitReorder?.()}
             />
           ) : (
             props.onAddPlan && (

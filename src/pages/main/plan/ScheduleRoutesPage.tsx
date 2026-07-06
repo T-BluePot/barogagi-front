@@ -13,6 +13,8 @@ import { usePlanEditStore } from "@/stores/planEditStore";
 import SkeletonScheduleRoutesContent from "@/components/main/plan/route/SkeletonScheduleRoutesContent";
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
 import ScheduleInfoBottomSheet from "@/components/main/plan/route/ScheduleInfoBottomSheet";
+import ScheduleDetailMenu from "@/components/main/plan/route/ScheduleDetailMenu";
+import { BackHeader } from "@/components/common/headers/BackHeader";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
@@ -385,6 +387,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     });
   };
 
+  // ----- 순서 변경 모드 (detail 전용) -----
+  // 앱 헤더 kebab "목록 편집"이 진입시키므로 페이지가 상태를 소유하고 콘텐츠에 내려줌
+  const [reorderMode, setReorderMode] = useState<boolean>(false);
+
   // 순서 변경 일괄 저장: reorder 모드 진입 후 첫 변경 시점의 상태를 롤백용으로 보관
   const reorderSnapshotRef = useRef<{
     plans: PlanRegistResDTO[];
@@ -421,6 +427,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     });
     setReorderDirty(false);
     reorderSnapshotRef.current = null;
+  };
+
+  // 콘텐츠 하단 "완료" 탭 — 순서 변경 모드 종료 + 누적 변경분 일괄 저장
+  const handleExitReorder = () => {
+    setReorderMode(false);
+    handleReorderCommit();
   };
 
   // ----- 계획 제목 수정 모달 -----
@@ -586,7 +598,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   }
 
   if (isDetail && isDetailLoading) {
-    return <SkeletonScheduleRoutesContent />;
+    return (
+      <div className="flex flex-col w-full h-full bg-gray-5">
+        <BackHeader onClick={() => navigate(-1)} />
+        <SkeletonScheduleRoutesContent />
+      </div>
+    );
   }
 
   return (
@@ -802,6 +819,16 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         />
       )}
       {isDetail && (
+        <BackHeader onClick={() => navigate(-1)}>
+          <div className="flex w-full justify-end">
+            <ScheduleDetailMenu
+              onEnterReorder={() => setReorderMode(true)}
+              onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
+            />
+          </div>
+        </BackHeader>
+      )}
+      {isDetail && (
         <ScheduleRoutesContent
           header={{
             scheduleDate,
@@ -818,8 +845,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           onChangeNote={handleChangeNote}
           onCommitNote={handleCommitNote}
           onReorder={handleReorder}
-          onReorderCommit={handleReorderCommit}
-          onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
+          reorderMode={reorderMode}
+          onExitReorder={handleExitReorder}
           onOpenInfoSheet={() => setIsInfoSheetOpen(true)}
           scheduleMemo={scheduleMemo}
         />
