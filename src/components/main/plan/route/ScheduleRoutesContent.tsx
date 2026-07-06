@@ -127,6 +127,8 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
                   isOpen={isOpen}
                   onToggleOpen={() => handleToggleOpen(planNum)}
                   mode="create"
+                  kept={props.keptIndexes?.has(index) ?? false}
+                  onToggleKept={() => props.onToggleKept?.(index)}
                 />
               )}
             </div>

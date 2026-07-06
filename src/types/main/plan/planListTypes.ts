@@ -18,12 +18,16 @@ interface PlanDetailCardBase {
 export interface PlanDetailCardSimple extends PlanDetailCardBase {
   mode: "create";
   onOpenCardMenu?: never;
+  kept?: boolean; // "유지" 체크 여부 (다시 만들기 시 유지 대상 표시)
+  onToggleKept?: () => void; // "유지" 체크 토글 콜백
 }
 
 // detail 모드
 export interface PlanDetailCardEdit extends PlanDetailCardBase {
   mode: "detail";
   onOpenCardMenu: (info: CardMenuAnchorInfo) => void;
+  kept?: never;
+  onToggleKept?: never;
 }
 
 export type PlanDetailCardProps = PlanDetailCardSimple | PlanDetailCardEdit;

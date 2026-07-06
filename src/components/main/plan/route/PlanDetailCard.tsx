@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { PlanInfoItem } from "./PlanInfoItem";
 import { TextTag } from "@/components/common/tags/TextTag";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CheckIcon from "@mui/icons-material/Check";
 import { GradientImage } from "../create/GradientImage";
 import fallbackImg from "@/assets/images/category/category_default.jpg";
 // === types ===
@@ -17,7 +18,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const simple = props.mode === "create";
   const edit = props.mode === "detail";
 
-  const { plan, src, isOpen, onToggleOpen, index } = props;
+  const { plan, src, isOpen, onToggleOpen, index, kept, onToggleKept } = props;
 
   const planName = plan.planNm ?? "";
   const startTime = plan.startTime;
@@ -103,8 +104,29 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
               </motion.div>
             )}
           </div>
-          {/* 우상단 영역: detail은 더보기 버튼, create는 자리 유지(추후 체크박스 예정) */}
+          {/* 우상단 영역: detail은 더보기 버튼, create는 "유지" 체크박스 */}
           <div>
+            {simple && (
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={kept ?? false}
+                aria-label={`${planName} 유지하기`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleKept?.();
+                }}
+                className={`shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${
+                  kept
+                    ? "bg-main border-main"
+                    : "bg-gray-white border-gray-20"
+                }`}
+              >
+                <CheckIcon
+                  className={`text-[16px]! ${kept ? "text-white" : "text-transparent"}`}
+                />
+              </button>
+            )}
             {edit && (
               <button
                 ref={moreButtonRef}

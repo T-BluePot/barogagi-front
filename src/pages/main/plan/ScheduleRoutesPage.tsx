@@ -60,6 +60,21 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const [isLoading, setIsLoading] = useState(isCreate);
   const [isDetailLoading, setIsDetailLoading] = useState(isDetail);
 
+  // create: "유지" 체크된 카드 index 집합 (로컬 상태 — 서버 DTO에 넣지 않음)
+  // create 플랜은 planNum이 없어 index로 식별하며, 다시 만들기 시 유지 대상 표시에 사용
+  const [keptIndexes, setKeptIndexes] = useState<Set<number>>(new Set());
+
+  const toggleKept = (index: number) =>
+    setKeptIndexes((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+
   // useRef로 중복 호출 방지
   // sessionStorage와 달리 컴포넌트 인스턴스에 묶여있어 탭 간 공유 / 이전 값 잔류 문제가 없음
   // React StrictMode의 마운트→언마운트→재마운트 사이클에서도 정확히 1회 fetch 보장
@@ -554,6 +569,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
           }}
+          keptIndexes={keptIndexes}
+          onToggleKept={toggleKept}
         />
       )}
       {isDetail && (

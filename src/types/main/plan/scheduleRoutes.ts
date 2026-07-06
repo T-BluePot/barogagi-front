@@ -37,6 +37,8 @@ interface ScheduleRoutesContentBase {
 interface ScheduleRoutesContentCreate extends ScheduleRoutesContentBase {
   isEditable: false; // create 모드에서는 false로 구분
   footer: CreateFooterProps;
+  keptIndexes?: Set<number>; // "유지" 체크된 카드 index 집합 (페이지 로컬 상태)
+  onToggleKept?: (index: number) => void; // index 카드의 "유지" 체크 토글
 }
 
 // detail 화면: 편집 가능 + 액션 필수
@@ -44,6 +46,8 @@ interface ScheduleRoutesContentDetail
   extends ScheduleRoutesContentBase, EditActionsProps {
   isEditable: true;
   footer?: never;
+  keptIndexes?: never;
+  onToggleKept?: never;
 }
 
 // 최종 Props 유니온
