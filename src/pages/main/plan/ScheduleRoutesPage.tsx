@@ -344,6 +344,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     if (!currentDraft) return;
     setDraft({
       ...currentDraft,
+      plan: {
+        ...currentDraft.plan,
+        // 이름이 비어 있으면 장소명으로 자동 채움 (장소만 골라도 계획명이 확보돼 저장 가능)
+        planNm: currentDraft.plan.planNm.trim() || place.placeName,
+      },
       place: {
         placeNum: null,
         placeNm: place.placeName,
@@ -489,13 +494,14 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     if (draft && name && scheduleResult) {
       const newPlan: PlanRegistResDTO = {
         // 사용자가 직접 추가한 계획 — 백엔드가 AI 아이템(itemNum)을 요구하지 않도록 source 명시
+        // 장소(placeUrl) 있으면 USER_PLACE, 이름만이면 USER_CUSTOM
         planSource: draft.place.placeUrl ? "USER_PLACE" : "USER_CUSTOM",
         planNm: name,
         startTime: draft.plan.startTime,
         endTime: draft.plan.endTime,
+        // 장소 식별/표시 값: 카카오 URL + 주소 (regionNm은 지역용이라 넣지 않음 → 카드는 planAddress로 표시)
         planLink: draft.place.placeUrl || undefined,
         planAddress: draft.place.address || undefined,
-        regionNm: draft.place.placeNm || undefined,
       };
       const prevPlans = planList;
       const prevSchedule = scheduleResult;
