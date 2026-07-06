@@ -5,7 +5,8 @@ import { PlanInfoItem } from "./PlanInfoItem";
 import { TextTag } from "@/components/common/tags/TextTag";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CheckIcon from "@mui/icons-material/Check";
-import { GradientImage } from "../create/GradientImage";
+import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import fallbackImg from "@/assets/images/category/category_default.jpg";
 // === types ===
 import type { PlanDetailCardProps } from "@/types/main/plan/planListTypes";
@@ -70,19 +71,22 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
       {/* 왼쪽 타임라인 레일: 순번 배지 + 시작~종료 시간 + 점선 연결선 */}
       <div className="flex w-11 shrink-0 flex-col items-center gap-2 pt-1">
         {index != null && (
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-white typo-tag">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-main text-white typo-tag">
             {index + 1}
           </span>
         )}
         {startTime && (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center gap-1">
             <span className="typo-caption text-gray-black tabular-nums">
               {startTime}
             </span>
             {endTime && (
-              <span className="typo-tag text-gray-40 tabular-nums">
-                {endTime}
-              </span>
+              <>
+                <span className="w-2 h-px bg-gray-20" />
+                <span className="typo-tag text-gray-40 tabular-nums">
+                  {endTime}
+                </span>
+              </>
             )}
           </div>
         )}
@@ -93,7 +97,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
       <motion.div
         layout
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="flex flex-1 min-w-0 flex-col items-baseline px-2 py-4 bg-gray-white rounded-xl gap-4 select-none shadow-md overflow-hidden"
+        className="flex flex-1 min-w-0 flex-col items-baseline px-5 py-4 bg-gray-white rounded-xl gap-4 select-none shadow-md overflow-hidden"
         onClick={() => {
           if (reorderMode) return; // 순서 변경 중엔 확장 토글 비활성
           if (!placeLink && !isOpen) return;
@@ -104,7 +108,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
           layout="position"
           className="flex w-full justify-between items-baseline"
         >
-          <div className="flex flex-col justify-start items-start gap-2 pl-3">
+          <div className="flex flex-col justify-start items-start gap-2">
             <span className="typo-subtitle truncate">{planName}</span>
             {planPlace && <PlanInfoItem variant="location" value={planPlace} />}
             {tagNames.length > 0 && (
@@ -179,21 +183,38 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, delay: 0.08 }}
-            className="flex px-3 w-full"
+            className="w-full"
             onClick={handleMapClick}
           >
-            <GradientImage src={imageSrc} alt={planName}>
-              <div className="flex flex-wrap flex-col w-full items-baseline gap-1">
-                {placeAddress && (
-                  <span className="typo-tag text-gray-20">{placeAddress}</span>
-                )}
+            <div className="w-full rounded-2xl overflow-hidden border border-gray-10 cursor-pointer">
+              <div className="relative">
+                <img
+                  src={imageSrc}
+                  alt={planName}
+                  className="w-full h-36 object-cover"
+                  loading="lazy"
+                />
+                <span className="absolute top-2.5 right-2.5 flex items-center gap-1 typo-tag font-semibold text-gray-80 bg-gray-white/90 backdrop-blur-sm border border-gray-white/60 rounded-full px-2.5 py-1.5 shadow-sm">
+                  <MapOutlinedIcon className="text-[14px]!" />
+                  지도 보러가기
+                </span>
+              </div>
+              <div className="flex flex-col gap-1.5 p-4 bg-gray-5">
                 {placeInfo && (
-                  <span className="typo-tag text-gray-white text-left">
+                  <span className="typo-caption text-gray-70 leading-relaxed">
                     {placeInfo}
                   </span>
                 )}
+                {(placeAddress || planPlace) && (
+                  <span className="flex items-center gap-1 typo-tag text-gray-50 min-w-0">
+                    <LocationOnIcon className="text-[14px]! text-main shrink-0" />
+                    <span className="truncate">
+                      {placeAddress || planPlace}
+                    </span>
+                  </span>
+                )}
               </div>
-            </GradientImage>
+            </div>
           </motion.div>
         )}
       </motion.div>
