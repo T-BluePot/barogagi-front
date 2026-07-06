@@ -44,17 +44,31 @@ export const toUserPlaceReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
   },
 });
 
-/** 재생성: 미체크 계획 → AI 슬롯 요청 DTO (AI가 재추천) */
-export const toAIReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
-  isUserAdded: "N",
+/** 재생성: 미체크 AI 계획 → AI 슬롯 요청 DTO (AI가 재추천) */
+export const toAIReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => {
+  // categoryNum이 0/undefined면 유효 카테고리가 없는 것 → 랜덤 카테고리로 재추천
+  const hasCategory = !!plan.categoryNum;
+  return {
+    isUserAdded: "N",
+    isRandomCategory: hasCategory ? "N" : "Y",
+    startTime: plan.startTime,
+    endTime: plan.endTime,
+    ...(hasCategory
+      ? { itemNum: plan.itemNum, categoryNum: plan.categoryNum }
+      : {}),
+    regionRegistReqDTOList:
+      plan.regionNum != null ? [{ regionNum: plan.regionNum }] : [],
+    planTagRegistReqDTOList: (plan.planTagRegistResDTOList ?? []).map((t) => ({
+      tagNum: t.tagNum,
+    })),
+  };
+};
+
+/** 재생성: 유지되는 USER_CUSTOM 계획 → 이름만 있는 사용자 계획 요청 DTO */
+export const toUserCustomReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
+  isUserAdded: "Y",
   isRandomCategory: "N",
   startTime: plan.startTime,
   endTime: plan.endTime,
-  itemNum: plan.itemNum,
-  categoryNum: plan.categoryNum,
-  regionRegistReqDTOList:
-    plan.regionNum != null ? [{ regionNum: plan.regionNum }] : [],
-  planTagRegistReqDTOList: (plan.planTagRegistResDTOList ?? []).map((t) => ({
-    tagNum: t.tagNum,
-  })),
+  planNm: plan.planNm,
 });

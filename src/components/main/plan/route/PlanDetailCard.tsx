@@ -44,6 +44,9 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const placeLink = plan.planLink ?? "";
   const tagNames = (plan.planTagRegistResDTOList ?? []).map((t) => t.tagNm);
   const planNum = plan.planNum;
+  // 사용자가 만든 계획(USER_*)은 재생성 시 항상 유지 → 체크 고정 + 비활성
+  const isUserKept =
+    plan.planSource === "USER_PLACE" || plan.planSource === "USER_CUSTOM";
   const imageSource = plan.imageLink ?? plan.imageUrl;
   const proxyImageUrl = imageSource
     ? `${API_BASE_URL}${ENDPOINTS.SCHEDULE.IMAGE_PROXY}?url=${encodeURIComponent(imageSource)}`
@@ -128,20 +131,23 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
               <button
                 type="button"
                 role="checkbox"
-                aria-checked={kept ?? false}
+                aria-checked={isUserKept || (kept ?? false)}
                 aria-label={`${planName} 유지하기`}
+                disabled={isUserKept}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onToggleKept?.();
+                  if (!isUserKept) onToggleKept?.();
                 }}
-                className={`shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${
-                  kept
+                className={`shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                  isUserKept || kept
                     ? "bg-main border-main"
                     : "bg-gray-white border-gray-20"
-                }`}
+                } ${isUserKept ? "opacity-60" : ""}`}
               >
                 <CheckIcon
-                  className={`text-[16px]! ${kept ? "text-white" : "text-transparent"}`}
+                  className={`text-[13px]! ${
+                    isUserKept || kept ? "text-white" : "text-transparent"
+                  }`}
                 />
               </button>
             )}

@@ -37,7 +37,12 @@ import type {
   ScheduleListResDTO,
   UserAddedPlaceDTO,
 } from "@/api/types";
-import { toCommonPlan, toUserPlaceReq, toAIReq } from "@/utils/api/planMapper";
+import {
+  toCommonPlan,
+  toUserPlaceReq,
+  toAIReq,
+  toUserCustomReq,
+} from "@/utils/api/planMapper";
 import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMutation";
 import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
@@ -493,13 +498,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const name = draft?.plan.planNm.trim() ?? "";
     if (draft && name && scheduleResult) {
       const newPlan: PlanRegistResDTO = {
-        // 사용자가 직접 추가한 계획 — 백엔드가 AI 아이템(itemNum)을 요구하지 않도록 source 명시
-        // 장소(placeUrl) 있으면 USER_PLACE, 이름만이면 USER_CUSTOM
+        // 사용자가 직접 추가한 계획 — 서버의 사용자 계획과 동일 shape로 전송
+        // (detail 응답: USER_* 계획은 itemNum:0/categoryNum:0 으로 저장 → 아이템 조회 스킵)
         planSource: draft.place.placeUrl ? "USER_PLACE" : "USER_CUSTOM",
+        itemNum: 0,
+        categoryNum: 0,
         planNm: name,
         startTime: draft.plan.startTime,
         endTime: draft.plan.endTime,
-        // 장소 식별/표시 값: 카카오 URL + 주소 (regionNm은 지역용이라 넣지 않음 → 카드는 planAddress로 표시)
+        // 장소 식별/표시: 카카오 URL + 주소 (regionNm은 지역용이라 넣지 않음)
         planLink: draft.place.placeUrl || undefined,
         planAddress: draft.place.address || undefined,
       };
@@ -567,9 +574,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     try {
       const req = buildRequest();
       req.scheduleNm = scheduleName || req.scheduleNm;
-      req.planRegistReqDTOList = planList.map((p, i) =>
-        keptIndexes.has(i) ? toUserPlaceReq(p) : toAIReq(p)
-      );
+      req.planRegistReqDTOList = planList.map((p, i) => {
+        const isUserMade =
+          p.planSource === "USER_PLACE" || p.planSource === "USER_CUSTOM";
+        // 사용자가 만든 계획은 항상 유지, AI 계획은 체크 시 유지
+        const keep = isUserMade || keptIndexes.has(i);
+        if (!keep) return toAIReq(p); // 미체크 AI → 재추천
+        if (p.planSource === "USER_CUSTOM") return toUserCustomReq(p);
+        return toUserPlaceReq(p); // USER_PLACE 또는 체크된 AI → 장소 고정
+      });
       const res = await createSchedule(req);
       if (res.code !== "S201") {
         toast(res.message ?? "일정 재생성에 실패했습니다.");
@@ -578,18 +591,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       const nextPlans = res.data?.planRegistResDTOList ?? [];
       setScheduleResult(res.data);
       setPlanList(nextPlans);
-      // 유지(USER_PLACE/USER_CUSTOM)로 돌아온 계획은 체크 상태 복원
-      setKeptIndexes(
-        new Set(
-          nextPlans
-            .map((p, i) =>
-              p.planSource === "USER_PLACE" || p.planSource === "USER_CUSTOM"
-                ? i
-                : -1
-            )
-            .filter((i) => i >= 0)
-        )
-      );
+      // 재생성 후 체크 초기화 (유지 여부는 planSource로 판별하므로 수동 체크 불필요)
+      setKeptIndexes(new Set());
     } catch (err) {
       if (err instanceof AxiosError) {
         toast(err.response?.data?.message ?? "일정 재생성에 실패했습니다.");
@@ -824,7 +827,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
             onRegenerate: handleRegenerate,
-            keptCount: keptIndexes.size,
+            keptCount: planList.filter(
+              (p, i) =>
+                p.planSource === "USER_PLACE" ||
+                p.planSource === "USER_CUSTOM" ||
+                keptIndexes.has(i)
+            ).length,
           }}
           keptIndexes={keptIndexes}
           onToggleKept={toggleKept}

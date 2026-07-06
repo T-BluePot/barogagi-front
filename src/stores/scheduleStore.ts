@@ -24,7 +24,7 @@ const initialDraft: ScheduleDraftType = {
   endDate: "",
   comment: "",
   ages: [],
-  people: 2,
+  people: 0, // 필수값 아님 — 0이면 미선택(서버 전송 시 제외)
   purpose: "",
   scheduleTagRegistReqDTOList: [],
   scheduleRegionRegistReqDTOList: [],
@@ -95,7 +95,7 @@ function buildComment(draft: ScheduleDraftType): string | undefined {
   if (draft.ages && draft.ages.length > 0) {
     parts.push(`연령대: ${draft.ages.join(", ")}`);
   }
-  if (draft.people != null) {
+  if (draft.people && draft.people > 0) {
     parts.push(`인원수: ${draft.people}명`);
   }
   const purpose = draft.purpose?.trim();
