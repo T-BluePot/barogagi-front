@@ -385,24 +385,42 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     });
   };
 
-  // 순서 변경: 배열만 재정렬(시간은 각 계획에 고정), 옵티미스틱 updateSchedule
+  // 순서 변경 일괄 저장: reorder 모드 진입 후 첫 변경 시점의 상태를 롤백용으로 보관
+  const reorderSnapshotRef = useRef<{
+    plans: PlanRegistResDTO[];
+    schedule: ScheduleRegistResDTO;
+  } | null>(null);
+  const [reorderDirty, setReorderDirty] = useState(false);
+
+  // reorder 중: 로컬 배열만 재정렬 (PUT 안 함). 첫 변경 시 롤백용 스냅샷 저장.
   const handleReorder = (from: number, to: number) => {
     if (!scheduleResult || from === to) return;
-    const prevPlans = planList;
-    const prevSchedule = scheduleResult;
+    if (!reorderDirty) {
+      reorderSnapshotRef.current = { plans: planList, schedule: scheduleResult };
+      setReorderDirty(true);
+    }
     const updatedPlans = arrayMove(planList, from, to);
-    const updatedSchedule = {
-      ...scheduleResult,
-      planRegistResDTOList: updatedPlans,
-    };
     setPlanList(updatedPlans);
-    setScheduleResult(updatedSchedule);
-    updateMutation.mutate(updatedSchedule, {
+    setScheduleResult({ ...scheduleResult, planRegistResDTOList: updatedPlans });
+  };
+
+  // "완료": 변경분 있으면 한 번만 PUT. 실패 시 스냅샷으로 롤백.
+  const handleReorderCommit = () => {
+    if (!reorderDirty || !scheduleResult) {
+      setReorderDirty(false);
+      return;
+    }
+    const snapshot = reorderSnapshotRef.current;
+    updateMutation.mutate(scheduleResult, {
       onError: () => {
-        setPlanList(prevPlans);
-        setScheduleResult(prevSchedule);
+        if (snapshot) {
+          setPlanList(snapshot.plans);
+          setScheduleResult(snapshot.schedule);
+        }
       },
     });
+    setReorderDirty(false);
+    reorderSnapshotRef.current = null;
   };
 
   // ----- 계획 제목 수정 모달 -----
@@ -800,6 +818,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           onChangeNote={handleChangeNote}
           onCommitNote={handleCommitNote}
           onReorder={handleReorder}
+          onReorderCommit={handleReorderCommit}
           onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
           onOpenInfoSheet={() => setIsInfoSheetOpen(true)}
           scheduleMemo={scheduleMemo}

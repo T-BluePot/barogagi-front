@@ -22,7 +22,7 @@ import ScheduleRouteInfoHeader from "@/components/main/plan/route/ScheduleRouteI
 
 import PlanDetailCard from "@/components/main/plan/route/PlanDetailCard";
 import PopMenu from "@/components/common/menu/PopMenu";
-import TextButton from "@/components/common/buttons/TextButton";
+import CommonButton from "@/components/common/buttons/CommonButton";
 import type { CardMenuAnchorInfo } from "@/types/main/plan/planListTypes";
 import type { PlanRegistResDTO } from "@/api/types";
 
@@ -217,16 +217,6 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           </button>
         )}
       </div>
-      {/* 순서 변경 모드 종료 툴바 (detail 전용) — 진입은 헤더 kebab "목록 편집" */}
-      {isEditable && reorderMode && (
-        <div className="flex justify-end px-6 pt-2">
-          <TextButton
-            label="완료"
-            variant="main"
-            onClick={() => setReorderMode(false)}
-          />
-        </div>
-      )}
       <motion.div
         className="flex flex-col flex-1 w-full min-h-0 p-6 overflow-y-auto gap-4 hide-scrollbar"
         layoutScroll
@@ -289,16 +279,28 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           })
         )}
 
-        {isEditable && props.onAddPlan && (
-          <button
-            type="button"
-            onClick={props.onAddPlan}
-            className="flex items-center justify-center gap-1.5 w-full py-4 rounded-2xl bg-gray-10 text-gray-60 typo-body active:bg-gray-20 transition-colors"
-          >
-            <AddIcon className="text-title-02!" />
-            계획 추가하기
-          </button>
-        )}
+        {/* 하단 액션: 순서 변경 모드에선 "완료"(일괄 저장), 평상시엔 "계획 추가하기" */}
+        {isEditable &&
+          (reorderMode ? (
+            <CommonButton
+              label="완료"
+              onClick={() => {
+                setReorderMode(false);
+                props.onReorderCommit?.();
+              }}
+            />
+          ) : (
+            props.onAddPlan && (
+              <button
+                type="button"
+                onClick={props.onAddPlan}
+                className="flex items-center justify-center gap-1.5 w-full py-4 rounded-2xl bg-gray-10 text-gray-60 typo-body active:bg-gray-20 transition-colors"
+              >
+                <AddIcon className="text-title-02!" />
+                계획 추가하기
+              </button>
+            )
+          ))}
       </motion.div>
 
       {!isEditable && (
