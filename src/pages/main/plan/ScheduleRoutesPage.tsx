@@ -50,6 +50,18 @@ import type { TimeValue } from "@/utils/date";
 import { getScheduleMemo, setScheduleMemo } from "@/utils/scheduleMemoStorage";
 import { useLoadingStore } from "@/stores/loadingStore";
 
+// 순서 변경 시 시간 재계산용 헬퍼 (HH:mm ↔ 분)
+const toMin = (t: string) => {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+};
+const toHHMM = (min: number) => {
+  const clamped = Math.max(0, Math.min(min, 1439));
+  return `${String(Math.floor(clamped / 60)).padStart(2, "0")}:${String(
+    clamped % 60
+  ).padStart(2, "0")}`;
+};
+
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
 
@@ -407,17 +419,38 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     schedule: ScheduleRegistResDTO;
   } | null>(null);
   const [reorderDirty, setReorderDirty] = useState(false);
+  // 순서 변경 세션 기준값: 첫 블록 시작(anchor) + 위치별 공백(idle)
+  const reorderMetaRef = useRef<{ anchor: number; gaps: number[] } | null>(null);
 
-  // reorder 중: 로컬 배열만 재정렬 (PUT 안 함). 첫 변경 시 롤백용 스냅샷 저장.
+  // reorder 중: 로컬만 재정렬 + 시간 재계산(PUT 안 함). 첫 변경 시 롤백용 스냅샷 저장.
+  // 각 블록 진행시간(종료−시작) 유지, anchor부터 순서대로 재부여, 위치별 공백 보존.
   const handleReorder = (from: number, to: number) => {
     if (!scheduleResult || from === to) return;
     if (!reorderDirty) {
       reorderSnapshotRef.current = { plans: planList, schedule: scheduleResult };
+      // 원본 기준: 첫 블록 시작(anchor) + 위치별 공백(idle) 캡처
+      reorderMetaRef.current = {
+        anchor: toMin(planList[0]?.startTime ?? "00:00"),
+        gaps: planList
+          .slice(0, -1)
+          .map((p, i) =>
+            Math.max(0, toMin(planList[i + 1].startTime) - toMin(p.endTime))
+          ),
+      };
       setReorderDirty(true);
     }
-    const updatedPlans = arrayMove(planList, from, to);
-    setPlanList(updatedPlans);
-    setScheduleResult({ ...scheduleResult, planRegistResDTOList: updatedPlans });
+    const meta = reorderMetaRef.current;
+    const moved = arrayMove(planList, from, to);
+    let cursor = meta?.anchor ?? toMin(moved[0]?.startTime ?? "00:00");
+    const reflowed = moved.map((p, i) => {
+      const dur = Math.max(0, toMin(p.endTime) - toMin(p.startTime));
+      const start = cursor;
+      const end = cursor + dur;
+      cursor = end + (meta?.gaps[i] ?? 0); // 다음 블록 시작 = 종료 + 위치별 공백
+      return { ...p, startTime: toHHMM(start), endTime: toHHMM(end) };
+    });
+    setPlanList(reflowed);
+    setScheduleResult({ ...scheduleResult, planRegistResDTOList: reflowed });
   };
 
   // "완료": 변경분 있으면 한 번만 PUT. 실패 시 스냅샷으로 롤백.
@@ -437,6 +470,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     });
     setReorderDirty(false);
     reorderSnapshotRef.current = null;
+    reorderMetaRef.current = null;
   };
 
   // 콘텐츠 하단 "완료" 탭 — 순서 변경 모드 종료 + 누적 변경분 일괄 저장
