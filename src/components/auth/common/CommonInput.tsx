@@ -74,7 +74,8 @@ export const CommonInput = ({
               backgroundColor: "var(--color-gray-white)",
               "&:hover": { backgroundColor: "var(--color-gray-white)" },
               "&.Mui-focused": { backgroundColor: "var(--color-gray-white)" },
-              "&:before": { borderBottomColor: "#dddddd" },
+              // 아래 SelectTriggerButton(border-gray-20)과 색 통일 (#dddddd는 더 연했음)
+              "&:before": { borderBottomColor: "var(--color-gray-20)" },
               "&:hover:before": { borderBottomColor: "var(--color-main-dark)" },
               "&.Mui-focused:after": { borderBottomColor: "var(--color-main)" },
             },
