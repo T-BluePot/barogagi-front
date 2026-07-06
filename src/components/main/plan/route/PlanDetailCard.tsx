@@ -100,7 +100,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
       <motion.div
         layout
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="flex flex-1 min-w-0 flex-col items-baseline px-5 py-4 bg-gray-white rounded-xl gap-4 select-none shadow-md overflow-hidden"
+        className="flex flex-1 min-w-0 flex-col items-baseline px-5 pt-5 pb-4 bg-gray-white rounded-xl gap-4 select-none shadow-md overflow-hidden"
         onClick={() => {
           if (reorderMode) return; // 순서 변경 중엔 확장 토글 비활성
           if (!placeLink && !isOpen) return;

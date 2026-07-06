@@ -26,7 +26,7 @@ const ScheduleRouteInfoHeader = ({
   onOpenInfoSheet,
 }: InfoHeaderProps) => {
   return (
-    <header className="flex flex-col w-full gap-1">
+    <header className="flex flex-col w-full gap-2">
       {/* 날짜 영역 */}
       <div className="flex px-1 w-full justify-between">
         <span className="typo-subtitle text-gray-80">{scheduleDate}</span>

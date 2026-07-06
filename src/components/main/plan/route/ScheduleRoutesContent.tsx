@@ -199,7 +199,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           <button
             type="button"
             onClick={props.onOpenInfoSheet}
-            className="text-left w-full px-1 mt-1"
+            className="text-left w-full px-1 mt-2"
           >
             {props.scheduleMemo ? (
               <span className="typo-caption text-gray-60">
