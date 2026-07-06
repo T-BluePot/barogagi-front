@@ -533,6 +533,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     if (draft && name && scheduleResult) {
       const newPlan: PlanRegistResDTO = {
         // 사용자가 직접 추가한 계획 — 서버의 사용자 계획과 동일 shape로 전송
+        // (실험) 마지막 계획 planNum + 1 을 임의 부여 — 원래 신규는 planNum 없이 보냈음
+        planNum: (planList[planList.length - 1]?.planNum ?? 0) + 1,
         // (detail 응답: USER_* 계획은 itemNum:0/categoryNum:0 으로 저장 → 아이템 조회 스킵)
         planSource: draft.place.placeUrl ? "USER_PLACE" : "USER_CUSTOM",
         itemNum: 0,
