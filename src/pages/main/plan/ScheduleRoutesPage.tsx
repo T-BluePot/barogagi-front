@@ -471,9 +471,13 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   const handleRequestAdd = () => {
     const lastEnd = planList[planList.length - 1]?.endTime || "09:00";
+    // 새 계획 기본값: 이전 계획 종료 시각부터 1시간 (블록 기본 용량)
+    const [h, m] = lastEnd.split(":").map(Number);
+    const endTotal = Math.min(h * 60 + m + 60, 23 * 60 + 59);
+    const defaultEnd = `${String(Math.floor(endTotal / 60)).padStart(2, "0")}:${String(endTotal % 60).padStart(2, "0")}`;
     setDraft({
       planNum: 0, // add 모드에선 미사용 (append 시 planNum 없이 신규 생성)
-      plan: { planNm: "", startTime: lastEnd, endTime: lastEnd },
+      plan: { planNm: "", startTime: lastEnd, endTime: defaultEnd },
       place: { placeNum: null, placeNm: "", address: "", placeUrl: "" },
     });
     setIsAddModalOpen(true);
@@ -484,6 +488,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const name = draft?.plan.planNm.trim() ?? "";
     if (draft && name && scheduleResult) {
       const newPlan: PlanRegistResDTO = {
+        // 사용자가 직접 추가한 계획 — 백엔드가 AI 아이템(itemNum)을 요구하지 않도록 source 명시
+        planSource: draft.place.placeUrl ? "USER_PLACE" : "USER_CUSTOM",
         planNm: name,
         startTime: draft.plan.startTime,
         endTime: draft.plan.endTime,
@@ -708,7 +714,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           info={{
             mode: "UserCustom",
             planNum: editDraft.planNum,
-            planNm: editDraft.plan.planNm,
+            planNm: editDraft.plan.planNm || undefined,
             startTime: editDraft.plan.startTime,
             endTime: editDraft.plan.endTime,
             address: editDraft.place.address,
