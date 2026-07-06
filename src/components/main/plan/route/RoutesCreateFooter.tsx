@@ -36,29 +36,36 @@ const RoutesCreateFooter = ({
   return (
     <>
       <div className="h-2 bg-gradient-to-b from-gray-white/0 to-gray-white" />
-      <div className="flex items-center gap-2 w-full p-6 pt-2 bg-gray-white">
-        <button
-          type="button"
-          ref={helpButtonRef}
-          onClick={toggleHelp}
-          aria-label="다시 만들기 안내"
-          className="shrink-0 p-2 transition-opacity active:opacity-70"
-        >
-          <HelpOutlineIcon className="text-title-02! text-gray-40" />
-        </button>
-        <button
-          type="button"
-          onClick={onRegenerate}
-          className="flex items-center gap-1 shrink-0 px-3 py-3 typo-body text-gray-50 active:text-gray-black transition-colors"
-        >
-          <RefreshIcon className="text-title-02!" />
-          {ROUTES_CREATE_TEXT.FOOTER_REGENERATE_LABEL}
-        </button>
-        <div className="flex-1">
-          <Button
-            label={ROUTES_CREATE_TEXT.FOOTER_BUTTON_LABEL}
-            onClick={onConfirm}
-          />
+      <div className="flex flex-col gap-3 w-full p-6 pt-2 bg-gray-white">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            ref={helpButtonRef}
+            onClick={toggleHelp}
+            aria-label="다시 만들기 안내"
+            className="flex items-center gap-1 shrink-0 p-2 transition-opacity active:opacity-70"
+          >
+            <HelpOutlineIcon className="text-title-02! text-gray-40" />
+            <span className="typo-caption text-gray-40">
+              일정 다시 만들기란?
+            </span>
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onRegenerate}
+            className="flex items-center gap-1 shrink-0 px-3 py-3 typo-body text-gray-50 active:text-gray-black transition-colors"
+          >
+            <RefreshIcon className="text-title-02!" />
+            {ROUTES_CREATE_TEXT.FOOTER_REGENERATE_LABEL}
+          </button>
+          <div className="flex-1">
+            <Button
+              label={ROUTES_CREATE_TEXT.FOOTER_BUTTON_LABEL}
+              onClick={onConfirm}
+            />
+          </div>
         </div>
       </div>
       <Popper
