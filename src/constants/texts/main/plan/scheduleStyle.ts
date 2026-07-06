@@ -9,7 +9,7 @@ export const SCHEDULE_STYLE_TEXT = {
   PEOPLE_LABEL: "인원수",
   PURPOSE_LABEL: "목적",
   PURPOSE_PLACEHOLDER: "예) 데이트",
-  NOTE_LABEL: "여유 참고사항",
+  NOTE_LABEL: "추가사항",
   PLACEHOLDER: "일정 스타일, 선호 사항 등을 자유롭게 적어주세요",
   NEXT_BUTTON: "일정 생성하기",
 } as const;

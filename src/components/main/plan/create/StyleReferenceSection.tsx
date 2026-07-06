@@ -23,7 +23,7 @@ interface StyleReferenceSectionProps {
 }
 
 /**
- * 일정 참고사항 섹션 — 연령대(다중) / 인원수 / 목적 / 자유 참고사항.
+ * 일정 참고사항 섹션 — 연령대(다중) / 인원수 / 목적 / 추가사항.
  * 입력값은 draft에 저장되고, 생성 시 하나의 comment 문자열로 집계돼 서버로 전송된다.
  */
 const StyleReferenceSection = ({
@@ -46,9 +46,9 @@ const StyleReferenceSection = ({
       <div className="flex w-full flex-col gap-6">
         {/* 연령대 (다중 선택) */}
         <div className="flex flex-col gap-2">
-          <p className="typo-caption text-gray-50">
+          <p className="typo-subtitle text-gray-black">
             {SCHEDULE_STYLE_TEXT.AGE_LABEL}{" "}
-            <span className="typo-tag text-gray-30">
+            <span className="typo-caption text-gray-40">
               ({SCHEDULE_STYLE_TEXT.AGE_HINT})
             </span>
           </p>
@@ -67,38 +67,40 @@ const StyleReferenceSection = ({
         </div>
 
         {/* 인원수 (스테퍼) */}
-        <div className="flex items-center justify-between">
-          <p className="typo-caption text-gray-50">
+        <div className="flex flex-col gap-2">
+          <p className="typo-subtitle text-gray-black">
             {SCHEDULE_STYLE_TEXT.PEOPLE_LABEL}
           </p>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              aria-label="인원수 줄이기"
-              disabled={people <= 1}
-              onClick={() => onChangePeople(-1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-10 text-gray-60 transition-colors active:bg-gray-20 disabled:opacity-40"
-            >
-              <MinusIcon className="h-4 w-4" />
-            </button>
-            <span className="w-10 text-center typo-body text-gray-black tabular-nums">
+          <div className="flex items-center justify-between bg-gray-5 rounded-xl px-4 py-3">
+            <span className="typo-body text-gray-black tabular-nums">
               {people}명
             </span>
-            <button
-              type="button"
-              aria-label="인원수 늘리기"
-              disabled={people >= 10}
-              onClick={() => onChangePeople(1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-10 text-gray-60 transition-colors active:bg-gray-20 disabled:opacity-40"
-            >
-              <PlusIcon className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-label="인원수 줄이기"
+                disabled={people <= 1}
+                onClick={() => onChangePeople(-1)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-10 text-gray-60 transition-colors active:bg-gray-20 disabled:opacity-40"
+              >
+                <MinusIcon className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="인원수 늘리기"
+                disabled={people >= 10}
+                onClick={() => onChangePeople(1)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-10 text-gray-60 transition-colors active:bg-gray-20 disabled:opacity-40"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* 목적 */}
         <div className="flex flex-col gap-2">
-          <p className="typo-caption text-gray-50">
+          <p className="typo-subtitle text-gray-black">
             {SCHEDULE_STYLE_TEXT.PURPOSE_LABEL}
           </p>
           <TextInput
@@ -111,9 +113,9 @@ const StyleReferenceSection = ({
           />
         </div>
 
-        {/* 자유 참고사항 */}
+        {/* 추가사항 (자유 입력) */}
         <div className="flex flex-col gap-2">
-          <p className="typo-caption text-gray-50">
+          <p className="typo-subtitle text-gray-black">
             {SCHEDULE_STYLE_TEXT.NOTE_LABEL}
           </p>
           <TextInput
