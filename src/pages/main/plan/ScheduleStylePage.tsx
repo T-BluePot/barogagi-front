@@ -9,7 +9,7 @@ import { ROUTES } from "@/constants/routes";
 import type { ActiveMap } from "@/components/main/plan/ScheduleStyleTagContainer";
 import StyleTagSection from "@/components/main/plan/create/StyleTagSection";
 import SectionSpacer from "@/components/layout/SectionSpacer";
-import StyleNoteSection from "@/components/main/plan/create/StyleNoteSection";
+import StyleReferenceSection from "@/components/main/plan/create/StyleReferenceSection";
 import Button from "@/components/common/buttons/CommonButton";
 
 // === server ===
@@ -57,12 +57,28 @@ const ScheduleStylePage = () => {
     setDraft({ scheduleTagRegistReqDTOList: selectedTags });
   }, [actives, styleTags]);
 
-  // 여행 참고사항 입력값 상태
+  // === 참고사항 추가 옵션 ===
+  // 연령대/인원수: 즉시 draft 반영 / 목적·참고사항: 로컬 state 후 blur 시 draft 반영
+  const ages = draft.ages ?? [];
+  const people = draft.people ?? 2;
+
+  const toggleAge = (age: string) => {
+    const next = ages.includes(age)
+      ? ages.filter((a) => a !== age)
+      : [...ages, age];
+    setDraft({ ages: next });
+  };
+
+  const changePeople = (delta: number) => {
+    setDraft({ people: Math.max(1, Math.min(10, people + delta)) });
+  };
+
+  const [purpose, setPurpose] = useState<string>(draft.purpose ?? "");
   const [scheduleNotes, setScheduleNotes] = useState<string>(
-    draft.comment ?? "" // ← store에서 초기값
+    draft.comment ?? ""
   );
 
-  // === 추천 알정 생성 ===
+  // === 추천 일정 생성 ===
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
 
   const handleNext = () => {
@@ -72,20 +88,27 @@ const ScheduleStylePage = () => {
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-white">
-      <div className="flex flex-col">
+      <div className="flex flex-1 flex-col overflow-y-auto hide-scrollbar">
         <StyleTagSection
           styles={styleTags}
           actives={actives}
           setActives={setActives}
         />
         <SectionSpacer />
-        <StyleNoteSection
-          scheduleNotes={scheduleNotes}
-          setScheduleNotes={setScheduleNotes}
-          onBlur={() => setDraft({ comment: scheduleNotes })}
+        <StyleReferenceSection
+          ages={ages}
+          onToggleAge={toggleAge}
+          people={people}
+          onChangePeople={changePeople}
+          purpose={purpose}
+          onChangePurpose={setPurpose}
+          onBlurPurpose={() => setDraft({ purpose })}
+          note={scheduleNotes}
+          onChangeNote={setScheduleNotes}
+          onBlurNote={() => setDraft({ comment: scheduleNotes })}
         />
       </div>
-      <div className="mt-auto w-full p-6">
+      <div className="w-full p-6">
         <Button
           label={SCHEDULE_STYLE_TEXT.NEXT_BUTTON}
           isDisabled={isAllInactive(actives)}
