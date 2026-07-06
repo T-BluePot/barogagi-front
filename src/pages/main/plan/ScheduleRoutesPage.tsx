@@ -325,6 +325,33 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setPlanNotes((prev) => ({ ...prev, [planNum]: nextValue }));
   };
 
+  // 인라인 메모 blur 시 커밋 — 변경분 있으면 옵티미스틱 updateSchedule
+  const handleCommitNote = (planNum: number) => {
+    if (!scheduleResult) return;
+    const originalPlan = planList.find((p) => p.planNum === planNum);
+    if (!originalPlan) return;
+    const nextMemo = planNotes[planNum] ?? "";
+    if (nextMemo === (originalPlan.planMemo ?? "")) return; // 변경 없음
+
+    const prevPlans = planList;
+    const prevSchedule = scheduleResult;
+    const updatedPlans = planList.map((p) =>
+      p.planNum === planNum ? { ...p, planMemo: nextMemo } : p
+    );
+    const updatedSchedule = {
+      ...scheduleResult,
+      planRegistResDTOList: updatedPlans,
+    };
+    setPlanList(updatedPlans);
+    setScheduleResult(updatedSchedule);
+    updateMutation.mutate(updatedSchedule, {
+      onError: () => {
+        setPlanList(prevPlans);
+        setScheduleResult(prevSchedule);
+      },
+    });
+  };
+
   // ----- 계획 제목 수정 모달 -----
   const [isNameModalOpen, setIsNameModalOpen] = useState<boolean>(false);
 
@@ -635,6 +662,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           isEditable={isDetail}
           onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
+          notes={planNotes}
+          onChangeNote={handleChangeNote}
+          onCommitNote={handleCommitNote}
         />
       )}
       <Outlet context={{ onPlaceSelect: handlePlaceSelect }} />

@@ -18,7 +18,18 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
   const simple = props.mode === "create";
   const edit = props.mode === "detail";
 
-  const { plan, src, isOpen, onToggleOpen, index, kept, onToggleKept } = props;
+  const {
+    plan,
+    src,
+    isOpen,
+    onToggleOpen,
+    index,
+    kept,
+    onToggleKept,
+    noteValue,
+    onChangeNote,
+    onCommitNote,
+  } = props;
 
   const planName = plan.planNm ?? "";
   const startTime = plan.startTime;
@@ -139,6 +150,21 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
             )}
           </div>
         </motion.div>
+
+        {/* detail: 인라인 메모 입력 — 수정 모달 메모와 같은 값을 편집, blur 시 커밋 */}
+        {edit && (
+          <input
+            type="text"
+            value={noteValue ?? ""}
+            onChange={(e) => onChangeNote?.(e.target.value)}
+            onBlur={() => onCommitNote?.()}
+            onClick={(e) => e.stopPropagation()}
+            placeholder="메모를 남겨보세요..."
+            aria-label={`${planName} 메모`}
+            maxLength={60}
+            className="w-full mt-2 typo-caption rounded-lg px-3 py-2 bg-gray-10 text-gray-black placeholder:text-gray-40"
+          />
+        )}
 
         {isOpen && (
           <motion.div

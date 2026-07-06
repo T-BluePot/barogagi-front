@@ -119,6 +119,9 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
                   onToggleOpen={() => handleToggleOpen(planNum)}
                   mode="detail"
                   onOpenCardMenu={handleOpenCardMenu}
+                  noteValue={props.notes?.[planNum] ?? ""}
+                  onChangeNote={(v) => props.onChangeNote?.(planNum, v)}
+                  onCommitNote={() => props.onCommitNote?.(planNum)}
                 />
               ) : (
                 <PlanDetailCard

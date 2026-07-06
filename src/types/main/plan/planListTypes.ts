@@ -20,6 +20,9 @@ export interface PlanDetailCardSimple extends PlanDetailCardBase {
   onOpenCardMenu?: never;
   kept?: boolean; // "유지" 체크 여부 (다시 만들기 시 유지 대상 표시)
   onToggleKept?: () => void; // "유지" 체크 토글 콜백
+  noteValue?: never;
+  onChangeNote?: never;
+  onCommitNote?: never;
 }
 
 // detail 모드
@@ -28,6 +31,9 @@ export interface PlanDetailCardEdit extends PlanDetailCardBase {
   onOpenCardMenu: (info: CardMenuAnchorInfo) => void;
   kept?: never;
   onToggleKept?: never;
+  noteValue?: string; // 인라인 메모 입력값 (수정 모달 메모와 동일 소스)
+  onChangeNote?: (value: string) => void; // 인라인 메모 입력 변경
+  onCommitNote?: () => void; // blur 시 메모 커밋 (변경분 있으면 서버 반영)
 }
 
 export type PlanDetailCardProps = PlanDetailCardSimple | PlanDetailCardEdit;

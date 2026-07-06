@@ -1,4 +1,5 @@
 import type { PlanRegistResDTO } from "@/api/types";
+import type { PlanNoteMap } from "@/types/main/plan/bottom-modal/planFromTypes";
 /**
  * 사용 화면에 따른 타입 분기
  * create: 추천 루트(생성 완료) 화면
@@ -50,6 +51,9 @@ interface ScheduleRoutesContentDetail
   footer?: never;
   keptIndexes?: never;
   onToggleKept?: never;
+  notes?: PlanNoteMap; // planNum → 인라인 메모 입력값
+  onChangeNote?: (planNum: number, value: string) => void; // 인라인 메모 입력 변경
+  onCommitNote?: (planNum: number) => void; // 인라인 메모 blur 시 커밋
 }
 
 // 최종 Props 유니온
