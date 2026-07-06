@@ -194,20 +194,18 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           setScheduleName={onChangeScheduleName}
           onCommitScheduleName={onCommitScheduleName}
           scheduleDate={scheduleDate}
+          onEnterReorder={isEditable ? () => setReorderMode(true) : undefined}
+          onDeleteSchedule={isEditable ? props.onDeleteSchedule : undefined}
         />
       </div>
-      {/* 순서 변경 모드 진입/종료 툴바 (detail 전용) */}
-      {isEditable && (
+      {/* 순서 변경 모드 종료 툴바 (detail 전용) — 진입은 헤더 kebab "목록 편집" */}
+      {isEditable && reorderMode && (
         <div className="flex justify-end px-6 pt-2">
-          {reorderMode ? (
-            <TextButton
-              label="완료"
-              variant="main"
-              onClick={() => setReorderMode(false)}
-            />
-          ) : (
-            <TextButton label="순서 변경" onClick={() => setReorderMode(true)} />
-          )}
+          <TextButton
+            label="완료"
+            variant="main"
+            onClick={() => setReorderMode(false)}
+          />
         </div>
       )}
       <motion.div

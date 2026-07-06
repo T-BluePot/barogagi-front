@@ -17,6 +17,7 @@ import { CreateScheduleModal } from "@/components/main/plan/create/CreateSchedul
 import PlanFormModal from "@/components/main/plan/common/modal/PlanFormModal";
 import DeletePlanModal from "@/components/main/plan/create/DeletePlanModal";
 import DeleteLastPlanScheduleModal from "@/components/main/plan/create/DeleteLastPlanScheduleModal";
+import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 import PlanNameInputModal from "@/components/main/plan/common/modal/PlanNameInputModal";
 import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/SelectTimeConfirmModal";
 
@@ -251,6 +252,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // 마지막 plan 삭제 시도 → 일정 자체 삭제 확인 모달
   const [isLastPlanDeleteModalOpen, setIsLastPlanDeleteModalOpen] =
     useState<boolean>(false);
+  // 헤더 kebab "일정 삭제" → 일정 삭제 확인 모달
+  const [isDeleteScheduleModalOpen, setIsDeleteScheduleModalOpen] =
+    useState<boolean>(false);
 
   const handleRequestDelete = (planNum: number) => {
     setDeletePlanNum(planNum);
@@ -265,6 +269,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const handleConfirmDeleteSchedule = () => {
     if (!scheduleResult) {
       setIsLastPlanDeleteModalOpen(false);
+      setIsDeleteScheduleModalOpen(false);
       return;
     }
     // 중복 클릭으로 mutate가 여러 번 호출되는 것을 방지
@@ -273,7 +278,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     // 성공/실패 무관하게 모달은 정리, 성공 시에만 목록으로 이동
     deleteScheduleMutation.mutate(scheduleResult.scheduleNum, {
       onSuccess: () => navigate(ROUTES.PLAN.LIST),
-      onSettled: () => setIsLastPlanDeleteModalOpen(false),
+      onSettled: () => {
+        setIsLastPlanDeleteModalOpen(false);
+        setIsDeleteScheduleModalOpen(false);
+      },
     });
   };
 
@@ -718,6 +726,12 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         onClickConfirm={handleConfirmDeleteSchedule}
       />
 
+      <DeleteScheduleModal
+        isOpen={isDeleteScheduleModalOpen}
+        onClickCancel={() => setIsDeleteScheduleModalOpen(false)}
+        onClickConfirm={handleConfirmDeleteSchedule}
+      />
+
       {isCreate && (
         <ScheduleRoutesContent
           header={{
@@ -754,6 +768,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           onChangeNote={handleChangeNote}
           onCommitNote={handleCommitNote}
           onReorder={handleReorder}
+          onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
         />
       )}
       <Outlet context={{ onPlaceSelect: handlePlaceSelect }} />
