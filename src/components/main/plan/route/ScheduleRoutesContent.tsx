@@ -203,15 +203,15 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           <button
             type="button"
             onClick={props.onOpenInfoSheet}
-            className="text-left w-full px-1 mt-1"
+            className="text-left w-full px-1 mt-0.5"
           >
             {props.scheduleMemo ? (
               <span className="typo-caption text-gray-60">
                 {props.scheduleMemo}
               </span>
             ) : (
-              <span className="typo-caption text-gray-40">
-                이 일정에 대한 메모
+              <span className="flex items-center gap-1 typo-caption text-gray-40">
+                <AddIcon className="text-[16px]!" />이 일정에 대한 메모
               </span>
             )}
           </button>

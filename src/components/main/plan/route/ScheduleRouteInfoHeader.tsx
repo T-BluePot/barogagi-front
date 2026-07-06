@@ -88,10 +88,11 @@ const ScheduleRouteInfoHeader = ({
         />
       )}
       {/* 일정명 영역 */}
-      <div className="flex flex-col w-full h-12 pb-[1px] items-baseline gap-2">
+      <div className="flex w-full items-center gap-2">
         {!editMode && (
           <button
-            className="cursor-pointer"
+            type="button"
+            className="flex items-center gap-2 px-1 cursor-pointer"
             onClick={() => {
               // detail: 일정 정보 바텀시트 / create: 기존 인라인 편집
               if (onOpenInfoSheet) {
@@ -101,11 +102,12 @@ const ScheduleRouteInfoHeader = ({
               }
             }}
           >
-            <div className="flex flex-row items-end gap-1 px-1 py-2">
-              <span className="typo-title-01 text-start">{scheduleName}</span>
-              <div>
-                <EditOutlinedIcon fontSize="small" className="text-gray-40" />
-              </div>
+            <span className="typo-title-01 text-start">{scheduleName}</span>
+            <div
+              aria-hidden="true"
+              className="shrink-0 w-7 h-7 rounded-full bg-gray-10 flex items-center justify-center"
+            >
+              <EditOutlinedIcon className="text-caption! text-gray-50" />
             </div>
           </button>
         )}
