@@ -1,4 +1,4 @@
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import EditIcon from "@mui/icons-material/Edit";
 
 import ScheduleTitleInput from "../common/ScheduleTitleInput";
 
@@ -26,7 +26,7 @@ const ScheduleRouteInfoHeader = ({
   onOpenInfoSheet,
 }: InfoHeaderProps) => {
   return (
-    <header className="flex flex-col w-full">
+    <header className="flex flex-col w-full gap-1">
       {/* 날짜 영역 */}
       <div className="flex px-1 w-full justify-between">
         <span className="typo-subtitle text-gray-80">{scheduleDate}</span>
@@ -36,7 +36,7 @@ const ScheduleRouteInfoHeader = ({
         {!editMode && (
           <button
             type="button"
-            className="flex items-center gap-2 px-1 cursor-pointer"
+            className="flex items-center justify-between w-full px-1 cursor-pointer"
             onClick={() => {
               // detail: 일정 정보 바텀시트 / create: 기존 인라인 편집
               if (onOpenInfoSheet) {
@@ -51,7 +51,7 @@ const ScheduleRouteInfoHeader = ({
               aria-hidden="true"
               className="shrink-0 w-7 h-7 rounded-full bg-gray-10 flex items-center justify-center"
             >
-              <EditOutlinedIcon className="text-caption! text-gray-50" />
+              <EditIcon className="text-caption! text-gray-50" />
             </div>
           </button>
         )}

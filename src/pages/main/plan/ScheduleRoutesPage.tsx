@@ -615,7 +615,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   if (isDetail && isDetailLoading) {
     return (
       <div className="flex flex-col w-full h-full bg-gray-5">
-        <BackHeader onClick={() => navigate(-1)} />
+        <div className="bg-gray-white">
+          <BackHeader onClick={() => navigate(-1)} />
+        </div>
         <SkeletonScheduleRoutesContent />
       </div>
     );
@@ -839,14 +841,16 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         />
       )}
       {isDetail && (
-        <BackHeader onClick={() => navigate(-1)}>
-          <div className="flex w-full justify-end">
-            <ScheduleDetailMenu
-              onEnterReorder={() => setReorderMode(true)}
-              onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
-            />
-          </div>
-        </BackHeader>
+        <div className="bg-gray-white">
+          <BackHeader onClick={() => navigate(-1)}>
+            <div className="flex w-full justify-end">
+              <ScheduleDetailMenu
+                onEnterReorder={() => setReorderMode(true)}
+                onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
+              />
+            </div>
+          </BackHeader>
+        </div>
       )}
       {isDetail && (
         <ScheduleRoutesContent
