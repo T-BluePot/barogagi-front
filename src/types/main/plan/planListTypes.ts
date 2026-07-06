@@ -11,6 +11,7 @@ interface PlanDetailCardBase {
   src?: string; // 이미지 URL (없으면 fallback 이미지 사용)
   isOpen: boolean;
   onToggleOpen: () => void;
+  index?: number; // 타임라인 순번 (0-based, 없으면 순번 배지 생략)
 }
 
 // create 모드

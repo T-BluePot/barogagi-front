@@ -114,6 +114,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
               {isEditable ? (
                 <PlanDetailCard
                   plan={plan}
+                  index={index}
                   isOpen={isOpen}
                   onToggleOpen={() => handleToggleOpen(planNum)}
                   mode="detail"
@@ -122,6 +123,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
               ) : (
                 <PlanDetailCard
                   plan={plan}
+                  index={index}
                   isOpen={isOpen}
                   onToggleOpen={() => handleToggleOpen(planNum)}
                   mode="create"
