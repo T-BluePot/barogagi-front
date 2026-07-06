@@ -383,6 +383,51 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     setIsTimeModalOpen(false);
   };
 
+  // ----- 계획 추가 (add) : 기존 편집 모달/검색/서브모달 재사용, onClose에서 append -----
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+
+  const handleRequestAdd = () => {
+    const lastEnd = planList[planList.length - 1]?.endTime || "09:00";
+    setDraft({
+      planNum: 0, // add 모드에선 미사용 (append 시 planNum 없이 신규 생성)
+      plan: { planNm: "", startTime: lastEnd, endTime: lastEnd },
+      place: { placeNum: null, placeNm: "", address: "", placeUrl: "" },
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleAddClose = () => {
+    const draft = editDraft;
+    const name = draft?.plan.planNm.trim() ?? "";
+    if (draft && name && scheduleResult) {
+      const newPlan: PlanRegistResDTO = {
+        planNm: name,
+        startTime: draft.plan.startTime,
+        endTime: draft.plan.endTime,
+        planLink: draft.place.placeUrl || undefined,
+        planAddress: draft.place.address || undefined,
+        regionNm: draft.place.placeNm || undefined,
+      };
+      const prevPlans = planList;
+      const prevSchedule = scheduleResult;
+      const updatedPlans = [...planList, newPlan];
+      const updatedSchedule = {
+        ...scheduleResult,
+        planRegistResDTOList: updatedPlans,
+      };
+      setPlanList(updatedPlans);
+      setScheduleResult(updatedSchedule);
+      updateMutation.mutate(updatedSchedule, {
+        onError: () => {
+          setPlanList(prevPlans);
+          setScheduleResult(prevSchedule);
+        },
+      });
+    }
+    setIsAddModalOpen(false);
+    clearDraft();
+  };
+
   // ----- 일정 confirm -----
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
@@ -481,7 +526,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         onConfirmConfirm={handleSaveSchedule}
       />
 
-      {editDraft && (
+      {editDraft && !isAddModalOpen && (
         <PlanFormModal
           action={{
             isOpen: isEditModalOpen,
@@ -560,6 +605,27 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             noteValue: planNotes[editDraft.planNum] ?? "",
             onChangeNote: (next: string) =>
               handleChangeNote(editDraft.planNum, next),
+          }}
+        />
+      )}
+
+      {editDraft && isAddModalOpen && (
+        <PlanFormModal
+          action={{
+            isOpen: isAddModalOpen,
+            onClose: handleAddClose,
+            onConfirm: () => {},
+            onClickEditTitle: handleEditTitleClick,
+          }}
+          info={{
+            mode: "UserCustom",
+            planNum: editDraft.planNum,
+            planNm: editDraft.plan.planNm,
+            startTime: editDraft.plan.startTime,
+            endTime: editDraft.plan.endTime,
+            address: editDraft.place.address,
+            onClickAddress: () => navigate("search"),
+            onClickTime: handleTimeClick,
           }}
         />
       )}
@@ -662,6 +728,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           isEditable={isDetail}
           onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
+          onAddPlan={handleRequestAdd}
           notes={planNotes}
           onChangeNote={handleChangeNote}
           onCommitNote={handleCommitNote}

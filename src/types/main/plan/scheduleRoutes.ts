@@ -54,6 +54,7 @@ interface ScheduleRoutesContentDetail
   notes?: PlanNoteMap; // planNum → 인라인 메모 입력값
   onChangeNote?: (planNum: number, value: string) => void; // 인라인 메모 입력 변경
   onCommitNote?: (planNum: number) => void; // 인라인 메모 blur 시 커밋
+  onAddPlan?: () => void; // 리스트 하단 "계획 추가하기" 타일 탭
 }
 
 // 최종 Props 유니온

@@ -15,6 +15,7 @@ import RoutesCreateFooter from "@/components/main/plan/route/RoutesCreateFooter"
 // --- 아이콘
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AddIcon from "@mui/icons-material/Add";
 
 const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   const { header, plans } = props;
@@ -137,6 +138,17 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
             </div>
           );
         })}
+
+        {isEditable && props.onAddPlan && (
+          <button
+            type="button"
+            onClick={props.onAddPlan}
+            className="flex items-center justify-center gap-1.5 w-full py-4 rounded-2xl bg-gray-10 text-gray-60 typo-body active:bg-gray-20 transition-colors"
+          >
+            <AddIcon className="text-title-02!" />
+            계획 추가하기
+          </button>
+        )}
       </motion.div>
 
       {!isEditable && (
