@@ -37,11 +37,11 @@ export const CommonTag = ({
 
   const textClass = clsx(
     "typo-description", // 12px / weight 500 (typo-tag 300보다 굵음)
-    isActive
-      ? "text-white" // 코랄 배경 위 → 흰 글자
-      : size === "default"
-      ? "text-gray-40"
-      : "text-gray-black"
+    size === "default"
+      ? isActive
+        ? "text-white"
+        : "text-gray-40"
+      : "text-gray-black" // small: 코랄/회색 배경 모두 검은 글자
   );
   return (
     <button

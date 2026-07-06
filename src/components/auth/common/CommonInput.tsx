@@ -70,6 +70,10 @@ export const CommonInput = ({
           sx: {
             "& .MuiFilledInput-root": {
               minHeight: 60,
+              // 기본/hover/포커스 모두 흰 배경 (MUI filled 기본 회색 배경 제거)
+              backgroundColor: "var(--color-gray-white)",
+              "&:hover": { backgroundColor: "var(--color-gray-white)" },
+              "&.Mui-focused": { backgroundColor: "var(--color-gray-white)" },
               "&:before": { borderBottomColor: "#dddddd" },
               "&:hover:before": { borderBottomColor: "var(--color-main-dark)" },
               "&.Mui-focused:after": { borderBottomColor: "var(--color-main)" },
