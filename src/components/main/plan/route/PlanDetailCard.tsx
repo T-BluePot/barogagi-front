@@ -29,6 +29,8 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
     noteValue,
     onChangeNote,
     onCommitNote,
+    reorderMode,
+    dragHandle,
   } = props;
 
   const planName = plan.planNm ?? "";
@@ -93,6 +95,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
         className="flex flex-1 min-w-0 flex-col items-baseline px-2 py-4 bg-gray-white rounded-xl gap-4 select-none shadow-md overflow-hidden"
         onClick={() => {
+          if (reorderMode) return; // 순서 변경 중엔 확장 토글 비활성
           if (!placeLink && !isOpen) return;
           onToggleOpen();
         }}
@@ -138,21 +141,25 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
                 />
               </button>
             )}
-            {edit && (
-              <button
-                ref={moreButtonRef}
-                onClick={handleEditClick}
-                aria-label="더보기"
-                className="rounded-full bg-transparent w-[24px] h-[24px] hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
-              >
-                <MoreVertIcon className="text-gray-40 text-title-02!" />
-              </button>
-            )}
+            {edit &&
+              (reorderMode ? (
+                // 순서 변경 모드: ⋮ 메뉴 대신 드래그 핸들 렌더
+                dragHandle
+              ) : (
+                <button
+                  ref={moreButtonRef}
+                  onClick={handleEditClick}
+                  aria-label="더보기"
+                  className="rounded-full bg-transparent w-[24px] h-[24px] hover:bg-gray-10 active:bg-gray-10 transition-colors duration-300 ease-in-out"
+                >
+                  <MoreVertIcon className="text-gray-40 text-title-02!" />
+                </button>
+              ))}
           </div>
         </motion.div>
 
-        {/* detail: 인라인 메모 입력 — 수정 모달 메모와 같은 값을 편집, blur 시 커밋 */}
-        {edit && (
+        {/* detail: 인라인 메모 입력 — 수정 모달 메모와 같은 값을 편집, blur 시 커밋 (순서 변경 중엔 숨김) */}
+        {edit && !reorderMode && (
           <input
             type="text"
             value={noteValue ?? ""}
@@ -166,7 +173,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
           />
         )}
 
-        {isOpen && (
+        {isOpen && !reorderMode && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

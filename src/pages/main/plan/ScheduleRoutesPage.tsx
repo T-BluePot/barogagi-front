@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import { arrayMove } from "@dnd-kit/sortable";
 
 import { ROUTES } from "@/constants/routes";
 import type { ScheduleRoutesPageProps } from "@/types/main/plan/scheduleRoutes";
@@ -338,6 +339,26 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const updatedPlans = planList.map((p) =>
       p.planNum === planNum ? { ...p, planMemo: nextMemo } : p
     );
+    const updatedSchedule = {
+      ...scheduleResult,
+      planRegistResDTOList: updatedPlans,
+    };
+    setPlanList(updatedPlans);
+    setScheduleResult(updatedSchedule);
+    updateMutation.mutate(updatedSchedule, {
+      onError: () => {
+        setPlanList(prevPlans);
+        setScheduleResult(prevSchedule);
+      },
+    });
+  };
+
+  // 순서 변경: 배열만 재정렬(시간은 각 계획에 고정), 옵티미스틱 updateSchedule
+  const handleReorder = (from: number, to: number) => {
+    if (!scheduleResult || from === to) return;
+    const prevPlans = planList;
+    const prevSchedule = scheduleResult;
+    const updatedPlans = arrayMove(planList, from, to);
     const updatedSchedule = {
       ...scheduleResult,
       planRegistResDTOList: updatedPlans,
@@ -732,6 +753,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           notes={planNotes}
           onChangeNote={handleChangeNote}
           onCommitNote={handleCommitNote}
+          onReorder={handleReorder}
         />
       )}
       <Outlet context={{ onPlaceSelect: handlePlaceSelect }} />
