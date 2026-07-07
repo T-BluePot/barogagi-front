@@ -532,17 +532,14 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const name = draft?.plan.planNm.trim() ?? "";
     if (draft && name && scheduleResult) {
       const newPlan: PlanRegistResDTO = {
-        // 사용자가 직접 추가한 계획 — 서버의 사용자 계획과 동일 shape로 전송
-        // (실험) 마지막 계획 planNum + 1 을 임의 부여 — 원래 신규는 planNum 없이 보냈음
-        planNum: (planList[planList.length - 1]?.planNum ?? 0) + 1,
-        // (detail 응답: USER_* 계획은 itemNum:0/categoryNum:0 으로 저장 → 아이템 조회 스킵)
+        // 사용자 추가 계획 — 서버 update 예시(2026-07-08)대로: isUserAdded:"Y"로
+        // 아이템 조회 스킵. itemNum/categoryNum/planNum은 보내지 않음(신규 insert).
         planSource: draft.place.placeUrl ? "USER_PLACE" : "USER_CUSTOM",
-        itemNum: 0,
-        categoryNum: 0,
+        isUserAdded: "Y",
         planNm: name,
         startTime: draft.plan.startTime,
         endTime: draft.plan.endTime,
-        // 장소 식별/표시: 카카오 URL + 주소 (regionNm은 지역용이라 넣지 않음)
+        // 장소(카카오): URL + 주소. USER_CUSTOM은 없음.
         planLink: draft.place.placeUrl || undefined,
         planAddress: draft.place.address || undefined,
       };

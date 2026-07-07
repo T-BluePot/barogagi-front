@@ -78,6 +78,8 @@ export interface ScheduleRegistReqDTO {
 /** 세부 일정(Plan) 응답 DTO */
 export interface PlanRegistResDTO {
   planSource?: PlanSource;
+  /** 사용자 추가 계획 표시 — 일정 수정(PUT)에서 "Y"면 서버가 아이템 조회를 스킵 */
+  isUserAdded?: "Y" | "N";
   startTime: string;
   endTime: string;
   /** 사용자가 상세 화면에서 직접 추가한 계획에는 AI 카테고리/아이템 개념이 없어 absent — 더미값 금지, optional 유지 */
