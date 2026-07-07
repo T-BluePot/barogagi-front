@@ -46,7 +46,13 @@ const AutoGrowTextarea = ({
     const el = ref.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
+    // box-sizing: border-box라 scrollHeight(콘텐츠+패딩)에 상하 border를 더해야
+    // 콘텐츠 영역이 위아래 대칭으로 딱 맞음(안 더하면 하단이 border 두께만큼 눌려 보임)
+    const cs = getComputedStyle(el);
+    const borderY =
+      parseFloat(cs.borderTopWidth || "0") +
+      parseFloat(cs.borderBottomWidth || "0");
+    el.style.height = `${el.scrollHeight + borderY}px`;
   }, [value]);
 
   // 경고 애니메이션 재시작 (연속 입력에도 매번 재생되도록 클래스 제거→reflow→추가)
