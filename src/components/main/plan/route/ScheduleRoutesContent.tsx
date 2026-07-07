@@ -164,6 +164,10 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
     <div className="flex flex-col w-full h-full bg-gray-5">
       {isEditable && (
         <PopMenu
+          // menuPlanNum을 key로 줘 카드 전환 시 Popper를 새 anchor로 remount
+          // (MUI Popper가 anchorEl 변경만으로는 위치를 갱신하지 않아 이전 카드 위치에
+          //  머무르는 문제 방지 — "마지막 카드 메뉴만 열리는" 증상 해결)
+          key={menuPlanNum ?? "closed"}
           anchorEl={menuAnchorEl}
           open={Boolean(menuAnchorEl)}
           onClose={handleCloseMenu}
