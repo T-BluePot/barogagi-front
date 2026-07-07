@@ -235,6 +235,7 @@
   10% {
     transform: translateX(-5px);
     background-color: rgba(255, 59, 56, 0.12);
+    border-color: rgba(255, 59, 56, 0.9);
     box-shadow: 0 0 0 2px rgba(255, 59, 56, 0.45);
   }
   30% {
@@ -243,6 +244,7 @@
   50% {
     transform: translateX(-3px);
     background-color: rgba(255, 59, 56, 0.12);
+    border-color: rgba(255, 59, 56, 0.9);
     box-shadow: 0 0 0 2px rgba(255, 59, 56, 0.45);
   }
   70% {

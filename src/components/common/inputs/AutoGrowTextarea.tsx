@@ -23,6 +23,7 @@ const WARN_CLASS = "animate-memo-warn";
  * - 최소 높이는 className의 min-h-* 로 지정(빈 값일 때 높이 유지).
  * - 세로 스크롤바/리사이즈 핸들은 숨김.
  * - warnOnMaxLength: 최대 글자수에서 더 입력하려 하면 경고 애니메이션 재생.
+ *   (한글 IME 대응 위해 maxLength 속성 대신 onChange/조합완료 시점에서 직접 잘라내며 감지)
  */
 const AutoGrowTextarea = ({
   value,
@@ -37,6 +38,8 @@ const AutoGrowTextarea = ({
   onClick,
 }: AutoGrowTextareaProps) => {
   const ref = useRef<HTMLTextAreaElement | null>(null);
+  // IME(한글 등) 조합 중 여부 — 조합 중엔 잘라내지 않아야 입력이 깨지지 않음
+  const composingRef = useRef(false);
 
   // 값이 바뀔 때마다 높이를 콘텐츠에 맞춤 (auto로 리셋 후 scrollHeight로 확정)
   useLayoutEffect(() => {
@@ -55,21 +58,33 @@ const AutoGrowTextarea = ({
     el.classList.add(WARN_CLASS);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (!warnOnMaxLength || maxLength == null) return;
-    if (e.nativeEvent.isComposing) return; // IME 조합 중 제외
-    const el = e.currentTarget;
-    const hasSelection = el.selectionStart !== el.selectionEnd; // 선택 후 대체 입력은 초과 아님
-    const isInsertKey = e.key.length === 1 || e.key === "Enter"; // 문자/줄바꿈 입력만
-    const withModifier = e.ctrlKey || e.metaKey || e.altKey;
-    if (
-      !withModifier &&
-      isInsertKey &&
-      !hasSelection &&
-      value.length >= maxLength
-    ) {
-      triggerWarn();
+  // 초과분을 잘라내고, 초과가 발생했으면 경고를 울린다
+  const clampAndWarn = (raw: string): string => {
+    if (maxLength == null || raw.length <= maxLength) return raw;
+    triggerWarn();
+    return raw.slice(0, maxLength);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const raw = e.target.value;
+    // 경고 모드가 아니면 기존 동작 유지(maxLength 속성이 하드 스톱 담당)
+    if (!warnOnMaxLength) {
+      onChange(raw);
+      return;
     }
+    // 조합 중엔 그대로 반영(초과 여부는 compositionEnd에서 판정), 아니면 즉시 잘라내며 감지
+    onChange(composingRef.current ? raw : clampAndWarn(raw));
+  };
+
+  const handleCompositionStart = () => {
+    composingRef.current = true;
+  };
+
+  const handleCompositionEnd = (e: React.CompositionEvent<HTMLTextAreaElement>) => {
+    composingRef.current = false;
+    if (!warnOnMaxLength) return;
+    // 한글 등 조합이 끝나는 시점에 최종 길이를 판정 → 초과면 자르고 경고
+    onChange(clampAndWarn(e.currentTarget.value));
   };
 
   return (
@@ -77,14 +92,16 @@ const AutoGrowTextarea = ({
       ref={ref}
       rows={1}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onKeyDown={warnOnMaxLength ? handleKeyDown : undefined}
+      onChange={handleChange}
+      onCompositionStart={warnOnMaxLength ? handleCompositionStart : undefined}
+      onCompositionEnd={warnOnMaxLength ? handleCompositionEnd : undefined}
       onAnimationEnd={(e) => e.currentTarget.classList.remove(WARN_CLASS)}
       onBlur={onBlur}
       onClick={onClick}
       placeholder={placeholder}
       aria-label={ariaLabel}
-      maxLength={maxLength}
+      // 경고 모드에선 직접 잘라내므로 속성 maxLength 제거(그래야 초과 입력이 onChange로 감지됨)
+      maxLength={warnOnMaxLength ? undefined : maxLength}
       autoFocus={autoFocus}
       className={clsx("block w-full resize-none overflow-hidden", className)}
     />
