@@ -72,3 +72,28 @@ export const toUserCustomReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
   endTime: plan.endTime,
   planNm: plan.planNm,
 });
+
+/**
+ * 일정 수정(PUT) 전송용 정규화.
+ * 사용자가 만든 계획(장소/직접입력)은 `isUserAdded:"Y"`로 표시해 서버 아이템 조회를
+ * 스킵시키고, 남아 있는 AI 아이템 참조(itemNum/categoryNum)를 제거한다.
+ * (상세 조회 응답엔 planSource/isUserAdded가 없어, 유효 itemNum이 없는 계획도 사용자 계획으로 간주)
+ * AI 계획(유효 itemNum 보유)은 그대로 두어 서버가 아이템을 조회한다.
+ */
+export const normalizePlanForUpdate = (
+  plan: PlanRegistResDTO
+): PlanRegistResDTO => {
+  const isUserMade =
+    plan.planSource === "USER_PLACE" ||
+    plan.planSource === "USER_CUSTOM" ||
+    plan.isUserAdded === "Y" ||
+    !plan.itemNum; // 유효 itemNum(양수) 없음 → 사용자 계획으로 간주
+
+  if (!isUserMade) return plan;
+
+  const next: PlanRegistResDTO = { ...plan, isUserAdded: "Y" };
+  // 아이템 조회를 유발하는 참조 제거 (추가 플로우와 동일하게 신규 사용자 계획으로 처리)
+  delete next.itemNum;
+  delete next.categoryNum;
+  return next;
+};

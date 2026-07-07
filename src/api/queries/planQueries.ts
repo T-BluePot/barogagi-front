@@ -4,6 +4,7 @@
 
 import { apiKeyHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
+import { normalizePlanForUpdate } from "@/utils/api/planMapper";
 import type {
   BaseResponse,
   ScheduleRegistReqDTO,
@@ -52,9 +53,14 @@ export const saveSchedule = async (data: ScheduleRegistResDTO) => {
 
 /** 일정 수정 */
 export const updateSchedule = async (data: ScheduleRegistResDTO) => {
+  // 사용자가 만든 계획은 isUserAdded:"Y"로 정규화해 서버 아이템 조회 실패(S302) 방지
+  const payload: ScheduleRegistResDTO = {
+    ...data,
+    planRegistResDTOList: data.planRegistResDTOList.map(normalizePlanForUpdate),
+  };
   const response = await apiKeyHttp.put<BaseResponse<unknown>>(
     ENDPOINTS.SCHEDULE.UPDATE,
-    data
+    payload
   );
   return response.data;
 };
