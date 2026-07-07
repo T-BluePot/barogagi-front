@@ -91,16 +91,35 @@ export const usePlanFormModal = (
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [tagOptions, setTagOptions] = useState<TagRegistResDTO[]>([]);
 
+  // 새 계획 기본 시간(블록 기본 용량 1시간):
+  // - 시간 지정된 블록이 있으면 가장 늦게 끝나는 블록의 종료시각부터 +1시간
+  // - 없으면(첫 블록) 09:00~10:00 기준
+  const getDefaultPlanTime = (): { startTime: string; endTime: string } => {
+    const endMins = items
+      .map((item) => (item.endTime ? hhmmToMinutes(item.endTime) : NaN))
+      .filter((m) => Number.isFinite(m) && m >= 0 && m < 24 * 60);
+    const startMin = endMins.length > 0 ? Math.max(...endMins) : 9 * 60;
+    const endMin = Math.min(startMin + 60, 23 * 60 + 59);
+    return {
+      startTime: minutesToHHmm(startMin),
+      endTime: minutesToHHmm(endMin),
+    };
+  };
+
   const handleAddPlan = () => setIsCategoryOpen(true);
 
   const handleCategorySelect = (selected: SelectedCategoryItemType) => {
     const categoryNum = selected.category.categoryNum;
+    const { startTime, endTime } = getDefaultPlanTime();
 
     setDraft({
       source: "AI",
       planNm: selected.option.itemNm,
       categoryNum,
       itemNum: selected.option.itemNum,
+      // 새 계획 기본 시간 미리 채움(이전 블록 종료~+1h, 첫 블록 09:00~10:00)
+      startTime,
+      endTime,
       // 지역이 1개면 선택 단계 없이 해당 지역을 바로 채워둔다
       ...(singleRegion
         ? {
@@ -127,9 +146,13 @@ export const usePlanFormModal = (
   const [editTargetId, setEditTargetId] = useState<number | null>(null);
 
   const handlePlanNameConfirm = (planNm: string) => {
+    const { startTime, endTime } = getDefaultPlanTime();
     setDraft({
       source: "USER_CUSTOM",
       planNm,
+      // 새 계획 기본 시간 미리 채움(이전 블록 종료~+1h, 첫 블록 09:00~10:00)
+      startTime,
+      endTime,
     });
     setIsPlanNameOpen(false);
     setIsPlanFormOpen(true);
