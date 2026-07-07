@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { BottomModalLayout } from "@/components/common/modal/bottom-modal/BottomModalLayout";
 import { BottomModalHeader } from "@/components/common/modal/bottom-modal/BottomModalHeader";
 import TextInput from "@/components/common/inputs/TextInput";
+import AutoGrowTextarea from "@/components/common/inputs/AutoGrowTextarea";
 import CommonButton from "@/components/common/buttons/CommonButton";
 
 interface ScheduleInfoBottomSheetProps {
@@ -59,12 +60,12 @@ const ScheduleInfoBottomSheet = ({
         </div>
         <div className="flex flex-col gap-2">
           <span className="typo-caption text-gray-50">메모</span>
-          <TextInput
-            size="large"
+          <AutoGrowTextarea
             placeholder="이 일정에 대한 메모"
             value={memo}
             onChange={setMemo}
-            maxLength={80}
+            maxLength={50}
+            className="min-h-20 border border-gray-20 rounded-lg p-4 typo-caption text-gray-black placeholder:text-gray-40"
           />
         </div>
         <CommonButton
