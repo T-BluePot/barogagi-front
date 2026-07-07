@@ -253,8 +253,8 @@ export const usePlanFormModal = (
               cancelLabel: "돌아가기",
             }
           : {
-              title: "일정 추가를 취소하시겠습니까?",
-              content: "시간을 선택하지 않으면 일정이 저장되지 않습니다.",
+              title: "계획 추가를 취소하시겠습니까?",
+              content: "시간을 선택하지 않으면 계획이 저장되지 않습니다.",
               confirmLabel: "취소하기",
               cancelLabel: "돌아가기",
             },

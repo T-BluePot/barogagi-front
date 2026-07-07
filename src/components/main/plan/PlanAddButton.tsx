@@ -7,7 +7,7 @@ interface PlanAddButtonProps {
 }
 
 const PlanAddButton = ({
-  label = "일정 추가하기",
+  label = "계획 추가하기",
   onClick,
   isDisabled = false,
 }: PlanAddButtonProps) => {

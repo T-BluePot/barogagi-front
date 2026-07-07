@@ -19,7 +19,7 @@ export const PlanCategoryBottomModal = ({
     <ActionBottomModal
       isOpen={isOpen}
       onClose={onClose}
-      title="일정 추가하기"
+      title="계획 추가하기"
       actionLabel="직접 등록하기"
       onClickAction={onClickAction}
     >

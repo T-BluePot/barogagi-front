@@ -21,6 +21,7 @@ import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 import ScheduleRouteInfoHeader from "@/components/main/plan/route/ScheduleRouteInfoHeader";
 
 import PlanDetailCard from "@/components/main/plan/route/PlanDetailCard";
+import PlanAddButton from "@/components/main/plan/PlanAddButton";
 import PopMenu from "@/components/common/menu/PopMenu";
 import CommonButton from "@/components/common/buttons/CommonButton";
 import type { CardMenuAnchorInfo } from "@/types/main/plan/planListTypes";
@@ -287,16 +288,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
               onClick={() => props.onExitReorder?.()}
             />
           ) : (
-            props.onAddPlan && (
-              <button
-                type="button"
-                onClick={props.onAddPlan}
-                className="flex items-center justify-center gap-1.5 w-full py-4 rounded-2xl bg-gray-10 text-gray-60 typo-body active:bg-gray-20 transition-colors"
-              >
-                <AddIcon className="text-title-02!" />
-                계획 추가하기
-              </button>
-            )
+            props.onAddPlan && <PlanAddButton onClick={props.onAddPlan} />
           ))}
       </motion.div>
 
