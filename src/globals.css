@@ -94,6 +94,8 @@
   --animate-warning-overlay-in: warning-overlay-in 0.9s ease-out forwards;
   /* 오버레이가 어느 정도 짙어진 뒤(0.3s delay) 모달이 흐릿→선명, 살짝 커지며 등장 */
   --animate-warning-modal-in: warning-modal-in 0.6s ease-out 0.3s both;
+  /* 메모 글자수 초과 시도 시 경고: 좌우 흔들림 + 살짝 빨간 플래시 (1회) */
+  --animate-memo-warn: memo-warn 0.4s ease-in-out;
 
   /* Font Weights */
   --font-weight-header: 700;
@@ -221,6 +223,30 @@
     opacity: 1;
     transform: scale(1);
     filter: blur(0);
+  }
+}
+
+/* 메모 최대 글자수에서 추가 입력 시도 시: 좌우로 흔들리며 살짝 빨갛게 번쩍였다 원복 */
+@keyframes memo-warn {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-5px);
+    background-color: rgba(255, 59, 56, 0.12);
+    box-shadow: 0 0 0 2px rgba(255, 59, 56, 0.45);
+  }
+  30% {
+    transform: translateX(4px);
+  }
+  50% {
+    transform: translateX(-3px);
+    background-color: rgba(255, 59, 56, 0.12);
+    box-shadow: 0 0 0 2px rgba(255, 59, 56, 0.45);
+  }
+  70% {
+    transform: translateX(2px);
   }
 }
 
