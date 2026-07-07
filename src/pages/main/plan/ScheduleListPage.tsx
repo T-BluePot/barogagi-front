@@ -66,7 +66,7 @@ const ScheduleListPage = () => {
 
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-2 h-full">
       <DeleteScheduleModal
         isOpen={isDeleteOpen}
         onClickCancel={handleCloseDeleteModal}
@@ -98,7 +98,7 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex flex-col flex-1 w-full px-6 min-h-0 pb-15 gap-6">
+          <div className="flex flex-col flex-1 w-full px-6 min-h-0 gap-6">
             {isLoading ? (
               <>
                 <SkeletonCalendar />
