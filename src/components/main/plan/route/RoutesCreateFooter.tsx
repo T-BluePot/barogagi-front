@@ -37,7 +37,7 @@ const RoutesCreateFooter = ({
     <>
       <div className="h-2 bg-gradient-to-b from-gray-white/0 to-gray-white" />
       <div className="flex flex-col gap-3 w-full p-6 pt-2 bg-gray-white">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-end gap-1">
           <button
             type="button"
             ref={helpButtonRef}
@@ -45,8 +45,8 @@ const RoutesCreateFooter = ({
             aria-label="다시 만들기 안내"
             className="flex items-center gap-1 shrink-0 p-2 transition-opacity active:opacity-70"
           >
-            <HelpOutlineIcon className="text-title-02! text-gray-40" />
-            <span className="typo-caption text-gray-40">
+            <HelpOutlineIcon className="text-caption! text-gray-30" />
+            <span className="typo-description text-gray-30">
               일정 다시 만들기란?
             </span>
           </button>
@@ -71,7 +71,7 @@ const RoutesCreateFooter = ({
       <Popper
         open={Boolean(helpAnchor)}
         anchorEl={helpAnchor}
-        placement="top-start"
+        placement="top-end"
         transition
       >
         {({ TransitionProps }) => (
