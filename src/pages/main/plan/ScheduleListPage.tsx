@@ -73,7 +73,7 @@ const ScheduleListPage = () => {
         onClickConfirm={handleConfirmDelete}
       />
       <ScheduleListHeader viewType={viewType} toggleViewType={toggleViewType} />
-      <div className="flex-1">
+      <div className="flex-1 min-h-0 flex flex-col">
         {isError ? (
           <div className="flex flex-col items-center justify-center w-full pt-25 gap-4">
             <p className="typo-sub-title text-gray-70">
@@ -98,7 +98,7 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex flex-col w-full px-6 min-h-0 pb-15 gap-6">
+          <div className="flex flex-col flex-1 w-full px-6 min-h-0 pb-15 gap-6">
             {isLoading ? (
               <>
                 <SkeletonCalendar />
