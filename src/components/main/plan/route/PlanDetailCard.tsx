@@ -176,11 +176,11 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
             onChange={(v) => onChangeNote?.(v)}
             onBlur={() => onCommitNote?.()}
             onClick={(e) => e.stopPropagation()}
-            placeholder="메모를 남겨보세요..."
+            placeholder="계획에 대한 메모를 남겨보세요"
             ariaLabel={`${planName} 메모`}
             maxLength={50}
             warnOnMaxLength
-            className="mt-2 typo-caption rounded-lg border-[1.5px] border-transparent focus:border-gray-40 px-3 py-2 bg-white focus:bg-gray-5 not-placeholder-shown:bg-gray-5 text-gray-black placeholder:text-gray-40 outline-none"
+            className="placeholder:font-normal typo-caption rounded-lg border-[1.5px] border-transparent focus:border-gray-40 px-3 py-2 bg-gray-10 focus:bg-gray-10 not-placeholder-shown:bg-gray-5 text-gray-black placeholder:text-gray-40 outline-none"
           />
         )}
 

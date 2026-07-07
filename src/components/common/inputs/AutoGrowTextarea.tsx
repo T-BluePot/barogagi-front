@@ -86,7 +86,9 @@ const AutoGrowTextarea = ({
     composingRef.current = true;
   };
 
-  const handleCompositionEnd = (e: React.CompositionEvent<HTMLTextAreaElement>) => {
+  const handleCompositionEnd = (
+    e: React.CompositionEvent<HTMLTextAreaElement>
+  ) => {
     composingRef.current = false;
     if (!warnOnMaxLength) return;
     // 한글 등 조합이 끝나는 시점에 최종 길이를 판정 → 초과면 자르고 경고
