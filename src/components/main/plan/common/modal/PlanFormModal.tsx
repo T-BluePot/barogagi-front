@@ -22,6 +22,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
     <BottomModalLayout isOpen={action.isOpen} onClose={action.onClose}>
       <BottomActionHeader
         title={title ?? "내 일정"}
+        titlePlaceholder={!title}
         actionLabel={
           action.onClickEditTitle
             ? create
