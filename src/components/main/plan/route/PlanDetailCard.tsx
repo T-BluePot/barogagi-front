@@ -180,7 +180,7 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
             ariaLabel={`${planName} 메모`}
             maxLength={50}
             warnOnMaxLength
-            className="mt-2 typo-caption rounded-lg border border-transparent px-3 py-2 bg-gray-10 text-gray-black placeholder:text-gray-40 outline-none"
+            className="mt-2 typo-caption rounded-lg border border-transparent focus:border-gray-40 px-3 py-2 bg-gray-10 text-gray-black placeholder:text-gray-40 outline-none"
           />
         )}
 
