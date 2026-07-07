@@ -48,7 +48,7 @@ const StyleReferenceSection = ({
         <div className="flex flex-col gap-2">
           <p className="typo-caption text-gray-70">
             {SCHEDULE_STYLE_TEXT.AGE_LABEL}{" "}
-            <span className="typo-caption text-gray-40">
+            <span className="typo-tag text-gray-40">
               ({SCHEDULE_STYLE_TEXT.AGE_HINT})
             </span>
           </p>
