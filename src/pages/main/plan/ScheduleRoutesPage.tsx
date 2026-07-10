@@ -648,13 +648,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 일정 다시 만들기 (재생성) -----
   // 체크(유지)된 계획은 USER_PLACE로 고정하고, 나머지는 AI 슬롯으로 재추천 요청
   const isRegeneratingRef = useRef(false);
-  // 재생성 중 표시 상태 — 전체화면 로딩 대신 유지 카드는 그대로 두고 재추천 슬롯만 스켈레톤
+  // 재생성 중 표시 상태 — 오버레이/로딩(터치 차단)은 유지하고, 재추천 슬롯에만 스켈레톤 표시
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   const handleRegenerate = async () => {
     if (isRegeneratingRef.current) return;
     isRegeneratingRef.current = true;
     setIsRegenerating(true);
+    // 오버레이 로딩으로 다른 영역 터치 차단 (반투명이라 아래 스켈레톤은 비쳐 보임)
+    showLoading("AI가 일정을 다시 생성하고 있어요");
     try {
       const req = buildRequest();
       req.scheduleNm = scheduleName || req.scheduleNm;
@@ -691,6 +693,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     } finally {
       isRegeneratingRef.current = false;
       setIsRegenerating(false);
+      hideLoading();
     }
   };
 
