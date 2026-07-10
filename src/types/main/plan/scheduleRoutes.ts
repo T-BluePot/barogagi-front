@@ -42,6 +42,7 @@ interface ScheduleRoutesContentCreate extends ScheduleRoutesContentBase {
   footer: CreateFooterProps;
   keptIndexes?: Set<number>; // "유지" 체크된 카드 index 집합 (페이지 로컬 상태)
   onToggleKept?: (index: number) => void; // index 카드의 "유지" 체크 토글
+  isRegenerating?: boolean; // 재생성 중 — 유지 안 되는 슬롯을 스켈레톤으로 표시
 }
 
 // detail 화면: 편집 가능 + 액션 필수
@@ -51,6 +52,7 @@ interface ScheduleRoutesContentDetail
   footer?: never;
   keptIndexes?: never;
   onToggleKept?: never;
+  isRegenerating?: never;
   notes?: PlanNoteMap; // planNum → 인라인 메모 입력값
   onChangeNote?: (planNum: number, value: string) => void; // 인라인 메모 입력 변경
   onCommitNote?: (planNum: number) => void; // 인라인 메모 blur 시 커밋

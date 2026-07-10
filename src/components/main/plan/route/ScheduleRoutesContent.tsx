@@ -21,6 +21,7 @@ import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 import ScheduleRouteInfoHeader from "@/components/main/plan/route/ScheduleRouteInfoHeader";
 
 import PlanDetailCard from "@/components/main/plan/route/PlanDetailCard";
+import SkeletonPlanCard from "@/components/main/plan/route/SkeletonPlanCard";
 import PlanAddButton from "@/components/main/plan/PlanAddButton";
 import PopMenu from "@/components/common/menu/PopMenu";
 import CommonButton from "@/components/common/buttons/CommonButton";
@@ -250,6 +251,13 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           plans.map((plan, index) => {
             const planNum = plan.planNum ?? index;
             const isOpen = openPlanNum === planNum;
+            // create 재생성 중: 유지되는 카드는 그대로 두고, 재추천되는 슬롯만 스켈레톤 처리
+            const isKept =
+              plan.planSource === "USER_PLACE" ||
+              plan.planSource === "USER_CUSTOM" ||
+              (props.keptIndexes?.has(index) ?? false);
+            const showSkeleton =
+              !isEditable && !!props.isRegenerating && !isKept;
 
             return (
               // layout 애니메이션이 이 div 안에서만 일어나도록 격리
@@ -265,6 +273,12 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
                     noteValue={props.notes?.[planNum] ?? ""}
                     onChangeNote={(v) => props.onChangeNote?.(planNum, v)}
                     onCommitNote={() => props.onCommitNote?.(planNum)}
+                  />
+                ) : showSkeleton ? (
+                  <SkeletonPlanCard
+                    index={index}
+                    startTime={plan.startTime}
+                    endTime={plan.endTime}
                   />
                 ) : (
                   <PlanDetailCard
