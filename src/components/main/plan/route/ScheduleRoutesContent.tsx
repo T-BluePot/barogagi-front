@@ -67,7 +67,7 @@ const SortablePlanCard = ({
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes}>
+    <div ref={setNodeRef} style={style}>
       <PlanDetailCard
         mode="detail"
         reorderMode
@@ -77,7 +77,9 @@ const SortablePlanCard = ({
         onToggleOpen={() => {}}
         onOpenCardMenu={onOpenCardMenu}
         dragHandle={
+          // 접근성: dnd-kit attributes(role/tabIndex 등)를 리스너와 같은 핸들 요소에 부착
           <span
+            {...attributes}
             {...listeners}
             aria-label="드래그해서 순서 변경"
             className="cursor-grab touch-none text-gray-40 flex items-center"
