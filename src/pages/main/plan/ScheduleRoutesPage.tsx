@@ -513,6 +513,37 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // ----- 계획 추가 (add) : 기존 편집 모달/검색/서브모달 재사용, onClose에서 append -----
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
 
+  // 서버 상태 변경(추가 등) 후 상세를 다시 불러와 로컬 계획을 서버 데이터로 동기화.
+  // 신규 계획이 서버 planNum을 부여받아 이후 메모 커밋/수정/삭제가 정상 동작하게 함.
+  const reloadPlansFromServer = async () => {
+    if (!scheduleNum || Number.isNaN(scheduleNum)) return;
+    try {
+      const res = await getScheduleDetail(scheduleNum);
+      if (res.code !== "S202") return;
+      const convertedPlans = res.data.planDetailVOList.map(toCommonPlan);
+      setPlanList(convertedPlans);
+      setScheduleResult((prev) =>
+        prev ? { ...prev, planRegistResDTOList: convertedPlans } : prev
+      );
+      // 서버 메모를 로컬 노트로 복원 (planNum 확보 후) — 기존 입력값은 보존
+      setPlanNotes((prev) => {
+        const next: PlanNoteMap = { ...prev };
+        convertedPlans.forEach((p) => {
+          if (
+            p.planNum != null &&
+            p.planMemo != null &&
+            next[p.planNum] == null
+          ) {
+            next[p.planNum] = p.planMemo;
+          }
+        });
+        return next;
+      });
+    } catch {
+      // 조용히 실패 — 옵티미스틱 상태 유지 (다음 상호작용/새로고침 때 재동기화)
+    }
+  };
+
   const handleRequestAdd = () => {
     const lastEnd = planList[planList.length - 1]?.endTime || "09:00";
     // 새 계획 기본값: 이전 계획 종료 시각부터 1시간 (블록 기본 용량)
@@ -553,6 +584,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       setPlanList(updatedPlans);
       setScheduleResult(updatedSchedule);
       updateMutation.mutate(updatedSchedule, {
+        onSuccess: () => {
+          // 서버에서 새 planNum을 받아오도록 상세 재조회 (신규 계획 메모 커밋 정상화)
+          reloadPlansFromServer();
+        },
         onError: () => {
           setPlanList(prevPlans);
           setScheduleResult(prevSchedule);
@@ -607,14 +642,17 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     try {
       const req = buildRequest();
       req.scheduleNm = scheduleName || req.scheduleNm;
-      req.planRegistReqDTOList = planList.map((p, i) => {
+      req.planRegistReqDTOList = planList.flatMap((p, i) => {
         const isUserMade =
           p.planSource === "USER_PLACE" || p.planSource === "USER_CUSTOM";
         // 사용자가 만든 계획은 항상 유지, AI 계획은 체크 시 유지
         const keep = isUserMade || keptIndexes.has(i);
-        if (!keep) return toAIReq(p); // 미체크 AI → 재추천
-        if (p.planSource === "USER_CUSTOM") return toUserCustomReq(p);
-        return toUserPlaceReq(p); // USER_PLACE 또는 체크된 AI → 장소 고정
+        if (!keep) return [toAIReq(p)]; // 미체크 AI → 재추천
+        // 유지 계획인데 이름·지역이 모두 비면(비정상) placeName 빈 문자열 전송을 막기 위해 제외
+        const hasName = !!(p.planNm?.trim() || p.regionNm?.trim());
+        if (!hasName) return [];
+        if (p.planSource === "USER_CUSTOM") return [toUserCustomReq(p)];
+        return [toUserPlaceReq(p)]; // USER_PLACE 또는 체크된 AI → 장소 고정
       });
       const res = await createSchedule(req);
       if (res.code !== "S201") {
