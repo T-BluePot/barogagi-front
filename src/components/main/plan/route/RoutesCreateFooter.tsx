@@ -14,10 +14,7 @@ interface FooterProps {
   onRegenerate: () => void;
 }
 
-const RoutesCreateFooter = ({
-  onConfirm,
-  onRegenerate,
-}: FooterProps) => {
+const RoutesCreateFooter = ({ onConfirm, onRegenerate }: FooterProps) => {
   const helpButtonRef = useRef<HTMLButtonElement | null>(null);
   const [helpAnchor, setHelpAnchor] = useState<HTMLElement | null>(null);
 
@@ -35,7 +32,7 @@ const RoutesCreateFooter = ({
     <>
       <div className="h-2 bg-linear-to-b from-gray-white/0 to-gray-white" />
       <div className="flex flex-col gap-3 w-full p-6 pt-2 bg-gray-white">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center px-2 gap-1">
           <button
             type="button"
             ref={helpButtonRef}
@@ -76,7 +73,7 @@ const RoutesCreateFooter = ({
           <ClickAwayListener onClickAway={closeHelp}>
             <Fade {...TransitionProps} timeout={350}>
               <Box className="max-w-60 p-3 bg-gray-white rounded-xl shadow-[0_6px_16px_rgba(15,23,42,0.15)]">
-                <p className="typo-caption text-gray-70">
+                <p className="typo-caption text-gray-70 whitespace-pre-line">
                   {ROUTES_CREATE_TEXT.FOOTER_KEPT_NOTICE}
                 </p>
               </Box>

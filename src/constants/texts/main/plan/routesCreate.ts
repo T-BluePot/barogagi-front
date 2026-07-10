@@ -29,5 +29,6 @@ export const ROUTES_CREATE_TEXT = {
   },
   FOOTER_BUTTON_LABEL: "일정 완성하기",
   FOOTER_REGENERATE_LABEL: "다시 만들기",
-  FOOTER_KEPT_NOTICE: "선택한 계획은 다시 만들어도 유지돼요",
+  FOOTER_KEPT_NOTICE:
+    "AI가 일정을 새로 추천해드려요.\n선택한 계획은 다시 만들어도 유지돼요",
 };
