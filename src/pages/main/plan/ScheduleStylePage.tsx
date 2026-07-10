@@ -70,7 +70,8 @@ const ScheduleStylePage = () => {
   };
 
   const changePeople = (delta: number) => {
-    setDraft({ people: Math.max(1, Math.min(10, people + delta)) });
+    // 하한 0 = 미선택(빈 값)으로 리셋 가능. 0이면 buildComment에서 서버 전송 제외됨
+    setDraft({ people: Math.max(0, Math.min(10, people + delta)) });
   };
 
   const [purpose, setPurpose] = useState<string>(draft.purpose ?? "");
