@@ -602,33 +602,8 @@ export const usePlanFormModal = (
       ? { startTime: draft?.startTime, endTime: draft?.endTime }
       : items.find((item) => item.id === timeTargetId);
 
-  // 새 일정 기본 시간: 기존 블록이 있을 때 이전 블록의 종료 시간 기준
-  const isDraftNoTime = timeTargetId === DRAFT_ID && !draft?.startTime;
-  const timedItems = isDraftNoTime ? items.filter((item) => item.endTime) : [];
-  const lastTimedItem =
-    timedItems.length > 0 ? timedItems[timedItems.length - 1] : null;
-
-  const lastEndMinutes = (() => {
-    if (!lastTimedItem?.endTime) return undefined;
-    const minutes = hhmmToMinutes(lastTimedItem.endTime);
-    return Number.isFinite(minutes) && minutes >= 0 && minutes < 24 * 60
-      ? minutes
-      : undefined;
-  })();
-
-  const nextEndMinutes =
-    lastEndMinutes !== undefined && lastEndMinutes + 60 < 24 * 60
-      ? lastEndMinutes + 60
-      : undefined;
-
-  const newDraftDefaultStart =
-    lastEndMinutes !== undefined
-      ? hhmmToTimeValue(minutesToHHmm(lastEndMinutes))
-      : undefined;
-  const newDraftDefaultEnd =
-    nextEndMinutes !== undefined
-      ? hhmmToTimeValue(minutesToHHmm(nextEndMinutes))
-      : undefined;
+  // 새 계획 기본 시간은 draft 생성 시 getDefaultPlanTime으로 이미 채워지므로
+  // 여기서 별도 기본값 계산은 불필요 (시간 모달은 draft 값을 그대로 초기값으로 사용)
 
   const regionEditTarget =
     regionTargetId === DRAFT_ID
@@ -702,10 +677,10 @@ export const usePlanFormModal = (
       isOpen: isTimeOpen,
       initialStartTime: timeEditTarget?.startTime
         ? hhmmToTimeValue(timeEditTarget.startTime)
-        : newDraftDefaultStart,
+        : undefined,
       initialEndTime: timeEditTarget?.endTime
         ? hhmmToTimeValue(timeEditTarget.endTime)
-        : newDraftDefaultEnd,
+        : undefined,
       onConfirm: handleTimeConfirm,
       onCancel: handleTimeCancel,
     },
