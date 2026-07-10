@@ -42,6 +42,10 @@
    * 큰 핸드폰(iPhone Pro Max 계열) 기준 폭 — 넓은 화면에서 좌우 여백 최소화 */
   --app-max-width: 430px;
 
+  /* 하단 탭바 지오메트리 (BottomTabBar·TabBarLayout 공통 — 변경 시 여기 한 곳만 수정) */
+  --tabbar-height: 68px; /* 탭바 자체 높이 */
+  --tabbar-bottom: 24px; /* 화면 하단에서 탭바까지 간격 */
+
   /* Gray Scale */
   --color-gray-black: #1e1e1e;
   --color-gray-90: #333333;
