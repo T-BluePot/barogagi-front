@@ -421,6 +421,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const [reorderDirty, setReorderDirty] = useState(false);
   // 순서 변경 세션 기준값: 첫 블록 시작(anchor) + 위치별 공백(idle)
   const reorderMetaRef = useRef<{ anchor: number; gaps: number[] } | null>(null);
+  // 빠른 재정렬-완료-재정렬 시, 늦게 실패한 이전 커밋의 stale 롤백을 무시하기 위한 토큰
+  const reorderCommitTokenRef = useRef(0);
 
   // reorder 중: 로컬만 재정렬 + 시간 재계산(PUT 안 함). 첫 변경 시 롤백용 스냅샷 저장.
   // 각 블록 진행시간(종료−시작) 유지, anchor부터 순서대로 재부여, 위치별 공백 보존.
@@ -460,8 +462,11 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       return;
     }
     const snapshot = reorderSnapshotRef.current;
+    const myToken = ++reorderCommitTokenRef.current;
     updateMutation.mutate(scheduleResult, {
       onError: () => {
+        // 더 최신 재정렬 커밋이 이미 시작됐으면 이 롤백은 stale이므로 무시
+        if (myToken !== reorderCommitTokenRef.current) return;
         if (snapshot) {
           setPlanList(snapshot.plans);
           setScheduleResult(snapshot.schedule);
