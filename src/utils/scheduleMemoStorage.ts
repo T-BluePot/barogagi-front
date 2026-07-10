@@ -15,9 +15,14 @@ export const setScheduleMemo = async (
   memo: string
 ): Promise<void> => {
   const trimmed = memo.trim();
-  if (trimmed) {
-    await storage.setItem(memoKey(scheduleNum), trimmed);
-  } else {
-    await storage.removeItem(memoKey(scheduleNum));
+  try {
+    if (trimmed) {
+      await storage.setItem(memoKey(scheduleNum), trimmed);
+    } else {
+      await storage.removeItem(memoKey(scheduleNum));
+    }
+  } catch (err) {
+    // 브릿지 저장 실패를 흡수해 unhandled rejection 방지 (메모는 임시 로컬 저장이라 치명적이지 않음)
+    console.error("일정 메모 저장 실패", err);
   }
 };
