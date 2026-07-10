@@ -83,7 +83,7 @@ const StyleReferenceSection = ({
               <button
                 type="button"
                 aria-label="인원수 줄이기"
-                disabled={people <= 0}
+                disabled={people <= 1}
                 onClick={() => onChangePeople(-1)}
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-10 text-gray-60 transition-colors active:bg-gray-20 disabled:opacity-40"
               >
