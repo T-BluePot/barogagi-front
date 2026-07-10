@@ -114,8 +114,10 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     const fetchCreateSchedule = async () => {
       try {
         const req = buildRequest();
+        console.log("[create 요청]", JSON.stringify(req, null, 2));
         const res = await createSchedule(req);
-        console.log("[create 응답]", JSON.stringify(res.data, null, 2));
+        console.log("[create 응답] code:", res.code, "message:", res.message);
+        console.log("[create 응답] data:", res.data);
 
         // HTTP 200이지만 에러 코드로 내려오는 경우 처리 (catch에 안 걸림)
         if (res.code !== "S201") {
@@ -124,8 +126,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           return;
         }
 
+        // 성공 코드인데 data가 비어 있으면(서버가 계획을 못 만든 경우) 빈 화면 대신 실패 처리
+        if (!res.data) {
+          toast(res.message ?? "생성된 일정이 비어 있어요. 다시 시도해주세요");
+          navigate(-1);
+          return;
+        }
+
         setScheduleResult(res.data);
-        setPlanList(res.data?.planRegistResDTOList ?? []);
+        setPlanList(res.data.planRegistResDTOList ?? []);
       } catch (err) {
         if (err instanceof AxiosError) {
           toast(err.response?.data?.message ?? "일정 생성에 실패했습니다.");
