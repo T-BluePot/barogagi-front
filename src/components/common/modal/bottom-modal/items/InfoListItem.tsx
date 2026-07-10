@@ -86,6 +86,7 @@ export const InputInfoItem = ({
           value={value ?? ""}
           onChange={(v) => onChange?.(v)}
           maxLength={50}
+          ariaLabel={placeholder}
           onBlur={handleExitEdit}
           autoFocus
         />
