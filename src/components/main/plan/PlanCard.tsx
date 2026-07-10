@@ -157,7 +157,7 @@ const PlanCard = ({
             >
               <PlaceIcon className="!text-[16px] text-gray-40 shrink-0" />
               <span className="typo-caption text-gray-40 truncate">
-                {hasLocation ? location : "장소 추가"}
+                {hasLocation ? location : "지역 추가"}
               </span>
             </button>
           </div>
