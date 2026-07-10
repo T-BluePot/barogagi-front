@@ -919,12 +919,6 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
             onRegenerate: handleRegenerate,
-            keptCount: planList.filter(
-              (p, i) =>
-                p.planSource === "USER_PLACE" ||
-                p.planSource === "USER_CUSTOM" ||
-                keptIndexes.has(i)
-            ).length,
           }}
           keptIndexes={keptIndexes}
           onToggleKept={toggleKept}

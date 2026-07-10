@@ -29,8 +29,5 @@ export const ROUTES_CREATE_TEXT = {
   },
   FOOTER_BUTTON_LABEL: "일정 완성하기",
   FOOTER_REGENERATE_LABEL: "다시 만들기",
-  FOOTER_KEPT_NOTICE: {
-    KEPT: (count: number) => `${count}개 계획은 다시 만들어도 유지돼요`,
-    EMPTY: "마음에 드는 계획을 체크해두면 다시 만들 때 유지돼요",
-  },
+  FOOTER_KEPT_NOTICE: "선택한 계획은 다시 만들어도 유지돼요",
 };

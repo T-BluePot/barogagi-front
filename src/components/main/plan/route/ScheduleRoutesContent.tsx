@@ -313,7 +313,6 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           <RoutesCreateFooter
             onConfirm={props.footer.onClickConfirm}
             onRegenerate={props.footer.onRegenerate}
-            keptCount={props.footer.keptCount}
           />
         </div>
       )}
