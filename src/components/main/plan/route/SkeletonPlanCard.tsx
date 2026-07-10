@@ -18,7 +18,9 @@ const SkeletonPlanCard = ({
   endTime,
 }: SkeletonPlanCardProps) => {
   return (
-    <article className="flex gap-3">
+    // 순수 시각적 로딩 자리표시 — 레일의 순번/시간이 스크린리더에 읽히지 않도록 숨김
+    // (재생성 로딩 상태는 상위 오버레이가 안내하므로 aria-hidden만으로 충분)
+    <article className="flex gap-3" aria-hidden="true">
       {/* 왼쪽 타임라인 레일 */}
       <div className="flex w-11 shrink-0 flex-col items-center gap-2 pt-1">
         {index != null && (
