@@ -30,5 +30,5 @@ export const ROUTES_CREATE_TEXT = {
   FOOTER_BUTTON_LABEL: "일정 완성하기",
   FOOTER_REGENERATE_LABEL: "다시 만들기",
   FOOTER_KEPT_NOTICE:
-    "입력한 정보는 유지된 채 일정만 새롭게 만들어져요\n선택한 계획은 다시 만들어도 유지돼요",
+    "입력한 내용으로 일정을 새롭게 만들어요\n선택한 계획은 다시 만들어도 유지돼요",
 };
