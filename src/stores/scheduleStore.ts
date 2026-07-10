@@ -102,7 +102,8 @@ function buildComment(draft: ScheduleDraftType): string | undefined {
   if (purpose) parts.push(`목적: ${purpose}`);
   const note = draft.comment?.trim();
   if (note) parts.push(note);
-  return parts.length > 0 ? parts.join(" / ") : undefined;
+  // 구분자 "/"가 AI 입력 파싱에 영향을 주는지 확인차 ", "로 변경
+  return parts.length > 0 ? parts.join(", ") : undefined;
 }
 
 export type ScheduleDraftStore = {
