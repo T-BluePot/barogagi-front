@@ -34,12 +34,21 @@ export const BottomModalHeader = ({
 
 export const BottomActionHeader = ({
   title,
+  titlePlaceholder = false,
   actionLabel,
   onClickAction,
 }: TitleWithActionHeaderProps) => {
   return (
     <div className="flex h-16 items-center justify-between px-6">
-      <span className="typo-title-02 text-gray-black">{title}</span>
+      <span
+        className={
+          titlePlaceholder
+            ? "text-title-02 font-normal text-gray-30" // 이름 미입력: 회색 + 얇게
+            : "typo-title-02 text-gray-black"
+        }
+      >
+        {title}
+      </span>
       {actionLabel && (
         <button
           onClick={onClickAction}

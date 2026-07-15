@@ -32,12 +32,19 @@
   --color-peach-border: #ffd6c9;
   --color-peach-text: #e96a47;
 
+  /* Accent - 보조 강조색 (타임라인 인덱스 배지 등, peach와 대비되는 인디고 블루) */
+  --color-accent: #666cfb;
+
   /* Motion - 리디자인 공통 이징 */
   --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
 
   /* Layout - 웹 브라우저에서 앱 전체를 모바일 폭으로 제한하는 프레임
    * 큰 핸드폰(iPhone Pro Max 계열) 기준 폭 — 넓은 화면에서 좌우 여백 최소화 */
   --app-max-width: 430px;
+
+  /* 하단 탭바 지오메트리 (BottomTabBar·TabBarLayout 공통 — 변경 시 여기 한 곳만 수정) */
+  --tabbar-height: 68px; /* 탭바 자체 높이 */
+  --tabbar-bottom: 24px; /* 화면 하단에서 탭바까지 간격 */
 
   /* Gray Scale */
   --color-gray-black: #1e1e1e;
@@ -91,6 +98,8 @@
   --animate-warning-overlay-in: warning-overlay-in 0.9s ease-out forwards;
   /* 오버레이가 어느 정도 짙어진 뒤(0.3s delay) 모달이 흐릿→선명, 살짝 커지며 등장 */
   --animate-warning-modal-in: warning-modal-in 0.6s ease-out 0.3s both;
+  /* 메모 글자수 초과 시도 시 경고: 좌우 흔들림 + 살짝 빨간 플래시 (1회) */
+  --animate-memo-warn: memo-warn 0.4s ease-in-out;
 
   /* Font Weights */
   --font-weight-header: 700;
@@ -218,6 +227,30 @@
     opacity: 1;
     transform: scale(1);
     filter: blur(0);
+  }
+}
+
+/* 메모 최대 글자수에서 추가 입력 시도 시: 좌우로 흔들리며 살짝 빨갛게 번쩍였다 원복 */
+@keyframes memo-warn {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-5px);
+    background-color: rgba(255, 59, 56, 0.06);
+    border-color: rgba(255, 59, 56, 0.8);
+  }
+  30% {
+    transform: translateX(4px);
+  }
+  50% {
+    transform: translateX(-3px);
+    background-color: rgba(255, 59, 56, 0.06);
+    border-color: rgba(255, 59, 56, 0.8);
+  }
+  70% {
+    transform: translateX(2px);
   }
 }
 

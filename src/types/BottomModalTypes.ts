@@ -24,6 +24,8 @@ interface DetailHeaderProps {
 
 export interface TitleWithActionHeaderProps {
   title: string;
+  /** 이름 미입력(placeholder "내 일정") 상태면 title을 회색 + 얇은 폰트로 표시 */
+  titlePlaceholder?: boolean;
   actionLabel?: string;
   onClickAction?: () => void;
 }

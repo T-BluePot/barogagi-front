@@ -78,12 +78,15 @@ export interface ScheduleRegistReqDTO {
 /** 세부 일정(Plan) 응답 DTO */
 export interface PlanRegistResDTO {
   planSource?: PlanSource;
+  /** 사용자 추가 계획 표시 — 일정 수정(PUT)에서 "Y"면 서버가 아이템 조회를 스킵 */
+  isUserAdded?: "Y" | "N";
   startTime: string;
   endTime: string;
-  itemNum: number;
-  itemNm: string;
-  categoryNum: number;
-  categoryNm: string;
+  /** 사용자가 상세 화면에서 직접 추가한 계획에는 AI 카테고리/아이템 개념이 없어 absent — 더미값 금지, optional 유지 */
+  itemNum?: number;
+  itemNm?: string;
+  categoryNum?: number;
+  categoryNm?: string;
   planNum?: number;
   planNm?: string;
   planLink?: string;
@@ -95,7 +98,8 @@ export interface PlanRegistResDTO {
   regionNum?: number;
   imageLink?: string;
   imageUrl?: string;
-  planTagRegistResDTOList: TagRegistResDTO[];
+  /** 사용자 직접 추가 계획에는 태그가 없을 수 있음 — absent 시 undefined 유지 */
+  planTagRegistResDTOList?: TagRegistResDTO[];
 }
 
 /** 일정(Schedule) 응답 DTO (POST /schedule/save, GET /schedule/detail 등) */

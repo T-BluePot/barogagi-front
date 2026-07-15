@@ -22,6 +22,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
     <BottomModalLayout isOpen={action.isOpen} onClose={action.onClose}>
       <BottomActionHeader
         title={title ?? "내 일정"}
+        titlePlaceholder={!title}
         actionLabel={
           action.onClickEditTitle
             ? create
@@ -43,7 +44,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
       />
       {!info.hideAddress && (
         <CommonInfoItem
-          placeholder="장소 추가"
+          placeholder="지역 추가"
           label={place}
           icon={{
             state: place ? "default" : "placeholder",

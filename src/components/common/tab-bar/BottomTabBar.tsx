@@ -15,7 +15,7 @@ const BottomTabBar = () => {
   return (
     <nav
       aria-label="Tabs"
-      className="fixed inset-x-0 mx-auto w-[calc(100%-32px)] max-w-[calc(var(--app-max-width)-32px)] bottom-[calc(24px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 h-17 rounded-full bg-white/75 px-2 backdrop-blur-[20px] backdrop-saturate-[1.8] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_12px_32px_rgba(0,0,0,0.10),0_0_0_1px_rgba(0,0,0,0.04)]"
+      className="fixed inset-x-0 mx-auto w-[calc(100%-32px)] max-w-[calc(var(--app-max-width)-32px)] bottom-[calc(var(--tabbar-bottom)+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 h-[var(--tabbar-height)] rounded-full bg-white/75 px-2 backdrop-blur-[20px] backdrop-saturate-[1.8] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_12px_32px_rgba(0,0,0,0.10),0_0_0_1px_rgba(0,0,0,0.04)]"
     >
       <ul className="flex h-full items-center">
         {tabs.map((tab) => {

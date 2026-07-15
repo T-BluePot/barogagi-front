@@ -34,19 +34,6 @@ export const CommonHeader = ({ onClick }: CommonHeaderProps) => {
       {/* fitpl 워드마크 */}
       <span className="flex items-center text-[23px] font-extrabold italic tracking-[-0.04em] text-peach">
         fitpl
-        <svg
-          width={15}
-          height={15}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.6}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="ml-px"
-        >
-          <path d="M4 12l5 5L20 6" />
-        </svg>
       </span>
 
       <div className="flex items-center gap-2">

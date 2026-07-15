@@ -181,8 +181,9 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     confirmMessage: "지금 나가면 생성된 일정이 모두 사라집니다.",
   },
 
+  // 상세는 페이지가 직접 BackHeader(+kebab 메뉴)를 렌더하므로 앱 레이아웃 헤더는 없음
   [ROUTES.PLAN.DETAIL]: {
-    type: "back",
+    type: "none",
     isHeaderDark: false,
   },
   [ROUTES.PLAN.SETTING_SEARCH]: { type: "none" },
