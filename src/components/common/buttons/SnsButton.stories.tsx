@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SnsButton } from './SnsButton';
 
 const meta: Meta<typeof SnsButton> = {
