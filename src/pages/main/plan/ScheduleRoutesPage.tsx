@@ -14,6 +14,9 @@ import SkeletonScheduleRoutesContent from "@/components/main/plan/route/Skeleton
 import ScheduleRoutesContent from "@/components/main/plan/route/ScheduleRoutesContent";
 import ScheduleInfoBottomSheet from "@/components/main/plan/route/ScheduleInfoBottomSheet";
 import ScheduleDetailMenu from "@/components/main/plan/route/ScheduleDetailMenu";
+import ShareBottomSheet from "@/components/main/plan/route/ShareBottomSheet";
+import { SHARE_TEXT } from "@/constants/texts/main/share";
+import IosShareIcon from "@mui/icons-material/IosShare";
 import { BackHeader } from "@/components/common/headers/BackHeader";
 
 import { CreateScheduleModal } from "@/components/main/plan/create/CreateScheduleModal";
@@ -280,6 +283,14 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   // 일정 레벨 메모는 서버 필드가 없어 브릿지 로컬 저장(scheduleMemoStorage) 사용
   const [scheduleMemo, setScheduleMemoState] = useState<string>("");
   const [isInfoSheetOpen, setIsInfoSheetOpen] = useState(false);
+  const [isShareSheetOpen, setIsShareSheetOpen] = useState(false);
+
+  // 카카오 공유 카드 썸네일 — 사진이 있는 첫 번째 계획의 이미지를 쓴다.
+  // 카카오 서버가 이미지를 직접 가져가므로, 앱이 화면에 쓰는 프록시 URL이 아니라
+  // 원본 URL(공개 CDN)을 그대로 넘겨야 한다.
+  const shareThumbnailUrl = planList
+    .map((plan) => plan.imageLink ?? plan.imageUrl)
+    .find(Boolean);
 
   // detail 진입 시 로컬 저장된 일정 메모 로드
   useEffect(() => {
@@ -906,6 +917,14 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         onSave={handleSaveInfo}
       />
 
+      <ShareBottomSheet
+        isOpen={isShareSheetOpen}
+        onClose={() => setIsShareSheetOpen(false)}
+        scheduleNum={scheduleNum}
+        scheduleName={scheduleName}
+        thumbnailUrl={shareThumbnailUrl}
+      />
+
       {isCreate && (
         <ScheduleRoutesContent
           header={{
@@ -915,7 +934,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             onCommitScheduleName: handleCommitScheduleName,
           }}
           plans={planList}
-          isEditable={false}
+          mode="create"
           footer={{
             onClickConfirm: () => setIsCreateModalOpen(true),
             onRegenerate: handleRegenerate,
@@ -928,7 +947,15 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       {isDetail && (
         <div className="bg-gray-white">
           <BackHeader onClick={() => navigate(-1)}>
-            <div className="flex w-full justify-end">
+            <div className="flex w-full items-center justify-end gap-4">
+              <button
+                type="button"
+                aria-label={SHARE_TEXT.SHARE_ARIA}
+                onClick={() => setIsShareSheetOpen(true)}
+                className="flex cursor-pointer items-center"
+              >
+                <IosShareIcon className="text-gray-40" sx={{ fontSize: 20 }} />
+              </button>
               <ScheduleDetailMenu
                 onEnterReorder={() => setReorderMode(true)}
                 onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
@@ -946,7 +973,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             onCommitScheduleName: handleCommitScheduleName,
           }}
           plans={planList}
-          isEditable={isDetail}
+          mode="detail"
           onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
           onAddPlan={handleRequestAdd}

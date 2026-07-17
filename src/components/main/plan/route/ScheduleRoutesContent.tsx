@@ -108,8 +108,10 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
     setOpenPlanNum((prev) => (prev === planNum ? null : planNum));
   };
 
-  // ----- 팝메뉴 영역 -----
-  const isEditable = props.isEditable === true; // 카드(plan) 편집 여부
+  // ----- 표시 모드 -----
+  const isDetail = props.mode === "detail"; // 편집·메뉴·순서변경·계획추가 가능
+  const isCreate = props.mode === "create"; // "유지" 체크 + 일정 완성 푸터
+  const isShare = props.mode === "share"; // 공유 링크 진입 — 조회만
 
   // ----- 순서 변경 모드 (detail 전용) -----
   // 앱 헤더 kebab이 진입시키므로 페이지가 소유한 상태를 props.reorderMode로 받음
@@ -123,7 +125,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
 
   // 드래그 완료 → 부모에 (from, to) 인덱스 전달 (시간 재계산 없이 배열 순서만 변경)
   const handleDragEnd = (event: DragEndEvent) => {
-    if (!isEditable) return;
+    if (props.mode !== "detail") return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = plans.findIndex((p, i) => (p.planNum ?? i) === active.id);
@@ -140,7 +142,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   // 팝메뉴 열기
   const handleOpenCardMenu = (info: CardMenuAnchorInfo) => {
     // 편집 모드가 아닐 경우 방지
-    if (!isEditable) return;
+    if (!isDetail) return;
 
     setMenuPlanNum(info.planNum);
     setMenuAnchorEl(info.anchorEl);
@@ -153,20 +155,20 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   };
 
   const handleClickEdit = () => {
-    if (!isEditable || menuPlanNum == null) return;
+    if (props.mode !== "detail" || menuPlanNum == null) return;
     props.onRequestEdit(menuPlanNum);
     handleCloseMenu();
   };
 
   const handleClickDelete = () => {
-    if (!isEditable || menuPlanNum == null) return;
+    if (props.mode !== "detail" || menuPlanNum == null) return;
     props.onRequestDelete(menuPlanNum);
     handleCloseMenu();
   };
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-5">
-      {isEditable && (
+      {isDetail && (
         <PopMenu
           // menuPlanNum을 key로 줘 카드 전환 시 Popper를 새 anchor로 remount
           // (MUI Popper가 anchorEl 변경만으로는 위치를 갱신하지 않아 이전 카드 위치에
@@ -200,10 +202,11 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           setScheduleName={onChangeScheduleName}
           onCommitScheduleName={onCommitScheduleName}
           scheduleDate={scheduleDate}
-          onOpenInfoSheet={isEditable ? props.onOpenInfoSheet : undefined}
+          onOpenInfoSheet={isDetail ? props.onOpenInfoSheet : undefined}
+          readOnly={isShare}
         />
         {/* 일정 메모 라인 (detail 전용) — 탭하면 일정 정보 바텀시트 오픈 */}
-        {isEditable && props.onOpenInfoSheet && (
+        {isDetail && props.onOpenInfoSheet && (
           <button
             type="button"
             onClick={props.onOpenInfoSheet}
@@ -225,7 +228,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
         className="flex flex-col flex-1 w-full min-h-0 p-6 overflow-y-auto gap-4 hide-scrollbar"
         layoutScroll
       >
-        {isEditable && props.reorderMode ? (
+        {isDetail && props.reorderMode ? (
           // 순서 변경 모드: 핸들 드래그로 재정렬 (시간은 각 계획에 고정)
           <DndContext
             sensors={sensors}
@@ -257,12 +260,12 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
               plan.planSource === "USER_CUSTOM" ||
               (props.keptIndexes?.has(index) ?? false);
             const showSkeleton =
-              !isEditable && !!props.isRegenerating && !isKept;
+              isCreate && !!props.isRegenerating && !isKept;
 
             return (
               // layout 애니메이션이 이 div 안에서만 일어나도록 격리
               <div key={planNum} style={{ isolation: "isolate" }}>
-                {isEditable ? (
+                {isDetail ? (
                   <PlanDetailCard
                     plan={plan}
                     index={index}
@@ -273,6 +276,14 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
                     noteValue={props.notes?.[planNum] ?? ""}
                     onChangeNote={(v) => props.onChangeNote?.(planNum, v)}
                     onCommitNote={() => props.onCommitNote?.(planNum)}
+                  />
+                ) : isShare ? (
+                  <PlanDetailCard
+                    plan={plan}
+                    index={index}
+                    isOpen={isOpen}
+                    onToggleOpen={() => handleToggleOpen(planNum)}
+                    mode="share"
                   />
                 ) : showSkeleton ? (
                   <SkeletonPlanCard
@@ -297,7 +308,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
         )}
 
         {/* 하단 액션: 순서 변경 모드에선 "완료"(일괄 저장), 평상시엔 "계획 추가하기" */}
-        {isEditable &&
+        {isDetail &&
           (props.reorderMode ? (
             <CommonButton
               label="완료"
@@ -308,7 +319,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           ))}
       </motion.div>
 
-      {!isEditable && (
+      {isCreate && (
         <div className="mt-auto">
           <RoutesCreateFooter
             onConfirm={props.footer.onClickConfirm}

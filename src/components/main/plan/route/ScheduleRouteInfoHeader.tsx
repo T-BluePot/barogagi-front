@@ -8,12 +8,20 @@ interface InfoHeaderProps {
   setEditMode: (mode: boolean) => void;
 
   scheduleName: string; // 일정명
-  setScheduleName: (name: string) => void; // 일정명 변경 함수 (실시간)
+  setScheduleName?: (name: string) => void; // 일정명 변경 함수 (실시간) — readOnly면 불필요
   onCommitScheduleName?: (finalName: string) => void; // 포커스 아웃 시 확정 콜백
   scheduleDate: string; // 일정 날짜
 
   // detail 전용: 제목 탭 시 인라인 편집 대신 일정 정보 바텀시트 오픈
   onOpenInfoSheet?: () => void;
+
+  /**
+   * share(공유 링크) 뷰처럼 조회만 가능한 화면.
+   * 제목을 버튼이 아닌 텍스트로 렌더하고 편집 아이콘도 감춘다.
+   * (이 가드가 없으면 onOpenInfoSheet가 없는 화면에서 제목을 탭했을 때
+   *  create용 인라인 편집 모드로 들어가 버린다)
+   */
+  readOnly?: boolean;
 }
 
 const ScheduleRouteInfoHeader = ({
@@ -24,6 +32,7 @@ const ScheduleRouteInfoHeader = ({
   editMode,
   setEditMode,
   onOpenInfoSheet,
+  readOnly = false,
 }: InfoHeaderProps) => {
   return (
     <header className="flex flex-col w-full gap-2">
@@ -33,7 +42,10 @@ const ScheduleRouteInfoHeader = ({
       </div>
       {/* 일정명 영역 */}
       <div className="flex w-full items-center gap-2">
-        {!editMode && (
+        {readOnly && (
+          <span className="typo-title-01 text-start px-1">{scheduleName}</span>
+        )}
+        {!readOnly && !editMode && (
           <button
             type="button"
             className="flex items-center justify-between w-full px-1 cursor-pointer"
@@ -55,10 +67,10 @@ const ScheduleRouteInfoHeader = ({
             </div>
           </button>
         )}
-        {editMode && (
+        {!readOnly && editMode && (
           <ScheduleTitleInput
             scheduleName={scheduleName}
-            setScheduleName={setScheduleName}
+            setScheduleName={setScheduleName ?? (() => {})}
             setEditMode={setEditMode}
             onCommit={onCommitScheduleName}
           />
