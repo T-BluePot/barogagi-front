@@ -10,6 +10,11 @@ export const BottomModalLayout = ({
   // 하드웨어 백 버튼: 모달이 열려있는 동안 닫기 동작으로 가로챔
   useNativeBack(isOpen, onClose);
 
+  // 페이지 로드 시점부터 미리 마운트해둔 채 isOpen prop만 나중에 true로 바뀌면
+  // react-modal-sheet의 열림 애니메이션(requestAnimationFrame 기반)이 시작되지 않고
+  // 시트가 닫힌 위치에 멈추는 문제가 있다. 열릴 때 처음 마운트되도록 하면 정상 동작한다.
+  if (!isOpen) return null;
+
   return (
     <Sheet
       isOpen={isOpen}
