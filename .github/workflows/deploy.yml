@@ -48,12 +48,20 @@ jobs:
         run: |
           echo "VITE_API_BASE_URL=${{ secrets.PROD_VITE_API_BASE_URL }}" >> .env
           echo "VITE_API_KEY=${{ secrets.PROD_VITE_API_KEY }}" >> .env
+          # 서버가 이 값으로 발급할 공유 링크의 도메인을 결정한다.
+          # 미지정 시 빌드 모드로 추론하는데, 테스트 배포도 production 빌드라 PROD로 잘못 추론된다.
+          echo "VITE_ENVIRONMENT=PROD" >> .env
+          # 카카오 JavaScript 키. 없으면 카카오톡 공유 버튼이 렌더되지 않는다.
+          # 공개용 키이며 보안은 카카오 개발자센터의 도메인 등록으로 건다.
+          echo "VITE_KAKAO_JS_KEY=${{ secrets.VITE_KAKAO_JS_KEY }}" >> .env
 
       - name: Create .env file from Secrets [main]
         if: github.ref == 'refs/heads/main'
         run: |
           echo "VITE_API_BASE_URL=${{ secrets.TEST_VITE_API_BASE_URL }}" >> .env
           echo "VITE_API_KEY=${{ secrets.TEST_VITE_API_KEY }}" >> .env
+          echo "VITE_ENVIRONMENT=TEST" >> .env
+          echo "VITE_KAKAO_JS_KEY=${{ secrets.VITE_KAKAO_JS_KEY }}" >> .env
 
       - name: Build Frontend
         run: |
