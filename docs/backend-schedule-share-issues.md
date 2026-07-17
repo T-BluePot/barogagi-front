@@ -228,6 +228,23 @@ HTTP 상태는 200인데 내용은 실패입니다. 클라이언트가 `status` 
 
 ---
 
+## 배포 인프라 공유 — 추가된 GitHub Secrets / 환경변수
+
+공유 기능 때문에 **빌드 시점에 필요한 환경변수 2개**가 새로 생겼습니다. 배포 워크플로(`.github/workflows/deploy.yml`)는 GitHub Actions에서 빌드 후 산출물(`dist`)을 서버로 scp 하는 구조라, 이 값들이 **Actions 빌드 환경**에 있어야 번들에 반영됩니다.
+
+| 변수 | 값 관리 방식 | 비고 |
+| --- | --- | --- |
+| `VITE_KAKAO_JS_KEY` | **GitHub Secret으로 추가함** (`Settings > Secrets and variables > Actions`) | 카카오 JS 앱키. 없으면 카카오톡 공유 버튼이 렌더되지 않음. 공개용 키라 노출돼도 무방(도메인 등록으로 보호) |
+| `VITE_ENVIRONMENT` | 워크플로에 **리터럴로 직접 기입** (`main`→`TEST`, `release`→`PROD`) | 시크릿 아님. 서버가 이 값으로 발급할 공유 링크의 도메인을 결정 |
+
+- `deploy.yml`의 `.env` 생성 스텝에 위 두 줄을 추가하는 변경은 **이 PR에 포함**됨.
+- **운영/테스트 서버 자체 설정에는 영향 없음** (프론트 빌드 산출물만 바뀜). 서버 쪽에서 하실 일은 없습니다.
+- 🔴 단, **카카오 개발자센터 도메인 등록**은 인프라와 무관하게 필요합니다:
+  - `플랫폼 키 > JavaScript SDK 도메인` 과 `제품 링크 관리 > 웹 도메인` 양쪽에 `https://fitpl.xyz`(+`https://test.fitpl.xyz`) 등록.
+
+> 참고: 배포 워크플로가 `npm install`로 빌드하는데 레포는 pnpm이라 lockfile이 무시되는 별개 이슈가 있습니다.
+> 프론트 자체 이슈라 백엔드와 무관하며, `docs/ci-pnpm-migration.md`에 별도 정리해 두었습니다.
+
 ## 참고 — 배포 관련
 
 - **SPA fallback 은 이미 정상입니다.** `fitpl.xyz` / `test.fitpl.xyz` 모두 `/share/{token}` 같은 임의 경로에 `index.html` 을 반환하는 것 확인했습니다 (`/` 와 md5 동일). **별도 요청 드릴 것 없습니다.**
