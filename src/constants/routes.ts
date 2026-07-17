@@ -75,6 +75,11 @@ export const ROUTES = {
     DETAIL_SEARCH: "/plan/:id/detail/search",
   },
 
+  // 공유 링크 뷰 (비로그인 접근 가능)
+  SHARE: {
+    VIEW: "/share/:shareToken",
+  },
+
   // 추가 기능들
   USER: {
     BASE: USER_BASE,
@@ -113,6 +118,10 @@ export const getRoutePath = {
     settingSearch: () => ROUTES.PLAN.SETTING_SEARCH,
     detailSearch: (id: string) =>
       ROUTES.PLAN.DETAIL_SEARCH.replace(":id", encodeURIComponent(id)),
+  },
+  share: {
+    view: (shareToken: string) =>
+      ROUTES.SHARE.VIEW.replace(":shareToken", encodeURIComponent(shareToken)),
   },
   user: {
     detail: (id: string) =>
