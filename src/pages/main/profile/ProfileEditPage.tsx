@@ -7,7 +7,7 @@ import { getMe, updateMe } from "@/api/queries/authQueries";
 import { authKeys } from "@/api/keyFactories";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_EDIT_TEXT } from "@/constants/texts/main/profile";
-import type { BaseResponse } from "@/api/types";
+import type { BaseResponse, MemberRequestDTO } from "@/api/types";
 import { getGenderLabel, type GenderType } from "@/constants/userInfo";
 
 import { PageTitle } from "@/components/auth/common/PageTitle";
@@ -125,11 +125,29 @@ const ProfileEditPage = () => {
         ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
         : undefined;
 
-    updateMutation.mutate({
-      nickName: nickname.trim(),
-      gender,
-      birth,
-    });
+    // 변경된 필드만 전송한다.
+    // 안 바꾼 닉네임까지 그대로 보내면 서버가 "본인 닉네임"도 중복으로 판정해
+    // "이미 사용 중인 닉네임" 에러가 난다. (MemberRequestDTO의 필드는 모두 optional)
+    const payload: MemberRequestDTO = {};
+    const trimmedNickname = nickname.trim();
+
+    if (trimmedNickname && trimmedNickname !== (userData?.nickName ?? "")) {
+      payload.nickName = trimmedNickname;
+    }
+    if (gender && gender !== userData?.gender) {
+      payload.gender = gender;
+    }
+    if (birth && birth !== userData?.birth) {
+      payload.birth = birth;
+    }
+
+    // 바뀐 게 없으면 요청 없이 프로필로 돌아간다
+    if (Object.keys(payload).length === 0) {
+      navigate(ROUTES.MAIN.PROFILE, { replace: true });
+      return;
+    }
+
+    updateMutation.mutate(payload);
   };
 
   if (isLoading) {
