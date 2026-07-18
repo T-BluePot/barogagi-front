@@ -44,7 +44,7 @@
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10            # 로컬과 동일 (pnpm 10.x)
+          version: 10.32.1       # 로컬과 정확히 동일하게 고정 (pnpm --version으로 확인)
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -66,7 +66,7 @@
 - [ ] `npm install` → `pnpm install --frozen-lockfile`
 - [ ] `npm run build` → `pnpm build`
 - [ ] `.env` 생성 스텝은 수정 불필요 (그대로)
-- [ ] (선택) `package.json`에 `"packageManager": "pnpm@10.x"` 명시 — Corepack 사용 시 버전 고정
+- [ ] (선택) `package.json`에 `"packageManager": "pnpm@10.32.1"` 명시 — Corepack 사용 시 pnpm 버전까지 강제
 
 ---
 

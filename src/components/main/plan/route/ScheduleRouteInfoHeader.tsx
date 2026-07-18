@@ -42,10 +42,13 @@ const ScheduleRouteInfoHeader = ({
       </div>
       {/* 일정명 영역 */}
       <div className="flex w-full items-center gap-2">
-        {readOnly && (
+        {/* 편집 수단이 하나도 없으면(readOnly거나, 시트 오픈·인라인 편집 콜백이 모두 미제공)
+            제목을 텍스트로만 렌더한다. 이렇게 안 하면 콜백 없는 화면에서 연필을 눌러
+            편집 모드로 들어가 타이핑이 먹통이 되는 상태가 생긴다. */}
+        {(readOnly || (!onOpenInfoSheet && !setScheduleName)) && (
           <span className="typo-title-01 text-start px-1">{scheduleName}</span>
         )}
-        {!readOnly && !editMode && (
+        {!readOnly && !editMode && (onOpenInfoSheet || setScheduleName) && (
           <button
             type="button"
             className="flex items-center justify-between w-full px-1 cursor-pointer"
@@ -54,6 +57,7 @@ const ScheduleRouteInfoHeader = ({
               if (onOpenInfoSheet) {
                 onOpenInfoSheet();
               } else {
+                // 위 렌더 조건상 여기 도달 시 setScheduleName이 반드시 존재한다
                 setEditMode(true);
               }
             }}
@@ -67,10 +71,10 @@ const ScheduleRouteInfoHeader = ({
             </div>
           </button>
         )}
-        {!readOnly && editMode && (
+        {!readOnly && editMode && setScheduleName && (
           <ScheduleTitleInput
             scheduleName={scheduleName}
-            setScheduleName={setScheduleName ?? (() => {})}
+            setScheduleName={setScheduleName}
             setEditMode={setEditMode}
             onCommit={onCommitScheduleName}
           />

@@ -824,7 +824,9 @@ const canWebShare = () =>
 const isHttp = protocol === "http:" || protocol === "https:";
 if (isHttp && isAppHost) return true;
 ...
-void Linking.openURL(url);  // ← kakaolink:// 는 isHttp가 false라 여기로 위임됨 → 카카오톡 열림
+// kakaolink:// 는 isHttp가 false라 여기로 위임됨 → 카카오톡 열림.
+// Android intent:// 등에서 throw/거부될 수 있으므로 .catch로 흡수(아래 11-C 참조)
+void Linking.openURL(url).catch(() => {});
 return false;
 ```
 
