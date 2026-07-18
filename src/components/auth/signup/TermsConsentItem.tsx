@@ -1,4 +1,5 @@
 import { CheckBoxButton } from "../common/CheckBoxButton";
+import { TERMS_TEXT } from "@/constants/texts/auth/signup/terms";
 
 interface TermsConsentItemProps {
   /** 약관 구분 num */
@@ -9,7 +10,7 @@ interface TermsConsentItemProps {
   isConsented: boolean;
   /** 체크박스 클릭 시 호출 */
   onToggle: (termsNum: number) => void;
-  /** 라벨 클릭 시 약관 전문 보기 */
+  /** "보기" 클릭 시 약관 전문 보기 */
   onOpenDetail: (termsNum: number) => void;
 }
 
@@ -21,19 +22,23 @@ export const TermsConsentItem = ({
   title,
 }: TermsConsentItemProps) => {
   return (
-    <div className="flex w-full h-12 items-center gap-4 active:bg-gray-10 transition-all duration-300 ease-in-out">
+    <div className="flex w-full h-12 items-center gap-3">
       <CheckBoxButton
         isChecked={isConsented}
         onCheckedChange={() => onToggle(termsNum)}
       />
+      <span
+        className="typo-body flex-1 cursor-pointer select-none text-left text-gray-70"
+        onClick={() => onToggle(termsNum)}
+      >
+        {title}
+      </span>
       <button
         type="button"
         onClick={() => onOpenDetail(termsNum)}
-        className="flex flex-1 items-center justify-between gap-4 cursor-pointer"
+        className="typo-caption shrink-0 cursor-pointer text-gray-40 underline"
       >
-        <span className="typo-body text-gray-70 underline text-left">
-          {title}
-        </span>
+        {TERMS_TEXT.DETAIL_VIEW}
       </button>
     </div>
   );
