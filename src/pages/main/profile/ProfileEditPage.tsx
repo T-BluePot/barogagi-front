@@ -3,12 +3,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { AxiosError } from "axios";
-import { getMe, updateMe } from "@/api/queries/authQueries";
+import { ValidationError } from "yup";
+import { getMe, updateMe, checkNickname } from "@/api/queries/authQueries";
 import { authKeys } from "@/api/keyFactories";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_EDIT_TEXT } from "@/constants/texts/main/profile";
 import type { BaseResponse, MemberRequestDTO } from "@/api/types";
+import type { NicknameCheckStatus } from "@/types/signupTypes";
 import { getGenderLabel, type GenderType } from "@/constants/userInfo";
+import { nicknameSchema } from "@/utils/authSchema";
 
 import { PageTitle } from "@/components/auth/common/PageTitle";
 import { CommonInput } from "@/components/auth/common/CommonInput";
@@ -115,11 +118,92 @@ const ProfileEditPage = () => {
   // 성별 표시 문자열
   const genderDisplayValue = getGenderLabel(gender);
 
-  // 완료 버튼 비활성화 조건: 닉네임이 비어있을 때
-  const isDisabled = !nickname.trim();
+  // === 닉네임 중복 확인 (닉네임을 기존과 다르게 바꿨을 때만 노출/요구) ===
+  const originalNickname = userData?.nickName ?? "";
+  const trimmedNickname = nickname.trim();
+  const isNicknameChanged =
+    trimmedNickname.length > 0 && trimmedNickname !== originalNickname;
+
+  const [nicknameCheckStatus, setNicknameCheckStatus] =
+    useState<NicknameCheckStatus>("idle");
+  const [lastCheckedNickname, setLastCheckedNickname] = useState("");
+
+  // 닉네임을 다시 수정하면 이전 확인 결과를 무효화한다
+  useEffect(() => {
+    setNicknameCheckStatus("idle");
+    setLastCheckedNickname("");
+  }, [nickname]);
+
+  const checkNicknameMutation = useMutation({
+    mutationFn: (value: string) => checkNickname(value),
+  });
+
+  const alertOnce = (title: string) =>
+    openAlertModal({
+      title,
+      buttonLabel: PROFILE_EDIT_TEXT.ERROR_MODAL.BUTTON_LABEL,
+    });
+
+  const handleCheckNickname = async () => {
+    const requested = nickname.trim();
+    if (!requested) return;
+
+    // 형식 검사 먼저 (회원가입과 동일 규칙)
+    try {
+      await nicknameSchema.validate(requested);
+    } catch (err) {
+      if (err instanceof ValidationError) alertOnce(err.message);
+      return;
+    }
+
+    checkNicknameMutation.mutate(requested, {
+      onSuccess: (res) => {
+        if (nickname.trim() !== requested) return; // 그 사이 입력이 바뀌면 무시
+        setLastCheckedNickname(requested);
+        setNicknameCheckStatus("valid");
+        alertOnce(res.message ?? "사용 가능한 닉네임입니다.");
+      },
+      onError: (error) => {
+        if (nickname.trim() !== requested) return;
+        const isDuplicate =
+          error instanceof AxiosError && error.response?.status === 409;
+        setNicknameCheckStatus(isDuplicate ? "duplicate" : "error");
+        if (isDuplicate) setLastCheckedNickname(requested);
+        const msg =
+          error instanceof AxiosError
+            ? (error.response?.data?.message ??
+              PROFILE_EDIT_TEXT.NICKNAME.CHECK_FAIL)
+            : PROFILE_EDIT_TEXT.NICKNAME.CHECK_FAIL;
+        alertOnce(msg);
+      },
+    });
+  };
+
+  // 변경된 닉네임이 "사용 가능" 확인을 통과했는지
+  const isNicknameVerified =
+    nicknameCheckStatus === "valid" &&
+    trimmedNickname.length > 0 &&
+    nickname === lastCheckedNickname;
+
+  const isCheckDisabled =
+    checkNicknameMutation.isPending ||
+    (nickname === lastCheckedNickname &&
+      (nicknameCheckStatus === "valid" || nicknameCheckStatus === "duplicate"));
+
+  // 완료 버튼 비활성화: 닉네임 공백 / 요청 중 / 닉네임을 바꿨는데 중복확인 미통과
+  const isDisabled =
+    !trimmedNickname ||
+    updateMutation.isPending ||
+    (isNicknameChanged && !isNicknameVerified);
 
   // 프로필 수정 제출
   const handleSubmitProfile = () => {
+    // 닉네임을 바꿨다면 중복 확인을 통과해야 제출 가능 (버튼도 비활성되지만 방어적으로 한 번 더)
+    if (isNicknameChanged && !isNicknameVerified) {
+      alertOnce(PROFILE_EDIT_TEXT.NICKNAME.CHECK_REQUIRED);
+      return;
+    }
+
     const birth =
       userBirthYear && userBirthMonth && userBirthDay
         ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
@@ -190,6 +274,15 @@ const ProfileEditPage = () => {
             placeholder={PROFILE_EDIT_TEXT.NICKNAME.PLACEHOLDER}
             value={nickname}
             setValue={setNickname}
+            // 닉네임을 기존과 다르게 바꿨을 때만 중복 확인 버튼을 노출한다
+            withButton={isNicknameChanged}
+            buttonProps={{
+              label: isNicknameVerified
+                ? PROFILE_EDIT_TEXT.NICKNAME.CHECK_DONE
+                : PROFILE_EDIT_TEXT.NICKNAME.CHECK_BUTTON,
+              onClick: handleCheckNickname,
+              disabled: isCheckDisabled,
+            }}
           />
           <SelectTriggerButton
             label={PROFILE_EDIT_TEXT.SELECT.GENDER_LABEL}

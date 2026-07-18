@@ -34,6 +34,10 @@ export const PROFILE_EDIT_TEXT = {
   NICKNAME: {
     LABEL: "닉네임",
     PLACEHOLDER: "닉네임을 입력하세요.",
+    CHECK_BUTTON: "중복 확인",
+    CHECK_DONE: "확인 완료",
+    CHECK_REQUIRED: "닉네임 중복 확인을 해주세요.",
+    CHECK_FAIL: "닉네임 중복 확인에 실패했습니다.",
   },
   SELECT: {
     GENDER_LABEL: "성별",
