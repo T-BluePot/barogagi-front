@@ -7,6 +7,12 @@ const months = Array.from({ length: 12 }, (_, i) =>
   String(i + 1).padStart(2, "0")
 );
 
+// 값이 비어 있을 때 커밋할 기본 생년월일.
+// 휠 픽커는 빈 값을 표시할 수 없어 현재년도(2026)가 아니라 생일로 무난한 2000년을 기본으로 둔다.
+const DEFAULT_BIRTH_YEAR = "2000";
+const DEFAULT_BIRTH_MONTH = "01";
+const DEFAULT_BIRTH_DAY = "01";
+
 export interface BirthdayPickerProps {
   userBirthYear: string;
   userBirthMonth: string;
@@ -25,6 +31,20 @@ export const BirthdayPicker = ({
   onChange,
 }: BirthdayPickerProps) => {
   const [days, setDays] = useState<string[]>([]);
+
+  // 모달이 열릴 때(이 컴포넌트가 마운트될 때) 값이 하나라도 비어 있으면 기본값을 커밋한다.
+  // 휠 픽커는 빈 값을 표시할 수 없어 화면엔 첫 항목이 보이지만, 사용자가 직접 굴리지 않은
+  // 컬럼은 값이 state에 저장되지 않는다. 이로 인해 "생일을 골라도 저장이 안 되던" 문제를 막는다.
+  useEffect(() => {
+    if (userBirthYear && userBirthMonth && userBirthDay) return;
+    onChange({
+      userBirthYear: userBirthYear || DEFAULT_BIRTH_YEAR,
+      userBirthMonth: userBirthMonth || DEFAULT_BIRTH_MONTH,
+      userBirthDay: userBirthDay || DEFAULT_BIRTH_DAY,
+    });
+    // 마운트 시 1회만 기본값을 시딩한다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 연도나 월 변경 시 → 해당 월의 마지막 일자 계산
   useEffect(() => {
