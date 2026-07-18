@@ -129,11 +129,12 @@ const ProfileEditPage = () => {
   const [lastCheckedNickname, setLastCheckedNickname] = useState("");
 
   // 비동기 응답 콜백은 요청 당시 nickname을 클로저로 캡처하므로, 최신값을 ref로 참조한다.
+  // (렌더 중 ref 변이는 동시성 렌더링에서 지양 → 커밋 이후 effect에서 동기화)
   const latestNicknameRef = useRef(nickname);
-  latestNicknameRef.current = nickname;
 
-  // 닉네임을 다시 수정하면 이전 확인 결과를 무효화한다
+  // 닉네임을 다시 수정하면 최신값 ref 동기화 + 이전 확인 결과 무효화
   useEffect(() => {
+    latestNicknameRef.current = nickname;
     setNicknameCheckStatus("idle");
     setLastCheckedNickname("");
   }, [nickname]);
