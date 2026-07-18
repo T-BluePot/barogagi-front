@@ -18,7 +18,12 @@ export const SelectAllConsentButton = ({
         isChecked={isChecked}
         onCheckedChange={onCheckedChange}
       />
-      <span className="typo-body font-semibold text-gray-black">{label}</span>
+      <span
+        className="typo-body font-semibold text-gray-black cursor-pointer select-none"
+        onClick={onCheckedChange}
+      >
+        {label}
+      </span>
     </div>
   );
 };

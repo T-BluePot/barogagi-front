@@ -27,7 +27,12 @@ export const TermsConsentItem = ({
         isChecked={isConsented}
         onCheckedChange={() => onToggle(termsNum)}
       />
-      <span className="typo-body flex-1 text-left text-gray-70">{title}</span>
+      <span
+        className="typo-body flex-1 cursor-pointer select-none text-left text-gray-70"
+        onClick={() => onToggle(termsNum)}
+      >
+        {title}
+      </span>
       <button
         type="button"
         onClick={() => onOpenDetail(termsNum)}
