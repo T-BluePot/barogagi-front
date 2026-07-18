@@ -4,18 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useSignupStore } from "@/stores/signupStore";
 import { ROUTES } from "@/constants/routes";
 
-/** 프로필 단계 진입에 필요한 이전 단계 완료 여부. */
-const hasCompletedPriorSteps = (): boolean => {
-  const { userId, tel, termsDTO } = useSignupStore.getState().draft;
-  return (
-    !!termsDTO &&
-    typeof userId === "string" &&
-    userId.trim().length > 0 &&
-    typeof tel === "string" &&
-    tel.trim().length > 0
-  );
-};
-
 /**
  * 회원가입 프로필 단계 접근 가드.
  *
@@ -32,6 +20,7 @@ const hasCompletedPriorSteps = (): boolean => {
  */
 export const useSignupProfileGuard = (): boolean => {
   const navigate = useNavigate();
+  const draft = useSignupStore((state) => state.draft);
   const [hydrated, setHydrated] = useState(() =>
     useSignupStore.persist.hasHydrated()
   );
@@ -47,12 +36,20 @@ export const useSignupProfileGuard = (): boolean => {
     return unsub;
   }, []);
 
+  // 이전 단계(약관·아이디·휴대폰 인증) 완료 여부. password는 persist 제외라 판정에서 뺀다.
+  const isCompleted =
+    !!draft.termsDTO &&
+    typeof draft.userId === "string" &&
+    draft.userId.trim().length > 0 &&
+    typeof draft.tel === "string" &&
+    draft.tel.trim().length > 0;
+
   useEffect(() => {
     if (!hydrated) return;
-    if (!hasCompletedPriorSteps()) {
+    if (!isCompleted) {
       navigate(ROUTES.AUTH.SIGNUP.TERMS, { replace: true });
     }
-  }, [hydrated, navigate]);
+  }, [hydrated, isCompleted, navigate]);
 
-  return hydrated && hasCompletedPriorSteps();
+  return hydrated && isCompleted;
 };
