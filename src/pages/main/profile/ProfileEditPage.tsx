@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -128,6 +128,10 @@ const ProfileEditPage = () => {
     useState<NicknameCheckStatus>("idle");
   const [lastCheckedNickname, setLastCheckedNickname] = useState("");
 
+  // 비동기 응답 콜백은 요청 당시 nickname을 클로저로 캡처하므로, 최신값을 ref로 참조한다.
+  const latestNicknameRef = useRef(nickname);
+  latestNicknameRef.current = nickname;
+
   // 닉네임을 다시 수정하면 이전 확인 결과를 무효화한다
   useEffect(() => {
     setNicknameCheckStatus("idle");
@@ -158,13 +162,13 @@ const ProfileEditPage = () => {
 
     checkNicknameMutation.mutate(requested, {
       onSuccess: (res) => {
-        if (nickname.trim() !== requested) return; // 그 사이 입력이 바뀌면 무시
+        if (latestNicknameRef.current.trim() !== requested) return; // 그 사이 입력이 바뀌면 무시
         setLastCheckedNickname(requested);
         setNicknameCheckStatus("valid");
         alertOnce(res.message ?? "사용 가능한 닉네임입니다.");
       },
       onError: (error) => {
-        if (nickname.trim() !== requested) return;
+        if (latestNicknameRef.current.trim() !== requested) return;
         const isDuplicate =
           error instanceof AxiosError && error.response?.status === 409;
         setNicknameCheckStatus(isDuplicate ? "duplicate" : "error");
@@ -179,15 +183,15 @@ const ProfileEditPage = () => {
     });
   };
 
-  // 변경된 닉네임이 "사용 가능" 확인을 통과했는지
+  // 변경된 닉네임이 "사용 가능" 확인을 통과했는지 (요청·저장 모두 trim 기준으로 비교)
   const isNicknameVerified =
     nicknameCheckStatus === "valid" &&
     trimmedNickname.length > 0 &&
-    nickname === lastCheckedNickname;
+    trimmedNickname === lastCheckedNickname;
 
   const isCheckDisabled =
     checkNicknameMutation.isPending ||
-    (nickname === lastCheckedNickname &&
+    (trimmedNickname === lastCheckedNickname &&
       (nicknameCheckStatus === "valid" || nicknameCheckStatus === "duplicate"));
 
   // 완료 버튼 비활성화: 닉네임 공백 / 요청 중 / 닉네임을 바꿨는데 중복확인 미통과
