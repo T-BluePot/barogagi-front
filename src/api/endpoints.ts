@@ -39,6 +39,10 @@ export const ENDPOINTS = {
     UPDATE: "/api/v1/schedule/", // PUT
     DELETE: "/api/v1/schedule/", // DELETE
     IMAGE_PROXY: "/api/v1/schedule/image/proxy",
+    // 공유 링크 생성 (POST) - scheduleNum 을 path 로 전달. 로그인 토큰 필요
+    SHARE: (scheduleNum: number) => `/api/v1/schedule/${scheduleNum}/share`,
+    // 공유 일정 조회 (GET) - shareToken 을 path 로 전달. API-KEY만으로 비로그인 조회 가능
+    SHARED: (shareToken: string) => `/api/v1/schedule/share/${shareToken}`,
   },
 
   /** 메인 홈 */

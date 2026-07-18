@@ -58,7 +58,9 @@ const PlanDetailCard = (props: PlanDetailCardProps) => {
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (simple || planNum == null) return;
+    // props.mode로 직접 좁혀야 onOpenCardMenu가 필수인 detail 변형으로 인식된다
+    // (simple 여부만으로는 readonly 변형을 배제하지 못함)
+    if (props.mode !== "detail" || planNum == null) return;
     props.onOpenCardMenu({
       planNum,
       anchorEl: moreButtonRef.current,

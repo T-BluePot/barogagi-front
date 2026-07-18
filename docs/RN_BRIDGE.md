@@ -778,6 +778,108 @@ async function loginWithOAuth(authorizeUrl: string): Promise<string | null> {
 
 ---
 
+## 11. 카카오톡 공유 (일정 공유 링크)
+
+### 문제
+
+- 일정 상세 화면의 **공유 버튼 → 카카오톡**은 카카오 JS SDK(`Kakao.Share.sendDefault`)로 카카오톡 공유창을 띄운다.
+- SDK는 내부적으로 **`kakaolink://` 같은 커스텀 스킴**(Android는 `intent://`일 수 있음)으로 카카오톡 앱을 여는데, WebView는 http(s)가 아닌 스킴을 기본적으로 처리하지 못해 **아무 반응 없이 무시**될 수 있다.
+- §10 OAuth와 **같은 계열의 문제**다(웹이 앱 밖 스킴/호스트로 나가려 할 때 WebView가 어떻게 처리하느냐).
+- ⚠️ **`openExternal`로는 우회할 수 없다.** [`src/utils/openExternal.ts`](../src/utils/openExternal.ts)가 스킴을 검증해 **http/https만 허용**하고 그 외는 차단하기 때문(`javascript:`/`data:` 차단 목적). 카카오 스킴은 여기서 막힌다.
+- **Web Share API(`navigator.share`)는 WebView에 없다.** 그래서 '더보기' 버튼은 앱에서 자동으로 숨겨진다(웹에서 처리 완료 — 아래 참조). 앱에서도 네이티브 공유 시트를 쓰려면 RPC가 필요하다.
+
+> **전제(웹/RN 무관):** 카카오 개발자센터에 도메인이 등록돼 있어야 한다.
+> - `플랫폼 키 > JavaScript 키 > JavaScript SDK 도메인` — SDK가 **실행될** 도메인
+> - `제품 링크 관리 > 웹 도메인` — 공유 카드에 담길 **링크 대상** 도메인
+> 둘 다 운영 도메인(`https://fitpl.xyz`)이 등록돼야 운영에서 동작한다.
+
+### 웹에서 완료한 작업
+
+**파일**:
+- [`src/lib/kakao/kakaoShare.ts`](../src/lib/kakao/kakaoShare.ts) (신설) — SDK 동적 로드 + `Kakao.Share.sendDefault`
+- [`src/components/main/plan/route/ShareBottomSheet.tsx`](../src/components/main/plan/route/ShareBottomSheet.tsx) (신설) — 카카오톡 / URL 복사 / 더보기
+- [`src/utils/shareLink.ts`](../src/utils/shareLink.ts) (신설) — 서버가 주는 API 주소를 공유 페이지 주소로 변환
+
+앱 환경에서 깨지지 않도록 웹에서 이미 방어해 둔 것:
+
+```ts
+// 1) SDK 로드/공유 실패를 전부 흡수 — 실패 시 false 반환 → 안내 모달만 뜨고 앱은 안 죽음
+const ok = await shareToKakao({ url, title, description, imageUrl, buttonTitle });
+if (!ok) alert(SHARE_TEXT.KAKAO_FAIL);
+
+// 2) navigator.share 미지원(= WebView)이면 '더보기' 버튼 자체를 렌더하지 않음
+const canWebShare = () =>
+  typeof navigator !== "undefined" && typeof navigator.share === "function";
+```
+
+→ **앱에서는 `카카오톡` / `URL 복사` 2개만 노출**되고, 카카오가 안 열려도 앱이 죽지는 않는다(안내만 뜸).
+
+### RN에서 해야 할 일
+
+#### 11-A. 커스텀 스킴 위임 확인 — **§4-B가 이미 커버할 가능성이 높다**
+
+§4-B의 `shouldAllowNavigation`이 구현돼 있다면 별도 작업이 필요 없을 수 있다:
+
+```ts
+const isHttp = protocol === "http:" || protocol === "https:";
+if (isHttp && isAppHost) return true;
+...
+// kakaolink:// 는 isHttp가 false라 여기로 위임됨 → 카카오톡 열림.
+// Android intent:// 등에서 throw/거부될 수 있으므로 .catch로 흡수(아래 11-C 참조)
+void Linking.openURL(url).catch(() => {});
+return false;
+```
+
+- [ ] **먼저 실기기에서 공유 버튼을 눌러보고**, 안 되면 아래를 확인할 것.
+- ⚠️ Android는 `intent://...#Intent;...;end` 형태로 올 수 있다. `Linking.openURL`이 이 스킴에서 **throw** 할 수 있으므로 `try/catch` 필요.
+
+#### 11-B. `window.open` 경로 대응
+
+카카오 SDK가 중간 팝업(`window.open`)을 타는 경우 RN WebView 기본 설정에선 무시된다.
+
+```tsx
+<WebView
+  setSupportMultipleWindows={false}   // window.open을 현재 WebView에서 처리
+  // 또는 onOpenWindow로 직접 가로채 Linking.openURL 위임
+/>
+```
+
+#### 11-C. 카카오톡 미설치 대응
+
+`Linking.openURL("kakaolink://...")`이 실패하면 사용자는 아무 일도 안 일어난 것처럼 느낀다.
+
+```ts
+try {
+  await Linking.openURL(url);
+} catch {
+  // 카카오톡 미설치 → 마켓으로 유도하거나, 웹에 실패를 알려 'URL 복사'를 안내
+}
+```
+
+#### 11-D. (선택) 네이티브 공유 시트 RPC — `share`
+
+앱에서도 '더보기'(카톡 외 채널)를 쓰고 싶다면 RPC를 추가한다. **없어도 웹이 버튼을 숨기므로 깨지지 않는다.**
+
+```ts
+// §7의 핸들러에 추가
+case 'share':
+  await Share.share({ message: payload.url, title: payload.title });
+  break;
+```
+
+추가하면 웹에서 `window.BarogagiApp.share` 분기를 넣겠다. (현재 `BarogagiApp` 인터페이스에 `share` 없음)
+
+### RN 측 체크리스트
+
+- [ ] **실기기에서 공유 → 카카오톡 눌러보기** (§4-B가 이미 처리하면 추가 작업 불필요)
+- [ ] `shouldAllowNavigation`이 `kakaolink://` / `intent://` 를 `Linking.openURL`로 위임하는지 확인
+- [ ] Android `intent://` 스킴에서 `Linking.openURL` throw 대비 `try/catch`
+- [ ] 카카오 SDK 팝업(`window.open`) 경로 대응 (`setSupportMultipleWindows={false}` 등)
+- [ ] 카카오톡 미설치 시 폴백 동작 정의
+- [ ] (선택) `share` RPC 추가 — 앱에서 '더보기' 지원할 경우
+
+---
+
 ## 변경 이력
 
 | 날짜       | 내용                                                                                                                                         | 작성자            |
@@ -785,3 +887,4 @@ async function loginWithOAuth(authorizeUrl: string): Promise<string | null> {
 | 2026-05-15 | 최초 작성 (Android-only 기준)                                                                                                                | fitpl-front 팀 |
 | 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | fitpl-front 팀 |
 | 2026-06-13 | OAuth 소셜 로그인 인앱 Custom Tab 흐름 추가(§10): 웹 `loginWithOAuth` 브릿지 호출 전환. RN `openAuth` 구현 명세·3초 timeout 우회 주의 명시         | fitpl-front 팀 |
+| 2026-07-17 | 카카오톡 공유 추가(§11): 웹은 SDK 연동·실패 흡수·`navigator.share` 미지원 시 '더보기' 자동 숨김까지 완료. RN은 §4-B가 `kakaolink://`를 이미 위임할 가능성이 높아 **실기기 확인이 먼저**. `openExternal`은 http(s)만 허용해 우회 불가임을 명시 | fitpl-front 팀 |

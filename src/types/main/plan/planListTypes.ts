@@ -41,7 +41,25 @@ export interface PlanDetailCardEdit extends PlanDetailCardBase {
   dragHandle?: ReactNode; // reorderMode일 때 ⋮ 메뉴 대신 렌더할 드래그 핸들 노드
 }
 
-export type PlanDetailCardProps = PlanDetailCardSimple | PlanDetailCardEdit;
+// share 모드 — 공유 링크로 진입한(비로그인 포함) 사용자에게 보여줄 읽기 전용 카드.
+// create도 detail도 아니므로 PlanDetailCard 내부의 simple/edit 분기가 모두 false가 되어
+// 우상단 영역(유지 체크박스 · ⋮ 메뉴)과 인라인 메모가 렌더되지 않는다. 카드 펼치기만 동작한다.
+export interface PlanDetailCardShare extends PlanDetailCardBase {
+  mode: "share";
+  onOpenCardMenu?: never;
+  kept?: never;
+  onToggleKept?: never;
+  noteValue?: never;
+  onChangeNote?: never;
+  onCommitNote?: never;
+  reorderMode?: never;
+  dragHandle?: never;
+}
+
+export type PlanDetailCardProps =
+  | PlanDetailCardSimple
+  | PlanDetailCardEdit
+  | PlanDetailCardShare;
 
 // Popover를 띄우기 위해 필요한 정보 타입
 export interface CardMenuAnchorInfo {

@@ -23,6 +23,10 @@ refactor: Schedule 타입 absent 필드 optional 처리
 design: PlanDetailCard 레이아웃 gap 제거
 ```
 
+### 커밋 메시지 금지 사항
+- **`Co-Authored-By: Claude ...` 트레일러를 넣지 않는다.** 어떤 AI 서명/공동작성자 트레일러도 커밋 메시지에 남기지 않는다.
+- PR 본문 등 다른 산출물에도 AI 생성 표시를 넣지 않는다.
+
 ---
 
 ## TypeScript 컨벤션
