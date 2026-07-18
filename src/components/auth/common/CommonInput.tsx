@@ -85,6 +85,11 @@ export const CommonInput = ({
           sx: {
             fontFamily: "Pretendard Variable",
             color: "#1d1d1f",
+            // 입력값을 앱 본문 타이포(typo-body)와 통일한다.
+            // 미지정 시 MUI 기본 weight 400이라 SelectTriggerButton 값(500)보다 얇게 보인다.
+            fontSize: "var(--text-body)",
+            fontWeight: "var(--font-weight-body)",
+            letterSpacing: "var(--tracking-body)",
           },
           endAdornment: withButton ? (
             <InputAdornment position="end">
