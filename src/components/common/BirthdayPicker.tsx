@@ -7,11 +7,19 @@ const months = Array.from({ length: 12 }, (_, i) =>
   String(i + 1).padStart(2, "0")
 );
 
-// 값이 비어 있을 때 커밋할 기본 생년월일.
-// 휠 픽커는 빈 값을 표시할 수 없어 현재년도(2026)가 아니라 생일로 무난한 2000년을 기본으로 둔다.
+// 휠에 처음 보여줄 표시용 기본값(현재년도 2026이 아니라 생일로 무난한 2000년).
+// 주의: 이 값은 "화면 표시용"일 뿐 사용자가 휠을 조작하기 전엔 부모(저장값)로 커밋하지 않는다.
 const DEFAULT_BIRTH_YEAR = "2000";
 const DEFAULT_BIRTH_MONTH = "01";
 const DEFAULT_BIRTH_DAY = "01";
+
+// react-mobile-picker의 value는 Record<string,string> 형태를 요구하므로 인덱스 시그니처를 포함한다.
+interface PickerValue {
+  year: string;
+  month: string;
+  day: string;
+  [key: string]: string;
+}
 
 export interface BirthdayPickerProps {
   userBirthYear: string;
@@ -30,73 +38,67 @@ export const BirthdayPicker = ({
   userBirthDay,
   onChange,
 }: BirthdayPickerProps) => {
+  // 표시용 내부 상태. 부모 값이 있으면 그 값을, 없으면 기본값을 보여준다.
+  // 휠은 빈 값을 표시할 수 없어 표시용 값은 항상 채워 두되, 저장값(부모)은 조작 시에만 커밋한다.
+  const [display, setDisplay] = useState<PickerValue>({
+    year: userBirthYear || DEFAULT_BIRTH_YEAR,
+    month: userBirthMonth || DEFAULT_BIRTH_MONTH,
+    day: userBirthDay || DEFAULT_BIRTH_DAY,
+  });
   const [days, setDays] = useState<string[]>([]);
 
-  // 모달이 열릴 때(이 컴포넌트가 마운트될 때) 값이 하나라도 비어 있으면 기본값을 커밋한다.
-  // 휠 픽커는 빈 값을 표시할 수 없어 화면엔 첫 항목이 보이지만, 사용자가 직접 굴리지 않은
-  // 컬럼은 값이 state에 저장되지 않는다. 이로 인해 "생일을 골라도 저장이 안 되던" 문제를 막는다.
+  // 부모 값이 채워지거나 바뀌면(수정 화면의 비동기 로드 등) 표시도 동기화한다.
   useEffect(() => {
-    if (userBirthYear && userBirthMonth && userBirthDay) return;
-    onChange({
-      userBirthYear: userBirthYear || DEFAULT_BIRTH_YEAR,
-      userBirthMonth: userBirthMonth || DEFAULT_BIRTH_MONTH,
-      userBirthDay: userBirthDay || DEFAULT_BIRTH_DAY,
-    });
-    // 마운트 시 1회만 기본값을 시딩한다
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (userBirthYear && userBirthMonth && userBirthDay) {
+      setDisplay({
+        year: userBirthYear,
+        month: userBirthMonth,
+        day: userBirthDay,
+      });
+    }
+  }, [userBirthYear, userBirthMonth, userBirthDay]);
 
-  // 연도나 월 변경 시 → 해당 월의 마지막 일자 계산
+  // 표시값(연·월) 기준으로 일수 계산 → 일 컬럼이 항상 채워지도록 한다.
   useEffect(() => {
     const lastDay = new Date(
-      Number(userBirthYear),
-      Number(userBirthMonth),
+      Number(display.year),
+      Number(display.month),
       0
     ).getDate();
 
-    const dayList = Array.from({ length: lastDay }, (_, i) =>
-      String(i + 1).padStart(2, "0")
+    setDays(
+      Array.from({ length: lastDay }, (_, i) => String(i + 1).padStart(2, "0"))
     );
 
-    setDays(dayList);
-
-    // 선택된 일이 존재하지 않는 경우 마지막 날로 보정
-    if (userBirthDay && Number(userBirthDay) > lastDay) {
-      onChange({
-        userBirthYear,
-        userBirthMonth,
-        userBirthDay: String(lastDay).padStart(2, "0"),
-      });
+    // 선택된 일이 해당 월에 없으면 마지막 날로 보정 (이미 조작이 있었던 경우에만 발생)
+    if (Number(display.day) > lastDay) {
+      commit({ ...display, day: String(lastDay).padStart(2, "0") });
     }
-  }, [userBirthYear, userBirthMonth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [display.year, display.month]);
 
-  // Picker에서 요구하는 내부 구조
-  const pickerValue = {
-    year: userBirthYear,
-    month: userBirthMonth,
-    day: userBirthDay,
+  // 표시 갱신 + 부모(저장값) 커밋. 사용자가 실제로 값을 정한 순간에만 호출된다.
+  const commit = (next: PickerValue) => {
+    setDisplay(next);
+    onChange({
+      userBirthYear: next.year,
+      userBirthMonth: next.month,
+      userBirthDay: next.day,
+    });
   };
 
-  // Picker에서 값 변경 시 호출
-  const handlePickerChange = (
-    newValue: { year: string; month: string; day: string },
-    changedKey: string
-  ) => {
+  const handlePickerChange = (newValue: PickerValue, changedKey: string) => {
     if (
       changedKey === "year" ||
       changedKey === "month" ||
       changedKey === "day"
     ) {
-      onChange({
-        userBirthYear: newValue.year,
-        userBirthMonth: newValue.month,
-        userBirthDay: newValue.day,
-      });
+      commit(newValue);
     }
   };
 
   return (
-    <Picker value={pickerValue} onChange={handlePickerChange}>
+    <Picker value={display} onChange={handlePickerChange}>
       <Picker.Column name="year">
         {years.map((y) => (
           <Picker.Item key={y} value={y}>
