@@ -36,7 +36,7 @@ export const idSchema = Yup.string()
     (value = "") => (value === "" ? true : /^[a-z0-9]*$/.test(value))
   )
   // 4. 숫자 반드시 포함
-  .test("must-include-number", ID_MESSAGES.INVALID_FORMAT, (v = "") =>
+  .test("must-include-number", ID_MESSAGES.MUST_INCLUDE_NUMBER, (v = "") =>
     v === "" ? true : /[0-9]/.test(v)
   )
   // 5. 전체 형식 검사: 영문 소문자 시작 + 영문/숫자 조합 + 길이 4~16자
