@@ -4,6 +4,7 @@ import { AxiosError } from "axios";
 
 // === navigate ===
 import { useBlockBackNavigation } from "@/utils/useBlockBackNavigation";
+import { useSignupProfileGuard } from "@/hooks/useSignupProfileGuard";
 import { ROUTES } from "@/constants/routes";
 
 // === Schema ===
@@ -41,6 +42,10 @@ import { completeSignupFlow } from "@/utils/auth/completeSignupFlow";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+
+  // 이전 단계(약관·아이디·휴대폰 인증) 없이 직접 진입하면 시작 화면으로 되돌린다.
+  // 하이드레이션 완료 전/미완료 사용자는 canAccess=false → 아래에서 본문 렌더를 막는다.
+  const canAccess = useSignupProfileGuard();
 
   useBlockBackNavigation(() => {
     navigate(ROUTES.AUTH.SIGNUP.VERIFY, { replace: true }); // 뒤로가면 인증 페이지로 강제 이동
@@ -385,6 +390,10 @@ const ProfilePage = () => {
       handleSignupError({ openErrorModal })(e);
     }
   };
+
+  // 접근 조건 미충족(또는 하이드레이션 대기) 시 본문을 렌더하지 않는다.
+  // useSignupProfileGuard 가 이미 리다이렉트를 예약하므로 여기선 빈 화면만 반환한다.
+  if (!canAccess) return null;
 
   return (
     <>
