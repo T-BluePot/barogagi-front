@@ -49,6 +49,7 @@ export const ENDPOINTS = {
   HOME: {
     POPULAR_TAGS: "/api/v1/home/tags/popular",
     POPULAR_REGIONS: "/api/v1/home/regions/popular",
+    HOT_PLACE: "/api/v1/home/regions/hot-place", // 오늘의 핫플레이스 (한국관광공사 데이터)
     MY_SCHEDULES: "/api/v1/home/me/schedules",
   },
 
