@@ -47,6 +47,15 @@ export const WithTextAction: Story = {
   args: { title: "나의 일정", actionLabel: "전체보기" },
 };
 
+/** 보조 설명(subtitle) — 기준 지역·기준월 같은 데이터 맥락 표기 */
+export const WithSubtitle: Story = {
+  args: {
+    title: "오늘의 핫플레이스",
+    subtitle: "서울 종로구 · 2026년 5월 기준",
+    onAction: undefined,
+  },
+};
+
 /** 우측 아이콘 액션 (aria-label 필수) */
 export const WithIconAction: Story = {
   args: {
