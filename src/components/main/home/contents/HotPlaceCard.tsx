@@ -38,8 +38,10 @@ const DEFAULT_ICON_PATH = "M4 21h16M6 21V8l6-4 6 4v13M10 21v-6h4v6";
  * - 1위에만 HOT 뱃지 노출
  */
 const HotPlaceCard = ({ place }: { place: HotPlaceData }) => {
+  // `||` 를 쓴다 — 외부(관광공사) 데이터라 category 가 빈 문자열로 올 수 있고,
+  // `??` 는 빈 문자열을 통과시켜 path 가 비어 아이콘이 사라진다.
   const iconPath =
-    (place.category && CATEGORY_ICON_PATH[place.category]) ??
+    (place.category && CATEGORY_ICON_PATH[place.category]) ||
     DEFAULT_ICON_PATH;
   // 지역이 있으면 지역, 없으면 카테고리를 메타 라인에 노출
   const metaLabel = place.area ?? place.category;
