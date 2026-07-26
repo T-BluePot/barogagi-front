@@ -880,6 +880,92 @@ case 'share':
 
 ---
 
+## 12. 앱 버전 조회 / 업데이트 안내
+
+### 문제
+
+웹은 자기가 어떤 **네이티브 앱 빌드** 안에서 돌고 있는지 알 방법이 없다.
+그래서 "구버전 앱 사용자에게 업데이트를 안내한다"는 요구(이슈 #112)를 웹 단독으로는 만족할 수 없다.
+
+`import.meta.env.VITE_APP_VERSION` 은 **웹 번들의 빌드 시점 값**이라 네이티브 빌드 버전과 무관하다.
+게다가 현재 `.env.local` 에 미설정이라 빈 문자열이다.
+
+→ 네이티브가 자기 버전을 알려주는 RPC 가 필요하다.
+
+### 웹에서 완료한 작업
+
+| 항목 | 위치 |
+| --- | --- |
+| 브릿지 타입 선언 (`getAppVersion?`, `getDeviceType?`) | `src/utils/bridgeStorage.ts` `declare global` |
+| 버전 비교 유틸 (`compareVersion` / `isVersionBelow`) | `src/utils/appVersion.ts` |
+| 버전 조회 (`getCurrentAppVersion`) — 브릿지 대기 + feature-detect + 실패 시 null | `src/utils/appVersion.ts` |
+| 부팅 시 체크 훅 (앱 생애 1회) | `src/hooks/useAppUpdateCheck.ts`, `src/App.tsx` |
+| 권장 업데이트 안내 모달 (기존 confirm 모달 재사용) | `src/hooks/useAppUpdateCheck.ts` → `confirmModalStore` |
+| 앱 버전 변경 시 FCM 토큰 재등록 트리거 | `src/stores/fcmStore.ts`, `src/utils/fcm.ts` |
+
+⚠️ **업데이트 필요 여부 판정부는 비어 있다(`TODO`).** 임계값(minVersion / latestVersion) 소스가
+미확정이기 때문이다(신규 백엔드 API / Firebase Remote Config / Play In-App Updates 중 기획 결정 대기).
+임계값을 코드에 하드코딩하지 않았다.
+
+### RN에서 해야 할 일
+
+`getAppVersion` RPC 하나만 추가하면 된다. `APP_VERSION` 상수는 이미 있다.
+
+1. `src/utils/bridgeInterface.ts` — `getDeviceType` 아래에 추가.
+   즉시 응답이므로 **기본 `rpc`(3초 timeout)** 를 쓴다. `rpcNoTimeout` 이 아니다.
+
+```js
+    // 앱 버전(config.ts APP_VERSION). 웹이 업데이트 필요 여부 판정에 사용.
+    getAppVersion: function() {
+      return rpc('getAppVersion', {});
+    },
+```
+
+2. `src/screens/WebViewScreen.tsx` — import 에 `APP_VERSION` 추가 후,
+   `case 'getDeviceType'` 블록 뒤 `default:` 앞에 case 추가.
+
+```ts
+        case 'getAppVersion': {
+          respond(true, APP_VERSION);
+          break;
+        }
+```
+
+3. `src/constants/config.ts` 의 `APP_VERSION` 위에 **이중 관리 경고 주석**을 남긴다 —
+   `android/app/build.gradle` 의 `versionName` 과 수동 동기화 상태다.
+   릴리스에서 한쪽만 올리면 정상 사용자에게 업데이트 안내가 뜨거나 반대로 안 뜬다.
+
+### 🕳️ 구버전 앱에는 이 메서드가 없다
+
+`getAppVersion` 은 **앱을 새로 배포한 뒤부터만 존재한다.** 이미 스토어에 올라간 빌드에는 없다.
+그래서 웹 타입 선언은 반드시 **`optional` + `typeof` 체크**여야 한다 (`getFcmToken?` 과 같은 이유).
+필수로 선언하면 구버전 앱에서 타입이 거짓말을 하고 런타임에 터진다.
+
+→ 결과적으로 "구버전 강제 업데이트"라는 원래 목적은 **다음 버전부터** 유효하다.
+`getAppVersion` 부재를 "최소버전 미달"로 간주할지 조용히 skip 할지는 기획 결정 사항이다.
+웹은 현재 **조용히 skip** 한다(아무 모달도 띄우지 않는다).
+
+### 📌 문서화 누락 보강 — FCM 브릿지
+
+`getFcmToken` / `getDeviceType` 은 **RN 에 이미 구현돼 있는데 이 문서에 전혀 없었다.**
+
+| method | payload | 응답 | 비고 |
+| --- | --- | --- | --- |
+| `getFcmToken` | `{}` | `string \| null` | 권한 거부·미발급 시 null. 웹은 optional 로 선언 |
+| `getDeviceType` | `{}` | `"ANDROID" \| "IOS"` | 웹 타입 선언이 누락돼 있었다 → 이번에 추가 |
+| `getAppVersion` | `{}` | `string \| null` | **신규**. timeout 3초(기본 `rpc`) |
+
+### RN 측 체크리스트
+
+- [ ] `bridgeInterface.ts` 에 `getAppVersion` 등록
+- [ ] `WebViewScreen.tsx` 에 `case 'getAppVersion'` 추가 + `APP_VERSION` import
+- [ ] `config.ts` `APP_VERSION` 에 `versionName` 이중 관리 경고 주석
+- [ ] 실기기 WebView 콘솔에서 `await window.BarogagiApp.getAppVersion()` → `"1.2.1"` 확인
+- [ ] 기존 RPC(`getData` / `getFcmToken` / `getDeviceType`) 회귀 없음 확인
+- [ ] (별 이슈) `versionName` 단일 소스화 — BuildConfig 브릿지 또는 `react-native-device-info`
+
+---
+
 ## 변경 이력
 
 | 날짜       | 내용                                                                                                                                         | 작성자            |
@@ -888,3 +974,4 @@ case 'share':
 | 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | fitpl-front 팀 |
 | 2026-06-13 | OAuth 소셜 로그인 인앱 Custom Tab 흐름 추가(§10): 웹 `loginWithOAuth` 브릿지 호출 전환. RN `openAuth` 구현 명세·3초 timeout 우회 주의 명시         | fitpl-front 팀 |
 | 2026-07-17 | 카카오톡 공유 추가(§11): 웹은 SDK 연동·실패 흡수·`navigator.share` 미지원 시 '더보기' 자동 숨김까지 완료. RN은 §4-B가 `kakaolink://`를 이미 위임할 가능성이 높아 **실기기 확인이 먼저**. `openExternal`은 http(s)만 허용해 우회 불가임을 명시 | fitpl-front 팀 |
+| 2026-07-26 | 앱 버전 조회 / 업데이트 안내 추가(§12): 웹은 타입 선언·버전 비교 유틸·부팅 체크 훅·권장 안내 모달·FCM 재등록 트리거까지 완료. RN은 `getAppVersion` RPC 추가만 필요(`APP_VERSION` 상수는 이미 존재). **구버전 앱에는 메서드가 없어 웹은 optional + typeof 체크**. 판정 임계값 소스는 기획 결정 대기라 판정부는 `TODO`. 기존에 문서화 누락돼 있던 FCM 브릿지(`getFcmToken`/`getDeviceType`)도 함께 보강 | fitpl-front 팀 |
