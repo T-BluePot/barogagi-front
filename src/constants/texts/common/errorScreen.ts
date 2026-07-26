@@ -41,12 +41,13 @@ export const ERROR_SCREEN_TEXT = {
    * 점검 안내.
    * ⚠️ 문구·UI 만 준비된 상태다 — 노출 트리거는 백엔드 대기.
    * 톤을 일반 오류와 구분한다(사고가 아니라 예정된 작업이므로 사과보다 안내).
+   * 액션도 다르다 — 앱 종료가 아니라 "점검이 끝났는지 다시 확인"이 목적이다.
    */
   maintenance: {
     TITLE: "서비스 점검 중이에요",
     DESCRIPTION:
       "더 나은 서비스를 위해 점검하고 있어요.\n점검이 끝나면 바로 이용할 수 있어요.",
-    ACTION_LABEL: "확인",
+    ACTION_LABEL: "다시 확인",
   },
   /** 렌더 예외 (ErrorBoundary 폴백) */
   render: {

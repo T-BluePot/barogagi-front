@@ -25,3 +25,13 @@ export const restartApp = (): void => {
  */
 export const isAppExitAction = (): boolean =>
   isNativeApp() && !!window.BarogagiApp;
+
+/**
+ * 앱을 종료하지 않고 현재 화면만 다시 불러온다.
+ *
+ * 점검(maintenance) 안내처럼 "상태가 끝났는지 다시 확인"하는 게 목적인 경우에 쓴다.
+ * 앱을 종료해버리면 사용자가 직접 다시 열어야 해서 오히려 불편하다.
+ */
+export const reloadPage = (): void => {
+  window.location.reload();
+};

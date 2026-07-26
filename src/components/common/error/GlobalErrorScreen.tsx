@@ -5,7 +5,7 @@ import {
   ERROR_SCREEN_APP_HINT,
   ERROR_SCREEN_TEXT,
 } from "@/constants/texts/common/errorScreen";
-import { isAppExitAction, restartApp } from "@/utils/restartApp";
+import { isAppExitAction, reloadPage, restartApp } from "@/utils/restartApp";
 import { useNativeBack } from "@/utils/nativeBackHandler";
 
 /**
@@ -26,8 +26,13 @@ const GlobalErrorScreen = () => {
   if (kind === null) return null;
 
   const text = ERROR_SCREEN_TEXT[kind];
+
+  // 점검은 "끝났는지 다시 확인"이 목적이라 앱을 종료하지 않고 새로고침만 한다.
+  // ⚠️ 노출 트리거는 아직 없다 — classifyApiError 는 maintenance 를 반환하지 않는다.
+  const isMaintenance = kind === "maintenance";
+
   // 앱은 액션이 "앱 종료"라 웹의 "다시 시도"(새로고침)와 동작이 다르다 → 라벨/안내를 바꾼다
-  const isAppExit = isAppExitAction();
+  const isAppExit = !isMaintenance && isAppExitAction();
 
   return (
     <FullScreenNotice
@@ -35,7 +40,7 @@ const GlobalErrorScreen = () => {
       title={text.TITLE}
       description={text.DESCRIPTION}
       actionLabel={isAppExit ? ERROR_SCREEN_APP_ACTION_LABEL : text.ACTION_LABEL}
-      onAction={restartApp}
+      onAction={isMaintenance ? reloadPage : restartApp}
       code={code}
       hint={isAppExit ? ERROR_SCREEN_APP_HINT : undefined}
     />

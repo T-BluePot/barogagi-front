@@ -65,10 +65,17 @@ export const classifyApiError = (error: unknown): ApiErrorKind => {
   // 그 외 401 은 기존 refresh/로그아웃 흐름에 맡긴다
   if (status === 401) return "auth";
 
-  // TODO(#113): 점검(maintenance) 트리거 미확정.
-  // 점검 상태 조회 API 가 없고 HTTP 503 도 관측된 바 없다.
+  // ⛔ TODO(#113): 점검(maintenance) 트리거 미확정 — **여기에 추측으로 분기를 넣지 말 것.**
+  //
+  // 근거: 백엔드 42개 경로 전수 확인 결과 점검 상태 조회 API 가 없고,
+  //       api-docs.json 에 HTTP 503 선언이 0건이며 503 을 실제로 관측한 적도 없다.
+  //       백엔드가 준 오류 코드 표 22건에도 점검 관련 코드가 없다.
+  //       → `503 → maintenance` 매핑은 근거 없는 추측이다.
+  //
   // 백엔드가 트리거(전용 API / 503 / 응답 헤더 / 전용 code)를 확정하면
   // 여기에 한 줄, apiErrorCodes.ts 에 상수 하나만 추가하면 된다.
+  // 화면·문구·액션은 이미 완성돼 있다(errorScreen.ts / GlobalErrorScreen.tsx).
+  // `ApiErrorKind` 에 "maintenance" 가 없으므로 지금은 타입상으로도 반환이 불가능하다.
 
   // 빈 데이터(404 + M201)를 포함한 비즈니스 응답 → 화면별 처리
   return "domain";

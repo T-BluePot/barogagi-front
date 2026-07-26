@@ -40,15 +40,15 @@ const FullScreenNotice = ({
   code,
   hint,
 }: FullScreenNoticeProps) => {
-  // 점검은 사고가 아니라 예정된 작업이므로 아이콘 톤을 구분한다
+  // 점검은 사고가 아니라 예정된 작업이므로 아이콘·안내 역할을 구분한다
   const isMaintenance = kind === "maintenance";
   const Icon = isMaintenance ? WrenchScrewdriverIcon : ExclamationTriangleIcon;
 
   return (
     <div
       className="pt-safe pb-safe pl-safe pr-safe fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white px-6"
-      role="alert"
-      aria-live="assertive"
+      role={isMaintenance ? "status" : "alert"}
+      aria-live={isMaintenance ? "polite" : "assertive"}
     >
       <Icon
         aria-hidden="true"
