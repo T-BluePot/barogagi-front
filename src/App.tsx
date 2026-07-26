@@ -8,6 +8,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import GlobalAlertModal from "@/components/common/modal/GlobalAlertModal";
 import GlobalConfirmModal from "@/components/common/modal/GlobalConfirmModal";
 import GlobalLoading from "@/components/common/loading/GlobalLoading";
+import GlobalErrorScreen from "@/components/common/error/GlobalErrorScreen";
 import { useFcmForegroundMessage } from "@/hooks/useFcmForegroundMessage";
 
 function App() {
@@ -30,6 +31,8 @@ function App() {
       <GlobalAlertModal />
       <GlobalConfirmModal />
       <GlobalLoading />
+      {/* 심각 오류 전체화면 — 헤더·탭바·모달 위를 덮는다 (z-9999) */}
+      <GlobalErrorScreen />
     </BrowserRouter>
   );
 }
