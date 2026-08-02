@@ -9,10 +9,19 @@ export interface BaseResponse<T = unknown> {
   data: T;
 }
 
-/** 에러 응답 타입 */
-export interface ErrorResponse {
-  code: string;
-  message: string;
+/**
+ * 서버 에러 응답 봉투.
+ * - 컨트롤러 도달   : `{ code, message, data }`
+ * - 전역 에러 핸들러 : `{ resultCode, message }`  ← data 필드 없음
+ *
+ * 두 형태가 HTTP status 와 무관하게 섞여 오므로 두 키를 모두 optional 로 둔다.
+ * 코드를 읽을 때는 `readApiErrorCode`(`@/utils/api/classifyApiError`)를 쓴다.
+ */
+export interface ApiErrorEnvelope {
+  code?: string;
+  resultCode?: string;
+  message?: string;
+  data?: null;
 }
 
 // Auth 관련 타입 re-export

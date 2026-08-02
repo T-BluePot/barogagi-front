@@ -23,6 +23,7 @@
 - [프로젝트 소개](#-프로젝트-소개)
 - [주요 기능](#-주요-기능)
 - [기술 스택](#-기술-스택)
+- [적용 기술·패턴](#-적용-기술패턴)
 - [시작하기](#-시작하기)
 - [프로젝트 구조](#-프로젝트-구조)
 - [개발 가이드](#-개발-가이드)
@@ -123,6 +124,55 @@
 - **Database**: MariaDB (RDB)
 - **API**: RESTful API
 - **인증**: JWT + OAuth 2.0
+
+---
+
+## 🧩 적용 기술·패턴
+
+라이브러리 목록이 아니라 **이 코드베이스가 채택한 방식과 그 이유**다. 새로 합류했거나 비슷한 기능을 붙일 때 같은 판단을 반복하지 않도록 한 줄씩 남긴다.
+
+### 오류 처리·복구 (#113)
+
+| 기술·패턴 | 무엇을 / 왜 |
+| --- | --- |
+| **응답 봉투 2종 파서** (`src/utils/api/classifyApiError.ts`) | `code` 와 `resultCode` 를 모두 읽는다 — 서버가 두 형태를 섞어 보내고 HTTP status 로는 어느 쪽인지 알 수 없다 |
+| **status + code 쌍 판정** (`classifyApiError`) | 5xx만 상태값으로 바로 `critical` 이고 나머지는 코드까지 본다 — `404` 가 정상 빈 데이터이고 `401` 이 토큰 만료가 아닐 수 있어, 상태값만 보면 멀쩡한 화면이 오류로 뒤집힌다 |
+| **오류 코드 단일 출처** (`src/constants/apiErrorCodes.ts`) | 서버 코드 문자열을 한 파일에 모은다 — 백엔드가 목록을 확정하면 여기 한 곳만 갈아끼우면 된다 |
+| **전역 심각오류 store (래치)** (`src/stores/criticalErrorStore.ts`) | 첫 오류를 유지하고 중복 raise 를 무시한다 — 재시도로 같은 오류가 여러 번 올라오면 화면이 깜빡이고 코드가 뒤바뀐다 |
+| **전체화면 안내 컴포넌트** (`src/components/common/error/FullScreenNotice.tsx`) | router hook 없이 렌더한다 — ErrorBoundary fallback 에서도 떠야 하는데 그 시점엔 라우터가 죽어 있을 수 있다 |
+| **React ErrorBoundary + 부팅 폴백** (`AppErrorBoundary`, `main.tsx`) | 렌더 예외와 `createRoot` 실패를 각각 잡는다 — 둘 다 놓치면 사용자에게 남는 건 흰 화면뿐이다 |
+| **인터셉터 전역 승격 + per-request opt-out** (`src/api/axiosInterceptors.ts`) | 심각 오류만 전체화면으로 올리고 `_skipGlobalError` 로 예외를 연다 — 인증 화면의 인라인 에러와 이중 노출되거나, fire-and-forget 요청이 로그인 플로우를 막는 것을 방지 |
+| **복구 불가 오류는 재시도 제외** (`src/lib/queryClient.ts`) | 서버 장애·설정 오류는 재시도하지 않고, 오류 화면이 떠 있는 동안의 재시도도 차단한다 — 화면에 기여하지 않는 요청이 장수 세션에서 계속 쌓인다 |
+| **환경별 복구 액션** (`src/utils/restartApp.ts`) | 앱은 종료, 웹은 새로고침으로 갈라준다 — WebView 에는 새로고침 개념이 없고 브라우저에는 종료가 없다 |
+
+### 서버 연동·데이터 계층 (#107)
+
+| 기술·패턴 | 무엇을 / 왜 |
+| --- | --- |
+| **DTO → UI 타입 매퍼 계층** (`src/utils/api/homeMapper.ts`) | 서버 응답을 화면 타입으로 바꾸는 지점을 컴포넌트 밖에 둔다 — 응답 스키마가 바뀔 때 고칠 곳이 한 곳으로 모인다 |
+| **UI 도메인 타입은 `src/types/` 에** (`src/types/main/home/hotPlace.ts`) | 매퍼가 컴포넌트를 import 하지 않게 한다 — 하위 계층이 상위 계층에 묶이면 컴포넌트를 옮길 때 유틸이 깨지고 순환 참조가 생긴다 |
+| **쿼리 키 팩토리** (`src/api/keyFactories/`) | 키 문자열을 손으로 쓰지 않는다 — 무효화 범위를 한 곳에서 통제한다 |
+| **훅에서 응답 정규화** (`src/hooks/queries/useHotPlacesQuery.ts`) | `data: null` 을 배열로 바꿔서 넘긴다 — 소비처마다 `Array.isArray` 가드를 반복하지 않게 |
+| **캐시 시간 상수화** (`src/constants/queryTimes.ts`) | `staleTime`/`gcTime` 을 데이터의 갱신 주기에서 끌어온다 — 월배치 데이터를 1분마다 다시 부를 이유가 없다 (#44 착수점) |
+| **absent 필드는 `undefined`** (프로젝트 필수 규칙) | 서버가 주지 않는 값에 `0`/`""`/`"N"` 을 넣지 않는다 — 더미값은 화면에 그대로 새고 "없음"과 구분이 사라진다 |
+
+### 하이브리드 앱(RN WebView) 연동 (#112)
+
+| 기술·패턴 | 무엇을 / 왜 |
+| --- | --- |
+| **브릿지 메서드는 optional + feature detect** (`src/utils/bridgeStorage.ts`) | 타입을 `?` 로 선언하고 `typeof === "function"` 으로 확인한다 — 브릿지 JS 는 앱 번들에 실려서 앱을 새로 배포하기 전엔 존재하지 않는다 |
+| **브릿지 유무 판정 단일화** (`isBridgeAvailable`) | 같은 판정식을 파일마다 복제하지 않는다 — 한쪽만 고치면 버튼 라벨과 실제 동작이 어긋난다 |
+| **버전 비교 유틸 + 임계값 주입** (`src/utils/appVersion.ts`) | 판정 로직과 임계값을 분리한다 — 임계값 소스(서버 API / Remote Config / 스토어)가 확정되기 전에 상수를 코드에 박으면 재작업이 확정된다 |
+| **기존 전역 모달 재사용** (`src/stores/confirmModalStore.ts`) | 권장 업데이트 안내에 새 컴포넌트를 만들지 않는다 — 이미 마운트된 전역 모달이 배경 클릭·하드웨어 백까지 처리한다 |
+| **앱 생애 1회 훅 패턴** (`src/hooks/useAppUpdateCheck.ts`) | 빈 deps + `cancelled` 플래그로 StrictMode 이중 마운트를 방어한다 — 부팅 시 1회만 돌아야 하는 체크가 두 번 뜨는 것을 막는다 |
+
+### 공통 규율
+
+| 기술·패턴 | 무엇을 / 왜 |
+| --- | --- |
+| **미확정 스펙은 TODO 정지선으로 남긴다** | 백엔드·기획이 확정하지 않은 판정(점검 트리거, 업데이트 임계값)은 경계 주석만 남기고 비운다 — 추측으로 채우면 조용히 틀린 채 동작한다 |
+| **하드웨어 백 정책 명시** (`src/utils/nativeBackHandler.ts` 사용처) | 전체화면을 띄우는 화면은 백 동작을 반드시 정의한다 — 빈 handler 로 삼키면 사용자가 앱에서 나갈 수 없다 |
+| **아이콘 버튼에 `aria-label`** | 텍스트 없는 인터랙티브 요소는 스크린리더에서 이름이 사라진다 |
 
 ---
 

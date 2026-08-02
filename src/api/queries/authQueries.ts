@@ -159,10 +159,16 @@ export const findUser = async (tel: string) => {
   return response.data;
 };
 
-/** 내 정보 조회 */
+/**
+ * 내 정보 조회
+ *
+ * 홈에서 인사 문구용 부가 정보로도 쓰인다(`HomePage`, `retry: false`).
+ * 부가 정보 조회 실패가 홈 전체를 덮으면 안 되므로 전역 오류 화면 승격에서 제외한다.
+ */
 export const getMe = async () => {
   const response = await http.get<BaseResponse<unknown>>(
-    ENDPOINTS.MEMBERS.GET_ME
+    ENDPOINTS.MEMBERS.GET_ME,
+    { _skipGlobalError: true }
   );
   return response.data;
 };
