@@ -12,8 +12,9 @@ import { isNativeApp, waitForBridge } from "./bridgeStorage";
  *
  * - `a > b` → 1 / `a < b` → -1 / 같으면 0
  * - 자리수가 다르면 부족한 쪽을 0 으로 패딩한다 (`"1.2"` === `"1.2.0"`)
- * - 숫자로 변환할 수 없는 세그먼트(`"1.2.1-beta"` 의 `"1-beta"` 등)는 0 으로 취급한다.
- *   throw 하지 않는 것이 중요하다 — 버전 문자열 하나 때문에 부팅이 깨지면 안 된다.
+ * - 세그먼트는 선두 숫자만 읽는다 — `"1-beta"` 는 `1`, 숫자가 없으면 0.
+ *   즉 프리릴리스는 정식 버전과 동급이다. semver 우선순위가 필요해지면 그때 규칙을 세운다.
+ * - throw 하지 않는다 — 버전 문자열 하나로 부팅이 깨지면 안 된다.
  */
 export const compareVersion = (a: string, b: string): number => {
   const parse = (v: string): number[] =>
