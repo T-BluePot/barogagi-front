@@ -38,7 +38,7 @@ jobs:
       #    업스트림이 바뀌는 순간 검토되지 않은 코드가 이 저장소의 GEMINI_API_KEY 와
       #    pull-requests: write 권한으로 실행된다.
       #    올릴 때는 리뷰어 저장소의 diff 를 보고 SHA 를 손으로 바꾼다.
-      - uses: Jung-eunwoo/ai-code-review@7bfb73363678bb1c90373dc1d25be1cbe0323d4a # main 기준
+      - uses: Jung-eunwoo/ai-code-review@b23b6408022d566b494e822e799ea524f956a167 # main 기준
         with:
           pr: ${{ github.event.number }}
           # 더 정확한 판정이 필요하면 model: gemini-pro-latest
@@ -65,7 +65,7 @@ jobs:
       group: ai-reply-${{ github.event.comment.id }}
       cancel-in-progress: false
     steps:
-      - uses: Jung-eunwoo/ai-code-review@7bfb73363678bb1c90373dc1d25be1cbe0323d4a # main 기준
+      - uses: Jung-eunwoo/ai-code-review@b23b6408022d566b494e822e799ea524f956a167 # main 기준
         with:
           pr: ${{ github.event.pull_request.number }}
           reply-to: ${{ github.event.comment.id }}
