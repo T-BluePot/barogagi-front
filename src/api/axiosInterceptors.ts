@@ -39,33 +39,23 @@ type RetriableRequestConfig = AxiosRequestConfig & { _retry?: boolean };
 const AUTH_ENDPOINTS: readonly string[] = Object.values(ENDPOINTS.AUTH);
 
 /**
- * 전역 승격에서 제외하는 엔드포인트.
- * `push/token` 은 등록 실패를 의도적으로 삼기는 요청이다(`utils/fcm.ts`).
- * 로그인 직후 호출되므로 여기서 전체화면이 뜨면 로그인 플로우가 막힌다.
+ * url 이 인증 엔드포인트인지 판정한다.
+ * 주의: originalRequest.url 이 baseURL 제외한 path 일 수도, 전체 URL 일 수도 있어 부분 일치로 본다.
  */
-const GLOBAL_ERROR_EXCLUDED_ENDPOINTS: readonly string[] = [
-  ENDPOINTS.PUSH.TOKEN,
-];
+const isAuthEndpoint = (url: string): boolean =>
+  AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
 
 /**
- * url 이 엔드포인트에 해당하는지 판정한다.
- * 주의: originalRequest.url 이 baseURL 제외한 path 일 수도, 전체 URL 일 수도 있다.
+ * 전역 승격에서 제외할 요청인지 판정한다.
+ *
+ * 기준은 `_skipGlobalError` **하나뿐**이다 — 제외 사유가 호출부에 붙어 있어야
+ * "왜 제외인지"를 그 함수 주석과 함께 읽을 수 있고, 여기에 엔드포인트 목록을 따로 두면
+ * 제외 대상을 추가할 때 봐야 할 곳이 두 군데가 된다.
+ * 현재 적용 대상: `push/token`(fire-and-forget), `getMe`(홈 부가 정보).
  */
-const matchesEndpoint = (url: string, endpoint: string): boolean =>
-  url === endpoint || url.startsWith(`${endpoint}?`) || url.includes(endpoint);
-
-const isAuthEndpoint = (url: string): boolean =>
-  AUTH_ENDPOINTS.some((endpoint) => matchesEndpoint(url, endpoint));
-
 const isExcludedFromGlobalError = (
   config: AxiosRequestConfig | undefined
-): boolean => {
-  if (config?._skipGlobalError) return true;
-  const url = config?.url ?? "";
-  return GLOBAL_ERROR_EXCLUDED_ENDPOINTS.some((endpoint) =>
-    matchesEndpoint(url, endpoint)
-  );
-};
+): boolean => config?._skipGlobalError === true;
 
 /**
  * 오류를 전역 오류 화면으로 승격한다.
@@ -187,11 +177,9 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
       } catch (e) {
         // refreshHttp(client.ts)에는 applyAuthInterceptors 가 걸리지 않으므로
         // refresh 요청의 5xx·네트워크 실패는 이 catch 로만 잡힌다.
-        const refreshErrorKind = axios.isAxiosError(e)
-          ? classifyApiError(e)
-          : null;
-
-        if (refreshErrorKind === "critical" || refreshErrorKind === "network") {
+        // 승격 대상 판정은 `isGlobalErrorKind` 하나로 맞춘다 — 여기에 종류를 손으로 나열하면
+        // 판정 기준이 두 곳으로 갈라져 한쪽만 갱신되는 순간 조용히 어긋난다.
+        if (isGlobalErrorKind(classifyApiError(e))) {
           // 토큰이 만료된 게 아니라 서버/네트워크 문제로 갱신이 실패한 것이므로 세션을 끊지 않는다.
           // handleLogout 은 하드 네비게이션이라 오류 화면까지 날려버린다.
           raiseGlobalError(e);
