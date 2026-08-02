@@ -28,16 +28,19 @@ const HotPlaceSection: React.FC<Props> = ({ places, isLoading }) => {
   // 서버 순서에 의존하지 않고 명시적으로 정렬한다 (hubRank 는 string)
   const sorted = sortByHubRank(places);
   // 목록 지역이 전부 같으면 카드별 표기를 생략하고 캡션에서 한 번만 노출한다
-  const showArea = !hasUniformSigngu(sorted);
+  const isSingleRegion = hasUniformSigngu(sorted);
 
   // 캡션: 값이 없으면 더미 문자열을 만들지 않고 표기 자체를 생략한다
   const baseYmLabel = sorted[0] ? formatBaseYm(sorted[0].baseYm) : undefined;
   const regionLabel =
-    sorted[0] && !showArea ? formatHotPlaceRegion(sorted[0]) : undefined;
-  const subtitle =
-    [regionLabel, baseYmLabel && `${baseYmLabel} 기준`]
-      .filter(Boolean)
-      .join(" · ") || undefined;
+    isSingleRegion && sorted[0] ? formatHotPlaceRegion(sorted[0]) : undefined;
+  const captionParts = [
+    regionLabel,
+    baseYmLabel && `${baseYmLabel} 기준`,
+  ].filter(Boolean);
+  const subtitle = captionParts.length
+    ? captionParts.join(" · ")
+    : undefined;
 
   const renderContent = () => {
     if (isLoading) return <SkeletonHotPlaceCarousel />;
@@ -50,7 +53,7 @@ const HotPlaceSection: React.FC<Props> = ({ places, isLoading }) => {
           <HotPlaceCard
             // hubTatsCd 는 실측 10건 전부 유니크. 없을 때만 순위+이름으로 폴백
             key={place.hubTatsCd || `${place.hubRank}-${place.hubTatsNm}`}
-            place={toHotPlaceCardData(place, showArea)}
+            place={toHotPlaceCardData(place, !isSingleRegion)}
           />
         ))}
       </div>
