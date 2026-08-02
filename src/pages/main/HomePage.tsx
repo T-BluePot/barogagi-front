@@ -7,6 +7,7 @@ import {
   getPopularRegions,
 } from "@/api/queries";
 import { getMe } from "@/api/queries/authQueries";
+import { useHotPlacesQuery } from "@/hooks/queries/useHotPlacesQuery";
 import { homeKeys } from "@/api/keyFactories";
 import { authKeys } from "@/api/keyFactories";
 import type { TagInfoDTO, PopularRegionDTO, BaseResponse } from "@/api/types";
@@ -33,6 +34,10 @@ const HomePage = () => {
     queryFn: getMe,
     retry: false,
   });
+
+  // 오늘의 핫플레이스 — 위 popularRegions 와 병존한다.
+  // popular 는 히어로 카드 지역 셀렉트·인사 문구가 계속 소비하므로 지우지 않는다.
+  const { hotPlaces, isLoading: isHotPlacesLoading } = useHotPlacesQuery();
 
   const userData = (userResponse as unknown as BaseResponse<UserData>)?.data;
   const popularTags: TagInfoDTO[] = tagsData?.tagInfoList ?? [];
@@ -62,7 +67,8 @@ const HomePage = () => {
         popularTags={popularTags}
         isTagsLoading={isTagsLoading}
         popularRegions={popularRegions}
-        isRegionsLoading={isRegionsLoading}
+        hotPlaces={hotPlaces}
+        isHotPlacesLoading={isHotPlacesLoading}
       />
     </div>
   );
