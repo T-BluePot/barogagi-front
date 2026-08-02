@@ -27,6 +27,8 @@ interface FullScreenNoticeProps {
  *
  * - `z-9999` 로 헤더·BottomTabBar(`z-30`)·모달(`z-[200]`) 위를 완전히 덮는다.
  *   배경은 반투명이 아니라 **불투명** — 뒤에 깨진 화면이 비치면 안 된다.
+ * - `fixed` 는 뷰포트 기준이라 `#root` 의 `--app-max-width` 제한을 받지 않는다.
+ *   태블릿처럼 넓은 화면에서 앱 프레임 밖으로 번지지 않게 폭을 직접 걸어준다(모달·탭바와 같은 방식).
  * - ⛔ **router hook 사용 금지.** AppErrorBoundary 의 폴백으로도 렌더되고,
  *   그때는 BrowserRouter 가 죽어 있을 수 있다. 이동이 필요하면 부모가 onAction 으로 넘긴다.
  * - 아이콘: 오류 일러스트 에셋이 아직 없어 heroicons 로 임시 사용한다(디자인 확정 시 교체).
@@ -57,7 +59,7 @@ const FullScreenNotice = ({
     <div
       ref={containerRef}
       tabIndex={-1}
-      className="pt-safe pb-safe pl-safe pr-safe fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white px-6 outline-none"
+      className="pt-safe pb-safe pl-safe pr-safe fixed inset-0 z-9999 mx-auto flex w-full max-w-(--app-max-width) flex-col items-center justify-center bg-white px-6 outline-none"
       role={isMaintenance ? "status" : "alert"}
       aria-live={isMaintenance ? "polite" : "assertive"}
     >
