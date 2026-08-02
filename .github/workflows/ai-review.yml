@@ -27,7 +27,7 @@ jobs:
     # 포크 PR 은 시크릿이 주입되지 않아 어차피 실패한다 → 아예 돌리지 않는다
     if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
-      - uses: Jung-eunwoo/ai-code-review@main
+      - uses: Jung-eunwoo/ai-code-review@v1
         with:
           pr: ${{ github.event.number }}
         env:
