@@ -13,7 +13,8 @@ import { isBridgeAvailable, isNativeApp } from "./bridgeStorage";
  */
 export const restartApp = (): void => {
   if (isAppExitAction()) {
-    void window.BarogagiApp!.exitApp();
+    // 종료가 거부되면 사용자가 안내 화면에 갇힌다 → 새로고침으로 떨어뜨린다
+    window.BarogagiApp!.exitApp().catch(reloadPage);
     return;
   }
   window.location.reload();
