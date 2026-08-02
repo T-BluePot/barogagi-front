@@ -47,7 +47,8 @@ declare global {
   }
 }
 
-const isBridgeAvailable = (): boolean =>
+/** RN 브릿지(window.BarogagiApp) 주입 여부. 브릿지 유무 판정은 이 함수 하나로 통일한다 */
+export const isBridgeAvailable = (): boolean =>
   typeof window !== "undefined" && !!window.BarogagiApp;
 
 /**

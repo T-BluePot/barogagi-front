@@ -1,4 +1,4 @@
-import { isNativeApp } from "./bridgeStorage";
+import { isBridgeAvailable, isNativeApp } from "./bridgeStorage";
 
 /**
  * 오류 화면의 복구 액션.
@@ -12,8 +12,8 @@ import { isNativeApp } from "./bridgeStorage";
  * 브릿지가 없으면 reload 로 폴백해 사용자가 화면에 갇히지 않게 한다.
  */
 export const restartApp = (): void => {
-  if (isNativeApp() && window.BarogagiApp) {
-    void window.BarogagiApp.exitApp();
+  if (isAppExitAction()) {
+    void window.BarogagiApp!.exitApp();
     return;
   }
   window.location.reload();
@@ -21,10 +21,11 @@ export const restartApp = (): void => {
 
 /**
  * 앱(WebView) 환경에서는 액션이 "앱 종료"라서 웹의 "다시 시도"(새로고침)와 동작이 다르다.
- * 문구를 환경에 맞게 고르기 위해 화면 쪽에서 사용한다.
+ * 문구를 환경에 맞게 고르기 위해 화면 쪽에서 사용하고, `restartApp` 도 같은 판정을 공유한다
+ * (판정을 복제하면 한쪽만 고쳤을 때 라벨과 실제 동작이 어긋난다).
  */
 export const isAppExitAction = (): boolean =>
-  isNativeApp() && !!window.BarogagiApp;
+  isNativeApp() && isBridgeAvailable();
 
 /**
  * 앱을 종료하지 않고 현재 화면만 다시 불러온다.
