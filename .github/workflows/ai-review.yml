@@ -1,0 +1,37 @@
+name: AI Code Review
+
+# PR 이 열리거나 커밋이 push 되면 AI 가 코드 리뷰를 남긴다.
+# 리뷰어 구현: https://github.com/Jung-eunwoo/ai-code-review
+#
+# ⛔ pull_request_target 으로 바꾸지 말 것.
+#    그 트리거는 시크릿과 쓰기 토큰이 주입된 상태로 **PR 브랜치 코드**를 실행한다.
+#    포크에서 리뷰가 안 돈다는 이유로 여기를 바꾸는 순간,
+#    아무나 PR 하나로 이 저장소의 시크릿을 가져갈 수 있게 된다.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# 리뷰 코멘트를 남기려면 write 가 필요하다. 그 외는 최소로 둔다.
+permissions:
+  contents: read
+  pull-requests: write
+
+# 같은 PR 에 push 가 연달아 오면 이전 리뷰 작업을 취소한다 (중복 리뷰·무료 한도 낭비 방지)
+concurrency:
+  group: ai-review-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    # 포크 PR 은 시크릿이 주입되지 않아 어차피 실패한다 → 아예 돌리지 않는다
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: Jung-eunwoo/ai-code-review@main
+        with:
+          pr: ${{ github.event.number }}
+        env:
+          # 저장소 시크릿. 발급: https://aistudio.google.com/apikey
+          #   gh secret set GEMINI_API_KEY --repo T-BluePot/barogagi-front
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
