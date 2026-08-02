@@ -82,15 +82,21 @@ curl -s -m 15 -w " [HTTP %{http_code}]\n" -H "API-KEY: $KEY" "$BASE/home/tags/po
 
 ### 콘솔에서 화면만 빠르게 확인하기
 
+`pnpm dev` 로 띄운 뒤 브라우저 콘솔에서:
+
 ```js
-// 전체화면 강제 표시 (kind: critical | network | config | maintenance)
-useCriticalErrorStore.getState().raise("critical", "COMMON-500");
-// 해제
-useCriticalErrorStore.getState().clear();
+// 전체화면 강제 표시 (kind: critical | network | config | maintenance | render)
+__errorStore.getState().raise("critical", "COMMON-500");
+__errorStore.getState().raise("network");
+__errorStore.getState().raise("config", "A100");
+__errorStore.getState().raise("maintenance");
+
+// 해제 — 다음 kind 를 보려면 반드시 먼저 호출한다 (첫 오류를 유지하는 래치라 raise 가 무시된다)
+__errorStore.getState().clear();
 ```
 
-> store 는 모듈 스코프라 콘솔에 노출되지 않는다. 필요하면 `GlobalErrorScreen` 에서
-> `window.__errorStore = useCriticalErrorStore` 를 임시로 붙여 확인하고 커밋하지 않는다.
+> `__errorStore` 는 `criticalErrorStore.ts` 에서 `import.meta.env.DEV` 일 때만 붙는다.
+> 프로덕션 번들에는 포함되지 않는다.
 
 ---
 

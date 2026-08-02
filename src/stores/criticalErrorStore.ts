@@ -46,3 +46,11 @@ export const useCriticalErrorStore = create<CriticalErrorState>((set, get) => ({
    */
   clear: () => set({ kind: null, code: undefined }),
 }));
+
+// QA 편의: 콘솔에서 화면을 바로 띄워 보게 노출한다.
+// dev 빌드에서만 붙고 프로덕션 번들에서는 통째로 사라진다.
+if (import.meta.env.DEV) {
+  (
+    window as unknown as { __errorStore: typeof useCriticalErrorStore }
+  ).__errorStore = useCriticalErrorStore;
+}
