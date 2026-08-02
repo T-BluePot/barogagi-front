@@ -177,6 +177,9 @@ export const syncFcmToken = async (): Promise<void> => {
       token,
       appVersion,
     });
+    // setToken 이 status 를 "issued" 로 올려둔 상태다. 서버 등록을 건너뛰는 건
+    // 이미 등록돼 있기 때문이므로 "registered" 로 되돌려야 상태가 실제와 맞는다.
+    store.setStatus("registered");
     return;
   }
 

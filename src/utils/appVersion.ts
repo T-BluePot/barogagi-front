@@ -69,5 +69,7 @@ export const getCurrentAppVersion = async (): Promise<string | null> => {
   if (!isNativeApp()) return null;
 
   // 앱이지만 RPC 가 없는 구버전. dev 편의용 fallback 만 허용한다(운영에서는 보통 미설정).
-  return import.meta.env.VITE_APP_VERSION ?? null;
+  // `||` 를 쓴다 — env 는 미설정 시 빈 문자열로 오는데 `??` 는 그것을 값으로 통과시켜
+  // 버전 비교에 `""` 가 흘러든다. 값이 없으면 null 이어야 한다.
+  return import.meta.env.VITE_APP_VERSION || null;
 };
