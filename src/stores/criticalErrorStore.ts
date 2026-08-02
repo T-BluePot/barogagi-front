@@ -37,5 +37,12 @@ export const useCriticalErrorStore = create<CriticalErrorState>((set, get) => ({
     if (get().kind !== null) return;
     set({ kind, code });
   },
+  /**
+   * 오류 화면을 내린다.
+   *
+   * 정상 경로에서는 호출하지 않는다 — 복구 액션이 앱 종료/새로고침이라
+   * 이 store 는 사실상 "한 번 raise 되면 재시작까지 유지되는 래치"다.
+   * QA 가 콘솔에서 화면을 내릴 때와, 트리거가 확정된 뒤 점검 종료를 감지할 때를 위한 경로다.
+   */
   clear: () => set({ kind: null, code: undefined }),
 }));
