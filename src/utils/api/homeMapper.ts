@@ -65,5 +65,7 @@ export const toHotPlaceCardData = (
   rank: Number(place.hubRank),
   name: place.hubTatsNm,
   area: showArea ? formatHotPlaceRegion(place) : undefined,
-  category: place.hubCtgryMclsNm,
+  // 외부(관광공사) 데이터라 빈 문자열이 올 수 있다 → 타입 계약(`category?: string`)대로 undefined 로 정규화.
+  // 소비처가 트루시 검사에 기대지 않게 경계에서 끊는다.
+  category: place.hubCtgryMclsNm || undefined,
 });
