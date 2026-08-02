@@ -3,7 +3,7 @@
  */
 
 import type { HotPlaceDTO } from "@/api/types";
-import type { HotPlaceData } from "@/components/main/home/contents/HotPlaceCard";
+import type { HotPlaceData } from "@/types/main/home/hotPlace";
 
 /**
  * `hubRank` 는 string("1"~"10") 이므로 숫자로 변환한 뒤 정렬한다.
@@ -27,7 +27,7 @@ export const hasUniformSigngu = (places: HotPlaceDTO[]): boolean =>
  *    "충청북도" → "충북" 같은 관례 축약은 임의 판단이 되므로 제거 대상에서 제외하고
  *    원문을 그대로 노출한다. 도 단위 데이터가 유입되면 기획과 표기 규칙을 확정한다.
  */
-export const shortenAreaNm = (areaNm: string): string =>
+const shortenAreaNm = (areaNm: string): string =>
   areaNm.replace(/(특별자치시|특별시|광역시)$/, "");
 
 /** 지역 표시명: "서울 종로구" */

@@ -1,11 +1,4 @@
-export interface HotPlaceData {
-  rank: number;
-  name: string;
-  /** 상위 행정구역명 (시/도) — 이름과 같거나 목록 전체가 같은 지역이면 생략 */
-  area?: string;
-  /** 카테고리 중분류 (hubCtgryMclsNm). area 가 없을 때 메타 라인에 노출 */
-  category?: string;
-}
+import type { HotPlaceData } from "@/types/main/home/hotPlace";
 
 /**
  * 카테고리별 플레이스홀더 글리프.
