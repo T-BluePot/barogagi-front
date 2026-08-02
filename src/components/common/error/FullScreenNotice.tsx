@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import {
   ExclamationTriangleIcon,
   WrenchScrewdriverIcon,
@@ -44,9 +45,19 @@ const FullScreenNotice = ({
   const isMaintenance = kind === "maintenance";
   const Icon = isMaintenance ? WrenchScrewdriverIcon : ExclamationTriangleIcon;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // 화면을 덮기만 하면 포커스는 가려진 뒤쪽 컨트롤에 남는다 → 키보드·스크린리더 사용자가
+  // 복구 버튼에 닿지 못한다. 마운트 시 안내 영역으로 포커스를 옮겨 여기서부터 탭이 시작되게 한다.
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, []);
+
   return (
     <div
-      className="pt-safe pb-safe pl-safe pr-safe fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white px-6"
+      ref={containerRef}
+      tabIndex={-1}
+      className="pt-safe pb-safe pl-safe pr-safe fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white px-6 outline-none"
       role={isMaintenance ? "status" : "alert"}
       aria-live={isMaintenance ? "polite" : "assertive"}
     >

@@ -11,7 +11,9 @@
 
 ## 0. 심각도 분류 규칙 (판정 기준)
 
-`status` **단독으로도**, `code` **단독으로도** 판정할 수 없다. 반드시 **쌍**으로 본다.
+5xx는 상태값만으로 `critical` 이고, 그 밖에는 `status` 와 `code` 를 함께 봐야 한다.
+`404` 가 정상 빈 데이터(`M201`)이고 `401` 이 토큰 만료가 아닐 수 있어(`A100`) 어느 한쪽만으로는 갈리지 않는다.
+아래 표의 순서대로 판정한다 — 먼저 걸리는 행이 결과다.
 
 | 순서 | 조건 | 결과 | 전체화면 |
 | --- | --- | --- | --- |
@@ -30,8 +32,11 @@
 ## 1. 서버 응답 재현 (curl) — ✅ 실측 확인 완료
 
 ```bash
-FRONT=~/Desktop/git-project/blue-hot-pot/barogagi/barogagi-front
+# 저장소 루트를 자동으로 잡는다 (작성자 PC 경로를 박아두면 다른 환경에서 키가 빈 채로 나간다)
+FRONT="${FRONT:-$(git rev-parse --show-toplevel)}"
+test -f "$FRONT/.env.local" || { echo ".env.local 없음: $FRONT"; return 1 2>/dev/null || exit 1; }
 KEY=$(grep '^VITE_API_KEY=' "$FRONT/.env.local" | cut -d= -f2-)
+test -n "$KEY" || { echo "VITE_API_KEY 비어 있음"; return 1 2>/dev/null || exit 1; }
 BASE=https://test.fitpl.xyz/api/v1
 
 # 본문 메시지만 믿으면 틀린다 — status를 반드시 같이 본다

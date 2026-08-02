@@ -18,7 +18,9 @@ import { useNativeBack } from "@/utils/nativeBackHandler";
  *    → 백도 복구 액션(restartApp)으로 매핑한다.
  */
 const GlobalErrorScreen = () => {
-  const { kind, code } = useCriticalErrorStore();
+  // 셀렉터로 구독 범위를 좁힌다 — 스토어 전체를 구독하면 raise/clear 참조 변경에도 리렌더된다
+  const kind = useCriticalErrorStore((s) => s.kind);
+  const code = useCriticalErrorStore((s) => s.code);
 
   // 오류가 떠 있는 동안만 백을 가로챈다 (kind === null 이면 등록되지 않음)
   useNativeBack(kind !== null, restartApp);

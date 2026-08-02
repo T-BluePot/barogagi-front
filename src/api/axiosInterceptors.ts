@@ -179,7 +179,12 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
         // refresh 요청의 5xx·네트워크 실패는 이 catch 로만 잡힌다.
         // 승격 대상 판정은 `isGlobalErrorKind` 하나로 맞춘다 — 여기에 종류를 손으로 나열하면
         // 판정 기준이 두 곳으로 갈라져 한쪽만 갱신되는 순간 조용히 어긋난다.
-        if (isGlobalErrorKind(classifyApiError(e))) {
+        //
+        // ⚠️ axios 에러인지 먼저 본다. 이 try 블록은 refreshToken 부재·응답 형식 오류에서
+        //    직접 `Error` 를 throw 하는데, classifyApiError 는 비-axios 예외를 `config` 로 돌려준다
+        //    (getApiKey 실패를 설정 오류로 잡기 위한 폴백). 그대로 두면 "토큰이 없어 로그아웃해야 할 상황"이
+        //    설정 오류 화면으로 바뀌어 handleLogout 이 실행되지 않는다.
+        if (axios.isAxiosError(e) && isGlobalErrorKind(classifyApiError(e))) {
           // 토큰이 만료된 게 아니라 서버/네트워크 문제로 갱신이 실패한 것이므로 세션을 끊지 않는다.
           // handleLogout 은 하드 네비게이션이라 오류 화면까지 날려버린다.
           raiseGlobalError(e);
