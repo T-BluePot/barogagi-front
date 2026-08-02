@@ -132,6 +132,11 @@ export const issueFcmToken = async (): Promise<string | null> => {
  *
  * NOTE: 서버 스펙상 appVersion은 필수 string이므로 env가 비면 빈 문자열로 전송된다.
  *       정확한 버전 추적을 위해 빌드 시 VITE_APP_VERSION 주입을 권장한다.
+ *
+ * ⚠️ 같은 env 를 `utils/appVersion.ts` 의 `getCurrentAppVersion()` 도 읽는다(브릿지 우선).
+ *    일원화하지 않은 것은 의도다 — 서버가 말하는 appVersion 이 "웹 클라이언트 버전"인지
+ *    "설치된 앱 버전"인지 확인되기 전에는 위 정책 주석을 임의로 뒤집을 수 없다.
+ *    서버 측 의미가 확정되면 여기서 `getCurrentAppVersion()` 을 호출하도록 합친다(#112).
  */
 const getFcmDeviceInfo = (): { deviceType: string; appVersion: string } => ({
   deviceType: "WEB",
