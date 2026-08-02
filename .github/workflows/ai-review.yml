@@ -4,9 +4,10 @@ name: AI Code Review
 # 리뷰어 구현: https://github.com/Jung-eunwoo/ai-code-review
 #
 # ⛔ pull_request_target 으로 바꾸지 말 것.
-#    그 트리거는 시크릿과 쓰기 토큰이 주입된 상태로 **PR 브랜치 코드**를 실행한다.
-#    포크에서 리뷰가 안 돈다는 이유로 여기를 바꾸는 순간,
-#    아무나 PR 하나로 이 저장소의 시크릿을 가져갈 수 있게 된다.
+#    그 트리거는 베이스 저장소의 워크플로를 **시크릿과 쓰기 토큰이 주입된 채로** 실행한다
+#    (PR 브랜치 코드를 자동으로 실행하는 건 아니다 — 위험한 건 주입된 권한 쪽이다).
+#    여기서 PR head 를 체크아웃하거나 실행하기까지 하면 아무나 PR 하나로
+#    이 저장소의 시크릿을 가져갈 수 있다. 포크 리뷰를 포기하고 pull_request 를 쓴다.
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -24,10 +25,14 @@ concurrency:
 jobs:
   review:
     runs-on: ubuntu-latest
+    # 외부 API 응답이 지연돼도 러너를 6시간(기본값) 물고 있지 않게 한다
+    timeout-minutes: 10
     # 포크 PR 은 시크릿이 주입되지 않아 어차피 실패한다 → 아예 돌리지 않는다
     if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
-      - uses: Jung-eunwoo/ai-code-review@v1
+      # ⚠️ 전체 커밋 SHA 로 고정. @main·@v1 같은 이동 가능한 ref 를 쓰면 업스트림이
+      #    바뀌는 순간 검토되지 않은 코드가 GEMINI_API_KEY 와 쓰기 권한으로 실행된다.
+      - uses: Jung-eunwoo/ai-code-review@4873a91e06083c39f8500342ada798e5204766be # main 기준
         with:
           pr: ${{ github.event.number }}
         env:
