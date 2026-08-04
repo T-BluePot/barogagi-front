@@ -24,8 +24,8 @@ export const CheckBoxButton = ({
   const gapClass = gap === "tight" ? "gap-2" : "gap-4";
   const containerClass = clsx("flex flex-row items-center", gapClass);
 
-  const iconSize = size === "large" ? 32 : 24; // px 단위
-  const colorClass = isChecked ? "text-main" : "text-gray-40";
+  const iconSize = size === "large" ? 28 : 20; // px 단위
+  const colorClass = isChecked ? "text-main" : "text-gray-30";
 
   const labelClass = clsx(
     "typo-body",
