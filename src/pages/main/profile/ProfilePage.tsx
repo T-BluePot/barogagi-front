@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getMe, withdrawMe } from "@/api/queries/authQueries";
-import { authKeys } from "@/api/keyFactories";
+import { withdrawMe } from "@/api/queries/authQueries";
+import { useMeQuery } from "@/hooks/queries/useMeQuery";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_PAGE_TEXT } from "@/constants/texts/main/profile";
 import { WITHDRAWAL_MODAL_TEXT } from "@/constants/texts/main/profile/withdrawal";
@@ -12,8 +11,6 @@ import ProfileMenuItem from "@/components/main/profile/ProfileMenuItem";
 import WithdrawalModal from "@/components/main/profile/WithdrawalModal";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
-import type { BaseResponse } from "@/api/types";
-import type { UserData } from "@/types/profileTypes";
 import { clearAuthTokens } from "@/lib/auth/tokenCache";
 
 const ProfilePage = () => {
@@ -23,13 +20,7 @@ const ProfilePage = () => {
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
 
   // 사용자 정보 조회
-  const { data: userResponse } = useQuery({
-    queryKey: authKeys.me(),
-    queryFn: getMe,
-    retry: false,
-  });
-
-  const userData = (userResponse as unknown as BaseResponse<UserData>)?.data;
+  const { user: userData } = useMeQuery();
 
   // 로그아웃 처리
   const handleLogout = () => {

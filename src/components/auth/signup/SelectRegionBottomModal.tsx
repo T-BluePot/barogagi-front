@@ -36,6 +36,7 @@ export const SelectRegionBottomModal = ({
   handleCloseRegionModal,
   region,
   setRegion,
+  canClear = true,
 }: SelectRegionProps) => {
   // 선호 지역은 선택 항목이라, 시트를 열어보지도 않은 사용자에게
   // 프로필 화면 진입만으로 252건을 받아올 이유가 없다.
@@ -105,7 +106,7 @@ export const SelectRegionBottomModal = ({
     // 1단계 — 시/도
     return (
       <>
-        {region && (
+        {canClear && region && (
           <BottomModalListButton
             label={REGION_MODAL.NONE}
             isChecked={false}

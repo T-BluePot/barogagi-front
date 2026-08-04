@@ -1,11 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 
-import { getMe } from "@/api/queries/authQueries";
-import { authKeys } from "@/api/keyFactories";
+import { useMeQuery } from "@/hooks/queries/useMeQuery";
 import { ROUTES } from "@/constants/routes";
-import type { BaseResponse } from "@/api/types";
-import type { UserData } from "@/types/profileTypes";
 
 interface CommonHeaderProps {
   onClick: () => void; // 아바타 클릭 → 프로필 이동 (MainLayout에서 주입)
@@ -20,13 +16,8 @@ export const CommonHeader = ({ onClick }: CommonHeaderProps) => {
   const navigate = useNavigate();
 
   // HomePage와 같은 쿼리 키를 사용하므로 캐시를 공유한다 (추가 요청 없음)
-  const { data: userResponse } = useQuery({
-    queryKey: authKeys.me(),
-    queryFn: getMe,
-    retry: false,
-  });
-  const nickName = (userResponse as unknown as BaseResponse<UserData>)?.data
-    ?.nickName;
+  const { user } = useMeQuery();
+  const nickName = user?.nickName;
 
   return (
     // 레퍼런스 앱바 리듬: 위 4px / 아래 14px (아래 여백이 인사말과의 간격 역할)

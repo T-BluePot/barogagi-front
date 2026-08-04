@@ -6,12 +6,10 @@ import {
   getPopularTags,
   getPopularRegions,
 } from "@/api/queries";
-import { getMe } from "@/api/queries/authQueries";
 import { useHotPlacesQuery } from "@/hooks/queries/useHotPlacesQuery";
+import { useMeQuery } from "@/hooks/queries/useMeQuery";
 import { homeKeys } from "@/api/keyFactories";
-import { authKeys } from "@/api/keyFactories";
-import type { TagInfoDTO, PopularRegionDTO, BaseResponse } from "@/api/types";
-import type { UserData } from "@/types/profileTypes";
+import type { TagInfoDTO, PopularRegionDTO } from "@/api/types";
 
 const HomePage = () => {
   const { data: scheduleData, isLoading: isScheduleLoading } = useQuery({
@@ -29,13 +27,7 @@ const HomePage = () => {
     queryFn: getPopularRegions,
   });
 
-  const { data: userResponse, isPending: isMePending } = useQuery({
-    queryKey: authKeys.me(),
-    queryFn: getMe,
-    retry: false,
-  });
-
-  const userData = (userResponse as unknown as BaseResponse<UserData>)?.data;
+  const { user: userData, isPending: isMePending } = useMeQuery();
 
   // 오늘의 핫플레이스 — 위 popularRegions 와 병존한다.
   // popular 는 히어로 카드 지역 셀렉트·인사 문구가 계속 소비하므로 지우지 않는다.

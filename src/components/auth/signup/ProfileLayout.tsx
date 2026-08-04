@@ -41,7 +41,7 @@ type ProfileLayoutProps = {
 
   genderValue: string | undefined;
   birthValue: string | undefined;
-  /** 선호 지역 표시명. 시/도만 고르면 "서울특별시", 시·군·구까지면 "서울특별시 종로구" */
+  /** 선호 지역 표시명. 예: "서울특별시 종로구". 미선택이면 `undefined` */
   regionValue: string | undefined;
   handleOpenGenderModal: () => void;
   handleOpenBirthModal: () => void;

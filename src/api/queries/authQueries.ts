@@ -13,6 +13,7 @@ import type {
   LoginResponseDataType,
   JoinRequestType,
   MemberRequestDTO,
+  MemberResponseDTO,
   RefreshTokenRequestType,
   RefreshResponseDataType,
   ApprovalSendRequestType,
@@ -199,7 +200,7 @@ export const findUser = async (tel: string) => {
  * 부가 정보 조회 실패가 홈 전체를 덮으면 안 되므로 전역 오류 화면 승격에서 제외한다.
  */
 export const getMe = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await http.get<BaseResponse<MemberResponseDTO>>(
     ENDPOINTS.MEMBERS.GET_ME,
     { _skipGlobalError: true }
   );

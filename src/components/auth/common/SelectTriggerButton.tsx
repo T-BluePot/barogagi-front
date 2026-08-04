@@ -47,13 +47,15 @@ export const SelectTriggerButton = ({
 
   return (
     <div className={containerClass}>
-      {/* 행 전체 탭 영역. 라벨을 읽어주는 이름이 필요해 aria-label 을 준다 */}
+      {/* 행 전체 탭 영역. 아이콘·값이 별도 요소라 이름을 직접 준다.
+          고른 값도 함께 읽어준다 — 라벨만 읽으면 낭독기 사용자는
+          이미 선택된 값이 무엇인지 알 수 없다 */}
       <button
         type="button"
         onClick={onClick}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        aria-label={label}
+        aria-label={value ? `${label}: ${value}` : label}
         className="absolute inset-0 focus:outline-none"
       />
 

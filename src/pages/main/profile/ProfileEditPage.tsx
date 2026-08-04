@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { AxiosError } from "axios";
 import { ValidationError } from "yup";
-import { getMe, updateMe, checkNickname } from "@/api/queries/authQueries";
+import { updateMe, checkNickname } from "@/api/queries/authQueries";
 import { authKeys } from "@/api/keyFactories";
+import { useMeQuery } from "@/hooks/queries/useMeQuery";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_EDIT_TEXT } from "@/constants/texts/main/profile";
 import type { BaseResponse, MemberRequestDTO } from "@/api/types";
@@ -27,32 +28,13 @@ import { useRegionCodesQuery } from "@/hooks/queries/useRegionCodesQuery";
 import { findPreferredRegion, formatPreferredRegion } from "@/utils/api/homeMapper";
 import type { PreferredRegion } from "@/types/regionCode";
 
-// TODO: 공통 타입으로 분리 (현재 ProfilePage에서도 사용)
-interface UserDataResponse {
-  userId: string;
-  nickName: string;
-  gender?: string;
-  birth?: string; // "YYYYMMDD" 형식
-  /** 선호 지역 시/도 코드. ⚠️ 미설정이면 null 이 아니라 빈 문자열로 온다(실측) */
-  areaCd?: string;
-  /** 선호 지역 시·군·구 코드. 위와 동일하게 미설정은 빈 문자열 */
-  sigunguCd?: string;
-}
-
 const ProfileEditPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { openAlertModal } = useAlertModalStore();
 
   // 사용자 정보 조회
-  const { data: userResponse, isLoading } = useQuery({
-    queryKey: authKeys.me(),
-    queryFn: getMe,
-    retry: false,
-  });
-
-  const userData = (userResponse as unknown as BaseResponse<UserDataResponse>)
-    ?.data;
+  const { user: userData, isLoading } = useMeQuery();
 
   // 프로필 수정 mutation
   const updateMutation = useMutation({
@@ -270,11 +252,16 @@ const ProfileEditPage = () => {
 
     // 지역은 쌍으로만 보낸다 — 한쪽만 보내면 서버가 200 을 주면서 조용히 버린다.
     // `PreferredRegion` 이 둘 다 필수라 region 이 있으면 쌍이 보장된다.
+    //
+    // ⚠️ "해제"는 여기서 처리하지 않는다. 서버에 지우는 방법이 없어서
+    //    (빈 문자열·null 모두 200 을 주면서 기존 값 유지, 실측) 시트에서 아예 막아뒀다
+    //    (`canClear={false}`). 그래서 region 은 "그대로" 아니면 "다른 지역"만 가능하다.
     const isRegionChanged =
-      (region?.areaCd ?? "") !== (userData?.areaCd ?? "") ||
-      (region?.sigunguCd ?? "") !== (userData?.sigunguCd ?? "");
+      region !== undefined &&
+      (region.areaCd !== userData?.areaCd ||
+        region.sigunguCd !== userData?.sigunguCd);
 
-    if (isRegionChanged && region) {
+    if (isRegionChanged) {
       payload.areaCd = region.areaCd;
       payload.sigunguCd = region.sigunguCd;
     }
@@ -324,6 +311,9 @@ const ProfileEditPage = () => {
         handleCloseRegionModal={() => setRegionModalOpen(false)}
         region={region}
         setRegion={handleChangeRegion}
+        // 서버에 선호 지역을 지우는 방법이 없다 — 해제해도 저장되지 않으므로 아예 막는다.
+        // 백엔드가 해제를 지원하면 이 prop 을 빼면 된다.
+        canClear={false}
       />
 
       {/* 화면 레이아웃 */}

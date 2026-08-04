@@ -133,7 +133,8 @@ const OAuthProfilePage = () => {
       : undefined;
 
   // === 선호 지역 선택 ===
-  // 미선택(undefined)과 "시/도까지만 선택"(sigunguCd 없음) 둘 다 정상 상태다.
+  // 미선택(undefined)은 정상 상태다 — 선호 지역은 선택 항목이라 안 고르고 넘어가도 된다.
+  // 고른 경우에는 시/도·시·군·구가 항상 함께 채워진다(`PreferredRegion`).
   const [region, setRegion] = useState<PreferredRegion | undefined>(undefined);
   const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
 
