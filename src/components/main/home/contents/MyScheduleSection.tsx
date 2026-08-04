@@ -1,11 +1,13 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ScheduleCard } from "../../plan/main/ScheduleCard";
 import SkeletonScheduleCard from "../../plan/main/SkeletonScheduleCard";
+import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 import SectionHeader from "@/components/common/SectionHeader";
 import EmptyContent from "@/components/common/EmptyContent";
 import { useScheduleListQuery } from "@/hooks/queries/useScheduleListQuery";
+import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
 import { useStartScheduleCreation } from "@/hooks/useStartScheduleCreation";
 import { getRoutePath } from "@/constants/routes";
 import type { Schedule } from "@/types/scheduleTypes";
@@ -50,12 +52,33 @@ const ADD_ICON = (
  * 홈 "나의 일정" 섹션 (메인 최하단 — 목록이 아래로 늘어나는 영역)
  * - 일정 목록 API의 다가오는 일정을 가까운 순으로 세로 나열
  * - 일정이 없으면 예시(mock) 일정을 보여주고 탭 시 일정 생성 플로우로 유도
- * - 카드는 일정 탭의 ScheduleCard를 그대로 재사용 (카드 리디자인은 일정 담당자 몫)
+ * - 카드·간격·삭제 흐름 모두 일정 탭(`ScheduleListPage`)과 동일하게 맞춘다.
+ *   같은 카드가 화면마다 다르게 동작하면 사용자가 "여기선 왜 안 되지"를 겪는다.
  */
 const MyScheduleSection = () => {
   const navigate = useNavigate();
   const { current, isLoading, isError } = useScheduleListQuery();
   const { startScheduleCreation } = useStartScheduleCreation();
+  const deleteMutation = useDeleteScheduleMutation();
+
+  // === 일정 삭제 (일정 탭과 같은 흐름: 확인 모달 → 삭제) ===
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  const handleDeleteSchedule = (scheduleNum: number) => {
+    setDeleteTargetId(scheduleNum);
+    setIsDeleteOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteOpen(false);
+    setDeleteTargetId(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTargetId !== null) deleteMutation.mutate(deleteTargetId);
+    handleCloseDeleteModal();
+  };
 
   // 다가오는 일정을 가까운 순으로 (YYYY-MM-DD라 문자열 정렬 = 날짜 오름차순)
   // current 참조는 React Query select 캐시로 안정적 → 데이터 변경 시에만 재정렬
@@ -68,7 +91,7 @@ const MyScheduleSection = () => {
     // 로딩 스켈레톤도 목록 레이아웃(세로 스택)으로 노출해 실데이터 전환 시 점프 완화
     if (isLoading)
       return (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-4">
           <SkeletonScheduleCard />
           <SkeletonScheduleCard />
         </div>
@@ -92,9 +115,10 @@ const MyScheduleSection = () => {
       );
     }
 
-    // 다가오는 일정 세로 스택 (레퍼런스 §6: gap 10px)
+    // 다가오는 일정 세로 스택.
+    // 간격(gap-4)·삭제 버튼 모두 일정 탭의 `ScheduleList` 와 동일하게 맞춘다.
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4">
         {upcoming.map((schedule) => (
           <ScheduleCard
             key={schedule.scheduleNum}
@@ -102,7 +126,7 @@ const MyScheduleSection = () => {
             onClickCard={() =>
               navigate(getRoutePath.plan.detail(String(schedule.scheduleNum)))
             }
-            isDeleteDisabled
+            onDelete={() => handleDeleteSchedule(schedule.scheduleNum)}
           />
         ))}
       </div>
@@ -111,6 +135,11 @@ const MyScheduleSection = () => {
 
   return (
     <section className="w-full">
+      <DeleteScheduleModal
+        isOpen={isDeleteOpen}
+        onClickCancel={handleCloseDeleteModal}
+        onClickConfirm={handleConfirmDelete}
+      />
       <SectionHeader
         title="나의 일정"
         actionIcon={ADD_ICON}
