@@ -226,10 +226,14 @@ npm >= 9.x (또는 yarn >= 1.22.x)
 
 배포된 테스트 빌드에서도 쓸 수 있도록 URL 쿼리로 켜는 방식이다. **운영 빌드에서는 쿼리를 붙이지 않는 한 꺼져 있다.**
 
-| 쿼리 | 개발 모드 | 동작 |
-|------|-----------|------|
-| `?debug` | 항상 켜짐 | 모바일 디버그 콘솔(eruda) — 콘솔·네트워크 확인 (`src/lib/mobileDebugConsole.ts`) |
-| `?devSignup` | 항상 켜짐 | 회원가입 단계 가드 우회 — 아래 참고 (`src/lib/devSignupAccess.ts`) |
+| 쿼리 | 개발 모드 | 배포 빌드 | 동작 |
+|------|-----------|-----------|------|
+| `?debug` | 항상 켜짐 | 모든 도메인 | 모바일 디버그 콘솔(eruda) — 콘솔·네트워크 확인 (`src/lib/mobileDebugConsole.ts`) |
+| `?devSignup` | 항상 켜짐 | **테스트 도메인만** | 회원가입 단계 가드 우회 — 아래 참고 (`src/lib/devSignupAccess.ts`) |
+
+`?devSignup` 은 화면 진입 순서를 바꾸는 동작이라 `?debug` 와 달리 **도메인 제한을 둔다.**
+허용 목록은 `devSignupAccess.ts` 의 `TOGGLE_ALLOWED_HOSTS`(`localhost` · `127.0.0.1` · `test.fitpl.xyz`)이고,
+여기 없는 도메인(= 운영)에서는 쿼리를 붙여도 무시된다. 스테이징이 늘면 그 상수에 한 줄 추가한다.
 
 #### 회원가입 화면 직접 접근 (`?devSignup`)
 
