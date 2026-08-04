@@ -22,13 +22,19 @@ export interface AreaOption {
 /**
  * 선택된 선호 지역.
  *
- * ⚠️ 시군구는 **선택 사항**이다 — 시/도만 고른 상태(`sigunguCd === undefined`)가
- *    정상값이므로 더미값("", "00")으로 채우지 않는다.
- *    서버 DTO(`JoinRequestDTO` / `MemberRequestDTO`)도 둘 다 optional 이다.
+ * ⚠️ 네 필드 모두 **필수**다. 서버가 areaCd·sigunguCd 를 쌍으로만 처리하기 때문이다
+ *    (한쪽만 보내면 200 을 주면서 조용히 버린다 — 저장·핫플레이스·날씨 전부 동일).
+ *    시/도만 고른 상태를 타입으로 아예 만들 수 없게 해서, UI 를 우회한 경로로도
+ *    반쪽짜리 값이 서버에 나가지 않도록 막는다.
+ *
+ * 선호 지역을 **아예 안 고른** 상태는 이 객체가 `undefined` 인 것으로 표현한다
+ * (빈 문자열 같은 더미값으로 채우지 않는다).
+ *
+ * 서버가 areaCd 단독 저장을 지원하게 되면 그때 시군구를 optional 로 되돌린다.
  */
 export interface PreferredRegion {
   areaCd: string;
   areaNm: string;
-  sigunguCd?: string;
-  sigunguNm?: string;
+  sigunguCd: string;
+  sigunguNm: string;
 }

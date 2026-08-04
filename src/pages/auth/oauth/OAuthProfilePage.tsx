@@ -144,10 +144,10 @@ const OAuthProfilePage = () => {
         nickName: nickName.trim(),
         ...(birth && { birth }),
         ...(gender && { gender }),
-        // sigunguCd 는 areaCd 가 있을 때만 의미가 있다 (단독 전송 금지)
+        // 지역은 쌍으로만 보낸다 (`PreferredRegion` 이 둘 다 필수)
         ...(region && {
           areaCd: region.areaCd,
-          ...(region.sigunguCd && { sigunguCd: region.sigunguCd }),
+          sigunguCd: region.sigunguCd,
         }),
       }),
     onSuccess: () => {

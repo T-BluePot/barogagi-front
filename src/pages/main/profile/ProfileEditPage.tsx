@@ -268,15 +268,13 @@ const ProfileEditPage = () => {
       payload.birth = birth;
     }
 
-    // ⚠️ 서버는 areaCd·sigunguCd 를 **쌍으로 받아야만** 저장한다.
-    //    한쪽만 보내면 200 을 주면서 조용히 무시한다(test 서버 실측).
-    //    → 시/도만 고른 상태는 지금 저장할 수 없으므로 전송 자체를 하지 않는다.
-    //      (더미 sigunguCd 를 만들어 채우지 않는다 — 없는 지역을 등록하게 된다)
+    // 지역은 쌍으로만 보낸다 — 한쪽만 보내면 서버가 200 을 주면서 조용히 버린다.
+    // `PreferredRegion` 이 둘 다 필수라 region 이 있으면 쌍이 보장된다.
     const isRegionChanged =
       (region?.areaCd ?? "") !== (userData?.areaCd ?? "") ||
       (region?.sigunguCd ?? "") !== (userData?.sigunguCd ?? "");
 
-    if (isRegionChanged && region?.areaCd && region.sigunguCd) {
+    if (isRegionChanged && region) {
       payload.areaCd = region.areaCd;
       payload.sigunguCd = region.sigunguCd;
     }

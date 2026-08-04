@@ -304,10 +304,12 @@ const ProfilePage = () => {
     // absent 는 키 자체를 넣지 않는다 — 더미값("", 0)으로 채우지 않는다.
     if (optional?.birth) payload.birth = optional.birth;
     if (optional?.gender) payload.gender = optional.gender;
-    // sigunguCd 는 areaCd 가 있을 때만 의미가 있어 areaCd 블록 안에서 처리한다
-    if (optional?.areaCd) {
+    // 지역은 쌍일 때만 보낸다 — 한쪽만 보내면 서버가 200 을 주면서 조용히 버린다.
+    // `PreferredRegion` 이 둘 다 필수라 정상 경로에선 항상 함께 오지만,
+    // 여기서도 한 번 더 막아 반쪽짜리가 요청에 실리지 않게 한다.
+    if (optional?.areaCd && optional.sigunguCd) {
       payload.areaCd = optional.areaCd;
-      if (optional.sigunguCd) payload.sigunguCd = optional.sigunguCd;
+      payload.sigunguCd = optional.sigunguCd;
     }
 
     return payload;

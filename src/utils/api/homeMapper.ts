@@ -84,40 +84,38 @@ export const groupRegionCodes = (codes: RegionCodeDTO[]): AreaOption[] => {
 /**
  * 저장된 코드(areaCd / sigunguCd) → 표시용 선호 지역
  *
+ * **둘 다 목록에서 찾아져야만** 값을 만든다. 한쪽만 있는 값은 서버가 저장하지 않으므로
+ * 정상적으로는 나올 수 없지만, 과거 데이터나 수기 수정으로 들어올 수는 있다.
+ * 그런 반쪽짜리는 `undefined` 로 떨어뜨려 "미설정"으로 취급한다 —
+ * 억지로 시/도만 채우면 저장할 수 없는 값이 화면에 살아 있게 된다.
+ *
  * 서버는 `GET /members` 에서 미설정을 `null` 이 아니라 **빈 문자열**로 준다.
- * 코드만으로는 이름을 알 수 없어 지역 목록에서 찾아야 하므로,
- * 목록이 아직 안 왔거나(`areas` 비어 있음) 코드가 목록에 없으면 `undefined` 를 준다
- * (없는 이름을 지어내지 않는다).
+ * 코드만으로는 이름을 알 수 없어 지역 목록에서 찾으므로, 목록이 아직 안 왔으면
+ * (`areas` 비어 있음) 역시 `undefined` 다 (없는 이름을 지어내지 않는다).
  */
 export const findPreferredRegion = (
   areas: AreaOption[],
   areaCd?: string,
   sigunguCd?: string
 ): PreferredRegion | undefined => {
-  if (!areaCd) return undefined;
+  if (!areaCd || !sigunguCd) return undefined;
 
   const area = areas.find((a) => a.areaCd === areaCd);
-  if (!area) return undefined;
-
-  const sigungu = sigunguCd
-    ? area.sigungus.find((s) => s.sigunguCd === sigunguCd)
-    : undefined;
+  const sigungu = area?.sigungus.find((s) => s.sigunguCd === sigunguCd);
+  if (!area || !sigungu) return undefined;
 
   return {
     areaCd: area.areaCd,
     areaNm: area.areaNm,
-    ...(sigungu && {
-      sigunguCd: sigungu.sigunguCd,
-      sigunguNm: sigungu.sigunguNm,
-    }),
+    sigunguCd: sigungu.sigunguCd,
+    sigunguNm: sigungu.sigunguNm,
   };
 };
 
 /**
- * 선호 지역 표시명: "서울특별시" 또는 "서울특별시 종로구"
+ * 선호 지역 표시명: "서울특별시 종로구"
  *
- * 시군구 미선택은 정상 상태라 시/도명만 반환한다.
- * 미선택(`undefined`)이면 `undefined` 를 그대로 돌려준다 —
+ * 미설정(`undefined`)이면 `undefined` 를 그대로 돌려준다 —
  * `SelectTriggerButton` 이 값 유무로 라벨 위치를 바꾸므로 빈 문자열을 주면 안 된다.
  *
  * ⚠️ `formatHotPlaceRegion` 과 달리 시/도명을 축약하지 않는다.
@@ -125,11 +123,8 @@ export const findPreferredRegion = (
  */
 export const formatPreferredRegion = (
   region?: PreferredRegion
-): string | undefined => {
-  if (!region) return undefined;
-
-  return [region.areaNm, region.sigunguNm].filter(Boolean).join(" ");
-};
+): string | undefined =>
+  region ? `${region.areaNm} ${region.sigunguNm}` : undefined;
 
 /**
  * 핫플레이스 DTO → 카드 데이터

@@ -18,12 +18,18 @@ const REGION_MODAL = PREFERRED_REGION_TEXT.MODAL;
 /**
  * 선호 지역 선택 바텀시트 (시/도 → 시·군·구 2단계)
  *
- * 시·군·구는 **선택 사항**이다 — 2단계 첫 항목 "○○ 전체"를 고르면 시/도까지만 저장한다.
- * 서버 DTO(`JoinRequestDTO` / `MemberRequestDTO`)가 areaCd·sigunguCd 를 모두 optional
- * 로 받으므로, 시·군·구 미선택을 빈 문자열 같은 더미값으로 채우지 않는다.
+ * 선호 지역 자체는 선택 항목이지만(안 고르고 넘어가도 된다), **고르기 시작했으면
+ * 시·군·구까지 골라야 한다.** 서버가 areaCd·sigunguCd 를 쌍으로만 처리하기 때문이다:
+ * - 저장   : 한쪽만 보내면 200 을 주면서 조용히 버린다(`MemberRequestDTO` 실측)
+ * - 핫플레이스: 데이터가 시·군·구 단위라 시/도만으론 지역을 특정할 수 없다
+ * → 시/도만 고르게 두면 사용자는 골랐다고 믿는데 아무 일도 안 일어난다.
+ *   고를 수 없게 막는 편이 정직하다.
+ *
+ * 서버가 areaCd 단독을 지원하게 되면 2단계 첫 항목으로 "○○ 전체"를 되살린다
+ * (`PREFERRED_REGION_TEXT.MODAL.AREA_ONLY` 가 그때를 위해 남아 있다).
  *
  * 두 단계를 한 시트 안에서 전환한다 — 시트를 두 번 여닫게 하면 "시·도를 잘못 골랐다"를
- * 되돌리는 경로가 사라진다. 되돌리기는 2단계 헤더의 "시·도 다시 선택"이 담당한다.
+ * 되돌리는 경로가 사라진다. 되돌리기는 2단계 헤더의 "지역 다시 선택"이 담당한다.
  */
 export const SelectRegionBottomModal = ({
   isRegionModalOpen,
@@ -46,12 +52,6 @@ export const SelectRegionBottomModal = ({
   useEffect(() => {
     if (!isRegionModalOpen) setSelectedArea(undefined);
   }, [isRegionModalOpen]);
-
-  /** 시/도까지만 선택 (시·군·구 생략) */
-  const handleSelectAreaOnly = (area: AreaOption) => {
-    setRegion({ areaCd: area.areaCd, areaNm: area.areaNm });
-    handleCloseRegionModal();
-  };
 
   /** 시·군·구까지 선택 */
   const handleSelectSigungu = (
@@ -88,13 +88,6 @@ export const SelectRegionBottomModal = ({
     if (selectedArea) {
       return (
         <>
-          <BottomModalListButton
-            label={REGION_MODAL.AREA_ONLY(selectedArea.areaNm)}
-            isChecked={
-              region?.areaCd === selectedArea.areaCd && !region.sigunguCd
-            }
-            onClickChecked={() => handleSelectAreaOnly(selectedArea)}
-          />
           {selectedArea.sigungus.map(({ sigunguCd, sigunguNm }) => (
             <BottomModalListButton
               key={sigunguCd}
