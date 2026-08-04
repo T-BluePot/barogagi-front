@@ -15,6 +15,17 @@ import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 
 // === store ===
 import { useSignupStore } from "@/stores/signupStore";
+import { isSignupAccessBypassed } from "@/lib/devSignupAccess";
+
+/**
+ * 개발/QA 로 이 화면에 바로 진입했을 때 쓸 자리표시 번호.
+ *
+ * 이 화면은 앞 화면(VerifyPage)에서 넘겨준 `state.phone` 없이는 폼 자체를 렌더하지 않아
+ * URL 직접 진입이 불가능하다. 화면 확인용으로만 채우는 값이라 **인증은 당연히 실패한다**
+ * (여기서 호출하는 건 `verify` 뿐이라 이 번호로 SMS 가 발송되지는 않는다).
+ * 실제 인증까지 확인하려면 앞 화면부터 정상 진행할 것.
+ */
+const DEV_PLACEHOLDER_TEL = "01000000000";
 
 type LocationState = {
   phone?: string;
@@ -40,8 +51,14 @@ const VerifyCodePage = () => {
 
   const flow = paramFlow ?? state.flow ?? "signup";
 
-  // state에서 전화번호를 가져옴
-  const tel = useMemo(() => state.phone?.trim(), [state.phone]);
+  // state에서 전화번호를 가져옴.
+  // 개발/QA 로 URL 직접 진입한 경우(state 없음)에만 자리표시 번호로 대체해 폼을 렌더한다.
+  const tel = useMemo(() => {
+    const fromState = state.phone?.trim();
+    if (fromState) return fromState;
+
+    return isSignupAccessBypassed() ? DEV_PLACEHOLDER_TEL : undefined;
+  }, [state.phone]);
 
   // NOTE: 인증 시 헤더 라벨 설정 주석 처리
   // flow에 따른 헤더 라벨 설정

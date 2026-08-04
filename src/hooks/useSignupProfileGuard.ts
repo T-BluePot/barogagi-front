@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useSignupStore } from "@/stores/signupStore";
 import { ROUTES } from "@/constants/routes";
+import { isSignupAccessBypassed } from "@/lib/devSignupAccess";
 
 /**
  * 회원가입 프로필 단계 접근 가드.
@@ -16,10 +17,14 @@ import { ROUTES } from "@/constants/routes";
  * - password 는 보안상 persist 에서 제외(partialize)되므로 새로고침 시 사라진다.
  *   따라서 가드 조건에서 password 는 제외하고, 항상 남아 있는 termsDTO·userId·tel 로 판정한다.
  *
+ * 개발/QA 편의: `isSignupAccessBypassed()` 가 true 면 검사 없이 통과시킨다
+ * (개발 모드 또는 배포 테스트 빌드 + `?devSignup`). `lib/devSignupAccess.ts` 참고.
+ *
  * @returns 접근 허용 여부. false 동안에는 페이지 본문을 렌더하지 말 것(검사 중 또는 리다이렉트 대기).
  */
 export const useSignupProfileGuard = (): boolean => {
   const navigate = useNavigate();
+  const bypassed = isSignupAccessBypassed();
   const draft = useSignupStore((state) => state.draft);
   const [hydrated, setHydrated] = useState(() =>
     useSignupStore.persist.hasHydrated()
@@ -45,11 +50,12 @@ export const useSignupProfileGuard = (): boolean => {
     draft.tel.trim().length > 0;
 
   useEffect(() => {
+    if (bypassed) return;
     if (!hydrated) return;
     if (!isCompleted) {
       navigate(ROUTES.AUTH.SIGNUP.TERMS, { replace: true });
     }
-  }, [hydrated, isCompleted, navigate]);
+  }, [bypassed, hydrated, isCompleted, navigate]);
 
-  return hydrated && isCompleted;
+  return bypassed || (hydrated && isCompleted);
 };
