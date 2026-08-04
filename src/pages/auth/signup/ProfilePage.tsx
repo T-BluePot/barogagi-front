@@ -19,6 +19,9 @@ import { getGenderLabel, type GenderType } from "@/constants/userInfo";
 import CheckResultModal from "@/components/auth/signup/CheckResultModal";
 import ErrorModal from "@/components/auth/signup/ErrorModal";
 
+import type { PreferredRegion } from "@/types/regionCode";
+import { formatPreferredRegion } from "@/utils/api/homeMapper";
+
 // === server ===
 import { useMutation } from "@tanstack/react-query";
 // 1. 닉네임
@@ -212,6 +215,13 @@ const ProfilePage = () => {
       ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
       : undefined;
 
+  // === 선호 지역 선택 모달 ===
+  // 미선택(undefined)과 "시/도까지만 선택"(sigunguCd 없음) 둘 다 정상 상태다.
+  const [region, setRegion] = useState<PreferredRegion | undefined>(undefined);
+  const [isRegionModalOpen, setIsRegionModalOpen] = useState<boolean>(false);
+  const handleOpenRegionModal = () => setIsRegionModalOpen(true);
+  const handleCloseRegionModal = () => setIsRegionModalOpen(false);
+
   // === 회원 가입 로직 ===
 
   const draft = useSignupStore((s) => s.draft); // store 값 꺼내오기
@@ -291,8 +301,14 @@ const ProfilePage = () => {
     };
 
     // optional 처리
+    // absent 는 키 자체를 넣지 않는다 — 더미값("", 0)으로 채우지 않는다.
     if (optional?.birth) payload.birth = optional.birth;
     if (optional?.gender) payload.gender = optional.gender;
+    // sigunguCd 는 areaCd 가 있을 때만 의미가 있어 areaCd 블록 안에서 처리한다
+    if (optional?.areaCd) {
+      payload.areaCd = optional.areaCd;
+      if (optional.sigunguCd) payload.sigunguCd = optional.sigunguCd;
+    }
 
     return payload;
   };
@@ -373,7 +389,16 @@ const ProfilePage = () => {
     }
 
     // 2) payload 조립
-    const payload = buildSignupPayload(draft, { nickName }, { birth, gender });
+    const payload = buildSignupPayload(
+      draft,
+      { nickName },
+      {
+        birth,
+        gender,
+        areaCd: region?.areaCd,
+        sigunguCd: region?.sigunguCd,
+      }
+    );
 
     // 검증 실패 시(모달 오픈 + null 반환) 제출 중단
     if (!payload) return;
@@ -422,6 +447,12 @@ const ProfilePage = () => {
           userBirthDay,
           handleChangeBirth,
         }}
+        regionProps={{
+          isRegionModalOpen,
+          handleCloseRegionModal,
+          region,
+          setRegion,
+        }}
         skipProfileProps={{
           isSkipModalOpen,
           handleOpenSkipModal,
@@ -443,8 +474,10 @@ const ProfilePage = () => {
         }}
         genderValue={getGenderLabel(gender)}
         birthValue={formattedBirth}
+        regionValue={formatPreferredRegion(region)}
         handleOpenGenderModal={handleOpenGenderModal}
         handleOpenBirthModal={handleOpenBirthModal}
+        handleOpenRegionModal={handleOpenRegionModal}
         isSkipProfile={isSkipProfile}
         isDisabled={isInvalid()}
         handleSubmitProfile={onSubmitSignupWithProfile}

@@ -50,6 +50,10 @@ export const ENDPOINTS = {
     POPULAR_TAGS: "/api/v1/home/tags/popular",
     POPULAR_REGIONS: "/api/v1/home/regions/popular",
     HOT_PLACE: "/api/v1/home/regions/hot-place", // 오늘의 핫플레이스 (한국관광공사 데이터)
+    // 공공기관 지역코드 목록. 쿼리 `type` 필수이며 **`HOT-PLACE` 만 동작**한다(실측).
+    // 스웨거 설명은 핫플레이스 전용처럼 적혀 있으나, 여기서 내려오는 areaCd/sigunguCd 가
+    // 회원가입·회원정보수정의 선호 지역 필드에 그대로 들어가는 값이다.
+    REGION_CODES: "/api/v1/home/regions/code",
     MY_SCHEDULES: "/api/v1/home/me/schedules",
   },
 

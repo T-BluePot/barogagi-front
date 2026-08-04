@@ -10,6 +10,18 @@ export type SignupPayloadType = {
   email?: string;
   birth?: string;
   gender?: GenderType;
+  /**
+   * 선호 지역 — 시/도 코드 (예: "11")
+   * `JoinRequestDTO` 기준 optional. 값 출처는 `GET /home/regions/code`.
+   */
+  areaCd?: string;
+  /**
+   * 선호 지역 — 시·군·구 코드 (예: "11110")
+   *
+   * `areaCd` 없이 단독으로 보내지 않는다. 반대로 `areaCd` 만 보내는 것은 허용된다
+   * (사용자가 시/도까지만 고른 정상 상태).
+   */
+  sigunguCd?: string;
   termsDTO: TermsDTOType;
 };
 
@@ -24,7 +36,7 @@ export type RequiredFieldKey = keyof RequiredFields;
 /** 선택 필드 타입 */
 export type OptionalFields = Pick<
   SignupPayloadType,
-  "email" | "birth" | "gender"
+  "email" | "birth" | "gender" | "areaCd" | "sigunguCd"
 >;
 
 export type OptionalFieldKey = keyof OptionalFields;

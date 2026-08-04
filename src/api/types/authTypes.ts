@@ -35,11 +35,18 @@ export type TermsDTOType = {
 /** 회원가입 Request Body */
 export type JoinRequestType = SignupPayloadType;
 
-/** 회원 정보 수정 요청 DTO */
+/**
+ * 회원 정보 수정 요청 DTO
+ * PATCH /api/v1/members — 서버 `MemberRequestDTO` 기준 5개 필드 전부 optional
+ */
 export interface MemberRequestDTO {
   birth?: string;
   gender?: string;
   nickName?: string;
+  /** 선호 지역 — 시/도 코드 (예: "11") */
+  areaCd?: string;
+  /** 선호 지역 — 시·군·구 코드 (예: "11110"). `areaCd` 없이 단독 전송하지 않는다 */
+  sigunguCd?: string;
 }
 
 /** refresh(토큰 재발급/로그아웃/탈퇴) 요청 타입 */

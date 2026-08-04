@@ -14,5 +14,10 @@ export const homeKeys = {
    *    기본값을 돌려주므로, 서로 다른 키가 같은 데이터를 담는 중복 적재가 발생한다.
    */
   hotPlaces: () => [...homeKeys.all, "hotPlaces"] as const,
+  /**
+   * 공공기관 지역코드 목록.
+   * 호출 파라미터가 `type=HOT-PLACE` 한 종류뿐이라 인자를 받지 않는다.
+   */
+  regionCodes: () => [...homeKeys.all, "regionCodes"] as const,
   mySchedules: () => [...homeKeys.all, "mySchedules"] as const,
 } as const;

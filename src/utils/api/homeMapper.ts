@@ -2,8 +2,9 @@
  * 메인 홈 관련 타입 변환 함수 모음
  */
 
-import type { HotPlaceDTO } from "@/api/types";
+import type { HotPlaceDTO, RegionCodeDTO } from "@/api/types";
 import type { HotPlaceData } from "@/types/main/home/hotPlace";
+import type { AreaOption, PreferredRegion } from "@/types/regionCode";
 
 /**
  * `hubRank` 는 string("1"~"10") 이므로 숫자로 변환한 뒤 정렬한다.
@@ -47,6 +48,55 @@ export const formatBaseYm = (baseYm: string): string | undefined => {
   if (month < 1 || month > 12) return undefined;
 
   return `${baseYm.slice(0, 4)}년 ${month}월`;
+};
+
+/**
+ * 지역코드 목록(플랫 252건) → 시/도별로 묶은 선택지
+ *
+ * 서버가 시/도 순 → 시군구 순으로 정렬해 내려주므로 **재정렬하지 않는다**
+ * (가나다순으로 다시 정렬하면 "종로구 → 중구 → 용산구" 같은 행정 관례 순서가 깨진다).
+ * 삽입 순서를 보존하려고 Map 을 쓴다.
+ */
+export const groupRegionCodes = (codes: RegionCodeDTO[]): AreaOption[] => {
+  const grouped = new Map<string, AreaOption>();
+
+  for (const code of codes) {
+    const area = grouped.get(code.areaCd);
+
+    if (area) {
+      area.sigungus.push({
+        sigunguCd: code.sigunguCd,
+        sigunguNm: code.sigunguNm,
+      });
+      continue;
+    }
+
+    grouped.set(code.areaCd, {
+      areaCd: code.areaCd,
+      areaNm: code.areaNm,
+      sigungus: [{ sigunguCd: code.sigunguCd, sigunguNm: code.sigunguNm }],
+    });
+  }
+
+  return [...grouped.values()];
+};
+
+/**
+ * 선호 지역 표시명: "서울특별시" 또는 "서울특별시 종로구"
+ *
+ * 시군구 미선택은 정상 상태라 시/도명만 반환한다.
+ * 미선택(`undefined`)이면 `undefined` 를 그대로 돌려준다 —
+ * `SelectTriggerButton` 이 값 유무로 라벨 위치를 바꾸므로 빈 문자열을 주면 안 된다.
+ *
+ * ⚠️ `formatHotPlaceRegion` 과 달리 시/도명을 축약하지 않는다.
+ *    선택 결과 확인용이라 서버가 준 정식 명칭을 그대로 보여주는 편이 오해가 없다.
+ */
+export const formatPreferredRegion = (
+  region?: PreferredRegion
+): string | undefined => {
+  if (!region) return undefined;
+
+  return [region.areaNm, region.sigunguNm].filter(Boolean).join(" ");
 };
 
 /**

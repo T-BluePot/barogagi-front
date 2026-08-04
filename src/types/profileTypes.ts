@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { GenderType } from "@/constants/userInfo";
+import type { PreferredRegion } from "@/types/regionCode";
 
 /** 성별 선택 모달 타입 */
 export interface SelectGenderProps {
@@ -21,6 +22,19 @@ export interface SelectBirthProps {
     userBirthMonth: string;
     userBirthDay: string;
   }) => void;
+}
+
+/**
+ * 선호 지역 선택 모달 타입
+ *
+ * `region` 이 `undefined` = 미선택, `sigunguCd` 가 `undefined` = 시/도까지만 선택.
+ * 둘 다 정상 상태다(서버 DTO 도 areaCd/sigunguCd 모두 optional).
+ */
+export interface SelectRegionProps {
+  isRegionModalOpen: boolean;
+  handleCloseRegionModal: () => void;
+  region: PreferredRegion | undefined;
+  setRegion: (region: PreferredRegion | undefined) => void;
 }
 
 /** 프로필 설정 스캅 모달 타입 */

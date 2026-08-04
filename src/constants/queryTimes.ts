@@ -18,3 +18,15 @@
  */
 export const HOT_PLACE_STALE_TIME = 24 * 60 * 60_000;
 export const HOT_PLACE_GC_TIME = 24 * 60 * 60_000;
+
+/**
+ * 공공기관 지역코드 목록 — 행정구역 코드라 사실상 정적이다(개편은 수년 단위).
+ *
+ * `HOT_PLACE` 와 같은 24시간을 쓴다. `Infinity` 를 피하는 이유도 동일하다 —
+ * RN WebView 세션이 장수하고 `refetchOnWindowFocus: false` 라 영구히 갱신되지 않는다.
+ *
+ * gcTime 을 staleTime 보다 짧게 두지 않는다. 선호 지역 모달은 열 때만 조회(`enabled`)라
+ * 닫혀 있는 동안 옵저버가 0이 되는데, gcTime 이 짧으면 캐시가 버려져 다시 열 때마다 재요청한다.
+ */
+export const REGION_CODE_STALE_TIME = 24 * 60 * 60_000;
+export const REGION_CODE_GC_TIME = 24 * 60 * 60_000;
