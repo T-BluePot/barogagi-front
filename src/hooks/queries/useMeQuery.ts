@@ -22,7 +22,11 @@ export const useMeQuery = () => {
     queryKey: authKeys.me(),
     queryFn: getMe,
     retry: false,
-    select: (res) => toUserData(res.data),
+    // `data` 가 비어 올 수 있다고 보고 방어한다. 타입상으로는 항상 채워져 있지만
+    // 그 타입은 실측 한 번으로 적은 것이고, 같은 서버가 다른 엔드포인트에서는
+    // 성공 응답에 `data: null` 을 준 전례가 있다(`popular` 의 `M201` — useHotPlacesQuery 참고).
+    // 비면 `undefined` 가 되는데 소비처 다섯 곳 모두 로딩 중 상태로 이미 대비돼 있다.
+    select: (res) => (res?.data ? toUserData(res.data) : undefined),
   });
 
   return {
