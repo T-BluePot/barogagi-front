@@ -18,8 +18,8 @@ export type SignupPayloadType = {
   /**
    * 선호 지역 — 시·군·구 코드 (예: "11110")
    *
-   * `areaCd` 없이 단독으로 보내지 않는다. 반대로 `areaCd` 만 보내는 것은 허용된다
-   * (사용자가 시/도까지만 고른 정상 상태).
+   * ⚠️ `areaCd` 와 **반드시 쌍으로** 보낸다. 서버가 한쪽만 오면 200 을 주면서
+   *    조용히 버린다(실측). 선호 지역을 아예 안 넣는 경우에만 둘 다 생략한다.
    */
   sigunguCd?: string;
   termsDTO: TermsDTOType;
