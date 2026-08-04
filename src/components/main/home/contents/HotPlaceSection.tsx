@@ -30,17 +30,10 @@ const HotPlaceSection: React.FC<Props> = ({ places, isLoading }) => {
   // 목록 지역이 전부 같으면 카드별 표기를 생략하고 캡션에서 한 번만 노출한다
   const isSingleRegion = hasUniformSigngu(sorted);
 
-  // 캡션: 값이 없으면 더미 문자열을 만들지 않고 표기 자체를 생략한다
+  // 헤더 메타: 값이 없으면 더미 문자열을 만들지 않고 표기 자체를 생략한다
   const baseYmLabel = sorted[0] ? formatBaseYm(sorted[0].baseYm) : undefined;
   const regionLabel =
     isSingleRegion && sorted[0] ? formatHotPlaceRegion(sorted[0]) : undefined;
-  const captionParts = [
-    regionLabel,
-    baseYmLabel && `${baseYmLabel} 기준`,
-  ].filter(Boolean);
-  const subtitle = captionParts.length
-    ? captionParts.join(" · ")
-    : undefined;
 
   const renderContent = () => {
     if (isLoading) return <SkeletonHotPlaceCarousel />;
@@ -62,9 +55,27 @@ const HotPlaceSection: React.FC<Props> = ({ places, isLoading }) => {
 
   return (
     <section className="w-full">
-      {/* 데이터 출처(한국관광 데이터랩) 표기 의무는 기획·법무 확인 대기 —
-          확정되면 이 subtitle 자리에 덧붙인다. 지금 임의 문구를 넣지 않는다. */}
-      <SectionHeader title="오늘의 핫플레이스" subtitle={subtitle} />
+      {/* 지역과 기준월을 세로 구분선으로 나눈다.
+          가운뎃점(·)으로 붙이면 둘이 한 덩어리로 읽혀서 기계가 만든 문자열처럼 보인다.
+
+          데이터 출처(한국관광 데이터랩) 표기 의무는 기획·법무 확인 대기 —
+          확정되면 캐러셀 아래에 덧붙인다. 지금 임의 문구를 넣지 않는다. */}
+      <SectionHeader
+        title="오늘의 핫플레이스"
+        subtitle={
+          (regionLabel || baseYmLabel) && (
+            <span className="flex min-w-0 items-center gap-2">
+              {regionLabel && <span className="truncate">{regionLabel}</span>}
+              {regionLabel && baseYmLabel && (
+                <span className="h-2.5 w-px shrink-0 bg-gray-20" />
+              )}
+              {baseYmLabel && (
+                <span className="shrink-0">{baseYmLabel} 기준</span>
+              )}
+            </span>
+          )
+        }
+      />
       {renderContent()}
     </section>
   );
