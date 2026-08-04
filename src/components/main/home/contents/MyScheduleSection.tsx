@@ -10,34 +10,12 @@ import { useScheduleListQuery } from "@/hooks/queries/useScheduleListQuery";
 import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
 import { useStartScheduleCreation } from "@/hooks/useStartScheduleCreation";
 import { getRoutePath } from "@/constants/routes";
-import type { Schedule } from "@/types/scheduleTypes";
 
-/** 오늘로부터 n일 뒤를 "YYYY-MM-DD"로 (mock 날짜가 항상 미래가 되도록) */
-const daysFromNow = (n: number) => {
-  const d = new Date();
-  d.setDate(d.getDate() + n);
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${mm}-${dd}`;
-};
-
-// 서버 일정이 없을 때 노출할 예시 일정 (사용자 요청 임시 mock)
-// TODO: 실제 일정 데이터가 안정적으로 쌓이면 제거
-const MOCK_SCHEDULE: Schedule = {
-  scheduleNum: -1,
-  scheduleNm: "한강 산책 데이트",
-  startDate: daysFromNow(3),
-  endDate: daysFromNow(4),
-  tags: [
-    { tagNum: -1, tagNm: "데이트" },
-    { tagNum: -2, tagNm: "서울" },
-  ],
-};
-
-const ADD_ICON = (
+/** + 아이콘 — 섹션 헤더(22px)와 빈 상태 플레이스홀더(18px)가 같은 모양을 공유한다 */
+const PlusIcon = ({ size }: { size: number }) => (
   <svg
-    width={22}
-    height={22}
+    width={size}
+    height={size}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -47,6 +25,8 @@ const ADD_ICON = (
     <path d="M12 5v14M5 12h14" />
   </svg>
 );
+
+const ADD_ICON = <PlusIcon size={22} />;
 
 /**
  * 홈 "나의 일정" 섹션 (메인 최하단 — 목록이 아래로 늘어나는 영역)
@@ -98,20 +78,23 @@ const MyScheduleSection = () => {
       );
     if (isError) return <EmptyContent message="일정을 불러오지 못했습니다." />;
 
-    // 일정 없음 → 예시 mock 카드 (탭 시 생성 플로우)
-    // 실제 일정과 구분되도록 "예시" 뱃지를 카드 위에 덧씌운다 (ScheduleCard는 미수정)
+    // 일정 없음 → 생성 유도 플레이스홀더.
+    // 점선으로 카드 자리를 유지한다 — 진짜 일정 카드(실선)와 형태로 구분되고,
+    // 영역 전체가 탭 영역이라 헤더의 + 버튼 말고 생성 버튼을 새로 두지 않아도 된다.
     if (upcoming.length === 0) {
       return (
-        <div className="relative">
-          <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-full bg-gray-black/65 px-2 py-0.5 text-[10px] font-medium text-white">
-            예시
+        <button
+          type="button"
+          onClick={startScheduleCreation}
+          className="flex w-full flex-col items-center gap-2 rounded-xl border border-dashed border-gray-30 py-8 transition-colors active:bg-gray-10/60"
+        >
+          {/* 텍스트 "+" 대신 아이콘을 쓴다 —
+              글리프는 폰트마다 세로 위치가 달라 원 안에서 미묘하게 떠 보인다 */}
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-peach-light text-peach-text">
+            <PlusIcon size={18} />
           </span>
-          <ScheduleCard
-            schedule={MOCK_SCHEDULE}
-            onClickCard={startScheduleCreation}
-            isDeleteDisabled
-          />
-        </div>
+          <span className="typo-body text-gray-50">첫 일정을 만들어보세요</span>
+        </button>
       );
     }
 
