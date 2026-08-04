@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { PROFILE_TEXT } from "@/constants/texts/auth/signup/profile";
+import { PREFERRED_REGION_TEXT } from "@/constants/texts/common/preferredRegion";
 import type { SelectRegionProps } from "@/types/profileTypes";
 import type { AreaOption } from "@/types/regionCode";
 
@@ -13,7 +13,7 @@ import { BottomModalListButton } from "@/components/common/modal/bottom-modal/Bo
 
 import { useRegionCodesQuery } from "@/hooks/queries/useRegionCodesQuery";
 
-const { REGION_MODAL } = PROFILE_TEXT;
+const REGION_MODAL = PREFERRED_REGION_TEXT.MODAL;
 
 /**
  * 선호 지역 선택 바텀시트 (시/도 → 시·군·구 2단계)

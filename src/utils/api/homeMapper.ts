@@ -82,6 +82,38 @@ export const groupRegionCodes = (codes: RegionCodeDTO[]): AreaOption[] => {
 };
 
 /**
+ * 저장된 코드(areaCd / sigunguCd) → 표시용 선호 지역
+ *
+ * 서버는 `GET /members` 에서 미설정을 `null` 이 아니라 **빈 문자열**로 준다.
+ * 코드만으로는 이름을 알 수 없어 지역 목록에서 찾아야 하므로,
+ * 목록이 아직 안 왔거나(`areas` 비어 있음) 코드가 목록에 없으면 `undefined` 를 준다
+ * (없는 이름을 지어내지 않는다).
+ */
+export const findPreferredRegion = (
+  areas: AreaOption[],
+  areaCd?: string,
+  sigunguCd?: string
+): PreferredRegion | undefined => {
+  if (!areaCd) return undefined;
+
+  const area = areas.find((a) => a.areaCd === areaCd);
+  if (!area) return undefined;
+
+  const sigungu = sigunguCd
+    ? area.sigungus.find((s) => s.sigunguCd === sigunguCd)
+    : undefined;
+
+  return {
+    areaCd: area.areaCd,
+    areaNm: area.areaNm,
+    ...(sigungu && {
+      sigunguCd: sigungu.sigunguCd,
+      sigunguNm: sigungu.sigunguNm,
+    }),
+  };
+};
+
+/**
  * 선호 지역 표시명: "서울특별시" 또는 "서울특별시 종로구"
  *
  * 시군구 미선택은 정상 상태라 시/도명만 반환한다.

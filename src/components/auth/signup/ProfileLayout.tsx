@@ -1,4 +1,5 @@
 import { PROFILE_TEXT } from "@/constants/texts/auth/signup/profile";
+import { PREFERRED_REGION_TEXT } from "@/constants/texts/common/preferredRegion";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 
 import type {
@@ -89,8 +90,8 @@ const ProfileLayout = ({
 
   const handleOpenRegionHelp = () =>
     openAlertModal({
-      title: PROFILE_TEXT.REGION_HELP.TITLE,
-      content: PROFILE_TEXT.REGION_HELP.CONTENT,
+      title: PREFERRED_REGION_TEXT.HELP.TITLE,
+      content: PREFERRED_REGION_TEXT.HELP.CONTENT,
     });
 
   return (
@@ -129,11 +130,11 @@ const ProfileLayout = ({
             value={birthValue}
           />
           <SelectTriggerButton
-            label={PROFILE_TEXT.SELECT.REGION_LABEL}
+            label={PREFERRED_REGION_TEXT.LABEL}
             onClick={handleOpenRegionModal}
             value={regionValue}
             help={{
-              ariaLabel: PROFILE_TEXT.REGION_HELP.ARIA_LABEL,
+              ariaLabel: PREFERRED_REGION_TEXT.HELP.ARIA_LABEL,
               onClick: handleOpenRegionHelp,
             }}
           />

@@ -18,8 +18,14 @@ import { CommonInput } from "@/components/auth/common/CommonInput";
 import { SelectTriggerButton } from "@/components/auth/common/SelectTriggerButton";
 import { SelectGenderBottomModal } from "@/components/auth/signup/SelectGenderBottomModal";
 import { SelectBirthBottomModal } from "@/components/auth/signup/SelectBirthBottomModal";
+import { SelectRegionBottomModal } from "@/components/auth/signup/SelectRegionBottomModal";
 import Button from "@/components/common/buttons/CommonButton";
 import { useAlertModalStore } from "@/stores/alertModalStore";
+
+import { PREFERRED_REGION_TEXT } from "@/constants/texts/common/preferredRegion";
+import { useRegionCodesQuery } from "@/hooks/queries/useRegionCodesQuery";
+import { findPreferredRegion, formatPreferredRegion } from "@/utils/api/homeMapper";
+import type { PreferredRegion } from "@/types/regionCode";
 
 // TODO: 공통 타입으로 분리 (현재 ProfilePage에서도 사용)
 interface UserDataResponse {
@@ -27,6 +33,10 @@ interface UserDataResponse {
   nickName: string;
   gender?: string;
   birth?: string; // "YYYYMMDD" 형식
+  /** 선호 지역 시/도 코드. ⚠️ 미설정이면 null 이 아니라 빈 문자열로 온다(실측) */
+  areaCd?: string;
+  /** 선호 지역 시·군·구 코드. 위와 동일하게 미설정은 빈 문자열 */
+  sigunguCd?: string;
 }
 
 const ProfileEditPage = () => {
@@ -71,9 +81,18 @@ const ProfileEditPage = () => {
   const [userBirthMonth, setUserBirthMonth] = useState("");
   const [userBirthDay, setUserBirthDay] = useState("");
 
+  const [region, setRegion] = useState<PreferredRegion | undefined>(undefined);
+
   // Modal State
   const [isGenderModalOpen, setGenderModalOpen] = useState(false);
   const [isBirthModalOpen, setBirthModalOpen] = useState(false);
+  const [isRegionModalOpen, setRegionModalOpen] = useState(false);
+
+  // 저장된 값은 코드(areaCd)뿐이라 이름을 붙이려면 지역 목록이 필요하다.
+  // → 이미 지역이 설정된 사용자는 시트를 열기 전에도 조회해야 한다.
+  const { areas } = useRegionCodesQuery(
+    isRegionModalOpen || !!userData?.areaCd
+  );
 
   // 초기 데이터 세팅
   useEffect(() => {
@@ -89,6 +108,25 @@ const ProfileEditPage = () => {
       }
     }
   }, [userData]);
+
+  // 지역 목록이 도착한 뒤에야 코드 → 이름 변환이 가능하다.
+  // 사용자가 이미 다른 지역을 골라둔 상태면 덮어쓰지 않는다.
+  const isRegionTouched = useRef(false);
+  useEffect(() => {
+    if (isRegionTouched.current || areas.length === 0) return;
+
+    const saved = findPreferredRegion(
+      areas,
+      userData?.areaCd,
+      userData?.sigunguCd
+    );
+    if (saved) setRegion(saved);
+  }, [areas, userData?.areaCd, userData?.sigunguCd]);
+
+  const handleChangeRegion = (next: PreferredRegion | undefined) => {
+    isRegionTouched.current = true;
+    setRegion(next);
+  };
 
   // 성별 모달 핸들러
   const handleOpenGenderModal = () => setGenderModalOpen(true);
@@ -230,6 +268,19 @@ const ProfileEditPage = () => {
       payload.birth = birth;
     }
 
+    // ⚠️ 서버는 areaCd·sigunguCd 를 **쌍으로 받아야만** 저장한다.
+    //    한쪽만 보내면 200 을 주면서 조용히 무시한다(test 서버 실측).
+    //    → 시/도만 고른 상태는 지금 저장할 수 없으므로 전송 자체를 하지 않는다.
+    //      (더미 sigunguCd 를 만들어 채우지 않는다 — 없는 지역을 등록하게 된다)
+    const isRegionChanged =
+      (region?.areaCd ?? "") !== (userData?.areaCd ?? "") ||
+      (region?.sigunguCd ?? "") !== (userData?.sigunguCd ?? "");
+
+    if (isRegionChanged && region?.areaCd && region.sigunguCd) {
+      payload.areaCd = region.areaCd;
+      payload.sigunguCd = region.sigunguCd;
+    }
+
     // 바뀐 게 없으면 요청 없이 프로필로 돌아간다
     if (Object.keys(payload).length === 0) {
       navigate(ROUTES.MAIN.PROFILE, { replace: true });
@@ -269,6 +320,14 @@ const ProfileEditPage = () => {
         handleChangeBirth={handleChangeBirth}
       />
 
+      {/* 선호 지역 선택 모달 (시/도 → 세부 지역 2단계) */}
+      <SelectRegionBottomModal
+        isRegionModalOpen={isRegionModalOpen}
+        handleCloseRegionModal={() => setRegionModalOpen(false)}
+        region={region}
+        setRegion={handleChangeRegion}
+      />
+
       {/* 화면 레이아웃 */}
       <div className="flex flex-col w-full px-6 flex-1">
         <PageTitle type="auth" title={PROFILE_EDIT_TEXT.TITLE} />
@@ -298,6 +357,19 @@ const ProfileEditPage = () => {
             label={PROFILE_EDIT_TEXT.SELECT.BIRTH_LABEL}
             onClick={handleOpenBirthModal}
             value={birthDisplayValue}
+          />
+          <SelectTriggerButton
+            label={PREFERRED_REGION_TEXT.LABEL}
+            onClick={() => setRegionModalOpen(true)}
+            value={formatPreferredRegion(region)}
+            help={{
+              ariaLabel: PREFERRED_REGION_TEXT.HELP.ARIA_LABEL,
+              onClick: () =>
+                openAlertModal({
+                  title: PREFERRED_REGION_TEXT.HELP.TITLE,
+                  content: PREFERRED_REGION_TEXT.HELP.CONTENT,
+                }),
+            }}
           />
         </div>
       </div>
