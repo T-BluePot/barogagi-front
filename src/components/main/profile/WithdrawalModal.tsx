@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CommonConfirmModalLayout from "@/components/common/modal/common-modal/CommonConfirmModalLayout";
+import CommonModalContent from "@/components/common/modal/common-modal/CommonModalContent";
 import CommonSelectBox from "@/components/common/inputs/CommonSelectBox";
 import CommonTextarea from "@/components/common/inputs/CommonTextarea";
 import { WITHDRAWAL_MODAL_TEXT } from "@/constants/texts/main/profile/withdrawal";
@@ -81,15 +82,14 @@ const WithdrawalModal = ({
         resetState();
       }}
     >
-      {/* 제목 */}
-      <h2 className="typo-title text-gray-black mb-2">
-        {WITHDRAWAL_MODAL_TEXT.TITLE}
-      </h2>
-
-      {/* 안내 문구 */}
-      <p className="typo-caption text-gray-50 whitespace-pre-line mb-4">
-        {WITHDRAWAL_MODAL_TEXT.CONTENT}
-      </p>
+      {/* 제목·본문은 다른 모달과 같은 규격을 쓰도록 공용 컴포넌트에 맡긴다.
+          직접 마크업하던 시절 `typo-title` 을 썼는데 그런 클래스가 없어서
+          (`typo-title-01` / `typo-title-02` 만 존재) 제목 굵기가 600 이 아니라
+          400 으로 떨어져 있었다. */}
+      <CommonModalContent
+        title={WITHDRAWAL_MODAL_TEXT.TITLE}
+        content={WITHDRAWAL_MODAL_TEXT.CONTENT}
+      />
 
       {/* 탈퇴 사유 선택 */}
       <CommonSelectBox
