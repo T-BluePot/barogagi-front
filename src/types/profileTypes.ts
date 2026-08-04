@@ -55,6 +55,13 @@ export interface ProfilePageTitleProps {
 export interface UserData {
   userId: string;
   nickName: string;
+  /**
+   * 선호 지역 시/도 코드.
+   * ⚠️ 미설정이면 `null` 이 아니라 **빈 문자열**로 온다(`GET /members` 실측).
+   */
+  areaCd?: string;
+  /** 선호 지역 시·군·구 코드. 위와 동일하게 미설정은 빈 문자열 */
+  sigunguCd?: string;
   // 필요한 필드 추가
 }
 

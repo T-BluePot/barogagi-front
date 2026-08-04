@@ -33,13 +33,20 @@ export const getPopularRegions = async () => {
  *
  * ⚠️ 반드시 `apiKeyHttp` 를 쓴다 — `http` 로는 API-KEY 가 빠져 실패한다.
  *
- * 현재는 `params` 를 보내지 않아 서버 기본값(서울 종로구)이 온다.
- * 지역 필터로 확장할 때는 `areaCd`/`sigunguCd` 를 **반드시 쌍으로** 넘긴다
- * (단독 전송은 조용히 무시되고, 접두 불일치는 HTTP 404 + `P400` 이다).
+ * 지역은 **쌍으로만** 보낸다. 실측 결과:
+ * - `areaCd`+`sigunguCd` → 해당 시군구 인기 장소 10건
+ * - 한쪽만            → 조용히 무시하고 기본값(서울 종로구)
+ * - 접두 불일치       → HTTP 404 + `P400`
+ *
+ * 쌍이 아니면 파라미터를 아예 붙이지 않는다 — 어차피 무시되는 쿼리스트링을 실어 보내면
+ * 네트워크 탭에서 "지역을 보냈는데 왜 종로가 오지?" 로 헷갈린다.
  */
-export const getHotPlaces = async () => {
+export const getHotPlaces = async (areaCd?: string, sigunguCd?: string) => {
+  const hasRegionPair = Boolean(areaCd && sigunguCd);
+
   const response = await apiKeyHttp.get<BaseResponse<HotPlaceDTO[] | null>>(
-    ENDPOINTS.HOME.HOT_PLACE
+    ENDPOINTS.HOME.HOT_PLACE,
+    hasRegionPair ? { params: { areaCd, sigunguCd } } : undefined
   );
   return response.data;
 };
