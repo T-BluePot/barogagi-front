@@ -37,7 +37,7 @@ const ADD_ICON = <PlusIcon size={22} />;
  */
 const MyScheduleSection = () => {
   const navigate = useNavigate();
-  const { current, isLoading, isError } = useScheduleListQuery();
+  const { current, past, isLoading, isError } = useScheduleListQuery();
   const { startScheduleCreation } = useStartScheduleCreation();
   const deleteMutation = useDeleteScheduleMutation();
 
@@ -67,6 +67,9 @@ const MyScheduleSection = () => {
     [current]
   );
 
+  // 다가오는 일정은 없지만 지난 일정은 있는 상태 = 신규 사용자가 아니다
+  const hasPastOnly = upcoming.length === 0 && past.length > 0;
+
   const renderContent = () => {
     // 로딩 스켈레톤도 목록 레이아웃(세로 스택)으로 노출해 실데이터 전환 시 점프 완화
     if (isLoading)
@@ -93,7 +96,11 @@ const MyScheduleSection = () => {
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-peach-light text-peach-text">
             <PlusIcon size={18} />
           </span>
-          <span className="typo-body text-gray-50">첫 일정을 만들어보세요</span>
+          {/* 지난 일정이 있으면 "첫 일정"이 아니다 — 이미 만들어본 사람에게 틀린 말이 된다.
+              "일정이 없어요" 같은 부재 안내 대신 다음 행동을 권하는 쪽으로 통일한다. */}
+          <span className="typo-body text-gray-50">
+            {hasPastOnly ? "다음 일정을 만들어보세요" : "첫 일정을 만들어보세요"}
+          </span>
         </button>
       );
     }
