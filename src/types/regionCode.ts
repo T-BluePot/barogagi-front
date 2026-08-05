@@ -30,7 +30,7 @@ export interface AreaOption {
  * 선호 지역을 **아예 안 고른** 상태는 이 객체가 `undefined` 인 것으로 표현한다
  * (빈 문자열 같은 더미값으로 채우지 않는다).
  *
- * 서버가 areaCd 단독 저장을 지원하게 되면 그때 시군구를 optional 로 되돌린다.
+ * 시·도 단독은 저장도 조회도 지원 예정이 없다(백엔드 확인). optional 로 되돌리지 말 것.
  */
 export interface PreferredRegion {
   areaCd: string;

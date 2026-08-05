@@ -253,9 +253,9 @@ const ProfileEditPage = () => {
     // 지역은 쌍으로만 보낸다 — 한쪽만 보내면 서버가 200 을 주면서 조용히 버린다.
     // `PreferredRegion` 이 둘 다 필수라 region 이 있으면 쌍이 보장된다.
     //
-    // ⚠️ "해제"는 여기서 처리하지 않는다. 서버에 지우는 방법이 없어서
-    //    (빈 문자열·null 모두 200 을 주면서 기존 값 유지, 실측) 시트에서 아예 막아뒀다
-    //    (`canClear={false}`). 그래서 region 은 "그대로" 아니면 "다른 지역"만 가능하다.
+    // ⚠️ "해제"는 여기서 처리하지 않는다. 저장된 선호 지역은 유지되는 것이 서버 설계라
+    //    해제 수단이 없고(백엔드 확인), 시트에서도 막아뒀다(`canClear={false}`).
+    //    그래서 region 은 "그대로" 아니면 "다른 지역"만 가능하다.
     const isRegionChanged =
       region !== undefined &&
       (region.areaCd !== userData?.areaCd ||
@@ -311,8 +311,8 @@ const ProfileEditPage = () => {
         handleCloseRegionModal={() => setRegionModalOpen(false)}
         region={region}
         setRegion={handleChangeRegion}
-        // 서버에 선호 지역을 지우는 방법이 없다 — 해제해도 저장되지 않으므로 아예 막는다.
-        // 백엔드가 해제를 지원하면 이 prop 을 빼면 된다.
+        // 저장된 선호 지역은 유지되는 것이 서버 설계다(백엔드 확인) — 해제 수단이 없다.
+        // 해제 항목을 노출하면 지워진 것처럼 보이고 실제로는 남으므로 아예 막는다.
         canClear={false}
       />
 
