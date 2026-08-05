@@ -30,42 +30,59 @@ const resolveStorage = async (): Promise<StateStorage> => {
 };
 
 /**
- * 예전에 브라우저 저장소로 새어나간 메모를 **꺼내면서 지운다**.
+ * 예전에 브라우저 저장소로 새어나간 메모를 읽는다 — **지우지는 않는다.**
  *
  * 저장소를 모듈 로드 시점에 잡던 시절, 앱에서도 메모가 localStorage 에 저장된 적이 있다.
  * 그대로 두면 이번 수정 이후 그 메모들이 안 보이게 되므로 읽을 때 옮겨온다.
  * 브라우저에서는 어차피 같은 저장소를 쓰므로 하지 않는다.
- *
- * ⚠️ **네이티브에 값이 있어도 반드시 호출해 잔재를 치워야 한다.**
- *    "네이티브가 비었을 때만" 뒤지게 두면, 나중에 사용자가 메모를 지워 네이티브가
- *    비는 순간 남아 있던 잔재가 다시 딸려 올라온다(= 지운 메모가 부활).
  */
-const takeLegacyMemo = (key: string): string | null => {
+const readLegacyMemo = (key: string): string | null => {
   if (!isBridgeAvailable()) return null;
 
   try {
-    const legacy = localStorage.getItem(key);
-    if (!legacy) return null;
-    localStorage.removeItem(key);
-    return legacy;
+    return localStorage.getItem(key) || null;
   } catch {
     return null; // WebView 가 localStorage 를 막아둔 경우
   }
 };
 
+/** 잔재 제거. 실패해도 무시한다 — 다음 읽기에서 다시 시도된다 */
+const dropLegacyMemo = (key: string): void => {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* WebView 가 localStorage 를 막아둔 경우 */
+  }
+};
+
+/**
+ * 메모 읽기.
+ *
+ * 잔재 처리 순서에 두 가지 요구가 동시에 걸린다.
+ * - 잔재를 **반드시 치워야 한다**: 남겨두면 나중에 사용자가 메모를 지워 네이티브가
+ *   비는 순간 잔재가 다시 딸려 올라온다(= 지운 메모 부활).
+ * - 치우기 **전에 안전하게 옮겨야 한다**: 먼저 지우면 옮기다 실패했을 때 메모가 영구 소실된다.
+ *   브릿지 저장은 실패해도 예외를 안 던지고 조용히 삼키므로(`bridgeStorage.createBridgeStorage`)
+ *   try/catch 로는 못 잡는다. → 옮겨 적은 뒤 **실제로 들어갔는지 확인하고** 지운다.
+ */
 export const getScheduleMemo = async (scheduleNum: number): Promise<string> => {
   const key = memoKey(scheduleNum);
   try {
     const storage = await resolveStorage();
-    // 네이티브 값보다 먼저 잔재를 걷어낸다 — 남겨두면 나중에 되살아난다
-    const legacy = takeLegacyMemo(key);
+    const legacy = readLegacyMemo(key);
     const saved = await storage.getItem(key);
 
     // 빈 문자열도 "저장된 값"이다. 없을 때만 null 이 온다
-    if (saved !== null) return saved;
+    if (saved !== null) {
+      // 네이티브 값이 최신이므로 잔재는 낡은 것 — 지워도 잃는 게 없다
+      if (legacy !== null) dropLegacyMemo(key);
+      return saved;
+    }
     if (legacy === null) return "";
 
     await storage.setItem(key, legacy);
+    // 들어간 걸 확인한 뒤에만 원본을 버린다. 실패했으면 잔재를 남겨 다음 기회를 노린다
+    if ((await storage.getItem(key)) === legacy) dropLegacyMemo(key);
     return legacy;
   } catch (err) {
     // 메모는 임시 로컬 저장이라 실패해도 화면은 계속 떠야 한다

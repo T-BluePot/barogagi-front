@@ -21,7 +21,11 @@ export const useBoardDetailQuery = (boardNum?: number, enabled = true) => {
     queryKey: boardKeys.detail(boardNum ?? -1),
     // 목록과 마찬가지로 실패도 HTTP 200 으로 온다 → 코드를 보고 직접 throw 한다
     queryFn: async () => {
-      const res = await getBoardDetail(boardNum!);
+      // `enabled` 가 막아주지만, 단언(`boardNum!`)으로 타입을 속이지 않도록 직접 확인한다
+      if (boardNum === undefined) {
+        throw new Error("공지 번호가 없습니다.");
+      }
+      const res = await getBoardDetail(boardNum);
       if (res.code !== BOARD_SUCCESS_CODE) {
         throw new Error(res.message ?? "공지 내용을 불러오지 못했습니다.");
       }
