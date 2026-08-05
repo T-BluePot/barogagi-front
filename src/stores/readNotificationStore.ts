@@ -18,12 +18,11 @@ interface ReadNotificationState {
   /** 읽은 공지의 boardNum 목록 */
   readIds: number[];
   markAsRead: (boardNum: number) => void;
-  isRead: (boardNum: number) => boolean;
 }
 
 export const useReadNotificationStore = create<ReadNotificationState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       readIds: [],
       markAsRead: (boardNum) =>
         set((state) =>
@@ -32,11 +31,28 @@ export const useReadNotificationStore = create<ReadNotificationState>()(
             ? state
             : { readIds: [...state.readIds, boardNum] }
         ),
-      isRead: (boardNum) => get().readIds.includes(boardNum),
     }),
     {
       name: "read-notifications",
       storage: createJSONStorage(() => getPersistStorage("persistent")),
+      /**
+       * 저장소에서 되살릴 때 `readIds` 를 반드시 number[] 로 맞춘다.
+       *
+       * 기본 동작은 저장된 값을 그대로 덮어쓰기 때문에, 저장소가 손상돼
+       * `readIds` 가 null 이거나 배열이 아닌 값이면 읽는 쪽에서 `.includes` 를
+       * 부르다 렌더가 통째로 죽는다(앱 전체가 오류 화면으로 넘어감).
+       * 읽는 곳마다 방어 코드를 흩뿌리는 대신 되살리는 입구 한 곳에서 막는다.
+       */
+      merge: (persisted, current) => {
+        const saved = (persisted as Partial<ReadNotificationState> | null)
+          ?.readIds;
+        return {
+          ...current,
+          readIds: Array.isArray(saved)
+            ? saved.filter((id): id is number => typeof id === "number")
+            : [],
+        };
+      },
     }
   )
 );
