@@ -6,13 +6,20 @@ export const homeKeys = {
   popularTags: () => [...homeKeys.all, "popularTags"] as const,
   popularRegions: () => [...homeKeys.all, "popularRegions"] as const,
   /**
-   * 오늘의 핫플레이스.
-   * 지역 선택 UI 가 없어 호출이 항상 기본값(종로구) 1종이므로 파라미터를 받지 않는다.
+   * 오늘의 핫플레이스 (선호 지역 기준).
    *
-   * 지역 선택 착수 시 `hotPlaces: (areaCd: string, sigunguCd: string)` 로 확장한다.
-   * ⚠️ 확장할 때 **둘 중 하나만 키에 넣지 마라.** 서버가 단독 파라미터를 무시하고
-   *    기본값을 돌려주므로, 서로 다른 키가 같은 데이터를 담는 중복 적재가 발생한다.
+   * ⚠️ 지역은 **쌍일 때만** 키에 넣는다. 서버가 단독 파라미터를 무시하고 기본값(종로구)을
+   *    돌려주므로, `areaCd` 만 키에 넣으면 서로 다른 키가 같은 데이터를 담는 중복 적재가 된다.
+   *    → 쌍이 아니면 파라미터 없는 호출과 같은 키(`[...all, "hotPlaces"]`)를 쓴다.
    */
-  hotPlaces: () => [...homeKeys.all, "hotPlaces"] as const,
+  hotPlaces: (areaCd?: string, sigunguCd?: string) =>
+    areaCd && sigunguCd
+      ? ([...homeKeys.all, "hotPlaces", areaCd, sigunguCd] as const)
+      : ([...homeKeys.all, "hotPlaces"] as const),
+  /**
+   * 공공기관 지역코드 목록.
+   * 호출 파라미터가 `type=HOT-PLACE` 한 종류뿐이라 인자를 받지 않는다.
+   */
+  regionCodes: () => [...homeKeys.all, "regionCodes"] as const,
   mySchedules: () => [...homeKeys.all, "mySchedules"] as const,
 } as const;

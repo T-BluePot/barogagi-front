@@ -13,6 +13,7 @@ import type {
   LoginResponseDataType,
   JoinRequestType,
   MemberRequestDTO,
+  MemberResponseDTO,
   RefreshTokenRequestType,
   RefreshResponseDataType,
   ApprovalSendRequestType,
@@ -80,38 +81,64 @@ export const refresh = async (data: RefreshTokenRequestType) => {
   return response.data;
 };
 
-/** 회원가입 */
+/**
+ * 회원가입
+ *
+ * 실패는 `handleSignupError` 가 `ErrorModal` 로 인라인 처리한다(ProfilePage).
+ * 전역 승격되면 인라인 모달과 전체화면이 이중 노출되고, 오류 화면은 래치라
+ * 앱 재실행 전까지 가입 플로우로 못 돌아온다. → 승격에서 제외한다.
+ */
 export const signup = async (payload: JoinRequestType) => {
   const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.USERS.SIGNUP,
-    payload
+    payload,
+    { _skipGlobalError: true }
   );
   return response.data;
 };
 
-/** 아이디 중복 체크 */
+/**
+ * 아이디 중복 체크
+ *
+ * 결과(중복/실패)를 `CheckResultModal` 로 인라인 안내한다(CredentialsPage).
+ * → 전역 오류 화면 승격에서 제외한다.
+ */
 export const checkId = async (userId: string) => {
   const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.USERS.CHECK_ID,
     {
       params: { userId },
+      _skipGlobalError: true,
     }
   );
   return response.data;
 };
 
-/** 닉네임 중복 체크 */
+/**
+ * 닉네임 중복 체크
+ *
+ * 결과(중복/실패)를 `CheckResultModal` 로 인라인 안내한다
+ * (ProfilePage / OAuthProfilePage / ProfileEditPage 세 곳 모두 동일).
+ * → 전역 오류 화면 승격에서 제외한다.
+ */
 export const checkNickname = async (nickname: string) => {
   const response = await apiKeyHttp.get<BaseResponse<unknown>>(
     ENDPOINTS.USERS.CHECK_NICKNAME,
     {
       params: { nickname },
+      _skipGlobalError: true,
     }
   );
   return response.data;
 };
 
-/** 인증번호 발송 */
+/**
+ * 인증번호 발송
+ *
+ * 실패를 호출 화면이 모달로 인라인 처리한다
+ * (VerifyPage / IdFindContent / PwFindContent 세 곳 모두 동일).
+ * → 전역 오류 화면 승격에서 제외한다.
+ */
 export const sendVerification = async (
   tel: string,
   type?: VerificationType
@@ -122,13 +149,19 @@ export const sendVerification = async (
   };
   const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.SEND,
-    payload
+    payload,
+    { _skipGlobalError: true }
   );
 
   return response.data;
 };
 
-/** 인증번호 확인 */
+/**
+ * 인증번호 확인
+ *
+ * 실패(코드 불일치·만료)를 `VerifyCodePage` 가 인라인 문구로 처리한다.
+ * → 전역 오류 화면 승격에서 제외한다.
+ */
 export const verifyVerification = async (
   input: VerifyCodeType,
   type?: VerificationType
@@ -141,7 +174,8 @@ export const verifyVerification = async (
 
   const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.VERIFICATION.VERIFY,
-    payload
+    payload,
+    { _skipGlobalError: true }
   );
 
   return response.data;
@@ -166,7 +200,7 @@ export const findUser = async (tel: string) => {
  * 부가 정보 조회 실패가 홈 전체를 덮으면 안 되므로 전역 오류 화면 승격에서 제외한다.
  */
 export const getMe = async () => {
-  const response = await http.get<BaseResponse<unknown>>(
+  const response = await http.get<BaseResponse<MemberResponseDTO>>(
     ENDPOINTS.MEMBERS.GET_ME,
     { _skipGlobalError: true }
   );

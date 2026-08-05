@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { AxiosError } from "axios";
 import { ValidationError } from "yup";
-import { getMe, updateMe, checkNickname } from "@/api/queries/authQueries";
+import { updateMe, checkNickname } from "@/api/queries/authQueries";
 import { authKeys } from "@/api/keyFactories";
+import { useMeQuery } from "@/hooks/queries/useMeQuery";
 import { ROUTES } from "@/constants/routes";
 import { PROFILE_EDIT_TEXT } from "@/constants/texts/main/profile";
 import type { BaseResponse, MemberRequestDTO } from "@/api/types";
@@ -18,16 +19,14 @@ import { CommonInput } from "@/components/auth/common/CommonInput";
 import { SelectTriggerButton } from "@/components/auth/common/SelectTriggerButton";
 import { SelectGenderBottomModal } from "@/components/auth/signup/SelectGenderBottomModal";
 import { SelectBirthBottomModal } from "@/components/auth/signup/SelectBirthBottomModal";
+import { SelectRegionBottomModal } from "@/components/auth/signup/SelectRegionBottomModal";
 import Button from "@/components/common/buttons/CommonButton";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 
-// TODO: 공통 타입으로 분리 (현재 ProfilePage에서도 사용)
-interface UserDataResponse {
-  userId: string;
-  nickName: string;
-  gender?: string;
-  birth?: string; // "YYYYMMDD" 형식
-}
+import { PREFERRED_REGION_TEXT } from "@/constants/texts/common/preferredRegion";
+import { useRegionCodesQuery } from "@/hooks/queries/useRegionCodesQuery";
+import { findPreferredRegion, formatPreferredRegion } from "@/utils/api/homeMapper";
+import type { PreferredRegion } from "@/types/regionCode";
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
@@ -35,14 +34,7 @@ const ProfileEditPage = () => {
   const { openAlertModal } = useAlertModalStore();
 
   // 사용자 정보 조회
-  const { data: userResponse, isLoading } = useQuery({
-    queryKey: authKeys.me(),
-    queryFn: getMe,
-    retry: false,
-  });
-
-  const userData = (userResponse as unknown as BaseResponse<UserDataResponse>)
-    ?.data;
+  const { user: userData, isLoading } = useMeQuery();
 
   // 프로필 수정 mutation
   const updateMutation = useMutation({
@@ -71,9 +63,18 @@ const ProfileEditPage = () => {
   const [userBirthMonth, setUserBirthMonth] = useState("");
   const [userBirthDay, setUserBirthDay] = useState("");
 
+  const [region, setRegion] = useState<PreferredRegion | undefined>(undefined);
+
   // Modal State
   const [isGenderModalOpen, setGenderModalOpen] = useState(false);
   const [isBirthModalOpen, setBirthModalOpen] = useState(false);
+  const [isRegionModalOpen, setRegionModalOpen] = useState(false);
+
+  // 저장된 값은 코드(areaCd)뿐이라 이름을 붙이려면 지역 목록이 필요하다.
+  // → 이미 지역이 설정된 사용자는 시트를 열기 전에도 조회해야 한다.
+  const { areas } = useRegionCodesQuery(
+    isRegionModalOpen || !!userData?.areaCd
+  );
 
   // 초기 데이터 세팅
   useEffect(() => {
@@ -89,6 +90,25 @@ const ProfileEditPage = () => {
       }
     }
   }, [userData]);
+
+  // 지역 목록이 도착한 뒤에야 코드 → 이름 변환이 가능하다.
+  // 사용자가 이미 다른 지역을 골라둔 상태면 덮어쓰지 않는다.
+  const isRegionTouched = useRef(false);
+  useEffect(() => {
+    if (isRegionTouched.current || areas.length === 0) return;
+
+    const saved = findPreferredRegion(
+      areas,
+      userData?.areaCd,
+      userData?.sigunguCd
+    );
+    if (saved) setRegion(saved);
+  }, [areas, userData?.areaCd, userData?.sigunguCd]);
+
+  const handleChangeRegion = (next: PreferredRegion | undefined) => {
+    isRegionTouched.current = true;
+    setRegion(next);
+  };
 
   // 성별 모달 핸들러
   const handleOpenGenderModal = () => setGenderModalOpen(true);
@@ -230,6 +250,22 @@ const ProfileEditPage = () => {
       payload.birth = birth;
     }
 
+    // 지역은 쌍으로만 보낸다 — 한쪽만 보내면 서버가 200 을 주면서 조용히 버린다.
+    // `PreferredRegion` 이 둘 다 필수라 region 이 있으면 쌍이 보장된다.
+    //
+    // ⚠️ "해제"는 여기서 처리하지 않는다. 저장된 선호 지역은 유지되는 것이 서버 설계라
+    //    해제 수단이 없고(백엔드 확인), 시트에서도 막아뒀다(`canClear={false}`).
+    //    그래서 region 은 "그대로" 아니면 "다른 지역"만 가능하다.
+    const isRegionChanged =
+      region !== undefined &&
+      (region.areaCd !== userData?.areaCd ||
+        region.sigunguCd !== userData?.sigunguCd);
+
+    if (isRegionChanged) {
+      payload.areaCd = region.areaCd;
+      payload.sigunguCd = region.sigunguCd;
+    }
+
     // 바뀐 게 없으면 요청 없이 프로필로 돌아간다
     if (Object.keys(payload).length === 0) {
       navigate(ROUTES.MAIN.PROFILE, { replace: true });
@@ -269,6 +305,17 @@ const ProfileEditPage = () => {
         handleChangeBirth={handleChangeBirth}
       />
 
+      {/* 선호 지역 선택 모달 (시/도 → 세부 지역 2단계) */}
+      <SelectRegionBottomModal
+        isRegionModalOpen={isRegionModalOpen}
+        handleCloseRegionModal={() => setRegionModalOpen(false)}
+        region={region}
+        setRegion={handleChangeRegion}
+        // 저장된 선호 지역은 유지되는 것이 서버 설계다(백엔드 확인) — 해제 수단이 없다.
+        // 해제 항목을 노출하면 지워진 것처럼 보이고 실제로는 남으므로 아예 막는다.
+        canClear={false}
+      />
+
       {/* 화면 레이아웃 */}
       <div className="flex flex-col w-full px-6 flex-1">
         <PageTitle type="auth" title={PROFILE_EDIT_TEXT.TITLE} />
@@ -298,6 +345,19 @@ const ProfileEditPage = () => {
             label={PROFILE_EDIT_TEXT.SELECT.BIRTH_LABEL}
             onClick={handleOpenBirthModal}
             value={birthDisplayValue}
+          />
+          <SelectTriggerButton
+            label={PREFERRED_REGION_TEXT.LABEL}
+            onClick={() => setRegionModalOpen(true)}
+            value={formatPreferredRegion(region)}
+            help={{
+              ariaLabel: PREFERRED_REGION_TEXT.HELP.ARIA_LABEL,
+              onClick: () =>
+                openAlertModal({
+                  title: PREFERRED_REGION_TEXT.HELP.TITLE,
+                  content: PREFERRED_REGION_TEXT.HELP.CONTENT,
+                }),
+            }}
           />
         </div>
       </div>

@@ -26,8 +26,7 @@ export const ERROR_SCREEN_TEXT = {
   /** 응답 자체가 없음 (timeout / 연결 실패) */
   network: {
     TITLE: "연결이 불안정해요",
-    DESCRIPTION:
-      "네트워크 상태를 확인한 뒤\n다시 시도해주세요.",
+    DESCRIPTION: "네트워크 상태를 확인한 뒤\n다시 시도해주세요.",
     ACTION_LABEL: "다시 시도",
   },
   /** API-KEY 등 클라이언트 설정 오류 — 사용자가 고칠 수 없다 */
@@ -52,14 +51,10 @@ export const ERROR_SCREEN_TEXT = {
   /** 렌더 예외 (ErrorBoundary 폴백) */
   render: {
     TITLE: "화면을 표시할 수 없어요",
-    DESCRIPTION:
-      "예상치 못한 오류가 발생했어요.\n앱을 다시 실행하면 대부분 해결돼요.",
+    DESCRIPTION: "예상치 못한 오류가 발생했어요.\n앱을 다시 실행해주세요.",
     ACTION_LABEL: "다시 시도",
   },
-} as const satisfies Record<
-  Exclude<CriticalErrorKind, null>,
-  ErrorScreenText
->;
+} as const satisfies Record<Exclude<CriticalErrorKind, null>, ErrorScreenText>;
 
 /**
  * 앱(WebView)에서만 덧붙이는 안내.

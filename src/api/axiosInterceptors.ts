@@ -41,6 +41,12 @@ const AUTH_ENDPOINTS: readonly string[] = Object.values(ENDPOINTS.AUTH);
 /**
  * url 이 인증 엔드포인트인지 판정한다.
  * 주의: originalRequest.url 이 baseURL 제외한 path 일 수도, 전체 URL 일 수도 있어 부분 일치로 본다.
+ *
+ * ⚠️ 이 목록은 `ENDPOINTS.AUTH`(= `/api/v1/auth/*` + `oauth-link`) 뿐이다.
+ *    회원가입 플로우(`USERS` / `VERIFICATION` / `TERMS`)는 **여기 안 들어온다** —
+ *    그쪽 제외는 호출부의 `_skipGlobalError` 로 한다(`isExcludedFromGlobalError` 주석 참고).
+ *    URL 그룹은 코드 정리용 분류지 오류 정책 분류가 아니라서, 여기에 그룹을 더 얹으면
+ *    `USERS.ME`(회원 탈퇴)처럼 의도치 않은 엔드포인트가 조용히 딸려 들어간다.
  */
 const isAuthEndpoint = (url: string): boolean =>
   AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
@@ -51,7 +57,15 @@ const isAuthEndpoint = (url: string): boolean =>
  * 기준은 `_skipGlobalError` **하나뿐**이다 — 제외 사유가 호출부에 붙어 있어야
  * "왜 제외인지"를 그 함수 주석과 함께 읽을 수 있고, 여기에 엔드포인트 목록을 따로 두면
  * 제외 대상을 추가할 때 봐야 할 곳이 두 군데가 된다.
- * 현재 적용 대상: `push/token`(fire-and-forget), `getMe`(홈 부가 정보).
+ *
+ * 현재 적용 대상:
+ * - `push/token`(fire-and-forget), `getMe`(홈 부가 정보)
+ * - 회원가입 플로우 전체 — `signup` / `checkId` / `checkNickname` / `checkTel` /
+ *   `sendVerification` / `verifyVerification` / `getTermsList`.
+ *   전부 화면이 모달·toast 로 인라인 처리하므로 승격하면 이중 노출된다.
+ *
+ * ⚠️ 여기(엔드포인트 URL)로 제외 대상을 옮기지 마라. `MEMBERS.GET_ME` 와 `MEMBERS.UPDATE_ME`
+ *    가 같은 `/api/v1/members` 라서 URL 로는 애초에 구분이 안 된다(전자만 제외 대상).
  */
 const isExcludedFromGlobalError = (
   config: AxiosRequestConfig | undefined

@@ -55,6 +55,9 @@ export const ScheduleCard = ({
             {!isDeleteDisabled && (
               <button
                 type="button"
+                // 아이콘만 있는 버튼이라 aria-label 필수. 일정명을 넣어
+                // 목록에서 어느 일정을 지우는지 구분되게 한다
+                aria-label={`${schedule.scheduleNm} 일정 삭제`}
                 className="cursor-pointer w-6 h-6 rounded-full hover:bg-gray-10 active:bg-gray-10"
                 onClick={(e) => {
                   e.stopPropagation();

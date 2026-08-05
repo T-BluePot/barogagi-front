@@ -19,6 +19,9 @@ import { getGenderLabel, type GenderType } from "@/constants/userInfo";
 import CheckResultModal from "@/components/auth/signup/CheckResultModal";
 import ErrorModal from "@/components/auth/signup/ErrorModal";
 
+import type { PreferredRegion } from "@/types/regionCode";
+import { formatPreferredRegion } from "@/utils/api/homeMapper";
+
 // === server ===
 import { useMutation } from "@tanstack/react-query";
 // 1. 닉네임
@@ -212,6 +215,14 @@ const ProfilePage = () => {
       ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
       : undefined;
 
+  // === 선호 지역 선택 모달 ===
+  // 미선택(undefined)은 정상 상태다 — 선호 지역은 선택 항목이라 안 고르고 넘어가도 된다.
+  // 고른 경우에는 시/도·시·군·구가 항상 함께 채워진다(`PreferredRegion`).
+  const [region, setRegion] = useState<PreferredRegion | undefined>(undefined);
+  const [isRegionModalOpen, setIsRegionModalOpen] = useState<boolean>(false);
+  const handleOpenRegionModal = () => setIsRegionModalOpen(true);
+  const handleCloseRegionModal = () => setIsRegionModalOpen(false);
+
   // === 회원 가입 로직 ===
 
   const draft = useSignupStore((s) => s.draft); // store 값 꺼내오기
@@ -291,8 +302,16 @@ const ProfilePage = () => {
     };
 
     // optional 처리
+    // absent 는 키 자체를 넣지 않는다 — 더미값("", 0)으로 채우지 않는다.
     if (optional?.birth) payload.birth = optional.birth;
     if (optional?.gender) payload.gender = optional.gender;
+    // 지역은 쌍일 때만 보낸다 — 한쪽만 보내면 서버가 200 을 주면서 조용히 버린다.
+    // `PreferredRegion` 이 둘 다 필수라 정상 경로에선 항상 함께 오지만,
+    // 여기서도 한 번 더 막아 반쪽짜리가 요청에 실리지 않게 한다.
+    if (optional?.areaCd && optional.sigunguCd) {
+      payload.areaCd = optional.areaCd;
+      payload.sigunguCd = optional.sigunguCd;
+    }
 
     return payload;
   };
@@ -373,7 +392,16 @@ const ProfilePage = () => {
     }
 
     // 2) payload 조립
-    const payload = buildSignupPayload(draft, { nickName }, { birth, gender });
+    const payload = buildSignupPayload(
+      draft,
+      { nickName },
+      {
+        birth,
+        gender,
+        areaCd: region?.areaCd,
+        sigunguCd: region?.sigunguCd,
+      }
+    );
 
     // 검증 실패 시(모달 오픈 + null 반환) 제출 중단
     if (!payload) return;
@@ -422,6 +450,12 @@ const ProfilePage = () => {
           userBirthDay,
           handleChangeBirth,
         }}
+        regionProps={{
+          isRegionModalOpen,
+          handleCloseRegionModal,
+          region,
+          setRegion,
+        }}
         skipProfileProps={{
           isSkipModalOpen,
           handleOpenSkipModal,
@@ -443,8 +477,10 @@ const ProfilePage = () => {
         }}
         genderValue={getGenderLabel(gender)}
         birthValue={formattedBirth}
+        regionValue={formatPreferredRegion(region)}
         handleOpenGenderModal={handleOpenGenderModal}
         handleOpenBirthModal={handleOpenBirthModal}
+        handleOpenRegionModal={handleOpenRegionModal}
         isSkipProfile={isSkipProfile}
         isDisabled={isInvalid()}
         handleSubmitProfile={onSubmitSignupWithProfile}

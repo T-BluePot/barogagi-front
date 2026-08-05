@@ -63,15 +63,17 @@ src/hooks/mutations/    # React Query 변경 훅
 
 ---
 
-## 디자인 시스템 (필수 참조)
+## 디자인 시스템
 
-UI/스타일 작업(컴포넌트·페이지·색상·타이포·모션) 전에 반드시 아래 문서를 읽고 따른다.
+UI/스타일 작업(컴포넌트·페이지·색상·타이포·모션) 전에 아래 문서가 **있으면** 읽고 따른다.
+없으면 건너뛰고, 기존 컴포넌트와 `src/globals.css`의 `@theme` 토큰을 기준으로 삼는다.
+(이 문서들은 리포에 커밋돼 있지 않을 수 있다 — 없다고 작업을 멈추지 말 것.)
 
 | 문서 | 역할 |
 |------|------|
-| `.claude/design/DESIGN.md` | **핏플 팀 디자인 시스템 — 최우선 준수.** Sunset Peach 컬러, 타이포, 4px 그리드, 라운드/그림자, 모션, 카피 규칙의 단일 기준 |
+| `.claude/design/DESIGN.md` | **핏플 팀 디자인 시스템 — 있으면 최우선 준수.** Sunset Peach 컬러, 타이포, 4px 그리드, 라운드/그림자, 모션, 카피 규칙의 단일 기준 |
 | `.claude/design/DESIGN-apple.md` | Apple 디자인 분석 — **참고용.** 글라스모피즘(backdrop blur), 타이포 감각 등 특정 질감을 차용할 때만 참조 |
 
-- 우선순위: **사용자 명시 요청 > DESIGN.md > DESIGN-apple.md**
+- 우선순위: **사용자 명시 요청 > DESIGN.md > DESIGN-apple.md > 기존 컴포넌트 관례**
 - 두 문서가 충돌하면 DESIGN.md를 따르고, 사용자가 Apple 스타일을 명시적으로 요청한 부분만 예외로 한다.
-- DESIGN.md의 토큰은 `src/globals.css`의 `@theme`(`--color-peach*`, `--ease-fitpl`)으로 관리한다 — 컴포넌트에 임의 hex 인라인 금지.
+- 색상·타이포·모션 토큰은 `src/globals.css`의 `@theme`(`--color-peach*`, `--text-*`, `--ease-fitpl`)으로 관리한다 — 컴포넌트에 임의 hex 인라인 금지.

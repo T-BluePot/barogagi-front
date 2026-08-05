@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
 import LinkIcon from "@mui/icons-material/Link";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
@@ -10,10 +9,7 @@ import { useAlertModalStore } from "@/stores/alertModalStore";
 import { useScheduleShareLinkQuery } from "@/hooks/queries/useScheduleShareLinkQuery";
 import { isKakaoShareConfigured, shareToKakao } from "@/lib/kakao/kakaoShare";
 import { SHARE_TEXT } from "@/constants/texts/main/share";
-import { getMe } from "@/api/queries/authQueries";
-import { authKeys } from "@/api/keyFactories";
-import type { BaseResponse } from "@/api/types";
-import type { UserData } from "@/types/profileTypes";
+import { useMeQuery } from "@/hooks/queries/useMeQuery";
 
 interface ShareBottomSheetProps {
   isOpen: boolean;
@@ -72,13 +68,8 @@ const ShareBottomSheet = ({
   );
 
   // 공유 카드 문구에 쓸 내 닉네임 — CommonHeader/HomePage와 같은 쿼리 키라 캐시를 공유한다(추가 요청 없음)
-  const { data: userResponse } = useQuery({
-    queryKey: authKeys.me(),
-    queryFn: getMe,
-    retry: false,
-  });
-  const nickName = (userResponse as unknown as BaseResponse<UserData>)?.data
-    ?.nickName;
+  const { user } = useMeQuery();
+  const nickName = user?.nickName;
 
   const alert = (title: string) =>
     openAlertModal({ title, buttonLabel: SHARE_TEXT.ALERT_BUTTON_LABEL });

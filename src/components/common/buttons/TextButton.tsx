@@ -19,7 +19,7 @@ const TextButton = ({
 
   const variantStyles = {
     default: `text-gray-50 hover:text-gray-black break-words`,
-    main: `text-peach-text hover:opacity-85  break-words`,
+    main: `text-peach-text hover:opacity-85  break-words font-medium`,
     "main-underline": `text-peach-text hover:opacity-85 text-sm underline break-words`,
   };
 

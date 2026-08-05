@@ -35,11 +35,48 @@ export type TermsDTOType = {
 /** 회원가입 Request Body */
 export type JoinRequestType = SignupPayloadType;
 
-/** 회원 정보 수정 요청 DTO */
+/**
+ * 회원 정보 조회 응답 DTO
+ * GET /api/v1/members — test 서버 실측 기준 13개 필드 전부.
+ *
+ * ⚠️ 서버는 **미설정을 `null` 이 아니라 빈 문자열로** 준다(`email`·`birth`·`areaCd` 등).
+ *    `gender` 만 `null` 로 온다. 화면에서 직접 쓰지 말고 `toUserData` 로 정규화한 뒤 쓴다.
+ *
+ * ⚠️ `password` 가 응답에 포함된다(값은 빈 문자열). 서버에서 빼는 게 맞지만
+ *    실제로 내려오므로 타입에는 있는 그대로 적는다 — 화면에서는 절대 쓰지 않는다.
+ */
+export interface MemberResponseDTO {
+  membershipNo: string;
+  userId: string;
+  /** 🚫 항상 빈 문자열. 사용 금지 */
+  password: string;
+  email: string;
+  /** "YYYYMMDD" 또는 빈 문자열 */
+  birth: string;
+  tel: string;
+  gender: string | null;
+  nickName: string;
+  /** 선호 지역 시/도 코드 또는 빈 문자열 */
+  areaCd: string;
+  /** 선호 지역 시·군·구 코드 또는 빈 문자열 */
+  sigunguCd: string;
+  joinType: string;
+  regDate: string;
+  updDate: string;
+}
+
+/**
+ * 회원 정보 수정 요청 DTO
+ * PATCH /api/v1/members — 서버 `MemberRequestDTO` 기준 5개 필드 전부 optional
+ */
 export interface MemberRequestDTO {
   birth?: string;
   gender?: string;
   nickName?: string;
+  /** 선호 지역 — 시/도 코드 (예: "11") */
+  areaCd?: string;
+  /** 선호 지역 — 시·군·구 코드 (예: "11110"). `areaCd` 없이 단독 전송하지 않는다 */
+  sigunguCd?: string;
 }
 
 /** refresh(토큰 재발급/로그아웃/탈퇴) 요청 타입 */
