@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import Chip from "@/components/common/Chip";
-import EmptyContent from "@/components/common/EmptyContent";
 import SkeletonBlock from "@/components/common/loading/SkeletonBlock";
 import {
   NOTIFICATION_TABS,
@@ -22,14 +21,26 @@ const EASE_FITPL = [0.2, 0, 0, 1] as const;
 /** 좌우 여백은 페이지가 아니라 각 항목이 갖는다 — 구분선이 화면 끝까지 이어지도록 */
 const ROW_PADDING = "px-6";
 
-/** 본문 들여쓰기: 좌여백(24) + 점 칸(6) + gap(10) = 제목 시작점과 맞춘다 */
-const BODY_INDENT = "pl-10";
-
 /** "2026-05-30T23:07:42" → "2026.05.30". 형식이 어긋나면 표기를 생략한다(더미값 금지) */
 const formatNoticeDate = (iso: string): string | undefined => {
   const parsed = parseISO(iso);
   return isValid(parsed) ? format(parsed, "yyyy.MM.dd") : undefined;
 };
+
+/**
+ * 비었거나 실패했을 때의 안내 — 목록 자리에 가운데 정렬로 세운다.
+ * 일정 탭(`ScheduleList`)의 빈 상태와 같은 방식이다.
+ */
+const CenteredNotice = ({ message }: { message: string }) => (
+  <div
+    className="flex flex-1 items-center justify-center px-6 pb-16"
+    role="status"
+  >
+    <p className="typo-body whitespace-pre-line text-center text-gray-50">
+      {message}
+    </p>
+  </div>
+);
 
 /** 펼쳐졌을 때만 본문을 받아온다 */
 const NoticeBody = ({ boardNum }: { boardNum: number }) => {
@@ -79,36 +90,42 @@ const NoticeItem = ({ notice }: { notice: BoardListItemDTO }) => {
         type="button"
         onClick={handleToggle}
         aria-expanded={isOpen}
-        className={clsx("flex w-full items-start gap-2.5 py-4 text-left", ROW_PADDING)}
+        className={clsx("flex w-full items-start gap-2 py-4 text-left", ROW_PADDING)}
       >
-        {/* 안 읽은 표시 — 자리를 항상 차지해 제목 시작점이 흔들리지 않게 한다 */}
-        <span className="flex h-5 w-1.5 shrink-0 items-center">
-          {!isRead && (
-            <span
-              className="h-1.5 w-1.5 rounded-full bg-main"
-              role="img"
-              aria-label={NOTIFICATION_TEXT.UNREAD_LABEL}
+        {/* [중요]
+              제목
+              날짜        ← 칩은 자체 줄. 칩 ~ 아래 묶음은 gap-2 */}
+        <span className="flex min-w-0 flex-1 flex-col items-start gap-2">
+          {notice.isImportant === "Y" && (
+            <Chip
+              label={NOTIFICATION_TEXT.IMPORTANT_BADGE}
+              tone="solid"
+              size="sm"
             />
           )}
-        </span>
 
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="flex items-center gap-1.5">
-            {notice.isImportant === "Y" && (
-              <Chip label={NOTIFICATION_TEXT.IMPORTANT_BADGE} size="sm" />
-            )}
-            <span
-              className={clsx(
-                "typo-body min-w-0 truncate",
-                isRead ? "text-gray-60" : "font-semibold text-gray-black"
+          {/* 제목·날짜 묶음만 살짝 들여쓴다(px-1). 칩은 행 여백에 그대로 붙는다 */}
+          <span className="flex w-full min-w-0 flex-col gap-3 px-1">
+            <span className="relative min-w-0">
+              {/* 안 읽은 점은 좌여백(24px) 안쪽에 띄운다 —
+                  흐름에 넣으면 그만큼 본문이 밀려 좌우 여백이 달라 보인다 */}
+              {!isRead && (
+                <span
+                  className="absolute top-1/2 -left-3.5 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-main"
+                  role="img"
+                  aria-label={NOTIFICATION_TEXT.UNREAD_LABEL}
+                />
               )}
-            >
-              {notice.boardTitle}
+              {/* 제목은 읽음 여부와 무관하게 가장 진한 색을 쓴다.
+                  구분은 왼쪽 점이 담당한다(색을 흐리면 목록 전체가 탁해진다) */}
+              <span className="typo-body block truncate text-gray-black">
+                {notice.boardTitle}
+              </span>
             </span>
+            {dateLabel && (
+              <span className="typo-tag text-gray-40">{dateLabel}</span>
+            )}
           </span>
-          {dateLabel && (
-            <span className="typo-tag text-gray-40">{dateLabel}</span>
-          )}
         </span>
 
         <KeyboardArrowUpIcon
@@ -129,7 +146,7 @@ const NoticeItem = ({ notice }: { notice: BoardListItemDTO }) => {
             transition={{ duration: 0.28, ease: EASE_FITPL }}
             className="overflow-hidden"
           >
-            <div className={clsx("pb-4", ROW_PADDING, BODY_INDENT)}>
+            <div className={clsx("pb-4", ROW_PADDING)}>
               <NoticeBody boardNum={notice.boardNum} />
             </div>
           </motion.div>
@@ -167,19 +184,13 @@ const NotificationPage = () => {
         </ul>
       );
     }
+    // 화면 전체가 목록인 페이지라, 홈 섹션용 회색 박스(EmptyContent) 대신
+    // 일정 탭과 같은 "가운데 텍스트" 방식을 쓴다
     if (isError) {
-      return (
-        <div className={clsx("pt-4", ROW_PADDING)}>
-          <EmptyContent message={NOTIFICATION_TEXT.ERROR} />
-        </div>
-      );
+      return <CenteredNotice message={NOTIFICATION_TEXT.ERROR} />;
     }
     if (notices.length === 0) {
-      return (
-        <div className={clsx("pt-4", ROW_PADDING)}>
-          <EmptyContent message={NOTIFICATION_TEXT.EMPTY} />
-        </div>
-      );
+      return <CenteredNotice message={NOTIFICATION_TEXT.EMPTY} />;
     }
     return (
       <ul className="flex flex-col">
