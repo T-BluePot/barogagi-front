@@ -71,8 +71,10 @@ const NoticeBody = ({ boardNum }: { boardNum: number }) => {
 
 const NoticeItem = ({ notice }: { notice: BoardListItemDTO }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const isRead = useReadNotificationStore((s) => s.readIds).includes(
-    notice.boardNum
+  // 배열이 아니라 boolean 을 꺼낸다 — `s.readIds` 를 그대로 반환하면 하나를 읽을 때마다
+  // 배열 참조가 바뀌어 목록의 모든 항목이 다시 그려진다
+  const isRead = useReadNotificationStore((s) =>
+    s.readIds.includes(notice.boardNum)
   );
   const markAsRead = useReadNotificationStore((s) => s.markAsRead);
 
@@ -164,6 +166,12 @@ const NoticeItem = ({ notice }: { notice: BoardListItemDTO }) => {
  *
  * 분류 탭(`NOTIFICATION_TABS`)은 지금 항목이 하나뿐이라 렌더하지 않는다.
  * 다가오는 일정 알림 등 공지가 아닌 종류가 생기면 상수에 추가하는 것만으로 나타난다.
+ *
+ * ⚠️ **탭을 추가하는 사람은 목록을 거르는 코드도 같이 넣어야 한다.**
+ *    지금은 `activeTab` 이 렌더에 아무 영향을 주지 않는다 — 종류가 공지 하나뿐이라
+ *    거를 대상이 없고, 공지 응답(`BoardListItemDTO`)에는 종류를 구분할 필드도 없다.
+ *    두 번째 탭은 같은 목록을 나누는 게 아니라 다른 API 를 하나 더 붙이는 일이 되므로,
+ *    그때 탭별 데이터 소스를 정하면서 `renderContent` 분기를 함께 만들 것.
  *
  * ⚠️ 페이지에는 좌우 여백을 주지 않는다 — 항목마다 `ROW_PADDING` 을 갖고,
  *    구분선은 화면 끝까지 이어져야 목록이 끊겨 보이지 않는다.
