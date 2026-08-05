@@ -38,6 +38,9 @@ export interface CommonConfirmModalLayoutPropsType {
   children?: ReactNode; // 모달 내용 영역
   contentClassName?: string; // 콘텐츠 영역 overflow 등 커스터마이징
   severity?: ModalSeverity; // 모달 강조 종류 (기본 default)
+  // 배경 클릭/하드웨어 백 등 "닫기만" 하는 경로 전용 핸들러
+  // 미지정 시 기존처럼 cancelButtonInfo.onClick으로 동작 (하위 호환)
+  onDismiss?: () => void;
 }
 
 export interface CommonConfirmModalPropsType {
@@ -46,4 +49,5 @@ export interface CommonConfirmModalPropsType {
   cancelButtonInfo: ButtonInfoType; // 취소 버튼 정보
   modalContent: ModalContentsType; // 모달에 표시할 내용
   severity?: ModalSeverity; // 모달 강조 종류 (기본 default)
+  onDismiss?: () => void; // 배경 클릭/하드웨어 백 닫기 전용 핸들러 (선택)
 }

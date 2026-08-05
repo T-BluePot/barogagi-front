@@ -8,6 +8,25 @@ interface HomeGreetingParams {
   isLoading?: boolean;
 }
 
+/** 인사 타이틀을 강조 구간 기준으로 분리한 구조 (highlight만 코랄로 렌더링) */
+export interface HomeGreetingParts {
+  lead: string;
+  highlight?: string;
+  tail: string;
+}
+
+/**
+ * 인사말 아래 서브 카피 — 위로 넘어가듯 순환 노출한다.
+ * 각 항목은 한 줄에 들어갈 만큼 짧게 유지한다.
+ * TODO: 추후 날씨 데이터와 연계해 날씨/시간대별 문구를 선택하도록 확장 예정.
+ */
+export const HOME_GREETING_SUBS = [
+  "고민없이 바로가는 만남",
+  "날씨도 좋고, 거리도 가까워요",
+  "오늘은 나들이하기 좋은 날이에요",
+  "가까운 코스부터 둘러볼까요?",
+];
+
 /**
  * 홈 인사 문구
  * 0. 로딩 중 → 기본 문구 (확정 전 깜빡임 방지)
@@ -20,12 +39,24 @@ export const HOME_GREETING = ({
   hasUpcomingSchedule,
   popularRegionName,
   isLoading,
-}: HomeGreetingParams) => {
+}: HomeGreetingParams): HomeGreetingParts => {
   if (!isLoading && hasUpcomingSchedule) {
-    return `${userName}님,\n곧 다가오는 일정이 있어요!`;
+    return {
+      lead: `${userName}님,\n곧 `,
+      highlight: "다가오는 일정",
+      tail: "이 있어요!",
+    };
   }
   if (!isLoading && popularRegionName) {
-    return `${userName}님,\n${popularRegionName}에서 하루 어떠세요?`;
+    return {
+      lead: `${userName}님,\n오늘 `,
+      highlight: `${popularRegionName} 데이트 코스`,
+      tail: "가 있어요!",
+    };
   }
-  return `${userName}님,\n특별한 일정을 만들어보세요!`;
+  return {
+    lead: `${userName}님,\n`,
+    highlight: "특별한 일정",
+    tail: "을 만들어보세요!",
+  };
 };

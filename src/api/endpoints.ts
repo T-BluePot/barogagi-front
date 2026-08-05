@@ -39,12 +39,21 @@ export const ENDPOINTS = {
     UPDATE: "/api/v1/schedule/", // PUT
     DELETE: "/api/v1/schedule/", // DELETE
     IMAGE_PROXY: "/api/v1/schedule/image/proxy",
+    // 공유 링크 생성 (POST) - scheduleNum 을 path 로 전달. 로그인 토큰 필요
+    SHARE: (scheduleNum: number) => `/api/v1/schedule/${scheduleNum}/share`,
+    // 공유 일정 조회 (GET) - shareToken 을 path 로 전달. API-KEY만으로 비로그인 조회 가능
+    SHARED: (shareToken: string) => `/api/v1/schedule/share/${shareToken}`,
   },
 
   /** 메인 홈 */
   HOME: {
     POPULAR_TAGS: "/api/v1/home/tags/popular",
     POPULAR_REGIONS: "/api/v1/home/regions/popular",
+    HOT_PLACE: "/api/v1/home/regions/hot-place", // 오늘의 핫플레이스 (한국관광공사 데이터)
+    // 공공기관 지역코드 목록. 쿼리 `type` 필수이며 **`HOT-PLACE` 만 동작**한다(실측).
+    // 스웨거 설명은 핫플레이스 전용처럼 적혀 있으나, 여기서 내려오는 areaCd/sigunguCd 가
+    // 회원가입·회원정보수정의 선호 지역 필드에 그대로 들어가는 값이다.
+    REGION_CODES: "/api/v1/home/regions/code",
     MY_SCHEDULES: "/api/v1/home/me/schedules",
   },
 
@@ -81,6 +90,13 @@ export const ENDPOINTS = {
   /** 푸시 알림 (Push) */
   PUSH: {
     TOKEN: "/api/v1/push/token", // FCM 토큰 등록
+  },
+
+  /** 공지사항 (Board) — 알림 화면에서 노출 */
+  BOARD: {
+    // ⚠️ 스웨거에 `page` 쿼리가 있지만 넘기면 COMMON-500 이 난다(실측). 붙이지 말 것.
+    LIST: "/api/v1/board/list",
+    DETAIL: "/api/v1/board/detail", // Query param: boardNum
   },
 
   /** 앱 설정 (Settings) */

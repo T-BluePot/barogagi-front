@@ -91,16 +91,35 @@ export const usePlanFormModal = (
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [tagOptions, setTagOptions] = useState<TagRegistResDTO[]>([]);
 
+  // 새 계획 기본 시간(블록 기본 용량 1시간):
+  // - 시간 지정된 블록이 있으면 가장 늦게 끝나는 블록의 종료시각부터 +1시간
+  // - 없으면(첫 블록) 09:00~10:00 기준
+  const getDefaultPlanTime = (): { startTime: string; endTime: string } => {
+    const endMins = items
+      .map((item) => (item.endTime ? hhmmToMinutes(item.endTime) : NaN))
+      .filter((m) => Number.isFinite(m) && m >= 0 && m < 24 * 60);
+    const startMin = endMins.length > 0 ? Math.max(...endMins) : 9 * 60;
+    const endMin = Math.min(startMin + 60, 23 * 60 + 59);
+    return {
+      startTime: minutesToHHmm(startMin),
+      endTime: minutesToHHmm(endMin),
+    };
+  };
+
   const handleAddPlan = () => setIsCategoryOpen(true);
 
   const handleCategorySelect = (selected: SelectedCategoryItemType) => {
     const categoryNum = selected.category.categoryNum;
+    const { startTime, endTime } = getDefaultPlanTime();
 
     setDraft({
       source: "AI",
       planNm: selected.option.itemNm,
       categoryNum,
       itemNum: selected.option.itemNum,
+      // 새 계획 기본 시간 미리 채움(이전 블록 종료~+1h, 첫 블록 09:00~10:00)
+      startTime,
+      endTime,
       // 지역이 1개면 선택 단계 없이 해당 지역을 바로 채워둔다
       ...(singleRegion
         ? {
@@ -127,9 +146,13 @@ export const usePlanFormModal = (
   const [editTargetId, setEditTargetId] = useState<number | null>(null);
 
   const handlePlanNameConfirm = (planNm: string) => {
+    const { startTime, endTime } = getDefaultPlanTime();
     setDraft({
       source: "USER_CUSTOM",
       planNm,
+      // 새 계획 기본 시간 미리 채움(이전 블록 종료~+1h, 첫 블록 09:00~10:00)
+      startTime,
+      endTime,
     });
     setIsPlanNameOpen(false);
     setIsPlanFormOpen(true);
@@ -230,8 +253,8 @@ export const usePlanFormModal = (
               cancelLabel: "돌아가기",
             }
           : {
-              title: "일정 추가를 취소하시겠습니까?",
-              content: "시간을 선택하지 않으면 일정이 저장되지 않습니다.",
+              title: "계획 추가를 취소하시겠습니까?",
+              content: "시간을 선택하지 않으면 계획이 저장되지 않습니다.",
               confirmLabel: "취소하기",
               cancelLabel: "돌아가기",
             },
@@ -579,33 +602,8 @@ export const usePlanFormModal = (
       ? { startTime: draft?.startTime, endTime: draft?.endTime }
       : items.find((item) => item.id === timeTargetId);
 
-  // 새 일정 기본 시간: 기존 블록이 있을 때 이전 블록의 종료 시간 기준
-  const isDraftNoTime = timeTargetId === DRAFT_ID && !draft?.startTime;
-  const timedItems = isDraftNoTime ? items.filter((item) => item.endTime) : [];
-  const lastTimedItem =
-    timedItems.length > 0 ? timedItems[timedItems.length - 1] : null;
-
-  const lastEndMinutes = (() => {
-    if (!lastTimedItem?.endTime) return undefined;
-    const minutes = hhmmToMinutes(lastTimedItem.endTime);
-    return Number.isFinite(minutes) && minutes >= 0 && minutes < 24 * 60
-      ? minutes
-      : undefined;
-  })();
-
-  const nextEndMinutes =
-    lastEndMinutes !== undefined && lastEndMinutes + 60 < 24 * 60
-      ? lastEndMinutes + 60
-      : undefined;
-
-  const newDraftDefaultStart =
-    lastEndMinutes !== undefined
-      ? hhmmToTimeValue(minutesToHHmm(lastEndMinutes))
-      : undefined;
-  const newDraftDefaultEnd =
-    nextEndMinutes !== undefined
-      ? hhmmToTimeValue(minutesToHHmm(nextEndMinutes))
-      : undefined;
+  // 새 계획 기본 시간은 draft 생성 시 getDefaultPlanTime으로 이미 채워지므로
+  // 여기서 별도 기본값 계산은 불필요 (시간 모달은 draft 값을 그대로 초기값으로 사용)
 
   const regionEditTarget =
     regionTargetId === DRAFT_ID
@@ -679,10 +677,10 @@ export const usePlanFormModal = (
       isOpen: isTimeOpen,
       initialStartTime: timeEditTarget?.startTime
         ? hhmmToTimeValue(timeEditTarget.startTime)
-        : newDraftDefaultStart,
+        : undefined,
       initialEndTime: timeEditTarget?.endTime
         ? hhmmToTimeValue(timeEditTarget.endTime)
-        : newDraftDefaultEnd,
+        : undefined,
       onConfirm: handleTimeConfirm,
       onCancel: handleTimeCancel,
     },

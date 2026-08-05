@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 
-import { scheduleKeys } from "@/api/keyFactories";
+import { homeKeys, scheduleKeys } from "@/api/keyFactories";
 import { deleteSchedule } from "@/api/queries";
 
 /**
@@ -25,6 +25,10 @@ export const useDeleteScheduleMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: scheduleKeys.lists() });
+      // 홈 인사 문구는 일정 목록이 아니라 별도 요약 API(`home/me/schedules`)로 판단한다.
+      // 같이 무효화하지 않으면 마지막 일정을 지웠을 때 목록은 비는데
+      // 인사말은 "곧 다가오는 일정이 있어요!" 로 남는다.
+      queryClient.invalidateQueries({ queryKey: homeKeys.mySchedules() });
       toast("일정이 삭제되었습니다");
     },
     onError: (err) => {

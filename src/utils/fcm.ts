@@ -42,13 +42,17 @@ const issueFirebaseToken = async (): Promise<string | null> => {
 
   const vapidKey = getVapidKey();
   if (!vapidKey) {
-    console.warn("[fcm] VITE_FIREBASE_VAPID_KEY 미설정 — Firebase 토큰 발급 skip");
+    console.warn(
+      "[fcm] VITE_FIREBASE_VAPID_KEY 미설정 — Firebase 토큰 발급 skip"
+    );
     return null;
   }
 
   // Notification API 자체가 없는 환경(일부 WebView/구버전) 방어 — 없으면 throw 대신 skip
   if (typeof Notification === "undefined") {
-    console.warn("[fcm] Notification API 미지원 환경 — Firebase 토큰 발급 skip");
+    console.warn(
+      "[fcm] Notification API 미지원 환경 — Firebase 토큰 발급 skip"
+    );
     return null;
   }
 
@@ -69,7 +73,10 @@ const issueFirebaseToken = async (): Promise<string | null> => {
       vapidKey,
       serviceWorkerRegistration,
     });
-    console.log("[fcm] Firebase 토큰 발급", { source: "firebase", token: firebaseToken });
+    console.log("[fcm] Firebase 토큰 발급", {
+      source: "firebase",
+      token: firebaseToken,
+    });
     return firebaseToken;
   } catch (err) {
     console.error("[fcm] Firebase 토큰 발급 실패", err);
@@ -91,7 +98,10 @@ export const issueFcmToken = async (): Promise<string | null> => {
   if (isBridgeFcmAvailable()) {
     try {
       const bridgeToken = await window.BarogagiApp!.getFcmToken!();
-      console.log("[fcm] 브릿지 토큰 발급", { source: "bridge", token: bridgeToken });
+      console.log("[fcm] 브릿지 토큰 발급", {
+        source: "bridge",
+        token: bridgeToken,
+      });
       return bridgeToken;
     } catch (err) {
       console.error("[fcm] 브릿지 토큰 발급 실패", err);
@@ -102,7 +112,10 @@ export const issueFcmToken = async (): Promise<string | null> => {
   // 브릿지 없는 환경(브라우저 직접 접속) — 테스트 토큰 override 우선
   const testToken = import.meta.env.VITE_FCM_TEST_TOKEN;
   if (testToken && testToken.length > 0) {
-    console.log("[fcm] 테스트 토큰 사용", { source: "test-env", token: testToken });
+    console.log("[fcm] 테스트 토큰 사용", {
+      source: "test-env",
+      token: testToken,
+    });
     return testToken;
   }
 
@@ -119,6 +132,11 @@ export const issueFcmToken = async (): Promise<string | null> => {
  *
  * NOTE: 서버 스펙상 appVersion은 필수 string이므로 env가 비면 빈 문자열로 전송된다.
  *       정확한 버전 추적을 위해 빌드 시 VITE_APP_VERSION 주입을 권장한다.
+ *
+ * ⚠️ 같은 env 를 `utils/appVersion.ts` 의 `getCurrentAppVersion()` 도 읽는다(브릿지 우선).
+ *    일원화하지 않은 것은 의도다 — 서버가 말하는 appVersion 이 "웹 클라이언트 버전"인지
+ *    "설치된 앱 버전"인지 확인되기 전에는 위 정책 주석을 임의로 뒤집을 수 없다.
+ *    서버 측 의미가 확정되면 여기서 `getCurrentAppVersion()` 을 호출하도록 합친다(#112).
  */
 const getFcmDeviceInfo = (): { deviceType: string; appVersion: string } => ({
   deviceType: "WEB",
@@ -142,18 +160,33 @@ export const syncFcmToken = async (): Promise<void> => {
 
   store.setToken(token);
 
-  // 이미 같은 토큰이 등록돼 있으면 중복 등록 skip
-  if (store.registeredToken === token) {
-    console.log("[fcm] 이미 등록된 토큰 — 서버 등록 skip", { token });
+  const { deviceType, appVersion } = getFcmDeviceInfo();
+
+  // 토큰과 appVersion이 **둘 다** 그대로일 때만 중복 등록 skip.
+  // 토큰이 같아도 앱 버전이 바뀌면 서버가 최신 버전을 알아야 하므로 재등록한다.
+  //
+  // ⚠️ 현재 appVersion은 getFcmDeviceInfo()가 정책상 VITE_APP_VERSION을 쓰고 그 env가 미설정이라
+  //    항상 빈 문자열이다 → 이 버전 트리거는 실질적으로 아직 발동하지 않는다.
+  //    브릿지 실측값(getAppVersion)으로 바꾸려면 서버 측 appVersion 의미 확인이 선행이다
+  //    (getFcmDeviceInfo 주석의 정책 참고). 지금은 트리거 경로만 심어 둔다.
+  if (
+    store.registeredToken === token &&
+    store.registeredAppVersion === appVersion
+  ) {
+    console.log("[fcm] 이미 등록된 토큰 — 서버 등록 skip", {
+      token,
+      appVersion,
+    });
+    // setToken 이 status 를 "issued" 로 올려둔 상태다. 서버 등록을 건너뛰는 건
+    // 이미 등록돼 있기 때문이므로 "registered" 로 되돌려야 상태가 실제와 맞는다.
+    store.setStatus("registered");
     return;
   }
-
-  const { deviceType, appVersion } = getFcmDeviceInfo();
 
   try {
     store.setStatus("registering");
     await registerPushToken({ fcmToken: token, deviceType, appVersion });
-    store.markRegistered(token);
+    store.markRegistered(token, appVersion);
     console.log("[fcm] 서버 토큰 등록 완료", { token, deviceType, appVersion });
   } catch (err) {
     console.error("[fcm] 서버 토큰 등록 실패", err);

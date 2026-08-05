@@ -7,3 +7,4 @@ export * from "./planKeys"; // endpoints.ts에는 SCHEDULE이지만 기존 파�
 export * from "./homeKeys";
 export * from "./commonKeys";
 export * from "./settingsKeys";
+export * from "./boardKeys";

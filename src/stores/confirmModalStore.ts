@@ -19,8 +19,10 @@ interface ConfirmModalState {
     onConfirm: () => void,
     onCancel?: () => void
   ) => void;
-  // 확인 모달 닫기 (취소)
+  // 확인 모달 닫기 전용 (배경 클릭/하드웨어 백 — onCancel 실행 안 함)
   closeConfirmModal: () => void;
+  // 취소 버튼 클릭 (onCancel 실행 후 닫기)
+  cancelModal: () => void;
   // 확인 버튼 클릭
   confirmModal: () => void;
 }
@@ -39,7 +41,15 @@ export const useConfirmModalStore = create<ConfirmModalState>((set, get) => ({
       onCancel: onCancel ?? null,
     }),
 
-  closeConfirmModal: () => {
+  closeConfirmModal: () =>
+    set({
+      isOpen: false,
+      modalContent: null,
+      onConfirm: null,
+      onCancel: null,
+    }),
+
+  cancelModal: () => {
     const { onCancel } = get();
     onCancel?.();
     set({

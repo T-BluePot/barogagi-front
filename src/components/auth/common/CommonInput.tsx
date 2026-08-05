@@ -70,16 +70,26 @@ export const CommonInput = ({
           sx: {
             "& .MuiFilledInput-root": {
               minHeight: 60,
-              "&:before": { borderBottomColor: "#676767" },
-              "&:hover:before": { borderBottomColor: "#8ed71b" },
-              "&.Mui-focused:after": { borderBottomColor: "#bafd4f" },
+              // 기본/hover/포커스 모두 흰 배경 (MUI filled 기본 회색 배경 제거)
+              backgroundColor: "var(--color-gray-white)",
+              "&:hover": { backgroundColor: "var(--color-gray-white)" },
+              "&.Mui-focused": { backgroundColor: "var(--color-gray-white)" },
+              // 아래 SelectTriggerButton(border-gray-20)과 색 통일 (#dddddd는 더 연했음)
+              "&:before": { borderBottomColor: "var(--color-gray-20)" },
+              "&:hover:before": { borderBottomColor: "var(--color-main-dark)" },
+              "&.Mui-focused:after": { borderBottomColor: "var(--color-main)" },
             },
           },
         },
         input: {
           sx: {
             fontFamily: "Pretendard Variable",
-            color: "#ffffff",
+            color: "#1d1d1f",
+            // 입력값을 앱 본문 타이포(typo-body)와 통일한다.
+            // 미지정 시 MUI 기본 weight 400이라 SelectTriggerButton 값(500)보다 얇게 보인다.
+            fontSize: "var(--text-body)",
+            fontWeight: "var(--font-weight-body)",
+            letterSpacing: "var(--tracking-body)",
           },
           endAdornment: withButton ? (
             <InputAdornment position="end">
@@ -117,14 +127,14 @@ export const CommonInput = ({
             color: "#676767", // 기본 상태 레이블 색상
 
             "&.Mui-focused": {
-              color: "#bafd4f", // 포커스 상태에서 색상 변경
+              color: "var(--color-main)", // 포커스 상태에서 색상 변경
             },
           },
         },
         formHelperText: {
           sx: {
             fontFamily: "Pretendard Variable",
-            color: "#bafd4f",
+            color: "var(--color-main)",
 
             "&.Mui-error": {
               color: "#ff3b38", // 에러 상태에서 색상 변경

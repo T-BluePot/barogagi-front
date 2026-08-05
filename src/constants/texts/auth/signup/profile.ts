@@ -9,6 +9,8 @@ export const PROFILE_TEXT = {
     GENDER_LABEL: "성별",
     BIRTH_LABEL: "생년월일",
   },
+  // 선호 지역 문구는 마이페이지 프로필 수정 화면과 공유한다
+  // → src/constants/texts/common/preferredRegion.ts
   CHECK_LABEL: "다음에 입력할게요",
   SKIP_MODAL: {
     CANCEL_LABEL: "취소",

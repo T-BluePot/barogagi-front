@@ -1,4 +1,5 @@
 import type { PlanRegistResDTO } from "@/api/types";
+import type { PlanNoteMap } from "@/types/main/plan/bottom-modal/planFromTypes";
 /**
  * 사용 화면에 따른 타입 분기
  * create: 추천 루트(생성 완료) 화면
@@ -6,13 +7,22 @@ import type { PlanRegistResDTO } from "@/api/types";
  */
 export type Variant = "create" | "detail";
 
+/**
+ * ScheduleRoutesContent 표시 모드
+ * - create: 추천 루트 — 카드 편집 불가, "유지" 체크박스 + 일정 완성 푸터
+ * - detail: 내 일정 상세 — ⋮메뉴 · 인라인 메모 · 순서 변경 · 계획 추가
+ * - share : 공유 링크로 들어온 읽기 전용 — detail과 같은 모습이되 조작 요소를 전부 뺀다
+ */
+export type ContentMode = "create" | "detail" | "share";
+
 // ----- scheduleRoutesContent 컴포넌트에서 사용되는 타입 -----
 
 // 헤더 정보
 interface ContentHeaderProps {
   scheduleDate: string;
   scheduleName: string;
-  onChangeScheduleName: (next: string) => void;
+  /** share 모드는 일정명을 바꿀 수 없으므로 받지 않는다 */
+  onChangeScheduleName?: (next: string) => void;
   onCommitScheduleName?: (finalName: string) => void;
 }
 
@@ -25,6 +35,7 @@ interface EditActionsProps {
 // create 화면에서만 쓰는 푸터 액션
 interface CreateFooterProps {
   onClickConfirm: () => void; // 예: 생성 완료 버튼 클릭
+  onRegenerate: () => void; // "다시 만들기" — 체크된 계획은 유지하고 재생성
 }
 
 // 공통 부분
@@ -33,23 +44,63 @@ interface ScheduleRoutesContentBase {
   plans: PlanRegistResDTO[];
 }
 
+// detail 전용 옵션 (create/share에서는 never로 막는다)
+interface DetailOnlyProps {
+  notes?: PlanNoteMap; // planNum → 인라인 메모 입력값
+  onChangeNote?: (planNum: number, value: string) => void; // 인라인 메모 입력 변경
+  onCommitNote?: (planNum: number) => void; // 인라인 메모 blur 시 커밋
+  onAddPlan?: () => void; // 리스트 하단 "계획 추가하기" 타일 탭
+  onReorder?: (from: number, to: number) => void; // 순서 변경 모드에서 드래그 완료 시 (시간 재계산 없음)
+  reorderMode?: boolean; // 순서 변경 모드 여부 — 앱 헤더 kebab이 진입시키므로 페이지 소유 상태
+  onExitReorder?: () => void; // 순서 변경 모드 "완료" 탭 — 모드 종료 + 누적 변경분 저장
+  onOpenInfoSheet?: () => void; // 헤더 제목/메모 라인 탭 → 일정 정보 바텀시트 오픈
+  scheduleMemo?: string; // 일정 레벨 메모 — 서버 필드가 없어 브릿지 로컬 저장
+}
+
+type NeverDetailOnly = { [K in keyof DetailOnlyProps]?: never };
+type NeverEditActions = { [K in keyof EditActionsProps]?: never };
+
 // create 화면: 편집 불가 + 일정 완성 푸터
-interface ScheduleRoutesContentCreate extends ScheduleRoutesContentBase {
-  isEditable: false; // create 모드에서는 false로 구분
+interface ScheduleRoutesContentCreate
+  extends ScheduleRoutesContentBase,
+    NeverDetailOnly,
+    NeverEditActions {
+  mode: "create";
   footer: CreateFooterProps;
+  keptIndexes?: Set<number>; // "유지" 체크된 카드 index 집합 (페이지 로컬 상태)
+  onToggleKept?: (index: number) => void; // index 카드의 "유지" 체크 토글
+  isRegenerating?: boolean; // 재생성 중 — 유지 안 되는 슬롯을 스켈레톤으로 표시
 }
 
 // detail 화면: 편집 가능 + 액션 필수
 interface ScheduleRoutesContentDetail
-  extends ScheduleRoutesContentBase, EditActionsProps {
-  isEditable: true;
+  extends ScheduleRoutesContentBase,
+    EditActionsProps,
+    DetailOnlyProps {
+  mode: "detail";
   footer?: never;
+  keptIndexes?: never;
+  onToggleKept?: never;
+  isRegenerating?: never;
+}
+
+// share 화면: 공유 링크로 진입한 비로그인 포함 사용자 — 조회만 가능
+interface ScheduleRoutesContentShare
+  extends ScheduleRoutesContentBase,
+    NeverDetailOnly,
+    NeverEditActions {
+  mode: "share";
+  footer?: never;
+  keptIndexes?: never;
+  onToggleKept?: never;
+  isRegenerating?: never;
 }
 
 // 최종 Props 유니온
 export type ScheduleRoutesContentProps =
   | ScheduleRoutesContentCreate
-  | ScheduleRoutesContentDetail;
+  | ScheduleRoutesContentDetail
+  | ScheduleRoutesContentShare;
 
 export interface ScheduleRoutesPageProps {
   variant: Variant;

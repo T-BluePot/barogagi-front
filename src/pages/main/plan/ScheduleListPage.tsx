@@ -1,22 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ROUTES } from "@/constants/routes";
 import type { ScheduleViewType } from "@/components/main/plan/main/ScheduleViewToggleButton";
 import { getMarkedDates } from "@/utils/getMarkedDates";
 
 import ScheduleListHeader from "@/components/main/plan/main/ScheduleListHeader";
 import { CalendarView } from "@/components/main/plan/CalendarView";
 import ListView from "@/components/main/plan/main/ListView";
-import AddScheduleButton from "@/components/main/plan/main/AddScheduleButton";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
 import SkeletonCalendar from "@/components/main/plan/SkeletonCalendar";
 import SkeletonListView from "@/components/main/plan/main/SkeletonListView";
-
-import { useScheduleDraftStore } from "@/stores/scheduleStore";
-import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
-import { useConfirmModalStore } from "@/stores/confirmModalStore";
 
 // === server ===
 import { useScheduleListQuery } from "@/hooks/queries/useScheduleListQuery";
@@ -70,55 +64,23 @@ const ScheduleListPage = () => {
     handleCloseDeleteModal();
   };
 
-  // === 일정 생성 관련 ===
-  const { draft, reset } = useScheduleDraftStore();
-  const { clearRegions } = useRegionSelectionStore();
-  const { openConfirmModal } = useConfirmModalStore();
-
-  // 이어하기(resume) 대상은 "두 번째 지역 선택 단계에서 지역을 고른 시점"부터.
-  // 날짜만 정한 첫 페이지 이탈은 이어하기 대상이 아님 → 항상 새로 시작.
-  const hasResumableDraft = draft.scheduleRegionRegistReqDTOList.length > 0;
-
-  const handleAddSchedule = () => {
-    if (hasResumableDraft) {
-      openConfirmModal(
-        {
-          title: "이어서 만드시겠습니까?",
-          content: "이전에 작성 중인 일정이 있습니다.\n이어서 만드시겠습니까?",
-          confirmLabel: "이어하기",
-          cancelLabel: "새로 만들기",
-        },
-        () => navigate(ROUTES.PLAN.DATE),
-        () => {
-          reset();
-          clearRegions();
-          navigate(ROUTES.PLAN.DATE);
-        }
-      );
-    } else {
-      // 지역 선택 전 단계(날짜 등)는 저장/복원하지 않고 깨끗한 상태로 시작
-      reset();
-      clearRegions();
-      navigate(ROUTES.PLAN.DATE);
-    }
-  };
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-2 h-full">
       <DeleteScheduleModal
         isOpen={isDeleteOpen}
         onClickCancel={handleCloseDeleteModal}
         onClickConfirm={handleConfirmDelete}
       />
       <ScheduleListHeader viewType={viewType} toggleViewType={toggleViewType} />
-      <div className="flex-1">
+      <div className="flex-1 min-h-0 flex flex-col">
         {isError ? (
           <div className="flex flex-col items-center justify-center w-full pt-25 gap-4">
             <p className="typo-sub-title text-gray-70">
               일정을 불러오지 못했습니다.
             </p>
             <button
-              className="typo-body text-main underline"
+              className="typo-body text-peach-text underline"
               onClick={() => refetch()}
             >
               다시 시도
@@ -136,7 +98,7 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex flex-col w-full px-6 min-h-0 pb-15 gap-6">
+          <div className="flex flex-col flex-1 w-full px-6 min-h-0 gap-6">
             {isLoading ? (
               <>
                 <SkeletonCalendar />
@@ -152,9 +114,6 @@ const ScheduleListPage = () => {
             )}
           </div>
         )}
-      </div>
-      <div className="fixed bottom-[calc(5rem+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] right-6 z-35">
-        <AddScheduleButton onAddSchedule={handleAddSchedule} />
       </div>
     </div>
   );

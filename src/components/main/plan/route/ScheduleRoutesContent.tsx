@@ -1,5 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { ScheduleRoutesContentProps } from "@/types/main/plan/scheduleRoutes";
 import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 
@@ -7,14 +21,77 @@ import { ROUTES_CREATE_TEXT } from "@/constants/texts/main/plan/routesCreate";
 import ScheduleRouteInfoHeader from "@/components/main/plan/route/ScheduleRouteInfoHeader";
 
 import PlanDetailCard from "@/components/main/plan/route/PlanDetailCard";
+import SkeletonPlanCard from "@/components/main/plan/route/SkeletonPlanCard";
+import PlanAddButton from "@/components/main/plan/PlanAddButton";
 import PopMenu from "@/components/common/menu/PopMenu";
+import CommonButton from "@/components/common/buttons/CommonButton";
 import type { CardMenuAnchorInfo } from "@/types/main/plan/planListTypes";
+import type { PlanRegistResDTO } from "@/api/types";
 
 import RoutesCreateFooter from "@/components/main/plan/route/RoutesCreateFooter";
 
 // --- 아이콘
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AddIcon from "@mui/icons-material/Add";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+
+// ----- 순서 변경 모드: 드래그 가능한 카드 래퍼 -----
+// 드래그 리스너는 핸들(span)에만 바인딩 — 카드 본문 인터랙션 보존
+interface SortablePlanCardProps {
+  id: number;
+  plan: PlanRegistResDTO;
+  index: number;
+  onOpenCardMenu: (info: CardMenuAnchorInfo) => void;
+}
+
+const SortablePlanCard = ({
+  id,
+  plan,
+  index,
+  onOpenCardMenu,
+}: SortablePlanCardProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1 : 0,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <PlanDetailCard
+        mode="detail"
+        reorderMode
+        plan={plan}
+        index={index}
+        isOpen={false}
+        onToggleOpen={() => {}}
+        onOpenCardMenu={onOpenCardMenu}
+        dragHandle={
+          // 접근성: dnd-kit attributes(role/tabIndex 등)를 리스너와 같은 핸들 요소에 부착
+          <span
+            {...attributes}
+            {...listeners}
+            aria-label="드래그해서 순서 변경"
+            className="cursor-grab touch-none text-gray-40 flex items-center"
+          >
+            <DragIndicatorIcon className="text-title-02!" />
+          </span>
+        }
+      />
+    </div>
+  );
+};
 
 const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   const { header, plans } = props;
@@ -31,8 +108,31 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
     setOpenPlanNum((prev) => (prev === planNum ? null : planNum));
   };
 
-  // ----- 팝메뉴 영역 -----
-  const isEditable = props.isEditable === true; // 카드(plan) 편집 여부
+  // ----- 표시 모드 -----
+  const isDetail = props.mode === "detail"; // 편집·메뉴·순서변경·계획추가 가능
+  const isCreate = props.mode === "create"; // "유지" 체크 + 일정 완성 푸터
+  const isShare = props.mode === "share"; // 공유 링크 진입 — 조회만
+
+  // ----- 순서 변경 모드 (detail 전용) -----
+  // 앱 헤더 kebab이 진입시키므로 페이지가 소유한 상태를 props.reorderMode로 받음
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px 이동해야 드래그 시작 (탭과 구분)
+      },
+    })
+  );
+
+  // 드래그 완료 → 부모에 (from, to) 인덱스 전달 (시간 재계산 없이 배열 순서만 변경)
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (props.mode !== "detail") return;
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = plans.findIndex((p, i) => (p.planNum ?? i) === active.id);
+    const newIndex = plans.findIndex((p, i) => (p.planNum ?? i) === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    props.onReorder?.(oldIndex, newIndex);
+  };
 
   // 메뉴 팝오버용 상태
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
@@ -42,7 +142,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   // 팝메뉴 열기
   const handleOpenCardMenu = (info: CardMenuAnchorInfo) => {
     // 편집 모드가 아닐 경우 방지
-    if (!isEditable) return;
+    if (!isDetail) return;
 
     setMenuPlanNum(info.planNum);
     setMenuAnchorEl(info.anchorEl);
@@ -55,21 +155,25 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
   };
 
   const handleClickEdit = () => {
-    if (!isEditable || menuPlanNum == null) return;
+    if (props.mode !== "detail" || menuPlanNum == null) return;
     props.onRequestEdit(menuPlanNum);
     handleCloseMenu();
   };
 
   const handleClickDelete = () => {
-    if (!isEditable || menuPlanNum == null) return;
+    if (props.mode !== "detail" || menuPlanNum == null) return;
     props.onRequestDelete(menuPlanNum);
     handleCloseMenu();
   };
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-5">
-      {isEditable && (
+      {isDetail && (
         <PopMenu
+          // menuPlanNum을 key로 줘 카드 전환 시 Popper를 새 anchor로 remount
+          // (MUI Popper가 anchorEl 변경만으로는 위치를 갱신하지 않아 이전 카드 위치에
+          //  머무르는 문제 방지 — "마지막 카드 메뉴만 열리는" 증상 해결)
+          key={menuPlanNum ?? "closed"}
           anchorEl={menuAnchorEl}
           open={Boolean(menuAnchorEl)}
           onClose={handleCloseMenu}
@@ -90,7 +194,7 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           ]}
         />
       )}
-      <div className="flex w-full p-6 bg-gray-white">
+      <div className="flex flex-col w-full p-6 bg-gray-white">
         <ScheduleRouteInfoHeader
           editMode={editMode}
           setEditMode={setEditMode}
@@ -98,43 +202,129 @@ const ScheduleRoutesContent = (props: ScheduleRoutesContentProps) => {
           setScheduleName={onChangeScheduleName}
           onCommitScheduleName={onCommitScheduleName}
           scheduleDate={scheduleDate}
+          onOpenInfoSheet={isDetail ? props.onOpenInfoSheet : undefined}
+          readOnly={isShare}
         />
+        {/* 일정 메모 라인 (detail 전용) — 탭하면 일정 정보 바텀시트 오픈 */}
+        {isDetail && props.onOpenInfoSheet && (
+          <button
+            type="button"
+            onClick={props.onOpenInfoSheet}
+            className="text-left w-full px-1 mt-2"
+          >
+            {props.scheduleMemo ? (
+              <span className="typo-caption text-gray-60">
+                {props.scheduleMemo}
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 typo-caption text-gray-40">
+                <AddIcon className="text-caption!" />메모 추가하기
+              </span>
+            )}
+          </button>
+        )}
       </div>
       <motion.div
         className="flex flex-col flex-1 w-full min-h-0 p-6 overflow-y-auto gap-4 hide-scrollbar"
         layoutScroll
       >
-        {plans.map((plan, index) => {
-          const planNum = plan.planNum ?? index;
-          const isOpen = openPlanNum === planNum;
-
-          return (
-            // layout 애니메이션이 이 div 안에서만 일어나도록 격리
-            <div key={planNum} style={{ isolation: "isolate" }}>
-              {isEditable ? (
-                <PlanDetailCard
+        {isDetail && props.reorderMode ? (
+          // 순서 변경 모드: 핸들 드래그로 재정렬 (시간은 각 계획에 고정)
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={plans.map((plan, index) => plan.planNum ?? index)}
+              strategy={verticalListSortingStrategy}
+            >
+              {plans.map((plan, index) => (
+                <SortablePlanCard
+                  key={plan.planNum ?? index}
+                  id={plan.planNum ?? index}
                   plan={plan}
-                  isOpen={isOpen}
-                  onToggleOpen={() => handleToggleOpen(planNum)}
-                  mode="detail"
+                  index={index}
                   onOpenCardMenu={handleOpenCardMenu}
                 />
-              ) : (
-                <PlanDetailCard
-                  plan={plan}
-                  isOpen={isOpen}
-                  onToggleOpen={() => handleToggleOpen(planNum)}
-                  mode="create"
-                />
-              )}
-            </div>
-          );
-        })}
+              ))}
+            </SortableContext>
+          </DndContext>
+        ) : (
+          plans.map((plan, index) => {
+            const planNum = plan.planNum ?? index;
+            const isOpen = openPlanNum === planNum;
+            // create 재생성 중: 유지되는 카드는 그대로 두고, 재추천되는 슬롯만 스켈레톤 처리
+            const isKept =
+              plan.planSource === "USER_PLACE" ||
+              plan.planSource === "USER_CUSTOM" ||
+              (props.keptIndexes?.has(index) ?? false);
+            const showSkeleton =
+              isCreate && !!props.isRegenerating && !isKept;
+
+            return (
+              // layout 애니메이션이 이 div 안에서만 일어나도록 격리
+              <div key={planNum} style={{ isolation: "isolate" }}>
+                {isDetail ? (
+                  <PlanDetailCard
+                    plan={plan}
+                    index={index}
+                    isOpen={isOpen}
+                    onToggleOpen={() => handleToggleOpen(planNum)}
+                    mode="detail"
+                    onOpenCardMenu={handleOpenCardMenu}
+                    noteValue={props.notes?.[planNum] ?? ""}
+                    onChangeNote={(v) => props.onChangeNote?.(planNum, v)}
+                    onCommitNote={() => props.onCommitNote?.(planNum)}
+                  />
+                ) : isShare ? (
+                  <PlanDetailCard
+                    plan={plan}
+                    index={index}
+                    isOpen={isOpen}
+                    onToggleOpen={() => handleToggleOpen(planNum)}
+                    mode="share"
+                  />
+                ) : showSkeleton ? (
+                  <SkeletonPlanCard
+                    index={index}
+                    startTime={plan.startTime}
+                    endTime={plan.endTime}
+                  />
+                ) : (
+                  <PlanDetailCard
+                    plan={plan}
+                    index={index}
+                    isOpen={isOpen}
+                    onToggleOpen={() => handleToggleOpen(planNum)}
+                    mode="create"
+                    kept={props.keptIndexes?.has(index) ?? false}
+                    onToggleKept={() => props.onToggleKept?.(index)}
+                  />
+                )}
+              </div>
+            );
+          })
+        )}
+
+        {/* 하단 액션: 순서 변경 모드에선 "완료"(일괄 저장), 평상시엔 "계획 추가하기" */}
+        {isDetail &&
+          (props.reorderMode ? (
+            <CommonButton
+              label="완료"
+              onClick={() => props.onExitReorder?.()}
+            />
+          ) : (
+            props.onAddPlan && <PlanAddButton onClick={props.onAddPlan} />
+          ))}
       </motion.div>
 
-      {!isEditable && (
+      {isCreate && (
         <div className="mt-auto">
-          <RoutesCreateFooter onConfirm={props.footer.onClickConfirm} />
+          <RoutesCreateFooter
+            onConfirm={props.footer.onClickConfirm}
+            onRegenerate={props.footer.onRegenerate}
+          />
         </div>
       )}
     </div>

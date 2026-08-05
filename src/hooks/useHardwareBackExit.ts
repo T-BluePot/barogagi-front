@@ -13,7 +13,7 @@ import { useNativeBack } from "@/utils/nativeBackHandler";
  *   (history.back → 갈 곳 없으면 exitApp)이 그대로 동작.
  * - 모달이 열려 있으면 모달의 useNativeBack 핸들러가 stack 위에 올라가 우선 처리됨.
  *
- * Layout(앱 생애 1회 마운트, Router 내부)에서 호출한다.
+ * MainLayout(앱 생애 1회 마운트, Router 내부)에서 호출한다.
  */
 const EXIT_CONFIRM_WINDOW_MS = 2000;
 

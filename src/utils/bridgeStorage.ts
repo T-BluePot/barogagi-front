@@ -43,11 +43,19 @@ declare global {
       // ⚠️ 일반 RPC(3초 timeout) 아님 — 사용자가 로그인할 때까지 기다려야 하므로 RN 측 별도 처리.
       // 브릿지 명세는 docs/RN_BRIDGE.md §10 참고.
       loginWithOAuth?(authorizeUrl: string): Promise<string | null>;
+      // === 앱 버전 ===
+      // 네이티브 빌드 버전(앱 레포 config.ts 의 APP_VERSION). 업데이트 안내 판정에 쓴다.
+      // ⚠️ 이미 스토어에 배포된 구버전 앱에는 이 메서드가 없다 → optional.
+      //    반드시 typeof 체크 후 호출한다 (getFcmToken 과 같은 이유).
+      getAppVersion?(): Promise<string | null>;
+      // 푸시 토큰 등록용 deviceType. RN 에는 구현돼 있으나 타입 선언이 누락돼 있었다.
+      getDeviceType?(): Promise<"ANDROID" | "IOS">;
     };
   }
 }
 
-const isBridgeAvailable = (): boolean =>
+/** RN 브릿지(window.BarogagiApp) 주입 여부. 브릿지 유무 판정은 이 함수 하나로 통일한다 */
+export const isBridgeAvailable = (): boolean =>
   typeof window !== "undefined" && !!window.BarogagiApp;
 
 /**
