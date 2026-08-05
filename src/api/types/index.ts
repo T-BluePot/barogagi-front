@@ -38,3 +38,6 @@ export * from "./pushTypes";
 
 // Settings 관련 타입 re-export
 export * from "./settingsTypes";
+
+// Board(공지사항) 관련 타입 re-export
+export * from "./boardTypes";

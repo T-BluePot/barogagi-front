@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { useMeQuery } from "@/hooks/queries/useMeQuery";
+import { useHasUnreadNotice } from "@/hooks/useHasUnreadNotice";
 import { ROUTES } from "@/constants/routes";
 
 interface CommonHeaderProps {
@@ -19,6 +20,8 @@ export const CommonHeader = ({ onClick }: CommonHeaderProps) => {
   const { user } = useMeQuery();
   const nickName = user?.nickName;
 
+  const hasUnread = useHasUnreadNotice();
+
   return (
     // 레퍼런스 앱바 리듬: 위 4px / 아래 14px (아래 여백이 인사말과의 간격 역할)
     <header className="flex w-full items-center justify-between bg-white px-5.5 py-3.5 select-none">
@@ -28,13 +31,17 @@ export const CommonHeader = ({ onClick }: CommonHeaderProps) => {
       </span>
 
       <div className="flex items-center gap-2">
-        {/* 알림 버튼 */}
+        {/* 알림 버튼 — 안 읽은 공지가 있으면 종 위에 빨간 점 */}
         <button
           type="button"
-          aria-label="알림"
+          aria-label={hasUnread ? "알림, 읽지 않은 알림 있음" : "알림"}
           onClick={() => navigate(ROUTES.MAIN.NOTIFICATION)}
-          className="flex h-9 w-9 items-center justify-center text-gray-50"
+          className="relative flex h-9 w-9 items-center justify-center text-gray-50"
         >
+          {hasUnread && (
+            // 흰 링으로 종 획과 분리해 작아도 눈에 띄게 한다
+            <span className="absolute top-2 right-2 h-1.25 w-1.25 rounded-full bg-alert-red" />
+          )}
           <svg
             width={20}
             height={20}
