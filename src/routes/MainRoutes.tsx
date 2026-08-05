@@ -17,6 +17,7 @@ import { PlanSettingPage } from "@/pages/main/plan/PlanSettingPage";
 // 메인 페이지
 import HomePage from "@/pages/main/HomePage";
 
+import NotificationPage from "@/pages/main/NotificationPage";
 import ProfilePage from "@/pages/main/profile/ProfilePage";
 import ProfileEditPage from "@/pages/main/profile/ProfileEditPage";
 import SettingsPage from "@/pages/main/settings/SettingsPage";
@@ -68,9 +69,13 @@ export const MainRoutes = () => (
         <Route path="search" element={<LocationSearchPage />} />
       </Route>
 
+      <Route
+        path={ROUTES.MAIN.NOTIFICATION}
+        element={<NotificationPage />}
+      />
+
       {/* TODO: 페이지 구현 후 Route 등록 예정 */}
       {/* <Route path={ROUTES.MAIN.CHAT} element={<ChatPage />} /> */}
-      {/* <Route path={ROUTES.MAIN.NOTIFICATION} element={<NotificationPage />} /> */}
     </Route>
 
     {/* 인증 불필요: 미정의 경로 → 인증 상태에 따라 분기 */}

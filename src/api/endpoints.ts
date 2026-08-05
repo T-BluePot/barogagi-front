@@ -92,6 +92,13 @@ export const ENDPOINTS = {
     TOKEN: "/api/v1/push/token", // FCM 토큰 등록
   },
 
+  /** 공지사항 (Board) — 알림 화면에서 노출 */
+  BOARD: {
+    // ⚠️ 스웨거에 `page` 쿼리가 있지만 넘기면 COMMON-500 이 난다(실측). 붙이지 말 것.
+    LIST: "/api/v1/board/list",
+    DETAIL: "/api/v1/board/detail", // Query param: boardNum
+  },
+
   /** 앱 설정 (Settings) */
   SETTINGS: {
     LIST: "/api/v1/settings", // 설정 목록 조회

@@ -8,3 +8,4 @@ export * from "./homeQueries";
 export * from "./commonQueries";
 export * from "./pushQueries";
 export * from "./settingsQueries";
+export * from "./boardQueries";
