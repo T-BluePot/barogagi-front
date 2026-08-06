@@ -24,6 +24,8 @@ export const SearchInput = ({
     <div className={inputClass}>
       <input
         type="search"
+        // 검색창은 '확인'보다 '검색' 키가 맞다 — 어느 쪽이든 엔터 키는 사라진다
+        enterKeyHint="search"
         placeholder={searchPlaceholder}
         aria-label={searchPlaceholder}
         value={value}

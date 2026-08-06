@@ -87,7 +87,7 @@ const ScheduleListPage = () => {
             </button>
           </div>
         ) : viewType === "calendar" ? (
-          <div className="flex h-full min-h-0 pb-15 bg-gray-5">
+          <div className="flex h-full min-h-0 bg-gray-5">
             <CalendarView
               selectedDate={selectedDate}
               onChangeDate={(date) => setSelectedDate(date)}
@@ -98,7 +98,7 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="flex flex-col flex-1 w-full px-6 min-h-0 gap-6">
+          <div className="pb-tabbar flex flex-col flex-1 w-full px-6 min-h-0 gap-6">
             {isLoading ? (
               <>
                 <SkeletonCalendar />

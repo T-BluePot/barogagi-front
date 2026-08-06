@@ -8,6 +8,9 @@ import {
 
 import type { PlanFormModalProps } from "@/types/main/plan/bottom-modal/planFromTypes";
 
+/** 계획 이름 미입력 시 제목 자리에 보여줄 문구. 이 모달이 다루는 단위는 '일정'이 아니라 '계획'이다. */
+const PLAN_TITLE_PLACEHOLDER = "내 계획";
+
 const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
   // ----- 모달 모드 변수 -----
   const create = info.mode === "Create";
@@ -21,7 +24,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
   return (
     <BottomModalLayout isOpen={action.isOpen} onClose={action.onClose}>
       <BottomActionHeader
-        title={title ?? "내 일정"}
+        title={title ?? PLAN_TITLE_PLACEHOLDER}
         titlePlaceholder={!title}
         actionLabel={
           action.onClickEditTitle
@@ -31,6 +34,7 @@ const PlanFormModal = ({ action, info }: PlanFormModalProps) => {
             : undefined
         }
         onClickAction={action.onClickEditTitle}
+        onClickTitle={action.onClickEditTitle}
       />
       <CommonInfoItem
         placeholder="시간 추가"
