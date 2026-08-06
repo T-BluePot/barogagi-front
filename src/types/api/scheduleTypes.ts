@@ -62,7 +62,12 @@ export type ScheduleDraftType = {
   scheduleNm?: string;
   startDate?: string; // YYYY-MM-DD
   endDate?: string; // YYYY-MM-DD
-  comment?: string;
+  comment?: string; // 자유 참고사항 (원본, 서버 전송 시 아래 옵션들과 합쳐 comment로 집계)
+
+  // 참고사항 추가 옵션 — 서버엔 별도 필드가 아니라 comment 문자열로 집계해 전송
+  ages?: string[]; // 연령대 (다중)
+  people?: number; // 인원수
+  purpose?: string; // 목적
 
   scheduleTagRegistReqDTOList: TagRegistReqDTO[];
   scheduleRegionRegistReqDTOList: RegionRegistReqDTO[];

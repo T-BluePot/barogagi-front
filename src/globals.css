@@ -18,11 +18,33 @@
 }
 
 @theme {
-  /* Color Scale */
-  --color-main: #bafd4f;
-  --color-main-dark: #8ed71b;
-  --color-main-disable: #d6ff96;
+  /* Color Scale - 메인 컬러는 Sunset Peach 팔레트의 별칭 (구 라임 #bafd4f 폐기) */
+  --color-main: #ff8a65;
+  --color-main-dark: #ff7b4e;
+  --color-main-disable: #ffd6c9;
   --color-alert-red: #ff3b38;
+
+  /* Sunset Peach - 리디자인 강조색 (홈/탭바) */
+  --color-peach: #ff8a65;
+  --color-peach-hover: #ff986f;
+  --color-peach-active: #ff7b4e;
+  --color-peach-light: #fff3ee;
+  --color-peach-border: #ffd6c9;
+  --color-peach-text: #e96a47;
+
+  /* Accent - 보조 강조색 (타임라인 인덱스 배지 등, peach와 대비되는 인디고 블루) */
+  --color-accent: #666cfb;
+
+  /* Motion - 리디자인 공통 이징 */
+  --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout - 웹 브라우저에서 앱 전체를 모바일 폭으로 제한하는 프레임
+   * 큰 핸드폰(iPhone Pro Max 계열) 기준 폭 — 넓은 화면에서 좌우 여백 최소화 */
+  --app-max-width: 430px;
+
+  /* 하단 탭바 지오메트리 (BottomTabBar·TabBarLayout 공통 — 변경 시 여기 한 곳만 수정) */
+  --tabbar-height: 68px; /* 탭바 자체 높이 */
+  --tabbar-bottom: 24px; /* 화면 하단에서 탭바까지 간격 */
 
   /* Gray Scale */
   --color-gray-black: #1e1e1e;
@@ -76,6 +98,8 @@
   --animate-warning-overlay-in: warning-overlay-in 0.9s ease-out forwards;
   /* 오버레이가 어느 정도 짙어진 뒤(0.3s delay) 모달이 흐릿→선명, 살짝 커지며 등장 */
   --animate-warning-modal-in: warning-modal-in 0.6s ease-out 0.3s both;
+  /* 메모 글자수 초과 시도 시 경고: 좌우 흔들림 + 살짝 빨간 플래시 (1회) */
+  --animate-memo-warn: memo-warn 0.4s ease-in-out;
 
   /* Font Weights */
   --font-weight-header: 700;
@@ -206,29 +230,76 @@
   }
 }
 
-body {
-  font-family: "Pretendard Variable", sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  overscroll-behavior-x: contain;
+/* 메모 최대 글자수에서 추가 입력 시도 시: 좌우로 흔들리며 살짝 빨갛게 번쩍였다 원복 */
+@keyframes memo-warn {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-5px);
+    background-color: rgba(255, 59, 56, 0.06);
+    border-color: rgba(255, 59, 56, 0.8);
+  }
+  30% {
+    transform: translateX(4px);
+  }
+  50% {
+    transform: translateX(-3px);
+    background-color: rgba(255, 59, 56, 0.06);
+    border-color: rgba(255, 59, 56, 0.8);
+  }
+  70% {
+    transform: translateX(2px);
+  }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-  /* font-weight: bold; */
-}
+/* 전역 리셋은 반드시 base 레이어 안에 둔다.
+ * 레이어 밖(un-layered) 규칙은 @layer utilities의 Tailwind 유틸리티보다
+ * 항상 우선되어 p/h* 요소의 mt-*, mb-* 등이 전부 무효가 된다. */
+@layer base {
+  body {
+    font-family: "Pretendard Variable", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overscroll-behavior-x: contain;
+    /* 모바일 프레임 바깥 영역 (넓은 브라우저에서만 보임) */
+    background-color: #f5f5f7;
+  }
 
-p {
-  margin: 0;
+  /* 웹 브라우저에서 모바일 레이아웃이 깨지지 않도록 앱 전체 폭 제한.
+   * fixed 요소는 뷰포트 기준이라 이 제한을 받지 않으므로,
+   * 각 fixed 요소(탭바·FAB·모달·시트)가 --app-max-width를 개별 적용한다. */
+  #root {
+    max-width: var(--app-max-width);
+    margin-inline: auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    /* font-weight: bold; */
+  }
+
+  p {
+    margin: 0;
+  }
+
+  /* Tailwind v4는 버튼 기본 커서가 default — 클릭 가능한 요소는 포인터로 복원.
+   * 비활성(disabled) 버튼은 제외되어 cursor-not-allowed 등이 그대로 적용된다. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 .react-modal-sheet-backdrop {

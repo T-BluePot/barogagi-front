@@ -20,6 +20,7 @@ export const ID_MESSAGES = {
   NO_WHITESPACE: "아이디에 공백을 포함할 수 없습니다.",
   ONLY_LOWERCASE_AND_NUMBER:
     "아이디는 영문 소문자와 숫자만 사용할 수 있습니다.",
+  MUST_INCLUDE_NUMBER: "아이디에 숫자를 하나 이상 포함해 주세요.",
   INVALID_FORMAT: "아이디는 4자 이상 16자 이하로 입력해 주세요.",
 };
 export const PASSWORD_MESSAGES = {

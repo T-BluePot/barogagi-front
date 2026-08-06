@@ -7,12 +7,13 @@ interface PlanAddButtonProps {
 }
 
 const PlanAddButton = ({
-  label = "일정 추가하기",
+  label = "계획 추가하기",
   onClick,
   isDisabled = false,
 }: PlanAddButtonProps) => {
+  // shrink-0: flex 스크롤 컨테이너에서 내용이 길어져도 버튼 높이(h-20)가 눌려 찌그러지지 않게 고정
   const baseStyle =
-    "flex items-center justify-center gap-1 w-full h-20 rounded-xl border border-dashed border-gray-40 transition-colors duration-200 cursor-pointer";
+    "flex items-center justify-center gap-1 w-full h-20 shrink-0 rounded-xl border border-dashed border-gray-40 transition-colors duration-200 cursor-pointer";
 
   const stateStyle = isDisabled
     ? "text-gray-40 cursor-not-allowed"

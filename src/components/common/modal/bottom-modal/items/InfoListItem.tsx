@@ -3,6 +3,7 @@ import clsx from "clsx";
 
 import { InfoItemContainer } from "./InfoItemContainer";
 import { TextTag } from "../../../tags/TextTag";
+import AutoGrowTextarea from "@/components/common/inputs/AutoGrowTextarea";
 
 import type { IconType } from "@/types/main/plan/bottom-modal/itemsTypes";
 import type { TagRegistResDTO } from "@/api/types";
@@ -54,7 +55,7 @@ export const InputInfoItem = ({
   const isEmpty = !label || label.trim().length === 0;
 
   const textClass = clsx(
-    "flex w-full typo-body text-left whitespace-normal break-words",
+    "flex w-full typo-body text-left whitespace-pre-wrap break-words",
     isEmpty ? "text-gray-40" : "text-gray-80"
   );
 
@@ -63,7 +64,7 @@ export const InputInfoItem = ({
     setIsEditing(true);
   };
 
-  // 입력 종료 (blur)
+  // 입력 종료 (blur). 실제 메모 저장은 모달 닫힘 시점에 일괄 처리됨
   const handleExitEdit = () => {
     setIsEditing(false);
   };
@@ -80,11 +81,12 @@ export const InputInfoItem = ({
       {!isEditing ? (
         <div className={textClass}>{!isEmpty ? label : placeholder}</div>
       ) : (
-        <input
-          className="flex w-full typo-body text-gray-80 text-left bg-transparent outline-none"
-          value={value}
-          onChange={(e) => onChange?.(e.target.value)}
-          maxLength={40}
+        <AutoGrowTextarea
+          className="typo-body text-gray-80 text-left bg-transparent outline-none"
+          value={value ?? ""}
+          onChange={(v) => onChange?.(v)}
+          maxLength={50}
+          ariaLabel={placeholder}
           onBlur={handleExitEdit}
           autoFocus
         />

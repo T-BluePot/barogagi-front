@@ -4,7 +4,7 @@
  * 관련 파일
  * routes.ts (현재) → 경로 문자열 정의
  * headerConfig.ts  → 경로별 헤더 설정
- * useHeaderConfig  → 현재 경로 매칭 → Layout.tsx에서 헤더 렌더링
+ * useHeaderConfig  → 현재 경로 매칭 → MainLayout.tsx에서 헤더 렌더링
  *
  * 새 페이지 추가 순서
  * 1. routes.ts → 경로 추가
@@ -75,6 +75,11 @@ export const ROUTES = {
     DETAIL_SEARCH: "/plan/:id/detail/search",
   },
 
+  // 공유 링크 뷰 (비로그인 접근 가능)
+  SHARE: {
+    VIEW: "/share/:shareToken",
+  },
+
   // 추가 기능들
   USER: {
     BASE: USER_BASE,
@@ -113,6 +118,10 @@ export const getRoutePath = {
     settingSearch: () => ROUTES.PLAN.SETTING_SEARCH,
     detailSearch: (id: string) =>
       ROUTES.PLAN.DETAIL_SEARCH.replace(":id", encodeURIComponent(id)),
+  },
+  share: {
+    view: (shareToken: string) =>
+      ROUTES.SHARE.VIEW.replace(":shareToken", encodeURIComponent(shareToken)),
   },
   user: {
     detail: (id: string) =>

@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# pnpm 프로젝트 - npm 락파일 추적 금지
+package-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

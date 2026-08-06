@@ -22,7 +22,7 @@ export const BottomModalListButton = ({
       onClick={onClickChecked}
     >
       <span className={textClass}>{label}</span>
-      {isChecked && <CheckIcon className="text-main-dark" />}
+      {isChecked && <CheckIcon className="text-peach-text" />}
     </div>
   );
 };

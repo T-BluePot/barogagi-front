@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import CommonConfirmModal from "./CommonConfirmModal";
+import { APP_UPDATE_TEXT } from "@/constants/texts/appUpdate";
 
 const meta = {
   title: "Components/Modal/Common Modal/CommonConfirmModal",
@@ -146,6 +147,51 @@ export const CustomLabels: Story = {
     cancelButtonInfo: {
       label: "나중에",
       onClick: () => console.log("updateLaterClick"),
+    },
+  },
+};
+
+/**
+ * #112 권장 업데이트 안내 — **실제 배포 문구**(`APP_UPDATE_TEXT`)로 렌더한 것.
+ * 전용 컴포넌트 없이 이 모달을 그대로 재사용한다(`useAppUpdateCheck` → `openConfirmModal`).
+ */
+export const AppUpdateOptional: Story = {
+  args: {
+    isOpen: true,
+    modalContent: {
+      title: APP_UPDATE_TEXT.OPTIONAL_TITLE,
+      content: APP_UPDATE_TEXT.OPTIONAL_CONTENT("1.3.0"),
+    },
+    confirmButtonInfo: {
+      label: APP_UPDATE_TEXT.OPTIONAL_CONFIRM,
+      onClick: () => console.log("openExternal(PLAY_STORE_URL)"),
+    },
+    cancelButtonInfo: {
+      label: APP_UPDATE_TEXT.OPTIONAL_CANCEL,
+      onClick: () => console.log("closeConfirmModal"),
+    },
+  },
+};
+
+/**
+ * #112 권장 업데이트 안내 — **최신 버전을 못 받은 경우**.
+ * 서버 스펙이 미확정이라 실제로 발생할 수 있는 상태다.
+ * `"undefined 버전"` 같은 더미 문구가 새지 않는지 확인하는 용도.
+ */
+export const AppUpdateOptionalWithoutVersion: Story = {
+  args: {
+    isOpen: true,
+    modalContent: {
+      title: APP_UPDATE_TEXT.OPTIONAL_TITLE,
+      content: APP_UPDATE_TEXT.OPTIONAL_CONTENT(),
+    },
+    confirmButtonInfo: {
+      label: APP_UPDATE_TEXT.OPTIONAL_CONFIRM,
+      onClick: () => console.log("openExternal(PLAY_STORE_URL)"),
+    },
+    cancelButtonInfo: {
+      label: APP_UPDATE_TEXT.OPTIONAL_CANCEL,
+      onClick: () => console.log("closeConfirmModal"),
     },
   },
 };

@@ -23,6 +23,9 @@ const initialDraft: ScheduleDraftType = {
   startDate: "",
   endDate: "",
   comment: "",
+  ages: [],
+  people: 0, // 필수값 아님 — 0이면 미선택(서버 전송 시 제외)
+  purpose: "",
   scheduleTagRegistReqDTOList: [],
   scheduleRegionRegistReqDTOList: [],
   planRegistReqDTOList: [],
@@ -84,6 +87,23 @@ function toPlanReqDTO(plan: PlanDraftType): PlanRegistReqDTO {
     isRandomCategory: "N",
     planNm: plan.planNm,
   };
+}
+
+/** 참고사항(연령대/인원수/목적)과 자유 코멘트를 하나의 comment 문자열로 집계 */
+function buildComment(draft: ScheduleDraftType): string | undefined {
+  const parts: string[] = [];
+  if (draft.ages && draft.ages.length > 0) {
+    parts.push(`연령대: ${draft.ages.join(", ")}`);
+  }
+  if (draft.people && draft.people > 0) {
+    parts.push(`인원수: ${draft.people}명`);
+  }
+  const purpose = draft.purpose?.trim();
+  if (purpose) parts.push(`목적: ${purpose}`);
+  const note = draft.comment?.trim();
+  if (note) parts.push(note);
+  // 구분자 "/"가 AI 입력 파싱에 영향을 주는지 확인차 ", "로 변경
+  return parts.length > 0 ? parts.join(", ") : undefined;
 }
 
 export type ScheduleDraftStore = {
@@ -327,7 +347,6 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
         const scheduleNm = draft.scheduleNm ?? "";
         const startDate = draft.startDate ?? "";
         const endDate = draft.endDate ?? "";
-        const comment = draft.comment ?? "";
 
         if (!scheduleNm) throw new Error("일정명이 필요합니다.");
         if (!startDate) throw new Error("시작 날짜가 필요합니다.");
@@ -339,7 +358,7 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
           scheduleNm,
           startDate,
           endDate,
-          comment: comment ? comment : undefined,
+          comment: buildComment(draft),
           scheduleTagRegistReqDTOList: draft.scheduleTagRegistReqDTOList,
           scheduleRegionRegistReqDTOList: draft.scheduleRegionRegistReqDTOList,
           planRegistReqDTOList: planReqList,

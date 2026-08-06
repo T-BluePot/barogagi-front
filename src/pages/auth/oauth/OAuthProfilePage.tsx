@@ -14,6 +14,8 @@ import ProfileLayout from "@/components/auth/signup/ProfileLayout";
 import CheckResultModal from "@/components/auth/signup/CheckResultModal";
 
 import type { NicknameCheckStatus } from "@/types/signupTypes";
+import type { PreferredRegion } from "@/types/regionCode";
+import { formatPreferredRegion } from "@/utils/api/homeMapper";
 
 /**
  * OAuth 신규 회원 프로필 설정 페이지
@@ -130,6 +132,12 @@ const OAuthProfilePage = () => {
       ? `${userBirthYear}${userBirthMonth}${userBirthDay}`
       : undefined;
 
+  // === 선호 지역 선택 ===
+  // 미선택(undefined)은 정상 상태다 — 선호 지역은 선택 항목이라 안 고르고 넘어가도 된다.
+  // 고른 경우에는 시/도·시·군·구가 항상 함께 채워진다(`PreferredRegion`).
+  const [region, setRegion] = useState<PreferredRegion | undefined>(undefined);
+  const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
+
   // === 프로필 저장 ===
   const updateMeMutation = useMutation({
     mutationFn: () =>
@@ -137,6 +145,11 @@ const OAuthProfilePage = () => {
         nickName: nickName.trim(),
         ...(birth && { birth }),
         ...(gender && { gender }),
+        // 지역은 쌍으로만 보낸다 (`PreferredRegion` 이 둘 다 필수)
+        ...(region && {
+          areaCd: region.areaCd,
+          sigunguCd: region.sigunguCd,
+        }),
       }),
     onSuccess: () => {
       navigate(ROUTES.MAIN.HOME, { replace: true });
@@ -190,6 +203,12 @@ const OAuthProfilePage = () => {
           userBirthDay,
           handleChangeBirth,
         }}
+        regionProps={{
+          isRegionModalOpen,
+          handleCloseRegionModal: () => setIsRegionModalOpen(false),
+          region,
+          setRegion,
+        }}
         skipProfileProps={{
           isSkipModalOpen: false,
           handleOpenSkipModal: () => {},
@@ -211,8 +230,10 @@ const OAuthProfilePage = () => {
         }}
         genderValue={getGenderLabel(gender)}
         birthValue={formattedBirth}
+        regionValue={formatPreferredRegion(region)}
         handleOpenGenderModal={() => setIsGenderModalOpen(true)}
         handleOpenBirthModal={() => setIsBirthModalOpen(true)}
+        handleOpenRegionModal={() => setIsRegionModalOpen(true)}
         isSkipProfile={false}
         isDisabled={isSubmitDisabled}
         handleSubmitProfile={() => updateMeMutation.mutate()}

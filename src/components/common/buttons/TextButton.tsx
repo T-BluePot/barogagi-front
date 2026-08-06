@@ -18,9 +18,9 @@ const TextButton = ({
   const baseStyle = `px-4 py-3 typo-body cursor-pointer transition-colors duration-200`;
 
   const variantStyles = {
-    default: `text-gray-50 hover:text-black break-words`,
-    main: `text-main-dark hover:main-disable  break-words`,
-    "main-underline": `text-main-dark hover:main-disable text-sm underline break-words`,
+    default: `text-gray-50 hover:text-gray-black break-words`,
+    main: `text-peach-text hover:opacity-85  break-words font-medium`,
+    "main-underline": `text-peach-text hover:opacity-85 text-sm underline break-words`,
   };
 
   const typoStyle = variantStyles[variant];

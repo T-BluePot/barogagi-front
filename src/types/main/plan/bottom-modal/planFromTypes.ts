@@ -30,6 +30,7 @@ interface ModalBaseInfo {
   address?: string;
   onClickTime: () => void;
   onClickAddress: () => void; // 장소 수정
+  hideAddress?: boolean; // 지역이 1개뿐이면 장소(지역) 선택 항목을 숨김
 }
 
 /**

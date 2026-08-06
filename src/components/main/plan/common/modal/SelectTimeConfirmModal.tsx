@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
+import CommonConfirmModalLayout from "@/components/common/modal/common-modal/CommonConfirmModalLayout";
+import { enforceTimeOrder } from "@/utils/date";
 import {
   SelectTimeConfirmModalContent,
   type TimeValue,
@@ -13,10 +14,15 @@ interface SelectTimeConfirmModalProps {
   onCancel: () => void;
 }
 
-// props로 시간이 전달되지 않았을 때 사용할 기본값
-const DEFAULT_TIME: TimeValue = {
+// props로 시간이 전달되지 않았을 때 사용할 기본값 (시작 오전 9시 / 종료 오전 10시)
+const DEFAULT_START_TIME: TimeValue = {
   period: "오전",
-  hour: "07",
+  hour: "09",
+  minute: "00",
+};
+const DEFAULT_END_TIME: TimeValue = {
+  period: "오전",
+  hour: "10",
   minute: "00",
 };
 
@@ -26,8 +32,8 @@ const DEFAULT_TIME: TimeValue = {
  */
 export const SelectTimeConfirmModal = ({
   isOpen,
-  initialStartTime = DEFAULT_TIME,
-  initialEndTime = DEFAULT_TIME,
+  initialStartTime = DEFAULT_START_TIME,
+  initialEndTime = DEFAULT_END_TIME,
   onConfirm,
   onCancel,
 }: SelectTimeConfirmModalProps) => {
@@ -43,6 +49,9 @@ export const SelectTimeConfirmModal = ({
   // 이전 isOpen 값을 저장하는 ref
   // ref는 값이 바뀌어도 리렌더링을 유발하지 않아서 이전 상태 추적에 적합
   const prevIsOpenRef = useRef(false);
+
+  // 마지막으로 사용자가 조정한 칸 (확인 시 보정 방향 결정용)
+  const lastEditedRef = useRef<"start" | "end">("start");
 
   // requestAnimationFrame ID를 저장하는 ref
   // 왜 필요한가? 모달이 빠르게 열렸다 닫히면, 예약된 애니메이션이 나중에 실행되어
@@ -96,12 +105,22 @@ export const SelectTimeConfirmModal = ({
   }, [isOpen, initialStartTime, initialEndTime]);
 
   const handleTimeChange = (newStartTime: TimeValue, newEndTime: TimeValue) => {
+    // 어느 칸이 바뀌었는지 추적 (확인 시 보정 방향에 사용)
+    if (newStartTime !== startTime) lastEditedRef.current = "start";
+    else if (newEndTime !== endTime) lastEditedRef.current = "end";
     setStartTime(newStartTime);
     setEndTime(newEndTime);
   };
 
   const handleConfirm = () => {
-    onConfirm(startTime, endTime);
+    // settle 보정 전에 확인을 눌러도 종료 > 시작이 보장되도록 최종 보정
+    // (마지막으로 편집한 칸을 기준으로 보정 방향 결정)
+    const { start, end } = enforceTimeOrder(
+      startTime,
+      endTime,
+      lastEditedRef.current
+    );
+    onConfirm(start, end);
   };
 
   if (!shouldRender) return null;

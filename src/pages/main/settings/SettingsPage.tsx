@@ -17,12 +17,12 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-black text-white overflow-y-auto pb-10">
+    <div className="flex flex-col w-full h-full bg-white text-gray-black overflow-y-auto pb-10">
       <SettingsSection title={SETTINGS_PAGE_TEXT.NOTIFICATION_SECTION.TITLE}>
         {/* 조회 완료 전에는 상태만 노출, 성공(데이터 존재) 후에만 토글 렌더
             → 로딩/실패 중 가짜 ON 표시 방지 */}
         {isLoading && (
-          <p className="typo-caption text-gray-30 px-6 py-4">
+          <p className="typo-caption text-gray-50 px-6 py-4">
             {SETTINGS_PAGE_TEXT.LOADING}
           </p>
         )}

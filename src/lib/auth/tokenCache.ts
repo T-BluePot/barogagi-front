@@ -1,5 +1,9 @@
 import type { AuthTokenBundle } from "@/types/tokenTypes";
-import { getPersistStorage } from "@/utils/bridgeStorage";
+import {
+  getPersistStorage,
+  isNativeApp,
+  waitForBridge,
+} from "@/utils/bridgeStorage";
 
 /**
  * 인증 토큰 in-memory cache.
@@ -82,6 +86,11 @@ export const clearAuthTokens = async (): Promise<void> => {
  * - 실패 시 빈 cache로 시작 (= 로그인 안 된 상태)
  */
 export const bootstrapTokens = async (): Promise<void> => {
+  // 앱(WebView) 부팅 직후 RN 브릿지(window.BarogagiApp) 주입이 페이지 스크립트보다 늦으면,
+  // secure 저장소 접근이 곧바로 브라우저 fallback(localStorage)으로 빠져
+  // 네이티브 보안 저장소의 토큰을 읽지 못한다(= 재시작 시 로그인 풀림).
+  // → 앱 환경에서는 브릿지가 준비될 때까지 대기한 뒤 읽는다.
+  const bridgeReady = await waitForBridge();
   const s = storage();
   try {
     const [accessToken, refreshToken, accessTokenExpiry, refreshTokenExpiry] =
@@ -110,6 +119,15 @@ export const bootstrapTokens = async (): Promise<void> => {
         refreshTokenExpiry: refreshExpiry,
       };
     }
+    // 재시작 로그아웃 원인 추적용 진단 로그 (토큰 값은 절대 기록하지 않음)
+    // - isNativeApp && !bridgeReady : 브릿지 주입 지연 (이번 fix로 대기 처리)
+    // - bridgeReady && !hasStoredTokens : 네이티브 secure 저장소에 토큰이 없음 → RN 측 영속 매핑 점검
+    console.info("[tokenCache] bootstrap", {
+      isNativeApp: isNativeApp(),
+      bridgeReady,
+      hasStoredTokens: !!(accessToken && refreshToken),
+      hydrated: !!cache,
+    });
   } catch (err) {
     console.error("[tokenCache] bootstrap failed", err);
   }

@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import TabLayout from "@/components/layout/TabLayout";
+import TabBarLayout from "@/components/layout/TabBarLayout";
 import { ROUTES } from "@/constants/routes";
 import PrivateRoute from "@/components/route/PrivateRoute";
 import { isLoggedIn } from "@/lib/auth/tokenCache";
@@ -17,6 +17,7 @@ import { PlanSettingPage } from "@/pages/main/plan/PlanSettingPage";
 // 메인 페이지
 import HomePage from "@/pages/main/HomePage";
 
+import NotificationPage from "@/pages/main/NotificationPage";
 import ProfilePage from "@/pages/main/profile/ProfilePage";
 import ProfileEditPage from "@/pages/main/profile/ProfileEditPage";
 import SettingsPage from "@/pages/main/settings/SettingsPage";
@@ -43,7 +44,7 @@ export const MainRoutes = () => (
     {/* 인증 필요 라우트 (PrivateRoute 가드) */}
     <Route element={<PrivateRoute />}>
       {/* Bottom Tab 페이지 */}
-      <Route element={<TabLayout />}>
+      <Route element={<TabBarLayout />}>
         <Route path={ROUTES.MAIN.HOME} element={<HomePage />} />
         <Route path={ROUTES.PLAN.LIST} element={<ScheduleListPage />} />
         <Route path={ROUTES.MAIN.PROFILE} element={<ProfilePage />} />
@@ -68,9 +69,13 @@ export const MainRoutes = () => (
         <Route path="search" element={<LocationSearchPage />} />
       </Route>
 
+      <Route
+        path={ROUTES.MAIN.NOTIFICATION}
+        element={<NotificationPage />}
+      />
+
       {/* TODO: 페이지 구현 후 Route 등록 예정 */}
       {/* <Route path={ROUTES.MAIN.CHAT} element={<ChatPage />} /> */}
-      {/* <Route path={ROUTES.MAIN.NOTIFICATION} element={<NotificationPage />} /> */}
     </Route>
 
     {/* 인증 불필요: 미정의 경로 → 인증 상태에 따라 분기 */}

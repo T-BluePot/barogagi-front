@@ -18,7 +18,7 @@ const ProfileInfoSection = ({ nickname, userId }: ProfileInfoSectionProps) => {
 
   return (
     <section
-      className="flex w-full items-center px-6 py-8 gap-4 cursor-pointer hover:bg-white/5 transition-colors"
+      className="flex w-full items-center px-6 py-8 gap-4 cursor-pointer hover:bg-peach-light transition-colors"
       onClick={handleEditProfile}
     >
       <ProfileAvatar />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CommonConfirmModalLayout from "@/components/layout/CommonConfirmModalLayout";
+import CommonConfirmModalLayout from "@/components/common/modal/common-modal/CommonConfirmModalLayout";
 import CommonModalContent from "./CommonModalContent";
 import type { CommonConfirmModalPropsType } from "@/types/modalTypes";
 
@@ -9,6 +9,7 @@ const CommonConfirmModal = ({
   cancelButtonInfo,
   modalContent,
   severity,
+  onDismiss,
 }: CommonConfirmModalPropsType) => {
   // shouldRenderLayout: 모달 레이아웃 컴포넌트 자체를 DOM에 렌더링할지 여부 (사라지는 애니메이션 후 제거)
   const [shouldRenderLayout, setShouldRenderLayout] = useState(isOpen);
@@ -47,6 +48,7 @@ const CommonConfirmModal = ({
       confirmButtonInfo={confirmButtonInfo}
       cancelButtonInfo={cancelButtonInfo}
       severity={severity}
+      onDismiss={onDismiss}
       onCloseComplete={() => setShouldRenderLayout(false)} // Layout의 애니메이션 완료 후 레이아웃 제거
     >
       <CommonModalContent

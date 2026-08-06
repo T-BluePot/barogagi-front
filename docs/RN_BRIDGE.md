@@ -3,7 +3,7 @@
 이 문서는 **fitpl-front 웹앱(Vite + React)** 을 React Native WebView로 감싸기 위한 양측(웹/RN) 작업 명세입니다.
 
 > 타깃 플랫폼: **Android only** (현 단계)
-> OAuth 로그인 흐름은 백엔드와 별도 합의되어 본 문서 범위 외
+> OAuth 소셜 로그인(인앱 Custom Tab) 흐름은 **§10** 참고
 > iOS 확장 시 고려 사항은 **부록 A** 참고
 
 각 섹션은 다음 구조로 정리됩니다:
@@ -180,6 +180,25 @@ bootstrapTokens(): Promise<void>
 - [ ] 부팅 직후 storage 응답이 빠른가 (병목 시 white screen 길어짐)
 - [ ] 다음 4개 key가 동일 namespace에서 일관되게 처리되는가:
   - `accessToken`, `refreshToken`, `accessTokenExpiry`, `refreshTokenExpiry`
+
+### 트러블슈팅: 앱 재시작 시 로그인 풀림 (#87)
+
+**증상**: 로그인 후 앱을 완전히 종료했다 재실행하면 로그아웃됨. 세션 중에는 정상이고, 브라우저에서는 재현되지 않음(앱에서만).
+
+**원인**: 부팅 시 웹이 `bootstrapTokens()`로 `secure` 저장소에서 토큰을 복원하는데, 그 시점에 `window.BarogagiApp`이 아직 주입되지 않으면 웹이 localStorage로 fallback → 네이티브 보안 저장소에 저장된 토큰을 읽지 못함.
+
+**웹 측 보강(완료)**: 앱 환경(`window.ReactNativeWebView` 존재)에서 `window.BarogagiApp` 주입을 최대 2초 대기한 뒤 읽도록 `waitForBridge()`를 적용 ([src/utils/bridgeStorage.ts](../src/utils/bridgeStorage.ts), [src/lib/auth/tokenCache.ts](../src/lib/auth/tokenCache.ts) `bootstrapTokens`).
+
+**RN 측 확인 필요**:
+
+- [ ] `window.BarogagiApp`을 **`injectedJavaScriptBeforeContentLoaded`** 로 주입하는가 (페이지 스크립트보다 먼저). `injectedJavaScript`(콘텐츠 로드 후)로 주입하면 부팅 복원이 매번 실패할 수 있음.
+- [ ] `secure` namespace가 **EncryptedSharedPreferences(영속)** 에 매핑되어 있는가. 실수로 in-memory(`session`처럼)에 매핑하면 재시작 시 토큰이 사라짐.
+- [ ] 부팅 직후 `getData('secure', ...)` RPC가 정상 응답하는가 (`onMessage` 핸들러·`__bridgeResolve` 준비 완료 시점인지).
+
+**진단 로그**: 앱 부팅 시 콘솔의 `[tokenCache] bootstrap` 로그로 원인 구분 가능 —
+
+- `isNativeApp: true, bridgeReady: false` → 브릿지 주입 지연 (웹 보강으로 대기 처리됨)
+- `bridgeReady: true, hasStoredTokens: false` → 네이티브 `secure`에 토큰이 없음 → 위 영속 매핑 점검 필요
 
 ---
 
@@ -680,9 +699,279 @@ iOS는 하드웨어 백 버튼이 없고 화면 좌측 엣지 스와이프 제�
 
 ---
 
+## 10. OAuth 소셜 로그인 (인앱 Custom Tab)
+
+### 문제
+
+- 웹이 로그인 버튼에서 `window.location.href = authorizeUrl`로 **페이지 이동**하면, WebView가 외부 호스트(`nid.naver.com` 등)로 navigate → §4-B `shouldAllowNavigation`이 외부로 판정 → **시스템 크롬으로 새어나감**.
+- 그러면 OAuth가 앱 밖(외부 크롬)에서 진행되고, 끝나고 돌아오는 `barogagiapp://` 콜백 딥링크를 앱이 잡기 어려워짐(콜백 유실).
+- 구글은 WebView 내장(embedded) OAuth를 `disallowed_useragent`로 차단하기도 해, WebView 직접 로딩도 답이 아님.
+
+→ 해법: 외부 크롬이 아니라 **인앱 Custom Tab**(`InAppBrowser.openAuth`)으로 열고, `redirectUrl` 딥링크를 직접 리슨해 콜백 URL을 promise로 돌려준다.
+
+### 웹에서 완료한 작업
+
+**파일**:
+- [`src/utils/auth/startOAuthLogin.ts`](../src/utils/auth/startOAuthLogin.ts) (신설)
+- [`src/components/auth/landing/LoginButtonSection.tsx`](../src/components/auth/landing/LoginButtonSection.tsx)
+- [`src/utils/bridgeStorage.ts`](../src/utils/bridgeStorage.ts) — `loginWithOAuth` 타입 추가
+
+로그인 버튼 → `getOAuthLink(type)`로 authorize URL 조회 후:
+
+```ts
+// 네이티브 앱: 인앱 Custom Tab으로 열고 콜백 URL을 받아 쿼리스트링만 추출
+if (typeof window.BarogagiApp?.loginWithOAuth === "function") {
+  const callbackUrl = await window.BarogagiApp.loginWithOAuth(authorizeUrl);
+  if (!callbackUrl) return;                  // 사용자가 닫음(취소)
+  const q = callbackUrl.indexOf("?");
+  const search = q >= 0 ? callbackUrl.slice(q) : ""; // ? 없으면 빈 문자열 (실구현과 동일)
+  navigate(`/auth/oauth/callback${search}`); // 기존 콜백 페이지가 토큰 처리·분기
+}
+// 브라우저: 표준 window.location.href 리다이렉트 (fallback)
+```
+
+- 받은 콜백 파라미터는 **기존 웹 콜백 페이지**([`OAuthCallbackPage`](../src/pages/auth/oauth/OAuthCallbackPage.tsx))가 그대로 처리 → 토큰 저장·FCM 동기화·신규/기존 회원 분기 로직 일원화.
+- 웹은 콜백 **host(`auth`/`oauth`)를 보지 않고 쿼리스트링만** 읽음 → 백엔드/앱의 host 합의와 무관하게 동작.
+
+### RN에서 해야 할 일
+
+`window.BarogagiApp`에 `loginWithOAuth` 메서드 노출:
+
+```ts
+loginWithOAuth(authorizeUrl: string): Promise<string | null>;
+```
+
+```ts
+import InAppBrowser from "react-native-inappbrowser-reborn";
+
+const REDIRECT_SCHEME = "barogagiapp://oauth/callback"; // ⚠️ 백엔드 302 타깃과 정확히 일치(scheme+host+path)
+
+async function loginWithOAuth(authorizeUrl: string): Promise<string | null> {
+  if (!(await InAppBrowser.isAvailable())) {
+    // Custom Tab 불가 단말 → 외부 브라우저 fallback (딥링크가 앱으로 돌아오도록 매니페스트 intent-filter 필요)
+    Linking.openURL(authorizeUrl);
+    return null;
+  }
+  const result = await InAppBrowser.openAuth(authorizeUrl, REDIRECT_SCHEME, {
+    ephemeralWebSession: false,
+    showTitle: false,
+    enableUrlBarHiding: true,
+    enableDefaultShare: false,
+  });
+  // 성공: 콜백 딥링크 URL을 그대로 반환 → 웹이 쿼리스트링 파싱
+  if (result.type === "success" && result.url) return result.url;
+  return null; // cancel/dismiss
+}
+```
+
+⚠️ **주의 — 이 메서드는 §7의 3초 timeout RPC를 쓰면 안 됨.** 사용자가 OAuth 화면에서 로그인하는 동안 수 초~수십 초가 걸리므로, `rpc()`의 3초 timeout에 걸려 끊긴다. `getData` 등과 **별도 분기**로 처리하거나, `loginWithOAuth` 전용으로 timeout 없이(또는 충분히 길게) 구현할 것.
+
+### RN 측 체크리스트
+
+- [ ] `react-native-inappbrowser-reborn` 설치 + **네이티브 모듈이므로 앱 재빌드**(JS 리로드만으론 미반영)
+- [ ] `window.BarogagiApp.loginWithOAuth` inject (§7 injection 스크립트에 추가)
+- [ ] **3초 timeout 우회** — 일반 RPC와 다른 경로로 처리
+- [ ] `openAuth`의 `redirectUrl`이 **백엔드 302 타깃과 scheme+host+path 정확히 일치** (현재 합의값: `barogagiapp://oauth/callback`)
+- [ ] AndroidManifest intent-filter(`scheme=barogagiapp`, `host=oauth`)가 동일 값으로 등록
+- [ ] `result.type === 'success'`일 때 `result.url`을 통째로 반환 (웹이 토큰 파싱)
+- [ ] cancel/dismiss 시 `null` 반환 (웹은 아무 동작 안 함)
+
+---
+
+## 11. 카카오톡 공유 (일정 공유 링크)
+
+### 문제
+
+- 일정 상세 화면의 **공유 버튼 → 카카오톡**은 카카오 JS SDK(`Kakao.Share.sendDefault`)로 카카오톡 공유창을 띄운다.
+- SDK는 내부적으로 **`kakaolink://` 같은 커스텀 스킴**(Android는 `intent://`일 수 있음)으로 카카오톡 앱을 여는데, WebView는 http(s)가 아닌 스킴을 기본적으로 처리하지 못해 **아무 반응 없이 무시**될 수 있다.
+- §10 OAuth와 **같은 계열의 문제**다(웹이 앱 밖 스킴/호스트로 나가려 할 때 WebView가 어떻게 처리하느냐).
+- ⚠️ **`openExternal`로는 우회할 수 없다.** [`src/utils/openExternal.ts`](../src/utils/openExternal.ts)가 스킴을 검증해 **http/https만 허용**하고 그 외는 차단하기 때문(`javascript:`/`data:` 차단 목적). 카카오 스킴은 여기서 막힌다.
+- **Web Share API(`navigator.share`)는 WebView에 없다.** 그래서 '더보기' 버튼은 앱에서 자동으로 숨겨진다(웹에서 처리 완료 — 아래 참조). 앱에서도 네이티브 공유 시트를 쓰려면 RPC가 필요하다.
+
+> **전제(웹/RN 무관):** 카카오 개발자센터에 도메인이 등록돼 있어야 한다.
+> - `플랫폼 키 > JavaScript 키 > JavaScript SDK 도메인` — SDK가 **실행될** 도메인
+> - `제품 링크 관리 > 웹 도메인` — 공유 카드에 담길 **링크 대상** 도메인
+> 둘 다 운영 도메인(`https://fitpl.xyz`)이 등록돼야 운영에서 동작한다.
+
+### 웹에서 완료한 작업
+
+**파일**:
+- [`src/lib/kakao/kakaoShare.ts`](../src/lib/kakao/kakaoShare.ts) (신설) — SDK 동적 로드 + `Kakao.Share.sendDefault`
+- [`src/components/main/plan/route/ShareBottomSheet.tsx`](../src/components/main/plan/route/ShareBottomSheet.tsx) (신설) — 카카오톡 / URL 복사 / 더보기
+- [`src/utils/shareLink.ts`](../src/utils/shareLink.ts) (신설) — 서버가 주는 API 주소를 공유 페이지 주소로 변환
+
+앱 환경에서 깨지지 않도록 웹에서 이미 방어해 둔 것:
+
+```ts
+// 1) SDK 로드/공유 실패를 전부 흡수 — 실패 시 false 반환 → 안내 모달만 뜨고 앱은 안 죽음
+const ok = await shareToKakao({ url, title, description, imageUrl, buttonTitle });
+if (!ok) alert(SHARE_TEXT.KAKAO_FAIL);
+
+// 2) navigator.share 미지원(= WebView)이면 '더보기' 버튼 자체를 렌더하지 않음
+const canWebShare = () =>
+  typeof navigator !== "undefined" && typeof navigator.share === "function";
+```
+
+→ **앱에서는 `카카오톡` / `URL 복사` 2개만 노출**되고, 카카오가 안 열려도 앱이 죽지는 않는다(안내만 뜸).
+
+### RN에서 해야 할 일
+
+#### 11-A. 커스텀 스킴 위임 확인 — **§4-B가 이미 커버할 가능성이 높다**
+
+§4-B의 `shouldAllowNavigation`이 구현돼 있다면 별도 작업이 필요 없을 수 있다:
+
+```ts
+const isHttp = protocol === "http:" || protocol === "https:";
+if (isHttp && isAppHost) return true;
+...
+// kakaolink:// 는 isHttp가 false라 여기로 위임됨 → 카카오톡 열림.
+// Android intent:// 등에서 throw/거부될 수 있으므로 .catch로 흡수(아래 11-C 참조)
+void Linking.openURL(url).catch(() => {});
+return false;
+```
+
+- [ ] **먼저 실기기에서 공유 버튼을 눌러보고**, 안 되면 아래를 확인할 것.
+- ⚠️ Android는 `intent://...#Intent;...;end` 형태로 올 수 있다. `Linking.openURL`이 이 스킴에서 **throw** 할 수 있으므로 `try/catch` 필요.
+
+#### 11-B. `window.open` 경로 대응
+
+카카오 SDK가 중간 팝업(`window.open`)을 타는 경우 RN WebView 기본 설정에선 무시된다.
+
+```tsx
+<WebView
+  setSupportMultipleWindows={false}   // window.open을 현재 WebView에서 처리
+  // 또는 onOpenWindow로 직접 가로채 Linking.openURL 위임
+/>
+```
+
+#### 11-C. 카카오톡 미설치 대응
+
+`Linking.openURL("kakaolink://...")`이 실패하면 사용자는 아무 일도 안 일어난 것처럼 느낀다.
+
+```ts
+try {
+  await Linking.openURL(url);
+} catch {
+  // 카카오톡 미설치 → 마켓으로 유도하거나, 웹에 실패를 알려 'URL 복사'를 안내
+}
+```
+
+#### 11-D. (선택) 네이티브 공유 시트 RPC — `share`
+
+앱에서도 '더보기'(카톡 외 채널)를 쓰고 싶다면 RPC를 추가한다. **없어도 웹이 버튼을 숨기므로 깨지지 않는다.**
+
+```ts
+// §7의 핸들러에 추가
+case 'share':
+  await Share.share({ message: payload.url, title: payload.title });
+  break;
+```
+
+추가하면 웹에서 `window.BarogagiApp.share` 분기를 넣겠다. (현재 `BarogagiApp` 인터페이스에 `share` 없음)
+
+### RN 측 체크리스트
+
+- [ ] **실기기에서 공유 → 카카오톡 눌러보기** (§4-B가 이미 처리하면 추가 작업 불필요)
+- [ ] `shouldAllowNavigation`이 `kakaolink://` / `intent://` 를 `Linking.openURL`로 위임하는지 확인
+- [ ] Android `intent://` 스킴에서 `Linking.openURL` throw 대비 `try/catch`
+- [ ] 카카오 SDK 팝업(`window.open`) 경로 대응 (`setSupportMultipleWindows={false}` 등)
+- [ ] 카카오톡 미설치 시 폴백 동작 정의
+- [ ] (선택) `share` RPC 추가 — 앱에서 '더보기' 지원할 경우
+
+---
+
+## 12. 앱 버전 조회 / 업데이트 안내
+
+### 문제
+
+웹은 자기가 어떤 **네이티브 앱 빌드** 안에서 돌고 있는지 알 방법이 없다.
+그래서 "구버전 앱 사용자에게 업데이트를 안내한다"는 요구(이슈 #112)를 웹 단독으로는 만족할 수 없다.
+
+`import.meta.env.VITE_APP_VERSION` 은 **웹 번들의 빌드 시점 값**이라 네이티브 빌드 버전과 무관하다.
+게다가 현재 `.env.local` 에 미설정이라 빈 문자열이다.
+
+→ 네이티브가 자기 버전을 알려주는 RPC 가 필요하다.
+
+### 웹에서 완료한 작업
+
+| 항목 | 위치 |
+| --- | --- |
+| 브릿지 타입 선언 (`getAppVersion?`, `getDeviceType?`) | `src/utils/bridgeStorage.ts` `declare global` |
+| 버전 비교 유틸 (`compareVersion` / `isVersionBelow`) | `src/utils/appVersion.ts` |
+| 버전 조회 (`getCurrentAppVersion`) — 브릿지 대기 + feature-detect + 실패 시 null | `src/utils/appVersion.ts` |
+| 부팅 시 체크 훅 (앱 생애 1회) | `src/hooks/useAppUpdateCheck.ts`, `src/App.tsx` |
+| 권장 업데이트 안내 모달 (기존 confirm 모달 재사용) | `src/hooks/useAppUpdateCheck.ts` → `confirmModalStore` |
+| 앱 버전 변경 시 FCM 토큰 재등록 트리거 | `src/stores/fcmStore.ts`, `src/utils/fcm.ts` |
+
+⚠️ **업데이트 필요 여부 판정부는 비어 있다(`TODO`).** 임계값(minVersion / latestVersion) 소스가
+미확정이기 때문이다(신규 백엔드 API / Firebase Remote Config / Play In-App Updates 중 기획 결정 대기).
+임계값을 코드에 하드코딩하지 않았다.
+
+### RN에서 해야 할 일
+
+`getAppVersion` RPC 하나만 추가하면 된다. `APP_VERSION` 상수는 이미 있다.
+
+1. `src/utils/bridgeInterface.ts` — `getDeviceType` 아래에 추가.
+   즉시 응답이므로 **기본 `rpc`(3초 timeout)** 를 쓴다. `rpcNoTimeout` 이 아니다.
+
+```js
+    // 앱 버전(config.ts APP_VERSION). 웹이 업데이트 필요 여부 판정에 사용.
+    getAppVersion: function() {
+      return rpc('getAppVersion', {});
+    },
+```
+
+2. `src/screens/WebViewScreen.tsx` — import 에 `APP_VERSION` 추가 후,
+   `case 'getDeviceType'` 블록 뒤 `default:` 앞에 case 추가.
+
+```ts
+        case 'getAppVersion': {
+          respond(true, APP_VERSION);
+          break;
+        }
+```
+
+3. `src/constants/config.ts` 의 `APP_VERSION` 위에 **이중 관리 경고 주석**을 남긴다 —
+   `android/app/build.gradle` 의 `versionName` 과 수동 동기화 상태다.
+   릴리스에서 한쪽만 올리면 정상 사용자에게 업데이트 안내가 뜨거나 반대로 안 뜬다.
+
+### 🕳️ 구버전 앱에는 이 메서드가 없다
+
+`getAppVersion` 은 **앱을 새로 배포한 뒤부터만 존재한다.** 이미 스토어에 올라간 빌드에는 없다.
+그래서 웹 타입 선언은 반드시 **`optional` + `typeof` 체크**여야 한다 (`getFcmToken?` 과 같은 이유).
+필수로 선언하면 구버전 앱에서 타입이 거짓말을 하고 런타임에 터진다.
+
+→ 결과적으로 "구버전 강제 업데이트"라는 원래 목적은 **다음 버전부터** 유효하다.
+`getAppVersion` 부재를 "최소버전 미달"로 간주할지 조용히 skip 할지는 기획 결정 사항이다.
+웹은 현재 **조용히 skip** 한다(아무 모달도 띄우지 않는다).
+
+### 📌 문서화 누락 보강 — FCM 브릿지
+
+`getFcmToken` / `getDeviceType` 은 **RN 에 이미 구현돼 있는데 이 문서에 전혀 없었다.**
+
+| method | payload | 응답 | 비고 |
+| --- | --- | --- | --- |
+| `getFcmToken` | `{}` | `string \| null` | 권한 거부·미발급 시 null. 웹은 optional 로 선언 |
+| `getDeviceType` | `{}` | `"ANDROID" \| "IOS"` | 웹 타입 선언이 누락돼 있었다 → 이번에 추가 |
+| `getAppVersion` | `{}` | `string \| null` | **신규**. timeout 3초(기본 `rpc`) |
+
+### RN 측 체크리스트
+
+- [ ] `bridgeInterface.ts` 에 `getAppVersion` 등록
+- [ ] `WebViewScreen.tsx` 에 `case 'getAppVersion'` 추가 + `APP_VERSION` import
+- [ ] `config.ts` `APP_VERSION` 에 `versionName` 이중 관리 경고 주석
+- [ ] 실기기 WebView 콘솔에서 `await window.BarogagiApp.getAppVersion()` → `"1.2.1"` 확인
+- [ ] 기존 RPC(`getData` / `getFcmToken` / `getDeviceType`) 회귀 없음 확인
+- [ ] (별 이슈) `versionName` 단일 소스화 — BuildConfig 브릿지 또는 `react-native-device-info`
+
+---
+
 ## 변경 이력
 
 | 날짜       | 내용                                                                                                                                         | 작성자            |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
 | 2026-05-15 | 최초 작성 (Android-only 기준)                                                                                                                | fitpl-front 팀 |
 | 2026-05-15 | 웹 측 작업 완료 반영: tokenCache 추상화(§2), Safe Area utility(§6), 모달 백 핸들러 일괄 적용(§5). iOS 내용은 본문에서 분리하여 부록 A로 이동 | fitpl-front 팀 |
+| 2026-06-13 | OAuth 소셜 로그인 인앱 Custom Tab 흐름 추가(§10): 웹 `loginWithOAuth` 브릿지 호출 전환. RN `openAuth` 구현 명세·3초 timeout 우회 주의 명시         | fitpl-front 팀 |
+| 2026-07-17 | 카카오톡 공유 추가(§11): 웹은 SDK 연동·실패 흡수·`navigator.share` 미지원 시 '더보기' 자동 숨김까지 완료. RN은 §4-B가 `kakaolink://`를 이미 위임할 가능성이 높아 **실기기 확인이 먼저**. `openExternal`은 http(s)만 허용해 우회 불가임을 명시 | fitpl-front 팀 |
+| 2026-07-26 | 앱 버전 조회 / 업데이트 안내 추가(§12): 웹은 타입 선언·버전 비교 유틸·부팅 체크 훅·권장 안내 모달·FCM 재등록 트리거까지 완료. RN은 `getAppVersion` RPC 추가만 필요(`APP_VERSION` 상수는 이미 존재). **구버전 앱에는 메서드가 없어 웹은 optional + typeof 체크**. 판정 임계값 소스는 기획 결정 대기라 판정부는 `TODO`. 기존에 문서화 누락돼 있던 FCM 브릿지(`getFcmToken`/`getDeviceType`)도 함께 보강 | fitpl-front 팀 |
