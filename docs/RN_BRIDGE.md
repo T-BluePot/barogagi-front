@@ -831,12 +831,18 @@ intent://send?<params>#Intent;scheme=kakaolink;launchFlags=0x14008000;package=co
 **RN Android 의 `Linking.openURL` 은 내부적으로 `Uri.parse` 를 쓰기 때문에 `intent://` 를 해석하지 못한다.**
 (`intent://` 는 `Intent.parseUri(url, Intent.URI_INTENT_SCHEME)` 로 파싱해야 한다)
 
-그리고 실패가 **양쪽에서 삼켜진다**:
+그리고 그 실패가 **어디에도 드러나지 않는다**:
 
 | 위치 | 코드 | 결과 |
 | --- | --- | --- |
-| RN §4-B | `void Linking.openURL(url).catch(() => {})` | 예외 무시 |
+| **실제 앱** `WebViewScreen.tsx:274` | `Linking.openURL(url)` — **catch 없음** | unhandled rejection 으로 흘러감. release 빌드에서는 로그조차 안 남음 |
+| 이 문서 §4-B 템플릿 | `void Linking.openURL(url).catch(() => {})` | 예외 무시 (템플릿이 실제 코드와 다르다 — 아래 참고) |
 | 카카오 SDK | `try { Wr(n) } catch (e) {}` | 예외 무시 → `sendDefault` 가 throw 하지 않음 |
+
+> ⚠️ **§4-B 템플릿과 실제 앱 구현이 다르다.** 이 문서의 템플릿은 `.catch(() => {})` 로 삼키지만,
+> 실제 배포본에는 `catch` 자체가 없다. 두 경우 모두 무반응으로 끝나지만 원인 추적 난이도가 다르다 —
+> 전자는 최소한 catch 지점이 있어 로그를 심을 수 있고, 후자는 release 빌드에서 아무 흔적도 안 남는다.
+> 앱 수정 시 **`catch` 를 추가하고 로그를 남기는 것부터** 하기를 권한다.
 
 → 웹에는 어떤 신호도 오지 않아 `shareToKakao` 가 성공으로 판단했다. 그래서 **무반응**.
 

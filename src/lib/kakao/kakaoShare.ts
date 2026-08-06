@@ -10,8 +10,11 @@
  *   SDK 2.7.5 는 Android 에서 아래 URL 로 `location.href` 이동해 카카오톡을 연다:
  *     intent://send?...#Intent;scheme=kakaolink;launchFlags=0x14008000;package=com.kakao.talk;end;
  *   RN 의 `Linking.openURL` 은 내부적으로 `Uri.parse` 를 쓰기 때문에 `intent://` 를 해석하지
- *   못하고 실패하는데, RN 측 위임 코드와 SDK 양쪽이 이 실패를 `catch {}` 로 삼킨다
- *   (SDK: `try { Wr(n) } catch (e) {}`). 그래서 예외도 안 나고 화면도 그대로다 = 무반응.
+ *   못하고 실패한다. 그런데 그 실패가 어디에도 드러나지 않는다:
+ *     - 앱: `Linking.openURL(url)` 에 `catch` 가 없어 unhandled rejection 으로 흘러간다
+ *           (release 빌드에서는 로그조차 안 남는다)
+ *     - SDK: `try { Wr(n) } catch (e) {}` 로 삼켜서 `sendDefault` 가 throw 하지 않는다
+ *   그래서 웹에는 어떤 신호도 오지 않고 화면도 그대로다 = 무반응.
  *
  *   근본 해결은 앱 측에서 `intent://` 를 `Intent.parseUri(url, URI_INTENT_SCHEME)` 로 처리하는
  *   것이라 스토어 배포가 필요하다(docs/RN_BRIDGE.md §11). 이미 설치된 빌드는 못 고친다.
