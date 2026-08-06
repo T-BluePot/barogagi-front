@@ -45,6 +45,12 @@
   /* 하단 탭바 지오메트리 (BottomTabBar·TabBarLayout 공통 — 변경 시 여기 한 곳만 수정) */
   --tabbar-height: 68px; /* 탭바 자체 높이 */
   --tabbar-bottom: 24px; /* 화면 하단에서 탭바까지 간격 */
+
+  /* 새 일정 FAB 지오메트리 (CreateScheduleActionButton).
+   * ⚠️ FAB 는 탭바보다 위에 떠 있다 — 화면 하단에서 104+56 = 160px 를 가린다.
+   *    콘텐츠 하단 여백을 탭바(92px)만 기준으로 잡으면 마지막 카드가 FAB 에 깔린다. */
+  --fab-size: 56px;
+  --fab-bottom: 104px; /* 화면 하단에서 FAB 까지 간격 */
   /* 탭바·FAB 아래 깔리는 스크림 높이.
    * FAB 상단이 하단에서 160px(bottom 104 + 높이 56)이라, 그보다 위에서 페이드가 시작되도록 잡았다. */
   --tabbar-scrim-height: 200px;
@@ -143,9 +149,12 @@
    *    상위 래퍼(TabBarLayout 의 main 등)에 padding 으로 주면 그 영역이 자식 배경 박스
    *    바깥이라, 페이지 배경이 화면 아래끝까지 못 가고 MainLayout 의 흰색이 드러난다.
    *    그 경계선이 스크롤할 때 따라다니는 것처럼 보인다(일정 목록 탭에서 실제로 발생). */
+  /* 기준은 탭바가 아니라 **FAB** 다. FAB 상단이 화면 하단에서 160px(104+56)라
+   * 탭바(92px)만 피하면 마지막 카드가 FAB 에 깔린다. 여기에 숨 쉴 틈 16px 를 더한다.
+   * = 176px. 스크림(200px)의 상단 12% 구간이라 알파가 사실상 0 이어서 흐려지지도 않는다. */
   .pb-tabbar {
     padding-bottom: calc(
-      var(--tabbar-height) + var(--tabbar-bottom) + 24px +
+      var(--fab-bottom) + var(--fab-size) + 16px +
         max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px))
     );
   }
