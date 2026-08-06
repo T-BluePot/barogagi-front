@@ -14,11 +14,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 이 리포는 pnpm 을 쓴다(pnpm-lock.yaml). setup-node 의 cache: 'pnpm' 이
+      # pnpm store 경로를 물어보므로 반드시 setup-node 보다 **먼저** 설치돼야 한다.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Setup SSH key [main/release]
         run: |
@@ -65,8 +72,8 @@ jobs:
 
       - name: Build Frontend
         run: |
-          npm install
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm build
 
       - name: Deploy
         run: |
