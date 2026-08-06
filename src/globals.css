@@ -139,15 +139,30 @@
 
   /* 하단 플로팅 UI(탭바·FAB) 뒤에 깔리는 스크림.
    * 콘텐츠가 바 뒤로 스크롤될 때 글자가 바에 겹쳐 읽히는 문제를 없앤다.
-   * 위는 완전 투명 → 아래로 갈수록 흰 배경. 탭바의 글라스 질감이 죽지 않도록
-   * 탭바 높이 구간(≈55%)에서는 아직 반투명이고, 화면 맨 아래에서만 불투명해진다. */
+   *
+   * ⚠️ 순백으로 끝내면 안 된다. 일정 목록 탭처럼 페이지 배경이 gray-5 인 화면에서는
+   *    흰 띠가 그대로 보여서 "회색 영역이 따라다니는" 것처럼 읽힌다.
+   *    → 색은 gray-5 로 맞추고(흰 배경과는 2% 차이라 사실상 안 보인다),
+   *      mask 로 알파를 위→아래로 올린다. mask 는 backdrop-filter 세기도 같이 조절해
+   *      blur 가 위에서는 전혀 안 걸리고 아래로 갈수록 서서히 켜진다.
+   *      결과적으로 페이지 배경색이 흰색이든 gray-5 든 동일하게 자연스럽다. */
   .bottom-scrim {
-    background: linear-gradient(
+    background-color: var(--color-gray-5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    -webkit-mask-image: linear-gradient(
       to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.55) 45%,
-      rgba(255, 255, 255, 0.88) 75%,
-      rgb(255, 255, 255) 100%
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.55) 45%,
+      rgba(0, 0, 0, 0.88) 75%,
+      rgb(0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.55) 45%,
+      rgba(0, 0, 0, 0.88) 75%,
+      rgb(0, 0, 0) 100%
     );
   }
 }
