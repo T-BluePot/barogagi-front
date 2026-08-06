@@ -108,6 +108,11 @@ const AutoGrowTextarea = ({
       onClick={onClick}
       placeholder={placeholder}
       aria-label={ariaLabel}
+      // 엔터 키 대신 '확인/완료' 키를 띄운다.
+      // ⚠️ textarea 라 완료 키를 눌러도 줄바꿈은 그대로 입력된다(키보드가 닫히지 않음).
+      //    키보드를 닫으려면 Enter 를 가로채 blur 해야 하는데, 그러면 여러 줄 메모를 못 쓴다.
+      //    메모는 여러 줄 입력을 유지하는 쪽을 택했다.
+      enterKeyHint="done"
       // 경고 모드에선 직접 잘라내므로 속성 maxLength 제거(그래야 초과 입력이 onChange로 감지됨)
       maxLength={warnOnMaxLength ? undefined : maxLength}
       autoFocus={autoFocus}

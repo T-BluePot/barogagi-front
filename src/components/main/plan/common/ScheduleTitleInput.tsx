@@ -57,6 +57,9 @@ const ScheduleTitleInput = ({
       <input
         ref={inputRef}
         type="text"
+        // 한 줄 입력이라 줄바꿈이 필요 없다 → 엔터 대신 '확인/완료' 키를 띄운다.
+        // 실제 완료 동작(blur)은 아래 onKeyDown 이 담당한다.
+        enterKeyHint="done"
         className={clsx(inputClass, inputFontClass, inputPlaceholder)}
         placeholder={placeholder}
         value={scheduleName}
