@@ -29,6 +29,10 @@ export const SHARE_TEXT = {
    * 카카오 공유 카드 설명 문구.
    * 닉네임을 못 가져온 경우(비로그인·조회 실패)엔 이름 없는 문구로 폴백한다.
    * ("알 수 없는 사용자님이 공유했어요" 같은 문구가 나가지 않도록)
+   *
+   * ⚠️ 이 문구는 index.html 의 og:title / og:description 과 짝을 이룬다.
+   *    SDK 공유(이 파일)와 링크 붙여넣기(OG 태그)의 멘트가 갈리면 안 되므로
+   *    여기를 고치면 index.html 도 같이 고칠 것.
    */
   KAKAO_CARD_DESCRIPTION: (nickname?: string) =>
     nickname

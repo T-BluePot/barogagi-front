@@ -262,7 +262,7 @@ React 로 `<meta>` 를 런타임에 주입해도 **스크래퍼는 그걸 못 �
 | OG 속성 | 값 | 출처 (`GET /api/v1/schedule/share/{token}` 응답) |
 | --- | --- | --- |
 | `og:title` | 일정 이름 | `data.scheduleNm` |
-| `og:description` | 고정 문구 (예: "핏플에서 만든 일정이에요. 링크로 확인해보세요.") | - |
+| `og:description` | `"핏플에서 만든 일정이에요. 링크로 확인해보세요."` | 고정 문구 |
 | `og:image` | **일정의 첫 번째 장소 사진** | `data.planDetailVOList` 에서 `imageLink` 가 있는 첫 항목 |
 | `og:url` | 공유 페이지 주소 | `https://{도메인}/share/{token}` |
 
@@ -274,6 +274,14 @@ React 로 `<meta>` 를 런타임에 주입해도 **스크래퍼는 그걸 못 �
 <meta property="og:image"       content="{첫 장소 imageLink}" />
 <meta property="og:url"         content="https://fitpl.xyz/share/{token}" />
 ```
+
+> **문구를 임의로 바꾸지 말아 주세요.** 앱 안에서 **공유 > 카카오톡** 버튼으로 보내는 카드와
+> 문구가 같아야 합니다. 같은 일정을 어떤 경로로 공유하든 수신자가 보는 카드가 동일해야 하는데,
+> 지금은 SDK 경로(`src/constants/texts/main/share/index.ts`)와 이 OG 경로 두 벌로 관리됩니다.
+>
+> **선택 사항:** SDK 경로는 닉네임이 있으면 `"{닉네임}님이 일정을 공유했어요. 핏플에서 확인해보세요."` 를 씁니다.
+> 서버가 일정 소유자 닉네임을 알 수 있다면 `og:description` 도 같은 형태로 내려주시면 더 잘 맞습니다.
+> 어렵다면 위 고정 문구로 충분합니다.
 
 구현 방식은 편하신 쪽으로 부탁드립니다. 떠오르는 선택지:
 
