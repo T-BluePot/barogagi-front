@@ -16,6 +16,12 @@ export const SHARE_TEXT = {
   LINK_ERROR: "링크를 만들지 못했어요. 잠시 후 다시 시도해 주세요.",
 
   KAKAO_FAIL: "카카오톡 공유를 열지 못했습니다.",
+  /**
+   * 앱에서 카카오톡 전환이 실패했을 때. 버튼이 무반응으로 죽지 않도록
+   * 링크를 대신 복사해 주고 그 사실을 알린다. (docs/RN_BRIDGE.md §11)
+   */
+  KAKAO_FAIL_COPIED:
+    "카카오톡을 열지 못했어요. 링크를 복사했으니 붙여넣어 공유해 주세요.",
 
   ALERT_BUTTON_LABEL: "확인",
 
