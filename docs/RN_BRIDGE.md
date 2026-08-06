@@ -816,9 +816,87 @@ const canWebShare = () =>
 
 ### RN에서 해야 할 일
 
-#### 11-A. 커스텀 스킴 위임 확인 — **§4-B가 이미 커버할 가능성이 높다**
+### 🔴 실기기 확인 결과 (2026-08-07) — 원인 확정, **앱 측 수정 필요**
 
-§4-B의 `shouldAllowNavigation`이 구현돼 있다면 별도 작업이 필요 없을 수 있다:
+플레이스토어 배포본에서 **공유 → 카카오톡이 무반응**이다(모달도 안 뜨고 카카오톡도 안 열림).
+브라우저(`fitpl.xyz` 직접 접속)에서는 정상 동작한다. 즉 WebView 전용 문제다.
+
+**원인 (SDK 2.7.5 코드 실측):** Android 에서 SDK 는 아래 URL 로 `location.href` 이동한다.
+
+```text
+intent://send?<params>#Intent;scheme=kakaolink;launchFlags=0x14008000;package=com.kakao.talk;end;
+```
+
+이 요청이 §4-B `shouldAllowNavigation` 을 타고 `Linking.openURL(url)` 로 위임되는데,
+**RN Android 의 `Linking.openURL` 은 내부적으로 `Uri.parse` 를 쓰기 때문에 `intent://` 를 해석하지 못한다.**
+(`intent://` 는 `Intent.parseUri(url, Intent.URI_INTENT_SCHEME)` 로 파싱해야 한다)
+
+그리고 그 실패가 **어디에도 드러나지 않는다**:
+
+| 위치 | 코드 | 결과 |
+| --- | --- | --- |
+| **실제 앱** `WebViewScreen.tsx:274` | `Linking.openURL(url)` — **catch 없음** | unhandled rejection 으로 흘러감. release 빌드에서는 로그조차 안 남음 |
+| 이 문서 §4-B 템플릿 | `void Linking.openURL(url).catch(() => {})` | 예외 무시 (템플릿이 실제 코드와 다르다 — 아래 참고) |
+| 카카오 SDK | `try { Wr(n) } catch (e) {}` | 예외 무시 → `sendDefault` 가 throw 하지 않음 |
+
+> ⚠️ **§4-B 템플릿과 실제 앱 구현이 다르다.** 이 문서의 템플릿은 `.catch(() => {})` 로 삼키지만,
+> 실제 배포본에는 `catch` 자체가 없다. 두 경우 모두 무반응으로 끝나지만 원인 추적 난이도가 다르다 —
+> 전자는 최소한 catch 지점이 있어 로그를 심을 수 있고, 후자는 release 빌드에서 아무 흔적도 안 남는다.
+> 앱 수정 시 **`catch` 를 추가하고 로그를 남기는 것부터** 하기를 권한다.
+
+→ 웹에는 어떤 신호도 오지 않아 `shareToKakao` 가 성공으로 판단했다. 그래서 **무반응**.
+
+#### 앱 측 수정 (근본 해결)
+
+`shouldAllowNavigation` 에서 `intent://` 를 별도 분기한다. `intent://` 는 `scheme=` 파라미터에
+원래 스킴(`kakaolink`)이 들어 있고, **평문 `kakaolink://` 는 `Linking.openURL` 로 정상 처리된다.**
+
+```ts
+// intent:// 는 Linking.openURL 이 처리하지 못한다 → scheme= 을 뽑아 평문 스킴으로 되돌린다.
+const openIntentUrl = async (url: string) => {
+  const scheme = url.match(/;scheme=([^;]+)/)?.[1];
+  const fallback = url.match(/;S\.browser_fallback_url=([^;]+)/)?.[1];
+  const body = url.slice("intent://".length).split("#Intent")[0];
+
+  if (scheme) {
+    try {
+      await Linking.openURL(`${scheme}://${body}`);
+      return;
+    } catch {
+      // 카카오톡 미설치 → 아래 폴백
+    }
+  }
+  if (fallback) {
+    try {
+      await Linking.openURL(decodeURIComponent(fallback));
+      return;
+    } catch {}
+  }
+  // 최후: 마켓으로 유도 (package= 파라미터 사용)
+};
+```
+
+> ⚠️ `SendIntentAndroid.openApp` / `react-native-send-intent` 같은 라이브러리를 쓰거나,
+> 네이티브 모듈에서 `Intent.parseUri(url, Intent.URI_INTENT_SCHEME)` 로 직접 처리해도 된다.
+
+#### 웹 측 임시 대응 (완료 — 이미 설치된 빌드에도 적용됨)
+
+앱 재배포 전까지 죽은 버튼을 남기지 않기 위해, 웹이 **앱 전환이 실제로 일어났는지 관찰**한다.
+
+- `sendDefault` 호출 후 `visibilitychange(hidden)` / `pagehide` 를 1.2초 대기
+- 아무 이벤트도 없으면 전환 실패로 판단해 `false` 반환
+- 호출부(`ShareBottomSheet`)가 **링크를 자동 복사**하고 "카카오톡을 열지 못했어요. 링크를 복사했으니 붙여넣어 공유해 주세요." 안내
+
+구현: [`src/lib/kakao/kakaoShare.ts`](../src/lib/kakao/kakaoShare.ts) `waitForAppSwitch()`
+
+> 이 대응은 **증상 완화**다. 카카오톡 공유창 자체는 앱 측 수정 후에야 뜬다.
+> 앱이 고쳐지면 전환이 성공하므로 폴백은 자동으로 발동하지 않는다 — 웹 코드를 되돌릴 필요 없다.
+
+---
+
+#### 11-A. 커스텀 스킴 위임 확인 — ~~§4-B가 이미 커버할 가능성이 높다~~ **커버하지 못한다 (위 참조)**
+
+§4-B의 `shouldAllowNavigation`이 구현돼 있어도 `intent://` 는 처리되지 않는다:
 
 ```ts
 const isHttp = protocol === "http:" || protocol === "https:";
@@ -871,9 +949,9 @@ case 'share':
 
 ### RN 측 체크리스트
 
-- [ ] **실기기에서 공유 → 카카오톡 눌러보기** (§4-B가 이미 처리하면 추가 작업 불필요)
-- [ ] `shouldAllowNavigation`이 `kakaolink://` / `intent://` 를 `Linking.openURL`로 위임하는지 확인
-- [ ] Android `intent://` 스킴에서 `Linking.openURL` throw 대비 `try/catch`
+- [x] ~~실기기에서 공유 → 카카오톡 눌러보기~~ → **무반응 확인. 원인 확정(위 참조)**
+- [ ] 🔴 `shouldAllowNavigation`에 **`intent://` 전용 분기 추가** — `scheme=` 추출 후 평문 스킴으로 `Linking.openURL`
+- [ ] `.catch(() => {})` 로 실패를 조용히 삼키지 말 것 — 최소한 로그를 남겨야 다음 디버깅이 가능하다
 - [ ] 카카오 SDK 팝업(`window.open`) 경로 대응 (`setSupportMultipleWindows={false}` 등)
 - [ ] 카카오톡 미설치 시 폴백 동작 정의
 - [ ] (선택) `share` RPC 추가 — 앱에서 '더보기' 지원할 경우

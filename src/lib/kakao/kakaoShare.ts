@@ -6,11 +6,23 @@
  * - 카카오는 "플랫폼 > Web > 사이트 도메인"에 등록되지 않은 도메인의 요청을 차단하므로,
  *   배포 도메인(fitpl.xyz / test.fitpl.xyz / localhost)이 등록돼 있어야 동작한다.
  *
- * ⚠️ RN WebView 안에서의 동작은 미검증이다.
- *   카카오 공유는 커스텀 스킴으로 카카오톡 앱을 여는 방식이라 WebView가 막을 수 있다.
- *   (이 앱은 같은 이유로 OAuth 로그인을 네이티브 Custom Tab 브릿지로 전환한 전례가 있다)
- *   실기기에서 확인 후 필요하면 브릿지(openExternal) 경유로 우회할 것.
+ * ⚠️ RN WebView(앱)에서는 카카오톡이 열리지 않는다 — 실기기에서 확인됨.
+ *   SDK 2.7.5 는 Android 에서 아래 URL 로 `location.href` 이동해 카카오톡을 연다:
+ *     intent://send?...#Intent;scheme=kakaolink;launchFlags=0x14008000;package=com.kakao.talk;end;
+ *   RN 의 `Linking.openURL` 은 내부적으로 `Uri.parse` 를 쓰기 때문에 `intent://` 를 해석하지
+ *   못하고 실패한다. 그런데 그 실패가 어디에도 드러나지 않는다:
+ *     - 앱: `Linking.openURL(url)` 에 `catch` 가 없어 unhandled rejection 으로 흘러간다
+ *           (release 빌드에서는 로그조차 안 남는다)
+ *     - SDK: `try { Wr(n) } catch (e) {}` 로 삼켜서 `sendDefault` 가 throw 하지 않는다
+ *   그래서 웹에는 어떤 신호도 오지 않고 화면도 그대로다 = 무반응.
+ *
+ *   근본 해결은 앱 측에서 `intent://` 를 `Intent.parseUri(url, URI_INTENT_SCHEME)` 로 처리하는
+ *   것이라 스토어 배포가 필요하다(docs/RN_BRIDGE.md §11). 이미 설치된 빌드는 못 고친다.
+ *   → 웹은 "앱 전환이 실제로 일어났는지"를 관찰해 실패를 감지하고, 호출부가 링크 복사로
+ *     폴백할 수 있게 false 를 돌려준다. 죽은 버튼을 남기지 않는 것이 목적이다.
  */
+
+import { isNativeApp } from "@/utils/bridgeStorage";
 
 const KAKAO_SDK_URL = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.5/kakao.min.js";
 // 위 URL의 실제 파일에서 계산한 해시 (CDN 변조 방지)
@@ -99,6 +111,54 @@ const loadKakaoSdk = (): Promise<KakaoSdk | null> => {
   return sdkPromise;
 };
 
+/**
+ * 카카오톡으로 전환됐다고 인정할 최대 대기 시간.
+ * 전환에 성공하면 WebView 가 백그라운드로 내려가며 즉시 이벤트가 뜬다.
+ * 실패했을 때 사용자가 폴백 안내를 받기까지의 체감 지연이기도 해서 짧게 잡는다.
+ */
+const APP_SWITCH_TIMEOUT_MS = 1200;
+
+/**
+ * 카카오톡으로 실제 전환됐는지 관찰한다.
+ *
+ * SDK 도 RN 도 스킴 실패를 삼키기 때문에 반환값·예외로는 성공 여부를 알 수 없다.
+ * 대신 "다른 앱이 앞으로 나왔는가"를 본다 — 전환에 성공하면 WebView 가 가려지면서
+ * visibilitychange(hidden) 또는 pagehide 가 뜬다.
+ *
+ * blur 는 보지 않는다. 키보드 표시·포커스 이동만으로도 떠서 오탐이 난다.
+ *
+ * @returns 제한 시간 안에 백그라운드로 내려갔으면 true.
+ */
+const waitForAppSwitch = (): Promise<boolean> =>
+  new Promise((resolve) => {
+    let settled = false;
+
+    const cleanup = () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", handlePageHide);
+      clearTimeout(timer);
+    };
+
+    const settle = (switched: boolean) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(switched);
+    };
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "hidden") settle(true);
+    }
+    function handlePageHide() {
+      settle(true);
+    }
+
+    const timer = setTimeout(() => settle(false), APP_SWITCH_TIMEOUT_MS);
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handlePageHide);
+  });
+
 interface ShareToKakaoParams {
   /** 공유할 링크 (서버가 발급한 공유 URL) */
   url: string;
@@ -141,9 +201,14 @@ export const shareToKakao = async ({
 
   try {
     sdk.Share.sendDefault(template);
-    return true;
   } catch {
     // 미등록 도메인 차단 등 SDK 내부 오류
     return false;
   }
+
+  // 브라우저에서는 스킴 전환이 정상 동작하고, PC 는 아예 팝업(로그인/QR)으로 뜬다.
+  // 관찰이 오탐만 만들 수 있어 앱(WebView) 환경에서만 전환 성공을 검증한다.
+  if (!isNativeApp()) return true;
+
+  return waitForAppSwitch();
 };

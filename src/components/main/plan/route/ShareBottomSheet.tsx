@@ -74,15 +74,21 @@ const ShareBottomSheet = ({
   const alert = (title: string) =>
     openAlertModal({ title, buttonLabel: SHARE_TEXT.ALERT_BUTTON_LABEL });
 
-  const handleCopy = async () => {
-    if (!shareUrl) return;
+  /** 링크를 클립보드에 넣는다. 카카오 폴백과 'URL 복사' 버튼이 함께 쓴다. */
+  const copyShareUrl = async (url: string): Promise<boolean> => {
     try {
-      await window.navigator.clipboard.writeText(shareUrl);
-      alert(SHARE_TEXT.COPY_SUCCESS);
+      await window.navigator.clipboard.writeText(url);
+      return true;
     } catch {
       // 비보안 컨텍스트(http)·구형 브라우저에서는 clipboard API 가 막혀 있다
-      alert(SHARE_TEXT.COPY_FAIL);
+      return false;
     }
+  };
+
+  const handleCopy = async () => {
+    if (!shareUrl) return;
+    const copied = await copyShareUrl(shareUrl);
+    alert(copied ? SHARE_TEXT.COPY_SUCCESS : SHARE_TEXT.COPY_FAIL);
   };
 
   const handleKakao = async () => {
@@ -94,7 +100,12 @@ const ShareBottomSheet = ({
       imageUrl: thumbnailUrl,
       buttonTitle: SHARE_TEXT.KAKAO_CARD_BUTTON,
     });
-    if (!ok) alert(SHARE_TEXT.KAKAO_FAIL);
+    if (ok) return;
+
+    // 앱에서 intent:// 가 무시되면 아무 일도 안 일어난 것처럼 보인다.
+    // 죽은 버튼을 남기지 않도록 링크를 대신 복사해 준다. (docs/RN_BRIDGE.md §11)
+    const copied = await copyShareUrl(shareUrl);
+    alert(copied ? SHARE_TEXT.KAKAO_FAIL_COPIED : SHARE_TEXT.KAKAO_FAIL);
   };
 
   const handleMore = async () => {

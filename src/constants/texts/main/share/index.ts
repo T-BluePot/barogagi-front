@@ -16,6 +16,12 @@ export const SHARE_TEXT = {
   LINK_ERROR: "링크를 만들지 못했어요. 잠시 후 다시 시도해 주세요.",
 
   KAKAO_FAIL: "카카오톡 공유를 열지 못했습니다.",
+  /**
+   * 앱에서 카카오톡 전환이 실패했을 때. 버튼이 무반응으로 죽지 않도록
+   * 링크를 대신 복사해 주고 그 사실을 알린다. (docs/RN_BRIDGE.md §11)
+   */
+  KAKAO_FAIL_COPIED:
+    "카카오톡을 열지 못했어요. 링크를 복사했으니 붙여넣어 공유해 주세요.",
 
   ALERT_BUTTON_LABEL: "확인",
 
@@ -23,11 +29,15 @@ export const SHARE_TEXT = {
    * 카카오 공유 카드 설명 문구.
    * 닉네임을 못 가져온 경우(비로그인·조회 실패)엔 이름 없는 문구로 폴백한다.
    * ("알 수 없는 사용자님이 공유했어요" 같은 문구가 나가지 않도록)
+   *
+   * ⚠️ 이 문구는 index.html 의 og:title / og:description 과 짝을 이룬다.
+   *    SDK 공유(이 파일)와 링크 붙여넣기(OG 태그)의 멘트가 갈리면 안 되므로
+   *    여기를 고치면 index.html 도 같이 고칠 것.
    */
   KAKAO_CARD_DESCRIPTION: (nickname?: string) =>
     nickname
       ? `${nickname}님이 일정을 공유했어요. 핏플에서 확인해보세요.`
-      : "핏플에서 만든 일정이에요. 링크로 확인해보세요.",
+      : "새로운 일정이 기다리고 있어요. 핏플에서 확인해보세요.",
   KAKAO_CARD_BUTTON: "일정 보기",
 } as const;
 

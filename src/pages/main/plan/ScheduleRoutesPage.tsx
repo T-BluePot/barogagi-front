@@ -959,6 +959,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
               <ScheduleDetailMenu
                 onEnterReorder={() => setReorderMode(true)}
                 onDeleteSchedule={() => setIsDeleteScheduleModalOpen(true)}
+                canReorder={planList.length > 1}
               />
             </div>
           </BackHeader>
