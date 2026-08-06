@@ -60,17 +60,20 @@ export const CalendarView = ({
       <div className="flex-none">
         <Calendar {...props} />
       </div>
+      {/* shrink-0 필수 — flex-1(= flex:1 1 0%)로 두면 스크롤 컨테이너 안에서
+          넘치는 대신 남은 공간에 눌려 들어가, scrollHeight 가 clientHeight 를
+          넘지 못해 스크롤이 아예 생기지 않는다. 자연 높이를 유지해야 스크롤된다. */}
       {props.selectedDate && (
         <div
           ref={scheduleSectionRef}
-          className="flex flex-1 flex-col py-6 items-baseline gap-4"
+          className="flex shrink-0 flex-col py-6 items-baseline gap-4"
         >
           <CalendarTitle
             selectedDate={props.selectedDate}
             subTitle={!hasSchedules ? "일정이 없습니다." : undefined}
           />
 
-          <div className="flex flex-1 flex-col w-full px-6 gap-4 hide-scrollbar">
+          <div className="flex shrink-0 flex-col w-full px-6 gap-4 hide-scrollbar">
             {filteredSchedules.map((schedule) => {
               return (
                 <ScheduleCardLite
