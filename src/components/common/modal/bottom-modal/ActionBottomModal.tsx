@@ -12,6 +12,7 @@ export const ActionBottomModal = ({
       title={layoutProps.title}
       actionLabel={layoutProps.actionLabel}
       onClickAction={layoutProps.onClickAction}
+      onClickTitle={layoutProps.onClickTitle}
     />
     {children}
   </BottomModalLayout>

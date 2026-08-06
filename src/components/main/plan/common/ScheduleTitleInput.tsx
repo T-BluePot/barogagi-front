@@ -57,11 +57,18 @@ const ScheduleTitleInput = ({
       <input
         ref={inputRef}
         type="text"
+        // 한 줄 입력이라 줄바꿈이 필요 없다 → 엔터 대신 '확인/완료' 키를 띄운다.
+        // 실제 완료 동작(blur)은 아래 onKeyDown 이 담당한다.
+        enterKeyHint="done"
         className={clsx(inputClass, inputFontClass, inputPlaceholder)}
         placeholder={placeholder}
         value={scheduleName}
         onChange={(e) => setScheduleName(e.target.value)}
         onKeyDown={(e) => {
+          // 한글 IME 조합 중의 Enter 는 "입력 완료"가 아니라 "이 글자를 확정"이다.
+          // 일정명은 한글 입력이 대부분이라, 이 가드가 없으면 마지막 글자를 확정하려는
+          // 순간 편집이 종료되고 키보드가 닫힌다.
+          if (e.nativeEvent.isComposing) return;
           if (e.key === "Enter") {
             setScheduleName(e.currentTarget.value);
             e.currentTarget.blur();

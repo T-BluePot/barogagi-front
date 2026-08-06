@@ -13,7 +13,9 @@ const CreateScheduleActionButton = () => {
       type="button"
       aria-label="새 일정 만들기"
       onClick={startScheduleCreation}
-      className="fixed right-[max(24px,calc(50vw-var(--app-max-width)/2+24px))] bottom-[calc(104px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-peach text-white shadow-[0_2px_10px_var(--tw-shadow-color,rgba(255,138,101,0.45))] transition-colors duration-120 ease-fitpl active:bg-peach-active"
+      // 치수는 globals.css 의 --fab-* 토큰을 쓴다. 콘텐츠 하단 여백(.pb-tabbar)이
+      // 같은 토큰으로 계산되므로, 여기서 크기를 바꾸면 여백도 같이 따라온다.
+      className="fixed right-[max(24px,calc(50vw-var(--app-max-width)/2+24px))] bottom-[calc(var(--fab-bottom)+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-30 flex h-[var(--fab-size)] w-[var(--fab-size)] items-center justify-center rounded-full bg-peach text-white shadow-[0_2px_10px_var(--tw-shadow-color,rgba(255,138,101,0.45))] transition-colors duration-120 ease-fitpl active:bg-peach-active"
     >
       <svg
         width={24}

@@ -24,10 +24,19 @@ interface DetailHeaderProps {
 
 export interface TitleWithActionHeaderProps {
   title: string;
-  /** 이름 미입력(placeholder "내 일정") 상태면 title을 회색 + 얇은 폰트로 표시 */
+  /** 이름 미입력(placeholder "내 계획") 상태면 title을 회색 + 얇은 폰트로 표시 */
   titlePlaceholder?: boolean;
   actionLabel?: string;
   onClickAction?: () => void;
+  /**
+   * 제목 텍스트 자체를 눌렀을 때의 동작.
+   *
+   * 우측 액션 링크가 작아 잘 안 눌린다는 피드백으로 추가했다.
+   * `onClickAction` 을 그대로 재사용하지 않는 이유: 액션이 항상 "제목 편집"인 건 아니다.
+   * (예: SelectRegionBottomModal 의 액션은 "지역 변경" — 제목을 눌러 초기화되면 안 된다)
+   * → 제목 편집이 맞는 모달만 이 prop 을 넘긴다.
+   */
+  onClickTitle?: () => void;
 }
 
 // 두 인터페이스를 유니언으로 합쳐 최종 Props 완성

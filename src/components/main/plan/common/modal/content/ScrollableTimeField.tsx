@@ -80,6 +80,17 @@ export const ScrollableTimeField = ({
         <input
           type="text"
           inputMode="numeric"
+          // 숫자 두 자리 입력이라 줄바꿈이 필요 없다 → 엔터 대신 '확인/완료' 키
+          enterKeyHint="done"
+          onKeyDown={(e) => {
+            // 숫자 입력이라 조합이 일어날 일은 거의 없지만, 키보드를 한글로 둔 채
+            // 들어오는 경우가 있어 다른 입력들과 동일하게 가드를 둔다.
+            if (e.nativeEvent.isComposing) return;
+            if (e.key === "Enter") {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+          }}
           value={value}
           aria-label={ariaLabel}
           onChange={(e) => {
