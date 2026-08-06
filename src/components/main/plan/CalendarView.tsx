@@ -56,7 +56,7 @@ export const CalendarView = ({
   }, [selectedDate, hasSchedules]);
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-5 overflow-y-auto hide-scrollbar">
+    <div className="pb-tabbar flex flex-col w-full h-full bg-gray-5 overflow-y-auto hide-scrollbar">
       <div className="flex-none">
         <Calendar {...props} />
       </div>

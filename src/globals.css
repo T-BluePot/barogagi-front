@@ -137,6 +137,19 @@
     padding-right: max(env(safe-area-inset-right, 0px), var(--sai-right, 0px));
   }
 
+  /* 탭 페이지가 하단 플로팅 탭바에 가리지 않도록 주는 여백.
+   *
+   * ⚠️ 반드시 **배경색을 가진 스크롤 컨테이너 자신**에 붙일 것.
+   *    상위 래퍼(TabBarLayout 의 main 등)에 padding 으로 주면 그 영역이 자식 배경 박스
+   *    바깥이라, 페이지 배경이 화면 아래끝까지 못 가고 MainLayout 의 흰색이 드러난다.
+   *    그 경계선이 스크롤할 때 따라다니는 것처럼 보인다(일정 목록 탭에서 실제로 발생). */
+  .pb-tabbar {
+    padding-bottom: calc(
+      var(--tabbar-height) + var(--tabbar-bottom) + 24px +
+        max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px))
+    );
+  }
+
   /* 하단 플로팅 UI(탭바·FAB) 뒤에 깔리는 스크림.
    * 콘텐츠가 바 뒤로 스크롤될 때 글자가 바에 겹쳐 읽히는 문제를 없앤다.
    *
@@ -148,20 +161,35 @@
    *      결과적으로 페이지 배경색이 흰색이든 gray-5 든 동일하게 자연스럽다. */
   .bottom-scrim {
     background-color: var(--color-gray-5);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    /* 스톱이 적은 선형 램프는 시작 지점이 '선'처럼 읽힌다.
+     * ease-in 곡선을 촘촘한 스톱으로 근사해서 위쪽 가장자리를 깃털처럼 흐린다.
+     * mask 는 backdrop-filter 세기도 같이 조절하므로 blur 도 같은 곡선으로 서서히 켜진다. */
     -webkit-mask-image: linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.55) 45%,
-      rgba(0, 0, 0, 0.88) 75%,
+      rgba(0, 0, 0, 0.02) 14%,
+      rgba(0, 0, 0, 0.08) 26%,
+      rgba(0, 0, 0, 0.19) 38%,
+      rgba(0, 0, 0, 0.35) 50%,
+      rgba(0, 0, 0, 0.54) 62%,
+      rgba(0, 0, 0, 0.73) 73%,
+      rgba(0, 0, 0, 0.88) 84%,
+      rgba(0, 0, 0, 0.97) 93%,
       rgb(0, 0, 0) 100%
     );
     mask-image: linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.55) 45%,
-      rgba(0, 0, 0, 0.88) 75%,
+      rgba(0, 0, 0, 0.02) 14%,
+      rgba(0, 0, 0, 0.08) 26%,
+      rgba(0, 0, 0, 0.19) 38%,
+      rgba(0, 0, 0, 0.35) 50%,
+      rgba(0, 0, 0, 0.54) 62%,
+      rgba(0, 0, 0, 0.73) 73%,
+      rgba(0, 0, 0, 0.88) 84%,
+      rgba(0, 0, 0, 0.97) 93%,
       rgb(0, 0, 0) 100%
     );
   }
