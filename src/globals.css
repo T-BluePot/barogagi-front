@@ -154,8 +154,7 @@
    * = 176px. 스크림(200px)의 상단 12% 구간이라 알파가 사실상 0 이어서 흐려지지도 않는다. */
   .pb-tabbar {
     padding-bottom: calc(
-      var(--fab-bottom) + var(--fab-size) + 16px +
-        max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px))
+      var(--fab-bottom) + var(--fab-size) + 16px + max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px))
     );
   }
 

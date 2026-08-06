@@ -48,6 +48,9 @@ const TextInput = ({
       // 한 줄 입력이라 줄바꿈이 필요 없다 → 엔터 대신 '확인/완료' 키를 띄우고, 누르면 키보드를 닫는다
       enterKeyHint="done"
       onKeyDown={(e) => {
+        // 한글 IME 조합 중의 Enter 는 "입력 완료"가 아니라 "이 글자를 확정"이다.
+        // 그것까지 blur 하면 마지막 글자를 확정하려는 순간 키보드가 닫힌다.
+        if (e.nativeEvent.isComposing) return;
         if (e.key === "Enter") {
           e.preventDefault();
           e.currentTarget.blur();

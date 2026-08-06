@@ -823,7 +823,7 @@ const canWebShare = () =>
 
 **원인 (SDK 2.7.5 코드 실측):** Android 에서 SDK 는 아래 URL 로 `location.href` 이동한다.
 
-```
+```text
 intent://send?<params>#Intent;scheme=kakaolink;launchFlags=0x14008000;package=com.kakao.talk;end;
 ```
 

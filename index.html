@@ -33,7 +33,13 @@
          한쪽만 고치면 SDK 공유와 링크 붙여넣기의 멘트가 갈린다 — 반드시 같이 수정할 것. -->
     <meta property="og:title" content="새로운 일정이 기다리고 있어요" />
     <meta property="og:description" content="핏플에서 확인해보세요." />
-    <meta property="og:url" content="https://fitpl.xyz" />
+    <!-- og:url 은 일부러 두지 않는다.
+         정적 HTML 이라 값을 박으면 모든 페이지가 같은 주소를 갖게 되는데,
+         일부 메신저는 og:url 을 **클릭 목적지**로 쓴다. 그러면 /share/{token} 링크를
+         공유해도 수신자가 홈으로 이동해 공유 자체가 무의미해진다.
+         생략하면 스크래퍼가 실제 접속한 주소를 그대로 쓴다.
+         서버가 /share/{token} 에 메타를 주입하게 되면 그때 정확한 값을 넣는다. -->
+
     <!-- 스크래퍼(카카오 서버)가 직접 가져가므로 반드시 절대 URL 이어야 한다.
          테스트 도메인에서도 같은 이미지를 쓰면 되므로 운영 주소로 고정한다. -->
     <meta property="og:image" content="https://fitpl.xyz/og-image.png" />

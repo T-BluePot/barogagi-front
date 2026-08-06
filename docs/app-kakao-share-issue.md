@@ -41,7 +41,7 @@ Qr(n, r);   // n = 평문 스킴, r = intent URI
 
 즉 **Android에서는 `r`(intent URI)로 `location.href` 이동**합니다.
 
-```
+```text
 intent://send?<params>#Intent;scheme=kakaolink;launchFlags=0x14008000;package=com.kakao.talk;end;
 ```
 
@@ -91,7 +91,7 @@ const shouldAllowNavigation = (req) => {
 
 기대 출력:
 
-```
+```text
 [nav] 외부 위임 시도: intent://send?...#Intent;scheme=kakaolink;launchFlags=0x14008000;package=com.kakao.talk;end;
 [nav] openURL 실패: intent://send?... [Error: Could not open URL / No Activity found to handle Intent]
 ```

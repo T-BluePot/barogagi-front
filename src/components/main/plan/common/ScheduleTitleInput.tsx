@@ -65,6 +65,10 @@ const ScheduleTitleInput = ({
         value={scheduleName}
         onChange={(e) => setScheduleName(e.target.value)}
         onKeyDown={(e) => {
+          // 한글 IME 조합 중의 Enter 는 "입력 완료"가 아니라 "이 글자를 확정"이다.
+          // 일정명은 한글 입력이 대부분이라, 이 가드가 없으면 마지막 글자를 확정하려는
+          // 순간 편집이 종료되고 키보드가 닫힌다.
+          if (e.nativeEvent.isComposing) return;
           if (e.key === "Enter") {
             setScheduleName(e.currentTarget.value);
             e.currentTarget.blur();
