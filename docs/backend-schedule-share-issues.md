@@ -262,7 +262,7 @@ React 로 `<meta>` 를 런타임에 주입해도 **스크래퍼는 그걸 못 �
 | OG 속성 | 값 | 출처 (`GET /api/v1/schedule/share/{token}` 응답) |
 | --- | --- | --- |
 | `og:title` | 일정 이름 | `data.scheduleNm` |
-| `og:description` | `"핏플에서 만든 일정이에요. 링크로 확인해보세요."` | 고정 문구 |
+| `og:description` | `"새로운 일정이 기다리고 있어요. 핏플에서 확인해보세요."` | 고정 문구 |
 | `og:image` | **일정의 첫 번째 장소 사진** | `data.planDetailVOList` 에서 `imageLink` 가 있는 첫 항목 |
 | `og:url` | 공유 페이지 주소 | `https://{도메인}/share/{token}` |
 
@@ -270,7 +270,7 @@ React 로 `<meta>` 를 런타임에 주입해도 **스크래퍼는 그걸 못 �
 <meta property="og:type"        content="website" />
 <meta property="og:site_name"   content="핏플" />
 <meta property="og:title"       content="{scheduleNm}" />
-<meta property="og:description" content="핏플에서 만든 일정이에요. 링크로 확인해보세요." />
+<meta property="og:description" content="새로운 일정이 기다리고 있어요. 핏플에서 확인해보세요." />
 <meta property="og:image"       content="{첫 장소 imageLink}" />
 <meta property="og:url"         content="https://fitpl.xyz/share/{token}" />
 ```

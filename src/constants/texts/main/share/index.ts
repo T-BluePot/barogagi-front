@@ -37,7 +37,7 @@ export const SHARE_TEXT = {
   KAKAO_CARD_DESCRIPTION: (nickname?: string) =>
     nickname
       ? `${nickname}님이 일정을 공유했어요. 핏플에서 확인해보세요.`
-      : "핏플에서 만든 일정이에요. 링크로 확인해보세요.",
+      : "새로운 일정이 기다리고 있어요. 핏플에서 확인해보세요.",
   KAKAO_CARD_BUTTON: "일정 보기",
 } as const;
 
