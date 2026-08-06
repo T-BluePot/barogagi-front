@@ -1,13 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>기본 세팅</title>
+
+    <title>핏플 | 내 일정에 딱 fit한 선택</title>
+    <meta
+      name="description"
+      content="취향에 맞는 장소로 하루 일정을 만들고, 링크 하나로 공유해보세요."
+    />
+
+    <!-- Open Graph — 카카오톡·메신저에 '링크'를 붙여넣었을 때 뜨는 미리보기 카드.
+         카카오 SDK 공유(Kakao.Share.sendDefault)는 카드 정보를 직접 실어보내므로 이 태그와 무관하다.
+         여기 값은 URL 복사 후 붙여넣기 / 네이티브 공유 시트 경로에서만 쓰인다.
+
+         ⚠️ 이 값은 모든 페이지에 동일하게 적용되는 고정값이다.
+            카카오 스크래퍼는 JS를 실행하지 않으므로, SPA 가 런타임에 주입한 메타 태그는 읽히지 않는다.
+            즉 /share/{token} 링크를 공유해도 일정별 제목·썸네일은 나오지 않는다.
+            일정별 카드가 필요하면 서버가 크롤러 요청에 메타를 넣어 응답해야 한다. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="핏플" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:title" content="핏플 | 내 일정에 딱 fit한 선택" />
+    <meta
+      property="og:description"
+      content="취향에 맞는 장소로 하루 일정을 만들고, 링크 하나로 공유해보세요."
+    />
+    <meta property="og:url" content="https://fitpl.xyz" />
+    <!-- 스크래퍼(카카오 서버)가 직접 가져가므로 반드시 절대 URL 이어야 한다.
+         테스트 도메인에서도 같은 이미지를 쓰면 되므로 운영 주소로 고정한다. -->
+    <meta property="og:image" content="https://fitpl.xyz/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="핏플 - 내 일정에 맞는 fit한 선택" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://fitpl.xyz/og-image.png" />
+    <meta name="twitter:title" content="핏플 | 내 일정에 딱 fit한 선택" />
+    <meta
+      name="twitter:description"
+      content="취향에 맞는 장소로 하루 일정을 만들고, 링크 하나로 공유해보세요."
+    />
+
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
