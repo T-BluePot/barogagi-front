@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { format } from "date-fns";
 
 import { CalendarTitle } from "./CalendarTitle";
@@ -32,13 +33,38 @@ export const CalendarView = ({
   // 일정 존재 여부
   const hasSchedules = filteredSchedules.length > 0;
 
+  // 달력이 화면을 거의 채워서, 날짜를 눌러도 아래 일정 카드가 뷰포트 밖에 있으면
+  // 아무 일도 안 일어난 것처럼 보인다 → 일정이 있을 때만 목록을 시야로 끌어온다.
+  const scheduleSectionRef = useRef<HTMLDivElement>(null);
+  // 첫 렌더(진입 시 오늘 날짜가 이미 선택된 상태)에는 스크롤하지 않는다.
+  // 사용자가 "누른" 결과일 때만 움직여야 달력이 제멋대로 튀지 않는다.
+  const isFirstRenderRef = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+    if (!hasSchedules) return;
+
+    // block: "nearest" — 이미 보이면 안 움직이고, 가려져 있을 때만 최소한으로 스크롤한다.
+    scheduleSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+    // selectedDate 문자열 기준 — 같은 날을 다시 눌렀을 땐 재실행하지 않는다
+  }, [selectedDate, hasSchedules]);
+
   return (
     <div className="flex flex-col w-full h-full bg-gray-5 overflow-y-auto hide-scrollbar">
       <div className="flex-none">
         <Calendar {...props} />
       </div>
       {props.selectedDate && (
-        <div className="flex flex-1 flex-col py-6 items-baseline gap-4">
+        <div
+          ref={scheduleSectionRef}
+          className="flex flex-1 flex-col py-6 items-baseline gap-4"
+        >
           <CalendarTitle
             selectedDate={props.selectedDate}
             subTitle={!hasSchedules ? "일정이 없습니다." : undefined}
