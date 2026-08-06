@@ -45,6 +45,9 @@
   /* 하단 탭바 지오메트리 (BottomTabBar·TabBarLayout 공통 — 변경 시 여기 한 곳만 수정) */
   --tabbar-height: 68px; /* 탭바 자체 높이 */
   --tabbar-bottom: 24px; /* 화면 하단에서 탭바까지 간격 */
+  /* 탭바·FAB 아래 깔리는 스크림 높이.
+   * FAB 상단이 하단에서 160px(bottom 104 + 높이 56)이라, 그보다 위에서 페이드가 시작되도록 잡았다. */
+  --tabbar-scrim-height: 200px;
 
   /* Gray Scale */
   --color-gray-black: #1e1e1e;
@@ -132,6 +135,20 @@
   }
   .pr-safe {
     padding-right: max(env(safe-area-inset-right, 0px), var(--sai-right, 0px));
+  }
+
+  /* 하단 플로팅 UI(탭바·FAB) 뒤에 깔리는 스크림.
+   * 콘텐츠가 바 뒤로 스크롤될 때 글자가 바에 겹쳐 읽히는 문제를 없앤다.
+   * 위는 완전 투명 → 아래로 갈수록 흰 배경. 탭바의 글라스 질감이 죽지 않도록
+   * 탭바 높이 구간(≈55%)에서는 아직 반투명이고, 화면 맨 아래에서만 불투명해진다. */
+  .bottom-scrim {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.55) 45%,
+      rgba(255, 255, 255, 0.88) 75%,
+      rgb(255, 255, 255) 100%
+    );
   }
 }
 
