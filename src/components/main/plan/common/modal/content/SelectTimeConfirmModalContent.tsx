@@ -5,6 +5,7 @@ import {
 } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
 import { useEffect, useRef, useState } from "react";
+import { MinuteQuickButtons } from "./MinuteQuickButtons";
 import { ScrollableTimeField } from "./ScrollableTimeField";
 
 interface SelectTimeConfirmModalContentProps {
@@ -114,64 +115,83 @@ export const SelectTimeConfirmModalContent = ({
       </h2>
 
       {/* 시작 시간 */}
-      <div className="flex items-center justify-center gap-4 bg-gray-5 rounded-xl px-6 py-3 w-full">
-        <ScrollableTimeField
-          value={startTime.period}
-          items={PERIODS}
-          wrap={false}
-          ariaLabel="시작 오전 오후"
-          widthClass="w-15"
-          onChange={(v) => handleStartTimeChange("period", v)}
-        />
-        <ScrollableTimeField
-          value={startTime.hour}
-          items={HOURS}
-          editable
-          validate={validateHourInput}
-          ariaLabel="시작 시"
-          onChange={(v) => handleStartTimeChange("hour", v)}
-        />
-        <span className="text-[18px] font-semibold text-gray-black">:</span>
-        <ScrollableTimeField
-          value={startTime.minute}
-          items={MINUTES}
-          editable
-          validate={validateMinuteInput}
-          ariaLabel="시작 분"
-          onChange={(v) => handleStartTimeChange("minute", v)}
-        />
+      <div className="bg-gray-5 rounded-xl px-6 py-3 w-full">
+        {/* w-fit 래퍼로 감싸 분 지름길 버튼이 시간 그룹의 오른쪽 끝(분 칸)에 정렬되게 한다 */}
+        <div className="mx-auto flex w-fit flex-col gap-2">
+          <div className="flex items-center gap-4">
+            <ScrollableTimeField
+              value={startTime.period}
+              items={PERIODS}
+              wrap={false}
+              ariaLabel="시작 오전 오후"
+              widthClass="w-15"
+              onChange={(v) => handleStartTimeChange("period", v)}
+            />
+            <ScrollableTimeField
+              value={startTime.hour}
+              items={HOURS}
+              editable
+              validate={validateHourInput}
+              ariaLabel="시작 시"
+              onChange={(v) => handleStartTimeChange("hour", v)}
+            />
+            <span className="text-[18px] font-semibold text-gray-black">:</span>
+            <ScrollableTimeField
+              value={startTime.minute}
+              items={MINUTES}
+              editable
+              validate={validateMinuteInput}
+              ariaLabel="시작 분"
+              onChange={(v) => handleStartTimeChange("minute", v)}
+            />
+          </div>
+          <MinuteQuickButtons
+            value={startTime.minute}
+            labelPrefix="시작"
+            onSelect={(v) => handleStartTimeChange("minute", v)}
+          />
+        </div>
       </div>
 
       {/* 구분자 */}
       <span className="typo-body text-gray-60">부터</span>
 
       {/* 종료 시간 */}
-      <div className="flex items-center justify-center gap-4 bg-gray-5 rounded-xl px-6 py-3 w-full">
-        <ScrollableTimeField
-          value={endTime.period}
-          items={PERIODS}
-          wrap={false}
-          ariaLabel="종료 오전 오후"
-          widthClass="w-15"
-          onChange={(v) => handleEndTimeChange("period", v)}
-        />
-        <ScrollableTimeField
-          value={endTime.hour}
-          items={HOURS}
-          editable
-          validate={validateHourInput}
-          ariaLabel="종료 시"
-          onChange={(v) => handleEndTimeChange("hour", v)}
-        />
-        <span className="text-[18px] font-semibold text-gray-black">:</span>
-        <ScrollableTimeField
-          value={endTime.minute}
-          items={MINUTES}
-          editable
-          validate={validateMinuteInput}
-          ariaLabel="종료 분"
-          onChange={(v) => handleEndTimeChange("minute", v)}
-        />
+      <div className="bg-gray-5 rounded-xl px-6 py-3 w-full">
+        <div className="mx-auto flex w-fit flex-col gap-2">
+          <div className="flex items-center gap-4">
+            <ScrollableTimeField
+              value={endTime.period}
+              items={PERIODS}
+              wrap={false}
+              ariaLabel="종료 오전 오후"
+              widthClass="w-15"
+              onChange={(v) => handleEndTimeChange("period", v)}
+            />
+            <ScrollableTimeField
+              value={endTime.hour}
+              items={HOURS}
+              editable
+              validate={validateHourInput}
+              ariaLabel="종료 시"
+              onChange={(v) => handleEndTimeChange("hour", v)}
+            />
+            <span className="text-[18px] font-semibold text-gray-black">:</span>
+            <ScrollableTimeField
+              value={endTime.minute}
+              items={MINUTES}
+              editable
+              validate={validateMinuteInput}
+              ariaLabel="종료 분"
+              onChange={(v) => handleEndTimeChange("minute", v)}
+            />
+          </div>
+          <MinuteQuickButtons
+            value={endTime.minute}
+            labelPrefix="종료"
+            onSelect={(v) => handleEndTimeChange("minute", v)}
+          />
+        </div>
       </div>
     </div>
   );

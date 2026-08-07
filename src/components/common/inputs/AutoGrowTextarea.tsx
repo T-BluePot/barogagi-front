@@ -95,12 +95,24 @@ const AutoGrowTextarea = ({
     onChange(clampAndWarn(e.currentTarget.value));
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // 한글 IME 조합 중의 Enter 는 "입력 완료"가 아니라 "이 글자를 확정"이다.
+    // 그것까지 편집 종료로 보면 마지막 글자를 확정하려는 순간 키보드가 닫힌다.
+    // (warnOnMaxLength 여부와 무관하게 조합 중인지 판정해야 하므로 nativeEvent 로 확인)
+    if (e.nativeEvent.isComposing) return;
+    if (e.key !== "Enter") return;
+    // 줄바꿈을 넣지 않고 편집을 끝낸다 → blur 로 키보드가 닫히고 onBlur 커밋이 돈다
+    e.preventDefault();
+    e.currentTarget.blur();
+  };
+
   return (
     <textarea
       ref={ref}
       rows={1}
       value={value}
       onChange={handleChange}
+      onKeyDown={handleKeyDown}
       onCompositionStart={warnOnMaxLength ? handleCompositionStart : undefined}
       onCompositionEnd={warnOnMaxLength ? handleCompositionEnd : undefined}
       onAnimationEnd={(e) => e.currentTarget.classList.remove(WARN_CLASS)}
@@ -108,10 +120,8 @@ const AutoGrowTextarea = ({
       onClick={onClick}
       placeholder={placeholder}
       aria-label={ariaLabel}
-      // 엔터 키 대신 '확인/완료' 키를 띄운다.
-      // ⚠️ textarea 라 완료 키를 눌러도 줄바꿈은 그대로 입력된다(키보드가 닫히지 않음).
-      //    키보드를 닫으려면 Enter 를 가로채 blur 해야 하는데, 그러면 여러 줄 메모를 못 쓴다.
-      //    메모는 여러 줄 입력을 유지하는 쪽을 택했다.
+      // 엔터 키 대신 '확인/완료' 키를 띄우고, 누르면 실제로 편집을 끝낸다(위 handleKeyDown).
+      // 짧은 메모(≤50자)용 입력이라 줄바꿈보다 "완료로 닫기"가 기대 동작이다.
       enterKeyHint="done"
       // 경고 모드에선 직접 잘라내므로 속성 maxLength 제거(그래야 초과 입력이 onChange로 감지됨)
       maxLength={warnOnMaxLength ? undefined : maxLength}
