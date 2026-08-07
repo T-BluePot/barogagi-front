@@ -117,7 +117,7 @@ export const SelectTimeConfirmModalContent = ({
       {/* 시작 시간 */}
       <div className="bg-gray-5 rounded-xl px-6 py-3 w-full">
         {/* w-fit 래퍼로 감싸 분 지름길 버튼이 시간 그룹의 오른쪽 끝(분 칸)에 정렬되게 한다 */}
-        <div className="mx-auto flex w-fit flex-col gap-2">
+        <div className="mx-auto flex w-fit flex-col gap-4">
           <div className="flex items-center gap-4">
             <ScrollableTimeField
               value={startTime.period}
@@ -146,7 +146,6 @@ export const SelectTimeConfirmModalContent = ({
             />
           </div>
           <MinuteQuickButtons
-            value={startTime.minute}
             labelPrefix="시작"
             onSelect={(v) => handleStartTimeChange("minute", v)}
           />
@@ -158,7 +157,7 @@ export const SelectTimeConfirmModalContent = ({
 
       {/* 종료 시간 */}
       <div className="bg-gray-5 rounded-xl px-6 py-3 w-full">
-        <div className="mx-auto flex w-fit flex-col gap-2">
+        <div className="mx-auto flex w-fit flex-col gap-4">
           <div className="flex items-center gap-4">
             <ScrollableTimeField
               value={endTime.period}
@@ -187,7 +186,6 @@ export const SelectTimeConfirmModalContent = ({
             />
           </div>
           <MinuteQuickButtons
-            value={endTime.minute}
             labelPrefix="종료"
             onSelect={(v) => handleEndTimeChange("minute", v)}
           />
