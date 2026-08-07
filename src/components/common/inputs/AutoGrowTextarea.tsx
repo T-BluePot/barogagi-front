@@ -100,7 +100,10 @@ const AutoGrowTextarea = ({
     // 그것까지 편집 종료로 보면 마지막 글자를 확정하려는 순간 키보드가 닫힌다.
     // (warnOnMaxLength 여부와 무관하게 조합 중인지 판정해야 하므로 nativeEvent 로 확인)
     if (e.nativeEvent.isComposing) return;
-    if (e.key !== "Enter") return;
+    // Shift+Enter 는 줄바꿈 탈출구로 남긴다. 저장된 메모는 whitespace-pre-wrap 으로
+    // 렌더되어 줄바꿈이 보존되므로 여러 줄 입력 수단이 필요하다.
+    // (모바일 완료 키는 Shift 를 동반하지 않아 "완료 = 편집 종료" 동작에는 영향 없음)
+    if (e.key !== "Enter" || e.shiftKey) return;
     // 줄바꿈을 넣지 않고 편집을 끝낸다 → blur 로 키보드가 닫히고 onBlur 커밋이 돈다
     e.preventDefault();
     e.currentTarget.blur();
