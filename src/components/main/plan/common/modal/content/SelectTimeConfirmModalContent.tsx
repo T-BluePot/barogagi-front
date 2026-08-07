@@ -1,10 +1,6 @@
-import {
-  enforceTimeOrder,
-  validateHourInput,
-  validateMinuteInput,
-} from "@/utils/date";
+import { validateHourInput, validateMinuteInput } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { MinuteQuickButtons } from "./MinuteQuickButtons";
 import { ScrollableTimeField } from "./ScrollableTimeField";
 
@@ -29,19 +25,54 @@ const MINUTES = Array.from({ length: 60 }, (_, i) =>
 
 const pad2 = (v: string) => v.padStart(2, "0");
 
-// 조정이 멈췄다고 판단할 시간(ms) — 이 시간 동안 추가 변경이 없으면 보정 실행
-const SETTLE_MS = 300;
+/** HOURS 목록에서 시(時) 문자열의 인덱스 ("01" → 0 … "12" → 11) */
+const hourToIndex = (hour: string) => Number(pad2(hour)) - 1;
 
 /**
- * 시(時)가 11↔12 경계를 넘으면 오전/오후를 자동 전환한다.
- * (오전11 → 오후12, 오후11 → 오전12 처럼 정오/자정을 지나는 지점에서 뒤집힘)
+ * 시 칸을 steps 칸 이동하는 동안 정오/자정 경계를 몇 번 지났는지 센다.
+ *
+ * 경계는 11↔12 사이다 (오전11 → 오후12 = 정오, 오후11 → 오전12 = 자정).
+ * - 앞으로 갈 때: 12(인덱스 11)에 들어서는 순간마다 1회
+ * - 뒤로 갈 때: 12에서 11(인덱스 10)로 내려서는 순간마다 1회
+ *
+ * 관성 스크롤은 여러 칸을 한 번에 건너뛰므로 끝값만으로는 판단할 수 없다.
+ * 예) 09 → 03 은 앞으로 6칸(정오 통과) 일 수도, 뒤로 6칸(통과 안 함) 일 수도 있다.
  */
-const applyHourChange = (time: TimeValue, newHour: string): TimeValue => {
+const countNoonCrossings = (fromIndex: number, steps: number): number => {
+  const mod12 = (n: number) => ((n % 12) + 12) % 12;
+  let crossings = 0;
+  if (steps > 0) {
+    for (let j = fromIndex + 1; j <= fromIndex + steps; j++) {
+      if (mod12(j) === 11) crossings++;
+    }
+  } else {
+    for (let j = fromIndex - 1; j >= fromIndex + steps; j--) {
+      if (mod12(j) === 10) crossings++;
+    }
+  }
+  return crossings;
+};
+
+/**
+ * 시(時)가 정오/자정을 지나면 오전/오후를 자동 전환한다.
+ *
+ * - steps 가 있으면(스크롤·화살표) 경로상 경계 통과 횟수가 홀수일 때 전환
+ * - steps 가 없으면(직접 입력) 인접 이동으로 보고 11↔12 만 판정
+ */
+const applyHourChange = (
+  time: TimeValue,
+  newHour: string,
+  steps?: number
+): TimeValue => {
   const prev = pad2(time.hour);
   const next = pad2(newHour);
-  const crossesNoon =
-    (prev === "11" && next === "12") || (prev === "12" && next === "11");
-  const period = crossesNoon
+
+  const flips =
+    steps != null && steps !== 0
+      ? countNoonCrossings(hourToIndex(prev), steps) % 2 === 1
+      : (prev === "11" && next === "12") || (prev === "12" && next === "11");
+
+  const period = flips
     ? time.period === "오전"
       ? "오후"
       : "오전"
@@ -57,55 +88,35 @@ export const SelectTimeConfirmModalContent = ({
   const [startTime, setStartTime] = useState<TimeValue>(initialStartTime);
   const [endTime, setEndTime] = useState<TimeValue>(initialEndTime);
 
-  // 마지막으로 사용자가 조정한 칸 (보정 방향 결정용)
-  const lastEditedRef = useRef<"start" | "end">("start");
-  // 조정이 멈춘 뒤(settle) 보정을 실행하기 위한 디바운스 타이머
-  const settleTimerRef = useRef<number | null>(null);
-
-  const handleStartTimeChange = (field: keyof TimeValue, value: string) => {
-    lastEditedRef.current = "start";
+  const handleStartTimeChange = (
+    field: keyof TimeValue,
+    value: string,
+    steps?: number
+  ) => {
     const newStartTime =
       field === "hour"
-        ? applyHourChange(startTime, value)
+        ? applyHourChange(startTime, value, steps)
         : { ...startTime, [field]: value };
     setStartTime(newStartTime);
     onChangeTime?.(newStartTime, endTime);
   };
 
-  const handleEndTimeChange = (field: keyof TimeValue, value: string) => {
-    lastEditedRef.current = "end";
+  const handleEndTimeChange = (
+    field: keyof TimeValue,
+    value: string,
+    steps?: number
+  ) => {
     const newEndTime =
       field === "hour"
-        ? applyHourChange(endTime, value)
+        ? applyHourChange(endTime, value, steps)
         : { ...endTime, [field]: value };
     setEndTime(newEndTime);
     onChangeTime?.(startTime, newEndTime);
   };
 
-  // 시작/종료 조정이 멈추면(settle) 종료 > 시작이 되도록 보정
-  useEffect(() => {
-    if (settleTimerRef.current != null) {
-      window.clearTimeout(settleTimerRef.current);
-    }
-    settleTimerRef.current = window.setTimeout(() => {
-      const corrected = enforceTimeOrder(
-        startTime,
-        endTime,
-        lastEditedRef.current
-      );
-      if (corrected.start !== startTime) setStartTime(corrected.start);
-      if (corrected.end !== endTime) setEndTime(corrected.end);
-      if (corrected.start !== startTime || corrected.end !== endTime) {
-        onChangeTime?.(corrected.start, corrected.end);
-      }
-    }, SETTLE_MS);
-
-    return () => {
-      if (settleTimerRef.current != null) {
-        window.clearTimeout(settleTimerRef.current);
-      }
-    };
-  }, [startTime, endTime, onChangeTime]);
+  // 편집 중에는 순서 보정을 하지 않는다.
+  // 예전엔 조정이 멈출 때마다(300ms) 보정이 끼어들어, 방금 맞춘 값이 뒤에서 밀리는 느낌이었다.
+  // 보정은 확인(저장) 시점에 SelectTimeConfirmModal 이 한 번만 수행한다.
 
   return (
     <div className="flex flex-col items-center gap-4 py-4">
@@ -133,7 +144,7 @@ export const SelectTimeConfirmModalContent = ({
               editable
               validate={validateHourInput}
               ariaLabel="시작 시"
-              onChange={(v) => handleStartTimeChange("hour", v)}
+              onChange={(v, steps) => handleStartTimeChange("hour", v, steps)}
             />
             <span className="text-[18px] font-semibold text-gray-black">:</span>
             <ScrollableTimeField
@@ -173,7 +184,7 @@ export const SelectTimeConfirmModalContent = ({
               editable
               validate={validateHourInput}
               ariaLabel="종료 시"
-              onChange={(v) => handleEndTimeChange("hour", v)}
+              onChange={(v, steps) => handleEndTimeChange("hour", v, steps)}
             />
             <span className="text-[18px] font-semibold text-gray-black">:</span>
             <ScrollableTimeField

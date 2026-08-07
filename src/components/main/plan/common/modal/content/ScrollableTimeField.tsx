@@ -24,8 +24,13 @@ interface ScrollableTimeFieldProps {
   value: string;
   /** 선택 가능한 값 목록 (2자리 0패딩 기준) */
   items: string[];
-  /** 값이 바뀔 때 호출 — 스크롤이 멈춘 뒤에만 불린다 */
-  onChange: (value: string) => void;
+  /**
+   * 값이 바뀔 때 호출 — 스크롤이 멈춘 뒤에만 불린다.
+   * steps 는 이번 이동에서 몇 칸을 지났는지(부호 있음). 관성으로 여러 칸을 건너뛰면
+   * 끝값만으로는 어떤 경계를 지났는지 알 수 없어, 경로가 필요한 쪽(시 → 오전/오후 전환)에서 쓴다.
+   * 직접 입력처럼 경로가 없는 변경에서는 전달되지 않는다.
+   */
+  onChange: (value: string, steps?: number) => void;
   /** 스크린리더용 라벨 */
   ariaLabel: string;
   /** 끝에서 계속 굴리면 순환할지 (시/분: true, 오전·오후: false) */
@@ -70,6 +75,11 @@ export const ScrollableTimeField = ({
   const isUserScrollingRef = useRef(false);
   // 최초 위치 배치는 애니메이션 없이(즉시) 해야 모달 열릴 때 값이 흐르지 않는다
   const hasPositionedRef = useRef(false);
+  // 마지막으로 값을 반영한 칸 — 다음 반영 때 몇 칸을 지났는지(steps) 계산의 기준점
+  const lastCommittedIndexRef = useRef(0);
+  // 코드가 옮기는 스크롤인지(초기 배치·외부 값 반영·순환 되돌림).
+  // 이 이동은 사용자 조작이 아니므로 중간 칸을 값으로 반영하면 안 된다.
+  const isProgrammaticRef = useRef(false);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -97,6 +107,8 @@ export const ScrollableTimeField = ({
     const target = (offset + valueIndex) * ITEM_HEIGHT;
 
     if (!hasPositionedRef.current) {
+      isProgrammaticRef.current = true;
+      lastCommittedIndexRef.current = offset + valueIndex;
       el.scrollTop = target;
       hasPositionedRef.current = true;
       setActiveIndex(offset + valueIndex);
@@ -110,6 +122,8 @@ export const ScrollableTimeField = ({
       return;
     }
 
+    isProgrammaticRef.current = true;
+    lastCommittedIndexRef.current = offset + valueIndex;
     el.scrollTo({ top: target, behavior: "smooth" });
     setActiveIndex(offset + valueIndex);
 
@@ -137,28 +151,44 @@ export const ScrollableTimeField = ({
     const el = listRef.current;
     if (!el) return;
 
-    isUserScrollingRef.current = true;
-
     const displayIndex = Math.min(
       renderItems.length - 1,
       Math.max(0, Math.round(el.scrollTop / ITEM_HEIGHT))
     );
+
     setActiveIndex(displayIndex);
+
+    if (isProgrammaticRef.current) {
+      // 코드가 옮기는 중 — 지나가는 칸을 값으로 반영하지 않고 기준점만 따라간다
+      lastCommittedIndexRef.current = displayIndex;
+    } else {
+      isUserScrollingRef.current = true;
+      // 굴리는 즉시 반영한다. 멈출 때까지 기다리면 값과 오전/오후가 뒤늦게 툭 바뀌어
+      // 휠과 표시가 어긋나 보인다. 관성으로 프레임 사이에 여러 칸을 건너뛸 수 있으므로
+      // 지나온 칸 수(steps)를 함께 넘겨, 경로가 필요한 쪽(오전/오후 전환)이 판단할 수 있게 한다.
+      if (displayIndex !== lastCommittedIndexRef.current) {
+        const steps = displayIndex - lastCommittedIndexRef.current;
+        lastCommittedIndexRef.current = displayIndex;
+        const next = items[toRealIndex(displayIndex, count)];
+        if (next != null && next !== pad2(value)) onChange(next, steps);
+      }
+    }
 
     if (settleTimerRef.current != null) {
       window.clearTimeout(settleTimerRef.current);
     }
-    // 멈춘 뒤에만 커밋 — 스크롤 도중 onChange 를 쏟으면 상위 보정 로직이 계속 재실행된다
+    // 멈춘 뒤에는 순환 되돌림만 담당한다 (값 반영은 위에서 이미 끝났다)
     settleTimerRef.current = window.setTimeout(() => {
       isUserScrollingRef.current = false;
+      isProgrammaticRef.current = false;
 
       const realIndex = toRealIndex(displayIndex, count);
-      const next = items[realIndex];
-      if (next != null && next !== pad2(value)) onChange(next);
 
       // 순환: 바깥 벌에 멈췄으면 가운데 벌의 같은 값 칸으로 즉시(애니메이션 없이) 되돌린다.
       // 같은 내용이 이어져 있어 화면상 변화가 없고, 다음 플릭에서 다시 양쪽으로 굴릴 수 있다.
       if (wrap && (displayIndex < count || displayIndex >= count * 2)) {
+        isProgrammaticRef.current = true;
+        lastCommittedIndexRef.current = offset + realIndex;
         el.scrollTop = (offset + realIndex) * ITEM_HEIGHT;
         setActiveIndex(offset + realIndex);
       }
@@ -185,8 +215,11 @@ export const ScrollableTimeField = ({
       ? ((from + delta) % count + count) % count
       : Math.min(count - 1, Math.max(0, from + delta));
 
+    // 값은 여기서 직접 반영하고, 스크롤은 따라오게만 한다
+    isProgrammaticRef.current = true;
+    lastCommittedIndexRef.current = offset + nextReal;
     el.scrollTo({ top: (offset + nextReal) * ITEM_HEIGHT, behavior: "smooth" });
-    onChange(items[nextReal]);
+    onChange(items[nextReal], delta);
   };
 
   // 입력 모드: 스크롤 리스트 자리에 같은 크기의 입력칸을 놓는다
@@ -238,7 +271,14 @@ export const ScrollableTimeField = ({
       aria-label={ariaLabel}
       onScroll={handleScroll}
       onPointerDown={() => {
-        pressTopRef.current = listRef.current?.scrollTop ?? 0;
+        const el = listRef.current;
+        pressTopRef.current = el?.scrollTop ?? 0;
+        // 사용자가 손을 댄 순간부터는 사용자 조작이다.
+        // (코드가 옮기던 중이었다면 그 이동을 여기서 끊고, 기준점을 현재 칸으로 맞춘다)
+        isProgrammaticRef.current = false;
+        if (el) {
+          lastCommittedIndexRef.current = Math.round(el.scrollTop / ITEM_HEIGHT);
+        }
       }}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
