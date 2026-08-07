@@ -13,6 +13,8 @@ interface MinuteQuickButtonsProps {
  * - 분은 60칸이라 드래그/휠로 정시·반시간까지 가는 비용이 커서 지름길을 둔다.
  * - 선택 상태를 가지지 않는 단순 이동 버튼이다 (현재 값 표시는 분 칸이 담당).
  * - 시간 그룹의 오른쪽 끝(= 분 칸)에 맞춰 정렬되도록 justify-end 로 붙인다.
+ * - 지름 32px 정원. 원을 유지해야 하므로 좌우 패딩 없이 w/h 를 같게 고정한다.
+ *   (숫자만 노출해 폭을 줄인 형태 — "분" 단위는 aria-label 로만 전달)
  */
 export const MinuteQuickButtons = ({
   onSelect,
@@ -25,9 +27,9 @@ export const MinuteQuickButtons = ({
         type="button"
         aria-label={`${labelPrefix} 분을 ${Number(minute)}분으로`}
         onClick={() => onSelect(minute)}
-        className="typo-tag flex h-6 items-center justify-center rounded-full border border-gray-20 bg-gray-white px-2 text-gray-60 transition-colors cursor-pointer touch-none active:bg-gray-10"
+        className="typo-tag flex h-8 w-8 items-center justify-center rounded-full bg-gray-white text-gray-60 shadow-[0_2px_6px_rgba(15,23,42,0.08)] transition-all duration-150 ease-fitpl cursor-pointer touch-none active:scale-95 active:shadow-[0_1px_3px_rgba(15,23,42,0.06)]"
       >
-        {minute}분
+        {minute}
       </button>
     ))}
   </div>
