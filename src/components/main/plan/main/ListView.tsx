@@ -15,7 +15,10 @@ const ListView = ({
 }: ListViewProps) => {
   const hasPast = pastSchedules && pastSchedules.length > 0;
   return (
-    <div className="flex flex-col w-full h-full pb-6 gap-4 overflow-y-scroll hide-scrollbar">
+    // 탭바 여백은 **이 스크롤러 자신**이 갖는다.
+    // 상위 래퍼에 padding 으로 주면 h-full 이 부모 content box(패딩 제외)를 채워서
+    // 스크롤러 자체가 화면 바닥보다 위에서 끝난다 → 카드가 그 지점에서 뚝 잘린다.
+    <div className="pb-tabbar flex flex-col w-full h-full gap-4 overflow-y-scroll hide-scrollbar">
       <ScheduleList
         schedules={schedules}
         onClickCard={onClickCard}

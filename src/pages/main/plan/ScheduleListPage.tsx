@@ -98,7 +98,7 @@ const ScheduleListPage = () => {
             />
           </div>
         ) : (
-          <div className="pb-tabbar flex flex-col flex-1 w-full px-6 min-h-0 gap-6">
+          <div className="flex flex-col flex-1 w-full px-6 min-h-0 gap-6">
             {isLoading ? (
               <>
                 <SkeletonCalendar />
