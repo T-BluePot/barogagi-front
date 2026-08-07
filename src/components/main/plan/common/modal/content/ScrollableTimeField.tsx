@@ -10,8 +10,14 @@ const SETTLE_MS = 120;
 const TAP_SLOP_PX = 4;
 /** smooth 스크롤이 이 시간 안에 도착하지 않으면 즉시 위치를 맞춘다 */
 const SMOOTH_FALLBACK_MS = 400;
+/** 순환용으로 목록을 몇 벌 이어 붙일지 (가운데 벌을 기준 벌로 쓴다) */
+const WRAP_COPIES = 3;
 
 const pad2 = (v: string) => v.padStart(2, "0");
+
+/** 렌더 목록(순환용 복제 포함) 기준 인덱스 → 실제 값 인덱스 */
+const toRealIndex = (displayIndex: number, count: number) =>
+  ((displayIndex % count) + count) % count;
 
 interface ScrollableTimeFieldProps {
   /** 현재 값 (시/분은 표시용 원본, 오전·오후는 그대로) */
@@ -22,6 +28,8 @@ interface ScrollableTimeFieldProps {
   onChange: (value: string) => void;
   /** 스크린리더용 라벨 */
   ariaLabel: string;
+  /** 끝에서 계속 굴리면 순환할지 (시/분: true, 오전·오후: false) */
+  wrap?: boolean;
   /** 탭하면 키패드로 직접 입력 가능 여부 (오전/오후는 false) */
   editable?: boolean;
   /** 키패드 입력값 검증 (유효하면 정제값, 아니면 null) */
@@ -40,13 +48,16 @@ interface ScrollableTimeFieldProps {
  * - 값 커밋은 스크롤이 멈춘 뒤(SETTLE_MS) 한 번만 — 스크롤 중엔 하이라이트만 따라간다
  * - 탭(스크롤 없이 클릭)하면 입력 모드로 바뀌어 숫자를 직접 칠 수 있다
  * - 외부에서 값이 바뀌면(예: 분 지름길 버튼) 해당 칸으로 부드럽게 스크롤한다
- * - 네이티브 스크롤이라 끝에서 순환(wrap)하지 않는다 — 00분/30분은 지름길 버튼으로 이동
+ * - wrap 이면 목록을 WRAP_COPIES 벌 이어 붙이고, 스크롤이 멈춘 뒤 가운데 벌의
+ *   같은 값 칸으로 조용히 되돌린다(애니메이션 없이). 같은 내용이 이어져 있어
+ *   사용자에겐 끊김 없이 무한히 도는 것으로 보인다.
  */
 export const ScrollableTimeField = ({
   value,
   items,
   onChange,
   ariaLabel,
+  wrap = true,
   editable = false,
   validate,
   widthClass = "w-12",
@@ -61,9 +72,20 @@ export const ScrollableTimeField = ({
   const hasPositionedRef = useRef(false);
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const count = items.length;
+  // 순환일 때 렌더 목록은 count * WRAP_COPIES 개, 기준(가운데) 벌의 시작 오프셋은 count
+  const offset = wrap ? count : 0;
+  const renderItems = wrap
+    ? Array.from({ length: WRAP_COPIES }, () => items).flat()
+    : items;
+
   const valueIndex = items.indexOf(pad2(value));
-  // 스크롤 중 하이라이트용 — 커밋 전에도 중앙 칸이 바로 강조되도록 별도로 들고 있는다
-  const [activeIndex, setActiveIndex] = useState(Math.max(0, valueIndex));
+
+  // 스크롤 중 하이라이트용(렌더 목록 기준) — 커밋 전에도 중앙 칸이 바로 강조되도록
+  const [activeIndex, setActiveIndex] = useState(
+    offset + Math.max(0, valueIndex)
+  );
 
   const containerHeight = ITEM_HEIGHT * VISIBLE_COUNT;
 
@@ -72,32 +94,36 @@ export const ScrollableTimeField = ({
     const el = listRef.current;
     if (!el || valueIndex < 0) return;
 
-    const target = valueIndex * ITEM_HEIGHT;
+    const target = (offset + valueIndex) * ITEM_HEIGHT;
 
     if (!hasPositionedRef.current) {
       el.scrollTop = target;
       hasPositionedRef.current = true;
-      setActiveIndex(valueIndex);
+      setActiveIndex(offset + valueIndex);
       return;
     }
     // 사용자가 굴리는 중엔 개입하지 않는다 (자기 스크롤을 자기가 되돌리는 상황 방지)
     if (isUserScrollingRef.current) return;
-    // 이미 같은 칸에 있으면 건드리지 않는다. 스냅이 소수점 오차를 남기는 경우가 있어
-    // 픽셀이 아니라 칸 인덱스로 비교해야 미세한 되돌림(지터)이 생기지 않는다.
-    if (Math.round(el.scrollTop / ITEM_HEIGHT) === valueIndex) return;
+    // 이미 같은 값 칸에 있으면 건드리지 않는다. 순환 때는 다른 벌의 같은 값일 수도 있어
+    // 픽셀이 아니라 "실제 값 인덱스"로 비교해야 불필요한 되돌림(지터)이 생기지 않는다.
+    if (toRealIndex(Math.round(el.scrollTop / ITEM_HEIGHT), count) === valueIndex) {
+      return;
+    }
 
     el.scrollTo({ top: target, behavior: "smooth" });
-    setActiveIndex(valueIndex);
+    setActiveIndex(offset + valueIndex);
 
     // 안전망: smooth 스크롤이 무시되는 환경(애니메이션 프레임이 돌지 않는 경우 등)에서는
     // 위치가 그대로 남아 하이라이트와 어긋난다. 잠시 뒤에도 도착하지 않았으면 즉시 맞춘다.
     const fallback = window.setTimeout(() => {
       if (isUserScrollingRef.current) return;
-      if (Math.round(el.scrollTop / ITEM_HEIGHT) === valueIndex) return;
+      if (toRealIndex(Math.round(el.scrollTop / ITEM_HEIGHT), count) === valueIndex) {
+        return;
+      }
       el.scrollTop = target;
     }, SMOOTH_FALLBACK_MS);
     return () => window.clearTimeout(fallback);
-  }, [valueIndex, isEditing]);
+  }, [valueIndex, isEditing, offset, count]);
 
   useEffect(() => {
     return () => {
@@ -113,11 +139,11 @@ export const ScrollableTimeField = ({
 
     isUserScrollingRef.current = true;
 
-    const index = Math.min(
-      items.length - 1,
+    const displayIndex = Math.min(
+      renderItems.length - 1,
       Math.max(0, Math.round(el.scrollTop / ITEM_HEIGHT))
     );
-    setActiveIndex(index);
+    setActiveIndex(displayIndex);
 
     if (settleTimerRef.current != null) {
       window.clearTimeout(settleTimerRef.current);
@@ -125,8 +151,17 @@ export const ScrollableTimeField = ({
     // 멈춘 뒤에만 커밋 — 스크롤 도중 onChange 를 쏟으면 상위 보정 로직이 계속 재실행된다
     settleTimerRef.current = window.setTimeout(() => {
       isUserScrollingRef.current = false;
-      const next = items[index];
+
+      const realIndex = toRealIndex(displayIndex, count);
+      const next = items[realIndex];
       if (next != null && next !== pad2(value)) onChange(next);
+
+      // 순환: 바깥 벌에 멈췄으면 가운데 벌의 같은 값 칸으로 즉시(애니메이션 없이) 되돌린다.
+      // 같은 내용이 이어져 있어 화면상 변화가 없고, 다음 플릭에서 다시 양쪽으로 굴릴 수 있다.
+      if (wrap && (displayIndex < count || displayIndex >= count * 2)) {
+        el.scrollTop = (offset + realIndex) * ITEM_HEIGHT;
+        setActiveIndex(offset + realIndex);
+      }
     }, SETTLE_MS);
   };
 
@@ -143,13 +178,15 @@ export const ScrollableTimeField = ({
     if (!el) return;
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
     e.preventDefault();
+
     const delta = e.key === "ArrowDown" ? 1 : -1;
-    const next = Math.min(
-      items.length - 1,
-      Math.max(0, (valueIndex < 0 ? 0 : valueIndex) + delta)
-    );
-    el.scrollTo({ top: next * ITEM_HEIGHT, behavior: "smooth" });
-    onChange(items[next]);
+    const from = valueIndex < 0 ? 0 : valueIndex;
+    const nextReal = wrap
+      ? ((from + delta) % count + count) % count
+      : Math.min(count - 1, Math.max(0, from + delta));
+
+    el.scrollTo({ top: (offset + nextReal) * ITEM_HEIGHT, behavior: "smooth" });
+    onChange(items[nextReal]);
   };
 
   // 입력 모드: 스크롤 리스트 자리에 같은 크기의 입력칸을 놓는다
@@ -211,13 +248,16 @@ export const ScrollableTimeField = ({
     >
       {/* 위아래 1칸씩 여백을 줘야 첫/마지막 항목도 중앙에 올 수 있다 */}
       <div style={{ paddingTop: ITEM_HEIGHT, paddingBottom: ITEM_HEIGHT }}>
-        {items.map((item, index) => {
+        {renderItems.map((item, index) => {
           const isActive = index === activeIndex;
+          // 순환용 복제 벌은 스크린리더에서 중복 낭독되지 않도록 숨긴다
+          const isDuplicate = wrap && (index < count || index >= count * 2);
           return (
             <div
-              key={item}
-              role="option"
-              aria-selected={isActive}
+              key={`${item}-${index}`}
+              role={isDuplicate ? undefined : "option"}
+              aria-selected={isDuplicate ? undefined : isActive}
+              aria-hidden={isDuplicate || undefined}
               style={{ height: ITEM_HEIGHT }}
               className={`flex snap-center items-center justify-center ${
                 isActive
