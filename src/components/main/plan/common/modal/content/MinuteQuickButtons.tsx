@@ -27,7 +27,7 @@ export const MinuteQuickButtons = ({
         type="button"
         aria-label={`${labelPrefix} 분을 ${Number(minute)}분으로`}
         onClick={() => onSelect(minute)}
-        className="typo-tag flex h-8 w-8 items-center justify-center rounded-full bg-gray-white text-gray-60 shadow-[0_2px_6px_rgba(15,23,42,0.08)] transition-all duration-150 ease-fitpl cursor-pointer touch-none active:scale-95 active:shadow-[0_1px_3px_rgba(15,23,42,0.06)]"
+        className="typo-tag flex h-8 w-8 items-center justify-center rounded-full bg-gray-white text-gray-70 shadow-[0_2px_6px_rgba(15,23,42,0.08)] transition-all duration-150 ease-fitpl cursor-pointer touch-none active:scale-95 active:shadow-[0_1px_3px_rgba(15,23,42,0.06)]"
       >
         {minute}
       </button>
