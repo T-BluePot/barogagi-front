@@ -122,7 +122,6 @@ export const SelectTimeConfirmModalContent = ({
             <ScrollableTimeField
               value={startTime.period}
               items={PERIODS}
-              wrap={false}
               ariaLabel="시작 오전 오후"
               widthClass="w-15"
               onChange={(v) => handleStartTimeChange("period", v)}
@@ -162,7 +161,6 @@ export const SelectTimeConfirmModalContent = ({
             <ScrollableTimeField
               value={endTime.period}
               items={PERIODS}
-              wrap={false}
               ariaLabel="종료 오전 오후"
               widthClass="w-15"
               onChange={(v) => handleEndTimeChange("period", v)}
