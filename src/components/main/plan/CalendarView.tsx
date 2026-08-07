@@ -62,7 +62,7 @@ export const CalendarView = ({
 
     // scrollIntoView 를 쓰면 안 된다. 그 기준은 스크롤포트 **맨 아래**인데,
     // 화면 아래 176px 는 FAB·탭바가 덮고 있어서 "보인다"고 판정돼도 실제론 가려진다.
-    // 컨테이너가 .pb-tabbar 로 이미 그만큼을 여백으로 확보해 두었으므로,
+    // 컨테이너가 .pb-fab 로 이미 그만큼을 여백으로 확보해 두었으므로,
     // 그 값을 그대로 읽어 '실제로 보이는 바닥'을 계산한다(값이 한 곳에서만 관리된다).
     const reservedBottom =
       parseFloat(getComputedStyle(container).paddingBottom) || 0;
@@ -90,7 +90,7 @@ export const CalendarView = ({
   return (
     <div
       ref={scrollContainerRef}
-      className="pb-tabbar flex flex-col w-full h-full bg-gray-5 overflow-y-auto hide-scrollbar"
+      className="pb-fab flex flex-col w-full h-full bg-gray-5 overflow-y-auto hide-scrollbar"
     >
       <div className="flex-none">
         <Calendar {...props} />
