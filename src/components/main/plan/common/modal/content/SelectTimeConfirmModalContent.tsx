@@ -1,6 +1,6 @@
 import { validateHourInput, validateMinuteInput } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MinuteQuickButtons } from "./MinuteQuickButtons";
 import { ScrollableTimeField } from "./ScrollableTimeField";
 
@@ -88,17 +88,27 @@ export const SelectTimeConfirmModalContent = ({
   const [startTime, setStartTime] = useState<TimeValue>(initialStartTime);
   const [endTime, setEndTime] = useState<TimeValue>(initialEndTime);
 
+  // state 의 최신값 미러. 리렌더 전에 연달아 들어오는 변경도 올바른 기준으로 계산하기 위함
+  // (state 를 갱신할 때 항상 함께 갱신한다)
+  const startTimeRef = useRef<TimeValue>(initialStartTime);
+  const endTimeRef = useRef<TimeValue>(initialEndTime);
+
   const handleStartTimeChange = (
     field: keyof TimeValue,
     value: string,
     steps?: number
   ) => {
+    // 클로저의 state 가 아니라 ref 의 최신값을 기준으로 계산한다.
+    // 한 프레임에 여러 칸을 건너뛰어 onChange 가 연달아 불릴 때, 아직 반영되지 않은
+    // 이전 렌더의 값을 기준으로 삼으면 경계를 지나도 오전/오후가 갱신되지 않는다.
+    const base = startTimeRef.current;
     const newStartTime =
       field === "hour"
-        ? applyHourChange(startTime, value, steps)
-        : { ...startTime, [field]: value };
+        ? applyHourChange(base, value, steps)
+        : { ...base, [field]: value };
+    startTimeRef.current = newStartTime;
     setStartTime(newStartTime);
-    onChangeTime?.(newStartTime, endTime);
+    onChangeTime?.(newStartTime, endTimeRef.current);
   };
 
   const handleEndTimeChange = (
@@ -106,12 +116,14 @@ export const SelectTimeConfirmModalContent = ({
     value: string,
     steps?: number
   ) => {
+    const base = endTimeRef.current;
     const newEndTime =
       field === "hour"
-        ? applyHourChange(endTime, value, steps)
-        : { ...endTime, [field]: value };
+        ? applyHourChange(base, value, steps)
+        : { ...base, [field]: value };
+    endTimeRef.current = newEndTime;
     setEndTime(newEndTime);
-    onChangeTime?.(startTime, newEndTime);
+    onChangeTime?.(startTimeRef.current, newEndTime);
   };
 
   // 편집 중에는 순서 보정을 하지 않는다.

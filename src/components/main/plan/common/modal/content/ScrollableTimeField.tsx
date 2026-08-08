@@ -107,11 +107,16 @@ export const ScrollableTimeField = ({
     const target = (offset + valueIndex) * ITEM_HEIGHT;
 
     if (!hasPositionedRef.current) {
-      isProgrammaticRef.current = true;
-      lastCommittedIndexRef.current = offset + valueIndex;
-      el.scrollTop = target;
       hasPositionedRef.current = true;
+      lastCommittedIndexRef.current = offset + valueIndex;
       setActiveIndex(offset + valueIndex);
+      // 이미 목표 위치면 scroll 이벤트가 나지 않는다 → 플래그를 세우면 내려줄 사람이 없어
+      // true 로 고착되고, pointerdown 이 없는 휠 조작의 첫 이동이 값으로 반영되지 않는다.
+      // (오전/오후 칸은 오전일 때 목표가 0 이라 정확히 이 경우에 해당한다)
+      if (el.scrollTop !== target) {
+        isProgrammaticRef.current = true;
+        el.scrollTop = target;
+      }
       return;
     }
     // 사용자가 굴리는 중엔 개입하지 않는다 (자기 스크롤을 자기가 되돌리는 상황 방지)
@@ -170,7 +175,10 @@ export const ScrollableTimeField = ({
         const steps = displayIndex - lastCommittedIndexRef.current;
         lastCommittedIndexRef.current = displayIndex;
         const next = items[toRealIndex(displayIndex, count)];
-        if (next != null && next !== pad2(value)) onChange(next, steps);
+        // 값이 같아도 호출한다. 정확히 한 바퀴(예: 시 12칸) 움직이면 값은 그대로지만
+        // 경계를 지났으므로 steps 를 전달해야 오전/오후 전환이 이뤄진다.
+        // 위치가 바뀐 것은 이미 위 조건으로 확인했다.
+        if (next != null) onChange(next, steps);
       }
     }
 
