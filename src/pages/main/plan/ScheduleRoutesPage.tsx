@@ -50,7 +50,6 @@ import { useUpdateScheduleMutation } from "@/hooks/mutations/useUpdateScheduleMu
 import { useDeleteScheduleMutation } from "@/hooks/mutations/useDeleteScheduleMutation";
 import { timeValueToHHmm, hhmmToTimeValue } from "@/utils/date";
 import type { TimeValue } from "@/utils/date";
-import { getScheduleMemo, setScheduleMemo } from "@/utils/scheduleMemoStorage";
 import { useLoadingStore } from "@/stores/loadingStore";
 
 // 순서 변경 시 시간 재계산용 헬퍼 (HH:mm ↔ 분)
@@ -193,14 +192,17 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             ?.scheduleTagRegistResDTOList ?? [];
 
         const convertedPlans = res.data.planDetailVOList.map(toCommonPlan);
+        const serverMemo = res.data.scheduleMemo ?? "";
         setScheduleResult({
           scheduleNum: res.data.scheduleNum,
           scheduleNm: res.data.scheduleNm,
           startDate: res.data.startDate,
           endDate: res.data.endDate,
+          scheduleMemo: serverMemo,
           scheduleTagRegistResDTOList: cachedTags,
           planRegistResDTOList: convertedPlans,
         });
+        setScheduleMemoState(serverMemo);
         setPlanList(convertedPlans);
 
         // 서버가 내려준 메모를 로컬 입력 state로 복원 (없으면 빈 맵)
@@ -280,7 +282,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   };
 
   // ----- 일정 정보 바텀시트 (detail 전용: 이름 + 일정 메모) -----
-  // 일정 레벨 메모는 서버 필드가 없어 브릿지 로컬 저장(scheduleMemoStorage) 사용
+  // 일정 레벨 메모는 서버 scheduleMemo 필드로 관리한다(상세 응답에서 로드, 수정 시 update 반영).
   const [scheduleMemo, setScheduleMemoState] = useState<string>("");
   const [isInfoSheetOpen, setIsInfoSheetOpen] = useState(false);
   const [isShareSheetOpen, setIsShareSheetOpen] = useState(false);
@@ -292,20 +294,46 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     .map((plan) => plan.imageLink ?? plan.imageUrl)
     .find(Boolean);
 
-  // detail 진입 시 로컬 저장된 일정 메모 로드
-  useEffect(() => {
-    if (isDetail && scheduleNum && !Number.isNaN(scheduleNum)) {
-      getScheduleMemo(scheduleNum).then(setScheduleMemoState);
-    }
-  }, [isDetail, scheduleNum]);
-
-  // 시트 "저장하기": 이름은 기존 옵티미스틱 커밋 재사용, 메모는 로컬 저장
+  // 시트 "저장하기": 이름·메모 변경분을 한 번에 옵티미스틱 update 로 반영한다.
+  // (이름·메모를 각각 mutate 하면 두 번째 요청이 stale scheduleResult 로 첫 변경을 덮어쓴다)
   const handleSaveInfo = (name: string, memo: string) => {
-    if (name && name !== scheduleName) handleCommitScheduleName(name);
-    if (scheduleNum && !Number.isNaN(scheduleNum)) {
-      setScheduleMemo(scheduleNum, memo);
+    if (!scheduleResult) {
+      setIsInfoSheetOpen(false);
+      return;
     }
-    setScheduleMemoState(memo);
+    const trimmedName = name.trim();
+    const trimmedMemo = memo.trim();
+    const nameChanged =
+      !!trimmedName && trimmedName !== (scheduleResult.scheduleNm ?? "");
+    const memoChanged = trimmedMemo !== (scheduleResult.scheduleMemo ?? "");
+
+    if (!nameChanged && !memoChanged) {
+      setIsInfoSheetOpen(false);
+      return;
+    }
+
+    const prevSchedule = scheduleResult;
+    const updatedSchedule = {
+      ...scheduleResult,
+      ...(nameChanged ? { scheduleNm: trimmedName } : {}),
+      ...(memoChanged ? { scheduleMemo: trimmedMemo } : {}),
+    };
+    setScheduleResult(updatedSchedule);
+    if (nameChanged) setScheduleName(trimmedName);
+    setScheduleMemoState(updatedSchedule.scheduleMemo ?? "");
+
+    // create 는 최종 저장(saveSchedule)에 실려 나가므로 여기서 서버 반영은 detail 만
+    if (isDetail) {
+      const myToken = ++scheduleNameCommitTokenRef.current;
+      updateMutation.mutate(updatedSchedule, {
+        onError: () => {
+          if (myToken !== scheduleNameCommitTokenRef.current) return;
+          setScheduleResult(prevSchedule);
+          setScheduleName(prevSchedule.scheduleNm ?? "");
+          setScheduleMemoState(prevSchedule.scheduleMemo ?? "");
+        },
+      });
+    }
     setIsInfoSheetOpen(false);
   };
 
@@ -671,6 +699,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     try {
       const req = buildRequest();
       req.scheduleNm = scheduleName || req.scheduleNm;
+      // 일정 레벨 메모도 재생성(create) 요청에 실어 보존한다 (미전송 시 응답에서 null 로 돌아옴)
+      req.scheduleMemo = scheduleResult?.scheduleMemo ?? scheduleMemo;
       req.planRegistReqDTOList = planList.flatMap((p, i) => {
         const isUserMade =
           p.planSource === "USER_PLACE" || p.planSource === "USER_CUSTOM";

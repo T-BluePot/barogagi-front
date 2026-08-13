@@ -16,8 +16,7 @@ interface ScheduleInfoBottomSheetProps {
 
 /**
  * 일정 정보(이름 + 메모) 편집 바텀시트 — detail 헤더의 제목/메모 라인 탭으로 오픈.
- * 이름은 기존 옵티미스틱 PUT(handleCommitScheduleName)으로, 메모는 서버 필드가
- * 아직 없어 브릿지 로컬 저장(scheduleMemoStorage)으로 반영된다.
+ * 저장 시 이름·메모를 한 번에 옵티미스틱 update(서버 scheduleMemo 필드)로 반영한다.
  */
 const ScheduleInfoBottomSheet = ({
   isOpen,
