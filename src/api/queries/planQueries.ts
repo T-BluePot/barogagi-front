@@ -71,13 +71,10 @@ export const updateSchedule = async (data: ScheduleRegistResDTO) => {
  *
  * - 로그인 토큰 필요. API-KEY만으로는 401 (실측 확인)
  * - environment 가 서버가 발급할 링크의 도메인을 결정한다 (TEST → test.fitpl.xyz)
- * - 호출할 때마다 **새 토큰**이 발급된다 (같은 일정 2회 호출 시 서로 다른 토큰 — 실측 확인)
- *   → 버튼을 누를 때마다 호출하면 토큰이 계속 쌓이므로 호출 시점에 주의할 것.
+ * - 같은 일정을 여러 번 공유하면 **동일 토큰**을 재사용하고 만료일만 갱신된다(백엔드 반영).
  *
- * ⚠️ 응답 data 는 **API 엔드포인트 주소**다:
- *      "https://test.fitpl.xyz/api/v1/schedule/share/8OD5dVzR8c1H"
- *    이 주소는 API-KEY 헤더를 요구하므로 브라우저로 열면 500 이 난다(실측).
- *    사용자에게 보낼 링크는 반드시 toSharePageUrl() 로 변환해서 쓸 것.
+ * 응답 data 는 이제 사용자용 페이지 주소다: "https://{도메인}/share/{token}".
+ * 로컬 개발에서는 오리진만 localhost 로 바꿔 열도록 toSharePageUrl() 을 거친다.
  */
 export const postScheduleShare = async (scheduleNum: number) => {
   const response = await apiKeyHttp.post<BaseResponse<string>>(
@@ -98,8 +95,8 @@ export const postScheduleShare = async (scheduleNum: number) => {
  *   (실측 대조: scheduleNum/scheduleNm/startDate/endDate/radius/planDetailVOList 일치.
  *    응답에 planSource 가 하나 더 있으나 null 이고 기존 타입은 이를 모델링하지 않는다)
  *
- * ⚠️ 실패해도 HTTP 200 으로 내려온다. (만료/없는 링크 → code "SS400", data null)
- *    반드시 res.code 로 성공/실패를 분기할 것. res.status 로 판단하면 만료 링크가 성공 처리된다.
+ * ⚠️ 만료/없는 링크는 code "SS400" 으로 오며, 백엔드가 실제 HTTP status(404 등)로 내려주도록
+ *    바뀌어 axios 가 throw 한다. 만료 판별은 useSharedScheduleQuery 에서 status·code 모두 고려한다.
  */
 export const getSharedSchedule = async (shareToken: string) => {
   const response = await apiKeyHttp.get<BaseResponse<ScheduleDetailResDTO>>(

@@ -37,6 +37,10 @@ export const toUserPlaceReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
   startTime: plan.startTime,
   endTime: plan.endTime,
   planNm: plan.planNm,
+  // 유지한 AI 계획의 장소 한줄 설명을 그대로 보존해 재생성 후에도 남게 한다.
+  ...(plan.planDescription
+    ? { planDescription: plan.planDescription }
+    : {}),
   userAddedPlaceDTO: {
     placeName: plan.planNm ?? plan.regionNm ?? "",
     placeUrl: plan.planLink,
@@ -71,6 +75,9 @@ export const toUserCustomReq = (plan: PlanRegistResDTO): PlanRegistReqDTO => ({
   startTime: plan.startTime,
   endTime: plan.endTime,
   planNm: plan.planNm,
+  ...(plan.planDescription
+    ? { planDescription: plan.planDescription }
+    : {}),
 });
 
 /**

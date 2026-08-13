@@ -26,7 +26,7 @@ export const ScheduleCardLite = ({
         <span className="typo-title-02">{schedule.scheduleNm}</span>
         {/* 태그 */}
         {hasTags && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {schedule.tags.map((tag, idx) => (
               <TextTag key={idx} label={tag.tagNm} />
             ))}
