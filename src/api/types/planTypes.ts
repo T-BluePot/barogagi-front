@@ -62,6 +62,8 @@ export interface PlanRegistReqDTO {
   isUserAdded?: "Y" | "N";
   userAddedPlaceDTO?: UserAddedPlaceDTO;
   planNm?: string;
+  /** 장소 한줄 설명 — 재생성 시 유지 계획의 기존 설명 보존용 (서버가 받음) */
+  planDescription?: string;
 }
 
 /** 일정(Schedule) 생성 요청 DTO (POST /schedule/create) */
@@ -70,6 +72,8 @@ export interface ScheduleRegistReqDTO {
   startDate: string; // YYYY-MM-DD
   endDate: string;
   comment?: string;
+  /** 일정 레벨 메모 (사용자 입력). 재생성 시 기존 메모 보존용 */
+  scheduleMemo?: string;
   scheduleTagRegistReqDTOList?: TagRegistReqDTO[];
   scheduleRegionRegistReqDTOList?: RegionRegistReqDTO[];
   planRegistReqDTOList?: PlanRegistReqDTO[];
@@ -108,6 +112,8 @@ export interface ScheduleRegistResDTO {
   scheduleNm: string;
   startDate: string;
   endDate: string;
+  /** 일정 레벨 메모 (사용자 입력) */
+  scheduleMemo?: string;
   scheduleTagRegistResDTOList: TagRegistResDTO[];
   planRegistResDTOList: PlanRegistResDTO[];
 }
@@ -179,5 +185,7 @@ export interface ScheduleDetailResDTO {
   startDate: string;
   endDate: string;
   radius: number;
+  /** 일정 레벨 메모 (사용자 입력) */
+  scheduleMemo?: string;
   planDetailVOList: PlanDetailVO[];
 }

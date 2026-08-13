@@ -19,9 +19,11 @@ export const TextTag = ({
   );
 
   return (
-    <div className="flex justify-center items-center gap-0.5">
-      {hasHash && <span className={textClass}>#</span>}
-      <span className={textClass}>{label}</span>
+    // 태그는 절대 두 줄로 접히지 않는다 (줄 넘김은 컨테이너의 flex-wrap 이 담당).
+    // 한 태그가 한 줄을 통째로 넘길 만큼 길면 말줄임으로 잘라 레이아웃을 지킨다.
+    <div className="flex shrink-0 max-w-full justify-center items-center gap-0.5 whitespace-nowrap">
+      {hasHash && <span className={clsx(textClass, "shrink-0")}>#</span>}
+      <span className={clsx(textClass, "min-w-0 truncate")}>{label}</span>
     </div>
   );
 };
