@@ -192,7 +192,9 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
             ?.scheduleTagRegistResDTOList ?? [];
 
         const convertedPlans = res.data.planDetailVOList.map(toCommonPlan);
-        const serverMemo = res.data.scheduleMemo ?? "";
+        // DTO 에는 서버값을 그대로 둔다(부재 시 undefined). "" 로 박으면 이름만 바꿔도
+        // 매 update 에 빈 메모가 딸려 나가 "메모 없음"과 "메모 비움"이 구분되지 않는다.
+        const serverMemo = res.data.scheduleMemo;
         setScheduleResult({
           scheduleNum: res.data.scheduleNum,
           scheduleNm: res.data.scheduleNm,
@@ -202,7 +204,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
           scheduleTagRegistResDTOList: cachedTags,
           planRegistResDTOList: convertedPlans,
         });
-        setScheduleMemoState(serverMemo);
+        // 입력 표시용 state 는 문자열이어야 하므로 여기서만 "" 로 대체한다
+        setScheduleMemoState(serverMemo ?? "");
         setPlanList(convertedPlans);
 
         // 서버가 내려준 메모를 로컬 입력 state로 복원 (없으면 빈 맵)
