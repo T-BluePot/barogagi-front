@@ -294,8 +294,15 @@ export const ScrollableTimeField = ({
       className={`hide-scrollbar snap-y snap-mandatory select-none overflow-y-scroll overscroll-contain outline-none ${widthClass}`}
       style={{ height: containerHeight }}
     >
-      {/* 위아래 1칸씩 여백을 줘야 첫/마지막 항목도 중앙에 올 수 있다 */}
-      <div style={{ paddingTop: ITEM_HEIGHT, paddingBottom: ITEM_HEIGHT }}>
+      {/* 위아래 1칸씩 여백을 줘야 첫/마지막 항목도 중앙에 올 수 있다.
+          여백을 스크롤 컨테이너에 직접 주면 clientHeight 에 padding 이 포함돼
+          최대 스크롤이 그만큼 줄고 마지막 항목을 중앙에 올릴 수 없다(실측 286 → 234).
+          그래서 래핑 div 를 두되, listbox 의 직계 자식이 option 이 되도록
+          접근성 트리에서는 이 div 를 감춘다. */}
+      <div
+        role="presentation"
+        style={{ paddingTop: ITEM_HEIGHT, paddingBottom: ITEM_HEIGHT }}
+      >
         {renderItems.map((item, index) => {
           const isActive = index === activeIndex;
           // 순환용 복제 벌은 스크린리더에서 중복 낭독되지 않도록 숨긴다
