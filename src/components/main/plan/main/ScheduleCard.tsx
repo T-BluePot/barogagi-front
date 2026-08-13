@@ -72,7 +72,7 @@ export const ScheduleCard = ({
           {/* 태그 */}
           {/* 태그가 없을 때 빈 공간 유지용 div */}
           {schedule.tags.length > 0 ? (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {schedule.tags.map((tag, idx) => (
                 <CommonTag key={idx} label={tag.tagNm} size="small" />
               ))}

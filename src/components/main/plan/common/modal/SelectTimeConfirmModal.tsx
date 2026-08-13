@@ -50,9 +50,6 @@ export const SelectTimeConfirmModal = ({
   // ref는 값이 바뀌어도 리렌더링을 유발하지 않아서 이전 상태 추적에 적합
   const prevIsOpenRef = useRef(false);
 
-  // 마지막으로 사용자가 조정한 칸 (확인 시 보정 방향 결정용)
-  const lastEditedRef = useRef<"start" | "end">("start");
-
   // requestAnimationFrame ID를 저장하는 ref
   // 왜 필요한가? 모달이 빠르게 열렸다 닫히면, 예약된 애니메이션이 나중에 실행되어
   // 이미 닫힌 모달의 상태를 바꿀 수 있음 → cleanup에서 예약 취소하기 위해 ID 저장
@@ -105,21 +102,17 @@ export const SelectTimeConfirmModal = ({
   }, [isOpen, initialStartTime, initialEndTime]);
 
   const handleTimeChange = (newStartTime: TimeValue, newEndTime: TimeValue) => {
-    // 어느 칸이 바뀌었는지 추적 (확인 시 보정 방향에 사용)
-    if (newStartTime !== startTime) lastEditedRef.current = "start";
-    else if (newEndTime !== endTime) lastEditedRef.current = "end";
     setStartTime(newStartTime);
     setEndTime(newEndTime);
   };
 
   const handleConfirm = () => {
-    // settle 보정 전에 확인을 눌러도 종료 > 시작이 보장되도록 최종 보정
-    // (마지막으로 편집한 칸을 기준으로 보정 방향 결정)
-    const { start, end } = enforceTimeOrder(
-      startTime,
-      endTime,
-      lastEditedRef.current
-    );
+    // 순서 보정은 여기(저장 시점) 한 번만 한다.
+    // 편집 중에는 개입하지 않으므로 사용자가 맞춘 값이 뒤에서 밀리지 않는다.
+    //
+    // 항상 "start" 기준으로 보정한다 = 시작은 사용자가 맞춘 그대로 두고,
+    // 종료가 시작과 같거나 앞서는 경우에만 종료를 시작 +1시간으로 옮긴다.
+    const { start, end } = enforceTimeOrder(startTime, endTime, "start");
     onConfirm(start, end);
   };
 
