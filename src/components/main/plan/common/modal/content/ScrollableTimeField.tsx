@@ -17,6 +17,20 @@ const pad2 = (v: string) => v.padStart(2, "0");
 const toRealIndex = (displayIndex: number, count: number) =>
   ((displayIndex % count) + count) % count;
 
+/**
+ * 스크롤 위치가 목표 칸에 도착했는지 판정한다.
+ *
+ * `scrollTop` 은 정수가 아니다 — 관성 스크롤 중이거나 DPR 이 비정수인 기기(안드로이드 2.75 등)에서
+ * 소수점 값을 갖는다. 엄격 비교(`===`)로 보면 `scrollTop = target` 을 대입해도 브라우저가
+ * 기기 픽셀에 맞춰 미세하게 다른 값으로 저장할 수 있고, 그러면 settle 마다
+ * "안 맞네 → 재대입 → scroll 이벤트 → settle" 이 반복되는 보정 루프에 빠진다.
+ *
+ * 허용 오차는 1px 미만으로 좁게 둔다. 이보다 크게 잡으면 격자를 벗어난 위치를
+ * "도착했다"고 오인해 방치하던 원래 버그(반 칸, 13px 수준)가 되살아난다.
+ */
+const isAtIndex = (scrollTop: number, target: number) =>
+  Math.abs(scrollTop - target) < 1;
+
 interface ScrollableTimeFieldProps {
   /** 현재 값 (시/분은 표시용 원본, 오전·오후는 그대로) */
   value: string;
@@ -132,10 +146,10 @@ export const ScrollableTimeField = ({
     }
     // 사용자가 굴리는 중엔 개입하지 않는다 (자기 스크롤을 자기가 되돌리는 상황 방지)
     if (isUserScrollingRef.current) return;
-    // 이미 정확히 그 자리면 건드리지 않는다.
+    // 이미 그 자리면 건드리지 않는다.
     // 칸 인덱스가 아니라 픽셀로 비교해야 한다 — 인덱스로 비교하면 스냅 격자에서
     // 살짝 벗어난 위치를 "도착했다"고 보고 방치해, 이후 버튼이 안 먹는 것처럼 보인다.
-    if (el.scrollTop === target) return;
+    if (isAtIndex(el.scrollTop, target)) return;
 
     isProgrammaticRef.current = true;
     lastCommittedIndexRef.current = offset + valueIndex;
@@ -210,7 +224,7 @@ export const ScrollableTimeField = ({
       if (currentIndex < 0) return;
 
       const target = (offset + currentIndex) * ITEM_HEIGHT;
-      if (el.scrollTop === target) return;
+      if (isAtIndex(el.scrollTop, target)) return;
 
       isProgrammaticRef.current = true;
       lastCommittedIndexRef.current = offset + currentIndex;
