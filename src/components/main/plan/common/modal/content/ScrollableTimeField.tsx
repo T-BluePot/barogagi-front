@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /** 한 칸(항목) 높이(px). 3칸이 보이도록 컨테이너 높이를 이 값의 3배로 잡는다 */
 const ITEM_HEIGHT = 26;
@@ -93,8 +93,15 @@ export const ScrollableTimeField = ({
   // settle 타임아웃이 실행될 시점의 최신 값을 읽기 위한 미러.
   // 타임아웃 안에서 클로저의 value 를 쓰면 타이머가 걸린 시점의 값이라, 그 사이 지름길
   // 버튼으로 바뀐 값을 놓치고 위치를 옛날 값에 맞춰버린다.
+  //
+  // 렌더 본문이 아니라 useLayoutEffect 에서 갱신한다 — 렌더 중 ref 대입은 React 가
+  // 금지하는 패턴이고, 폐기된 렌더의 값이 ref 에 남으면 타이머가 커밋되지 않은 값으로
+  // 위치를 보정할 수 있다. 레이아웃 이펙트는 페인트 전에 동기 실행되므로,
+  // 사용자 입력이 들어오는 시점에는 항상 커밋된 최신 값이 들어 있다.
   const valueRef = useRef(value);
-  valueRef.current = value;
+  useLayoutEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   // 스크롤 중 하이라이트용(렌더 목록 기준) — 커밋 전에도 중앙 칸이 바로 강조되도록
   const [activeIndex, setActiveIndex] = useState(
