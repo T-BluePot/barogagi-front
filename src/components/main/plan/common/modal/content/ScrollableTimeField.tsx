@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /** 한 칸(항목) 높이(px). 3칸이 보이도록 컨테이너 높이를 이 값의 3배로 잡는다 */
 const ITEM_HEIGHT = 26;
@@ -8,8 +8,6 @@ const VISIBLE_COUNT = 3;
 const SETTLE_MS = 120;
 /** 이만큼 넘게 스크롤됐으면 탭이 아니라 스와이프로 본다(스와이프 끝 click 무시용) */
 const TAP_SLOP_PX = 4;
-/** smooth 스크롤이 이 시간 안에 도착하지 않으면 즉시 위치를 맞춘다 */
-const SMOOTH_FALLBACK_MS = 400;
 /** 순환용으로 목록을 몇 벌 이어 붙일지 (가운데 벌을 기준 벌로 쓴다) */
 const WRAP_COPIES = 3;
 
@@ -18,6 +16,20 @@ const pad2 = (v: string) => v.padStart(2, "0");
 /** 렌더 목록(순환용 복제 포함) 기준 인덱스 → 실제 값 인덱스 */
 const toRealIndex = (displayIndex: number, count: number) =>
   ((displayIndex % count) + count) % count;
+
+/**
+ * 스크롤 위치가 목표 칸에 도착했는지 판정한다.
+ *
+ * `scrollTop` 은 정수가 아니다 — 관성 스크롤 중이거나 DPR 이 비정수인 기기(안드로이드 2.75 등)에서
+ * 소수점 값을 갖는다. 엄격 비교(`===`)로 보면 `scrollTop = target` 을 대입해도 브라우저가
+ * 기기 픽셀에 맞춰 미세하게 다른 값으로 저장할 수 있고, 그러면 settle 마다
+ * "안 맞네 → 재대입 → scroll 이벤트 → settle" 이 반복되는 보정 루프에 빠진다.
+ *
+ * 허용 오차는 1px 미만으로 좁게 둔다. 이보다 크게 잡으면 격자를 벗어난 위치를
+ * "도착했다"고 오인해 방치하던 원래 버그(반 칸, 13px 수준)가 되살아난다.
+ */
+const isAtIndex = (scrollTop: number, target: number) =>
+  Math.abs(scrollTop - target) < 1;
 
 interface ScrollableTimeFieldProps {
   /** 현재 값 (시/분은 표시용 원본, 오전·오후는 그대로) */
@@ -92,6 +104,19 @@ export const ScrollableTimeField = ({
 
   const valueIndex = items.indexOf(pad2(value));
 
+  // settle 타임아웃이 실행될 시점의 최신 값을 읽기 위한 미러.
+  // 타임아웃 안에서 클로저의 value 를 쓰면 타이머가 걸린 시점의 값이라, 그 사이 지름길
+  // 버튼으로 바뀐 값을 놓치고 위치를 옛날 값에 맞춰버린다.
+  //
+  // 렌더 본문이 아니라 useLayoutEffect 에서 갱신한다 — 렌더 중 ref 대입은 React 가
+  // 금지하는 패턴이고, 폐기된 렌더의 값이 ref 에 남으면 타이머가 커밋되지 않은 값으로
+  // 위치를 보정할 수 있다. 레이아웃 이펙트는 페인트 전에 동기 실행되므로,
+  // 사용자 입력이 들어오는 시점에는 항상 커밋된 최신 값이 들어 있다.
+  const valueRef = useRef(value);
+  useLayoutEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
   // 스크롤 중 하이라이트용(렌더 목록 기준) — 커밋 전에도 중앙 칸이 바로 강조되도록
   const [activeIndex, setActiveIndex] = useState(
     offset + Math.max(0, valueIndex)
@@ -121,27 +146,21 @@ export const ScrollableTimeField = ({
     }
     // 사용자가 굴리는 중엔 개입하지 않는다 (자기 스크롤을 자기가 되돌리는 상황 방지)
     if (isUserScrollingRef.current) return;
-    // 이미 같은 값 칸에 있으면 건드리지 않는다. 순환 때는 다른 벌의 같은 값일 수도 있어
-    // 픽셀이 아니라 "실제 값 인덱스"로 비교해야 불필요한 되돌림(지터)이 생기지 않는다.
-    if (toRealIndex(Math.round(el.scrollTop / ITEM_HEIGHT), count) === valueIndex) {
-      return;
-    }
+    // 이미 그 자리면 건드리지 않는다.
+    // 칸 인덱스가 아니라 픽셀로 비교해야 한다 — 인덱스로 비교하면 스냅 격자에서
+    // 살짝 벗어난 위치를 "도착했다"고 보고 방치해, 이후 버튼이 안 먹는 것처럼 보인다.
+    if (isAtIndex(el.scrollTop, target)) return;
 
     isProgrammaticRef.current = true;
     lastCommittedIndexRef.current = offset + valueIndex;
-    el.scrollTo({ top: target, behavior: "smooth" });
+    // 즉시 이동한다.
+    // 예전엔 scrollTo({behavior:"smooth"}) + 400ms 폴백을 썼는데, 실기기에서는 smooth 가
+    // 실제로 애니메이션하기 때문에 폴백이 애니메이션 도중 scrollTop 을 덮어썼다.
+    // 그 결과 스냅 격자를 벗어난 채 멈추거나(30 이 위로 밀림) 한 칸 어긋났다(0분 → 59분).
+    // 폴백은 애니메이션 프레임이 돌지 않는 검증 환경 때문에 넣었던 장치였고,
+    // 실기기에는 없는 문제를 위해 실기기를 망가뜨리고 있었다.
+    el.scrollTop = target;
     setActiveIndex(offset + valueIndex);
-
-    // 안전망: smooth 스크롤이 무시되는 환경(애니메이션 프레임이 돌지 않는 경우 등)에서는
-    // 위치가 그대로 남아 하이라이트와 어긋난다. 잠시 뒤에도 도착하지 않았으면 즉시 맞춘다.
-    const fallback = window.setTimeout(() => {
-      if (isUserScrollingRef.current) return;
-      if (toRealIndex(Math.round(el.scrollTop / ITEM_HEIGHT), count) === valueIndex) {
-        return;
-      }
-      el.scrollTop = target;
-    }, SMOOTH_FALLBACK_MS);
-    return () => window.clearTimeout(fallback);
   }, [valueIndex, isEditing, offset, count]);
 
   useEffect(() => {
@@ -185,21 +204,32 @@ export const ScrollableTimeField = ({
     if (settleTimerRef.current != null) {
       window.clearTimeout(settleTimerRef.current);
     }
-    // 멈춘 뒤에는 순환 되돌림만 담당한다 (값 반영은 위에서 이미 끝났다)
+    // 멈춘 뒤에는 "현재 값"이 있어야 할 자리로 위치를 맞춘다.
+    //
+    // 이 한 규칙이 두 가지를 함께 처리한다.
+    //  1) 순환 되돌림 — 바깥 벌에 멈췄으면 가운데 벌의 같은 값 칸으로 옮긴다.
+    //     내용이 같아 화면상 변화가 없고, 다음 플릭에서 다시 양쪽으로 굴릴 수 있다.
+    //  2) 값과 위치의 어긋남 해소 — 스크롤 중(또는 멈춘 직후 SETTLE_MS 안)에 지름길
+    //     버튼을 누르면, 동기화 효과는 isUserScrollingRef 때문에 개입하지 않고 빠져나간다.
+    //     그러면 값만 00/30 으로 바뀌고 휠은 스크롤하던 자리에 남아 굳는다.
+    //     여기서 값 기준으로 다시 맞춰야 그 어긋남이 풀린다.
+    //
+    // 위치가 아니라 "값"을 기준으로 삼는 게 핵심이다. 사용자가 굴려서 값이 바뀐 경우엔
+    // 값과 위치가 이미 일치하므로 아래 비교에서 걸러져 아무 일도 일어나지 않는다.
     settleTimerRef.current = window.setTimeout(() => {
       isUserScrollingRef.current = false;
       isProgrammaticRef.current = false;
 
-      const realIndex = toRealIndex(displayIndex, count);
+      const currentIndex = items.indexOf(pad2(valueRef.current));
+      if (currentIndex < 0) return;
 
-      // 순환: 바깥 벌에 멈췄으면 가운데 벌의 같은 값 칸으로 즉시(애니메이션 없이) 되돌린다.
-      // 같은 내용이 이어져 있어 화면상 변화가 없고, 다음 플릭에서 다시 양쪽으로 굴릴 수 있다.
-      if (wrap && (displayIndex < count || displayIndex >= count * 2)) {
-        isProgrammaticRef.current = true;
-        lastCommittedIndexRef.current = offset + realIndex;
-        el.scrollTop = (offset + realIndex) * ITEM_HEIGHT;
-        setActiveIndex(offset + realIndex);
-      }
+      const target = (offset + currentIndex) * ITEM_HEIGHT;
+      if (isAtIndex(el.scrollTop, target)) return;
+
+      isProgrammaticRef.current = true;
+      lastCommittedIndexRef.current = offset + currentIndex;
+      el.scrollTop = target;
+      setActiveIndex(offset + currentIndex);
     }, SETTLE_MS);
   };
 
@@ -226,7 +256,8 @@ export const ScrollableTimeField = ({
     // 값은 여기서 직접 반영하고, 스크롤은 따라오게만 한다
     isProgrammaticRef.current = true;
     lastCommittedIndexRef.current = offset + nextReal;
-    el.scrollTo({ top: (offset + nextReal) * ITEM_HEIGHT, behavior: "smooth" });
+    // 위 동기화 효과와 같은 이유로 즉시 이동한다 (애니메이션이 스냅과 다투지 않도록)
+    el.scrollTop = (offset + nextReal) * ITEM_HEIGHT;
     onChange(items[nextReal], delta);
   };
 
