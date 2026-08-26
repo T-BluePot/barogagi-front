@@ -174,6 +174,22 @@ export const syncFcmToken = async (): Promise<void> => {
 
   const { deviceType, appVersion } = await getFcmDeviceInfo();
 
+  // 종전 버전이 `"WEB"` 으로 등록해 둔 기록이 있으면 **먼저 지운다.**
+  // 지우지 않고 새 식별자로 등록하면 같은 FCM 토큰이 옛 행("WEB")과 새 행(deviceId)에
+  // 동시에 남아 같은 기기로 푸시가 두 번 간다.
+  // 삭제에 실패하면 등록 자체를 건너뛴다 — 옛 행이 살아 있어 푸시는 계속 도달하므로
+  // 사용자 피해가 없고, 억지로 등록하면 오히려 중복 발송이 된다. 다음 기회에 다시 시도한다.
+  if (await cleanupLegacyRegistration()) {
+    console.log("[fcm] 레거시 등록 정리 후 재등록 진행");
+  } else if (isLegacyRegistration()) {
+    console.warn("[fcm] 레거시 등록 삭제 실패 — 이번 등록은 건너뛴다(중복 발송 방지)");
+    store.setStatus("error");
+    return;
+  }
+
+  // 위에서 reset() 이 일어났을 수 있으므로 **스냅샷이 아니라 현재 상태**를 다시 읽는다.
+  const registered = useFcmStore.getState();
+
   // 토큰·기기식별자·appVersion이 **셋 다** 그대로일 때만 중복 등록 skip.
   // - 토큰이 같아도 앱 버전이 바뀌면 서버가 최신 버전을 알아야 하므로 재등록한다.
   // - 기기 식별자가 바뀌면 서버에는 **다른 기기의 등록**이 남아 있는 상태다. 여기서 skip 하면
@@ -181,9 +197,9 @@ export const syncFcmToken = async (): Promise<void> => {
   //   (deviceId 는 원칙적으로 불변이지만, 저장소 읽기 실패 시 임시 식별자가 쓰였다가
   //    다음 실행에서 원래 값으로 복귀하는 경로가 있다 — utils/deviceId.ts 참고)
   if (
-    store.registeredToken === token &&
-    store.registeredDeviceId === deviceType &&
-    store.registeredAppVersion === appVersion
+    registered.registeredToken === token &&
+    registered.registeredDeviceId === deviceType &&
+    registered.registeredAppVersion === appVersion
   ) {
     console.log("[fcm] 이미 등록된 토큰 — 서버 등록 skip", {
       token,
@@ -311,9 +327,17 @@ const LEGACY_DEVICE_TYPE = "WEB";
  *
  * @returns 정리를 수행했는지 여부. true 면 호출부가 새 식별자로 재등록해야 한다.
  */
-const cleanupLegacyRegistration = async (): Promise<boolean> => {
+const isLegacyRegistration = (): boolean => {
   const { registeredToken, registeredDeviceId } = useFcmStore.getState();
-  if (!registeredToken || registeredDeviceId) return false;
+  // registeredDeviceId 는 이번 버전에서 추가된 필드다.
+  // 등록 기록(registeredToken)은 있는데 이 값만 비어 있다 = 종전 버전이 남긴 등록.
+  return !!registeredToken && !registeredDeviceId;
+};
+
+const cleanupLegacyRegistration = async (): Promise<boolean> => {
+  const { registeredToken } = useFcmStore.getState();
+  // isLegacyRegistration() 과 같은 판정이지만, registeredToken 이 string 으로 좁혀지도록 여기서 직접 본다
+  if (!registeredToken || !isLegacyRegistration()) return false;
 
   const deleted = await runDelete(
     { fcmToken: registeredToken, deviceType: LEGACY_DEVICE_TYPE },
