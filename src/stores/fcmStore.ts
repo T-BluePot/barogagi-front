@@ -8,11 +8,13 @@ import { getPersistStorage } from "@/utils/bridgeStorage";
  * - token: 단말에서 발급(획득)된 현재 FCM 토큰
  * - registeredToken: 서버에 등록 완료된 토큰 (다음 단계의 등록 API 연동 시 set)
  *   → token !== registeredToken 이면 미등록/토큰 변경으로 보고 재등록 대상.
+ * - registeredDeviceId: 그 등록에 함께 보낸 기기 식별자
+ *   → 토큰·버전이 그대로여도 기기 식별자가 바뀌면 서버에는 다른 기기의 등록이 남으므로 재등록 대상.
  * - registeredAppVersion: 그 등록에 함께 보낸 appVersion
  *   → 토큰이 그대로여도 앱 버전이 바뀌면 재등록해야 하므로 함께 보관한다.
  * - status: 발급/등록 진행 상태 (UI 표시·중복 등록 방지용)
  *
- * 영속화는 token/registeredToken/registeredAppVersion만 (persistent namespace).
+ * 영속화는 token/registeredToken/registeredDeviceId/registeredAppVersion만 (persistent namespace).
  * status는 휘발 — 앱 재시작 시 항상 "idle"부터 시작해 재동기화가 자연스럽게 일어난다.
  */
 export type FcmStatus =
@@ -25,6 +27,14 @@ export type FcmStatus =
 interface FcmState {
   token: string | null;
   registeredToken: string | null;
+  /**
+   * 서버 등록 시 함께 보낸 기기 식별자(deviceId). 기기 변경 감지용.
+   *
+   * 토큰·앱버전이 그대로여도 deviceId 가 달라졌다면 서버에는 **다른 기기의 등록**이 남아 있는
+   * 상태다. 예: 저장소 읽기 실패로 임시 식별자가 쓰였다가 원래 값으로 복귀한 경우.
+   * 이때 재등록을 건너뛰면 서버가 현재 기기를 영영 모른다 → 중복 등록 판정에 반드시 포함한다.
+   */
+  registeredDeviceId: string | null;
   /** 서버 등록 시 함께 보낸 appVersion. 버전 변경 감지용 */
   registeredAppVersion: string | null;
   status: FcmStatus;
@@ -33,8 +43,12 @@ interface FcmState {
   setToken: (token: string) => void;
   /** 등록 진행/상태 갱신 */
   setStatus: (status: FcmStatus) => void;
-  /** 서버 등록 완료 마킹 (registeredToken/registeredAppVersion 동기화, status → "registered") */
-  markRegistered: (token: string, appVersion: string) => void;
+  /** 서버 등록 완료 마킹 (registeredToken/DeviceId/AppVersion 동기화, status → "registered") */
+  markRegistered: (
+    token: string,
+    deviceId: string,
+    appVersion: string
+  ) => void;
   /** 로그아웃 등에서 전체 초기화 */
   reset: () => void;
 }
@@ -44,14 +58,16 @@ export const useFcmStore = create<FcmState>()(
     (set) => ({
       token: null,
       registeredToken: null,
+      registeredDeviceId: null,
       registeredAppVersion: null,
       status: "idle",
 
       setToken: (token) => set({ token, status: "issued" }),
       setStatus: (status) => set({ status }),
-      markRegistered: (token, appVersion) =>
+      markRegistered: (token, deviceId, appVersion) =>
         set({
           registeredToken: token,
+          registeredDeviceId: deviceId,
           registeredAppVersion: appVersion,
           status: "registered",
         }),
@@ -59,6 +75,7 @@ export const useFcmStore = create<FcmState>()(
         set({
           token: null,
           registeredToken: null,
+          registeredDeviceId: null,
           registeredAppVersion: null,
           status: "idle",
         }),
@@ -70,6 +87,7 @@ export const useFcmStore = create<FcmState>()(
       partialize: (state) => ({
         token: state.token,
         registeredToken: state.registeredToken,
+        registeredDeviceId: state.registeredDeviceId,
         registeredAppVersion: state.registeredAppVersion,
       }),
     }
