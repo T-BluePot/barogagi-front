@@ -3,11 +3,15 @@ import { isLoggedIn } from "@/lib/auth/tokenCache";
 import { resyncFcmRegistration } from "@/utils/fcm";
 
 /**
- * FCM 토큰 갱신 감지 훅
+ * FCM 등록 재동기화 훅
  *
- * 서버에 등록된 토큰과 현재 단말 토큰을 대조해, 다르면 옛 등록을 지우고 새로 등록한다.
+ * 서버에 등록된 정보와 현재 단말 상태를 대조해 어긋난 부분을 맞춘다.
  * 실제 처리는 `resyncFcmRegistration()` 가 하고, 이 훅은 **언제 확인할지**만 정한다.
- * (기기 식별자 승격 + 토큰 로테이션 재등록 두 가지를 처리한다)
+ *
+ * 처리 대상 세 가지 (자세한 내용은 `resyncFcmRegistration` 주석 참고):
+ *   1) 레거시(`"WEB"`) 등록 정리 — 배포 직후 1회
+ *   2) 기기 식별자 승격 (`local` → `native`)
+ *   3) FCM 토큰 로테이션 재등록
  *
  * 확인 시점 두 가지:
  *   1) 마운트 직후 — 앱을 껐다 켠 경우. 토큰 등록은 로그인 시점에만 일어나므로,
@@ -22,7 +26,7 @@ import { resyncFcmRegistration } from "@/utils/fcm";
  * 중복 실행 방지는 `resyncFcmRegistration()` 내부의 in-flight 가드가 담당한다
  * (`visibilitychange` 는 연달아 발생할 수 있다).
  */
-export const useFcmTokenResync = () => {
+export const useFcmRegistrationResync = () => {
   useEffect(() => {
     const run = () => {
       if (!isLoggedIn()) return;

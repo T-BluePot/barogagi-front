@@ -172,7 +172,18 @@ export const syncFcmToken = async (): Promise<void> => {
 
   store.setToken(token);
 
-  const { deviceType, appVersion } = await getFcmDeviceInfo();
+  // 호출부가 `void syncFcmToken()` 으로 던져두므로 이 함수는 **reject 하면 안 된다.**
+  // getFcmDeviceInfo() 는 getDeviceId() 를 부르는데, 그 안의 getDeviceIdRecord() 는
+  // 실패를 캐시하지 않으려고 의도적으로 rethrow 한다 → 여기서 받지 않으면 unhandled rejection.
+  let deviceType: string;
+  let appVersion: string;
+  try {
+    ({ deviceType, appVersion } = await getFcmDeviceInfo());
+  } catch (err) {
+    console.error("[fcm] 단말 정보 조회 실패 — 서버 등록 skip", err);
+    store.setStatus("error");
+    return;
+  }
 
   // 종전 버전이 `"WEB"` 으로 등록해 둔 기록이 있으면 **먼저 지운다.**
   // 지우지 않고 새 식별자로 등록하면 같은 FCM 토큰이 옛 행("WEB")과 새 행(deviceId)에
@@ -181,8 +192,10 @@ export const syncFcmToken = async (): Promise<void> => {
   // 사용자 피해가 없고, 억지로 등록하면 오히려 중복 발송이 된다. 다음 기회에 다시 시도한다.
   if (await cleanupLegacyRegistration()) {
     console.log("[fcm] 레거시 등록 정리 후 재등록 진행");
-  } else if (isLegacyRegistration()) {
-    console.warn("[fcm] 레거시 등록 삭제 실패 — 이번 등록은 건너뛴다(중복 발송 방지)");
+  } else if (getLegacyRegisteredToken()) {
+    console.warn(
+      "[fcm] 레거시 등록 삭제 실패 — 이번 등록은 건너뛴다(중복 발송 방지)"
+    );
     store.setStatus("error");
     return;
   }
@@ -327,20 +340,26 @@ const LEGACY_DEVICE_TYPE = "WEB";
  *
  * @returns 정리를 수행했는지 여부. true 면 호출부가 새 식별자로 재등록해야 한다.
  */
-const isLegacyRegistration = (): boolean => {
+/**
+ * 종전 버전이 남긴 등록이면 그때 등록했던 FCM 토큰을, 아니면 null 을 반환한다.
+ *
+ * 판정 근거: `registeredDeviceId` 는 이번 버전에서 추가된 필드다.
+ * 등록 기록(`registeredToken`)은 있는데 이 값만 비어 있다면 종전 버전이 남긴 등록이다.
+ *
+ * boolean 이 아니라 토큰을 돌려주는 이유 — 호출부가 판정과 토큰 추출을 각각 하면
+ * 같은 판정이 두 곳으로 갈라진다. 한 곳에서 판정하고 필요한 값까지 함께 넘긴다.
+ */
+const getLegacyRegisteredToken = (): string | null => {
   const { registeredToken, registeredDeviceId } = useFcmStore.getState();
-  // registeredDeviceId 는 이번 버전에서 추가된 필드다.
-  // 등록 기록(registeredToken)은 있는데 이 값만 비어 있다 = 종전 버전이 남긴 등록.
-  return !!registeredToken && !registeredDeviceId;
+  return registeredToken && !registeredDeviceId ? registeredToken : null;
 };
 
 const cleanupLegacyRegistration = async (): Promise<boolean> => {
-  const { registeredToken } = useFcmStore.getState();
-  // isLegacyRegistration() 과 같은 판정이지만, registeredToken 이 string 으로 좁혀지도록 여기서 직접 본다
-  if (!registeredToken || !isLegacyRegistration()) return false;
+  const legacyToken = getLegacyRegisteredToken();
+  if (!legacyToken) return false;
 
   const deleted = await runDelete(
-    { fcmToken: registeredToken, deviceType: LEGACY_DEVICE_TYPE },
+    { fcmToken: legacyToken, deviceType: LEGACY_DEVICE_TYPE },
     "레거시(WEB) 등록 삭제"
   );
 
@@ -351,7 +370,7 @@ const cleanupLegacyRegistration = async (): Promise<boolean> => {
 
   // 서버 등록을 지웠으므로 로컬 기록도 비운다(안 그러면 뒤이은 재등록이 skip 된다)
   useFcmStore.getState().reset();
-  console.log("[fcm] 레거시(WEB) 등록 정리 완료", { token: registeredToken });
+  console.log("[fcm] 레거시(WEB) 등록 정리 완료", { token: legacyToken });
   return true;
 };
 
@@ -436,6 +455,9 @@ const promoteDeviceIdIfPossible = async (): Promise<boolean> => {
  *    반면 새 토큰을 등록하지 않으면 알림이 아예 끊긴다. 등록 쪽이 우선이다.
  *
  * 호출 전 로그인 여부를 확인해야 한다(미로그인 시 401). 판정은 훅이 담당한다.
+ *
+ * 호출부가 `void resyncFcmRegistration()` 으로 던져두므로 **reject 하지 않는다.**
+ * (`promoteDeviceIdIfPossible` → `getDeviceIdRecord()` 가 rethrow 할 수 있어 아래에서 받는다)
  */
 export const resyncFcmRegistration = async (): Promise<void> => {
   if (resyncInFlight) return resyncInFlight;
@@ -480,9 +502,14 @@ export const resyncFcmRegistration = async (): Promise<void> => {
       "로테이션 전 토큰 삭제"
     );
     await syncFcmToken();
-  })().finally(() => {
-    resyncInFlight = null;
-  });
+  })()
+    .catch((err: unknown) => {
+      // fire-and-forget 으로 호출되므로 여기서 흡수한다(unhandled rejection 방지)
+      console.error("[fcm] 재동기화 실패", err);
+    })
+    .finally(() => {
+      resyncInFlight = null;
+    });
 
   return resyncInFlight;
 };

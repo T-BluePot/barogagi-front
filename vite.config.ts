@@ -27,8 +27,13 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: apiTarget,
           changeOrigin: true,
-          // 브라우저가 붙인 Origin(`http://<PC IP>:8080`)이 그대로 넘어가면 서버가 403 으로 막는다.
-          // 중계 요청은 서버 대 서버이므로 Origin/Referer 를 대상 도메인 기준으로 바꿔 보낸다.
+          // ⚠️ 이 두 줄은 **서버의 Origin 검사를 우회한다.**
+          //    브라우저가 붙인 Origin(`http://<PC IP>:8080`)이 그대로 넘어가면 서버가 403 으로 막는다.
+          //    중계 요청은 서버 대 서버이므로 Origin/Referer 를 대상 도메인 기준으로 바꿔 보낸다.
+          //
+          //    의도적인 선택이며 **개발 서버에서만** 동작한다(운영 빌드에는 프록시 자체가 없다).
+          //    서버 측 방어를 로컬에서 무력화하는 것이므로, 이 설정을 스테이징·운영 경로로
+          //    옮기거나 target 을 신뢰할 수 없는 호스트로 바꾸지 말 것.
           headers: {
             Origin: apiTarget,
             Referer: `${apiTarget}/`,
