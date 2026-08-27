@@ -48,11 +48,16 @@ const appendDeviceId = (authorizeUrl: string, deviceId: string): string => {
 export const startOAuthLogin = async (
   authorizeUrl: string
 ): Promise<string | null> => {
-  const bridge = window.BarogagiApp;
-
   // deviceId 주입은 분기 이전에 한다 — 앱(Custom Tab)이든 브라우저(리다이렉트)든
   // 실제로 열리는 URL 은 동일하므로, 한 곳에서 붙여야 경로별 누락이 생기지 않는다.
   const targetUrl = appendDeviceId(authorizeUrl, await getDeviceId());
+
+  // ⚠️ 브릿지는 위 await **이후에** 읽는다.
+  //    getDeviceId() 는 내부에서 waitForBridge() 로 최대 2초를 기다린다. 앱 부팅 직후에는
+  //    브릿지 주입이 페이지 스크립트보다 늦으므로, await 이전에 읽어 두면 그 대기 중에
+  //    주입된 브릿지를 놓친다 → 앱인데 브라우저로 판정 → window.location.href 로 외부 크롬에
+  //    새고 barogagiapp:// 콜백이 유실된다(이 파일 상단 주석의 그 사고).
+  const bridge = window.BarogagiApp;
 
   // 네이티브 앱 환경: BarogagiApp 존재로 판별
   if (bridge) {

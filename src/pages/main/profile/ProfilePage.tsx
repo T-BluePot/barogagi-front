@@ -60,7 +60,28 @@ const ProfilePage = () => {
       //    탈퇴 후에는 계정 자체가 사라져 삭제 API 를 부를 인증이 없다.
       //    파라미터 없이 호출 = 회원의 **모든 기기** 토큰 삭제 — 계정이 없어지므로
       //    다른 기기에 등록이 남으면 안 된다.
-      await deleteAllFcmTokens();
+      //
+      // ⚠️ 삭제에 실패하면 **탈퇴를 진행하지 않는다.**
+      //    그대로 탈퇴시키면 서버에 (탈퇴한 회원, 기기, 살아 있는 토큰) 행이 남는데,
+      //    인증이 사라져 클라이언트가 그걸 치울 방법이 **영구히** 없다.
+      //    등록해 둔 미래 일정이 남아 있으면 하루 전 알림이 그 토큰으로 발송된다
+      //    — 탈퇴한 사람 폰에 알림이 뜬다.
+      //
+      //    반대로 여기서 막았을 때의 피해는 "나중에 다시 시도"로 복구된다.
+      //    되돌릴 수 없는 쪽을 피한다. (deleteAllFcmTokens 는 내부에서 이미 1회 재시도한다)
+      const deleted = await deleteAllFcmTokens();
+      if (!deleted) {
+        console.error(
+          "[withdraw] FCM 토큰 삭제 실패 — 탈퇴를 중단한다(탈퇴 후에는 정리 불가)"
+        );
+        // 복구(restorePushAfterFailedWithdraw)는 부르지 않는다.
+        // 삭제가 실패했다는 건 서버 등록이 그대로 남아 있다는 뜻이고, deleteAllFcmTokens 는
+        // 로컬 store 도 건드리지 않는다 → 되돌릴 상태 자체가 없다.
+        // 여기서 reset() 후 재등록하면 멀쩡한 등록을 지웠다 붙이는 왕복이 되고,
+        // 그 재등록이 실패하면 오히려 상태가 나빠진다.
+        openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+        return;
+      }
 
       const response = await withdrawMe({ reasonNo, withdrawReason });
 

@@ -144,15 +144,17 @@ export const issueFcmToken = async (): Promise<string | null> => {
  * 따라서 빌드 env(VITE_APP_VERSION)가 아니라 브릿지 실측값을 우선하는
  * `getCurrentAppVersion()` 을 쓴다. #112 가 남겨둔 "서버 측 appVersion 의미 확인" 조건이
  * 백엔드 API 문서("앱 버전 정보를 넘겨주세요 (ex. 1.1)")로 충족되어 여기서 일원화한다.
- * 버전을 알 수 없는 환경(브라우저·구버전 앱)에서는 null 이므로 빈 문자열로 보낸다
- * (서버 스펙상 필수 string).
+ * 버전을 알 수 없는 환경(브라우저·구버전 앱)에서는 `undefined` 로 남긴다.
+ * `""` 로 채우지 않는다 — CLAUDE.md 의 "absent 필드에 더미값 금지" 규칙이다.
+ * 서버도 이 필드를 필수로 두지 않는다(스웨거 `PushTokenRequest` 에 required 배열 없음).
+ * axios 가 JSON 직렬화하면서 undefined 키를 빼므로 전송에서도 자연히 생략된다.
  */
 const getFcmDeviceInfo = async (): Promise<{
   deviceType: string;
-  appVersion: string;
+  appVersion: string | undefined;
 }> => ({
   deviceType: await getDeviceId(),
-  appVersion: (await getCurrentAppVersion()) ?? "",
+  appVersion: (await getCurrentAppVersion()) ?? undefined,
 });
 
 /**
@@ -176,7 +178,7 @@ export const syncFcmToken = async (): Promise<void> => {
   // getFcmDeviceInfo() 는 getDeviceId() 를 부르는데, 그 안의 getDeviceIdRecord() 는
   // 실패를 캐시하지 않으려고 의도적으로 rethrow 한다 → 여기서 받지 않으면 unhandled rejection.
   let deviceType: string;
-  let appVersion: string;
+  let appVersion: string | undefined;
   try {
     ({ deviceType, appVersion } = await getFcmDeviceInfo());
   } catch (err) {

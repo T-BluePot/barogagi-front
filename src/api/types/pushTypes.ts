@@ -11,7 +11,14 @@ export interface PushTokenRequestType {
    *    "기기를 식별할 수 있는 고유 데이터". 값은 `utils/deviceId.ts` 의 `getDeviceId()`.
    */
   deviceType: string;
-  appVersion: string;
+  /**
+   * 설치된 앱 버전. 서버가 구버전 사용자를 구분하는 데 쓴다.
+   *
+   * 스웨거상 `PushTokenRequest` 에 `required` 배열이 없어 이 필드는 서버에서도 선택이다.
+   * 버전을 알 수 없는 환경(브라우저·구버전 앱)에서는 `""` 로 채우지 않고 생략한다
+   * (CLAUDE.md: absent 필드에 더미값 금지 — absent 는 undefined 로 남긴다).
+   */
+  appVersion?: string;
 }
 
 /**

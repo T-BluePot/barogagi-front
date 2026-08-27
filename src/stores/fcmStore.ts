@@ -35,8 +35,14 @@ interface FcmState {
    * 이때 재등록을 건너뛰면 서버가 현재 기기를 영영 모른다 → 중복 등록 판정에 반드시 포함한다.
    */
   registeredDeviceId: string | null;
-  /** 서버 등록 시 함께 보낸 appVersion. 버전 변경 감지용 */
-  registeredAppVersion: string | null;
+  /**
+   * 서버 등록 시 함께 보낸 appVersion. 버전 변경 감지용.
+   *
+   * 버전을 알 수 없는 환경(브라우저·구버전 앱)에서는 `undefined` 다 — `""` 로 채우지 않는다
+   * (CLAUDE.md: absent 필드에 더미값 금지). 등록 시 보낸 값과 **같은 표현**이어야
+   * 중복 등록 판정이 맞아떨어지므로 `null` 이 아니라 `undefined` 로 맞춘다.
+   */
+  registeredAppVersion: string | undefined;
   status: FcmStatus;
 
   /** 발급된 토큰 저장 (status → "issued") */
@@ -47,7 +53,7 @@ interface FcmState {
   markRegistered: (
     token: string,
     deviceId: string,
-    appVersion: string
+    appVersion: string | undefined
   ) => void;
   /** 로그아웃 등에서 전체 초기화 */
   reset: () => void;
@@ -59,7 +65,7 @@ export const useFcmStore = create<FcmState>()(
       token: null,
       registeredToken: null,
       registeredDeviceId: null,
-      registeredAppVersion: null,
+      registeredAppVersion: undefined,
       status: "idle",
 
       setToken: (token) => set({ token, status: "issued" }),
@@ -76,7 +82,7 @@ export const useFcmStore = create<FcmState>()(
           token: null,
           registeredToken: null,
           registeredDeviceId: null,
-          registeredAppVersion: null,
+          registeredAppVersion: undefined,
           status: "idle",
         }),
     }),

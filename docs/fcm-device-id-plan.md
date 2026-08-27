@@ -42,7 +42,7 @@ FCM 저장/삭제 API 의 `deviceType` 필드 설명이 로그인의 `deviceId` 
 | 인증 요청 주입 | `src/api/queries/authQueries.ts`, `src/utils/auth/startOAuthLogin.ts` |
 | FCM 등록/삭제/재동기화 | `src/utils/fcm.ts`, `src/api/queries/pushQueries.ts` |
 | 로그아웃 (강제 / 사용자) | `src/utils/auth/handleLogout.ts`, `src/utils/auth/handleUserLogout.ts` |
-| 갱신 감지 훅 | `src/hooks/useFcmTokenResync.ts` |
+| 갱신 감지 훅 | `src/hooks/useFcmRegistrationResync.ts` |
 
 ### deviceId 발급 규칙
 
