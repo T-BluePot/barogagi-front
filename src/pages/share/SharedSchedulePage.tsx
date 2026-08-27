@@ -15,14 +15,29 @@ const formatPeriod = (startDate: string, endDate: string) =>
 /** 하단 설치 유도 CTA — 공유 링크로 들어온 미가입자 전환용 */
 const InstallCta = () => (
   <div className="pb-safe bg-gray-white border-gray-10 shrink-0 border-t">
-    <div className="flex items-center justify-between gap-3 px-6 py-4">
-      <span className="typo-caption text-gray-60">
-        {SHARED_VIEW_TEXT.CTA_QUESTION}
-      </span>
+    <div className="flex items-center gap-2.5 px-5 py-3.5">
+      {/* 앱 아이콘. 흰 배경 위에 흰 아이콘이라 경계가 안 잡히므로 옅은 그림자로 띄운다.
+          alt 는 비운다 — 바로 옆에 브랜드명이 텍스트로 있어 읽어주면 중복이다. */}
+      <img
+        src="/favicon.png"
+        alt=""
+        aria-hidden
+        className="shadow-raised h-11 w-11 shrink-0 rounded-xl"
+      />
+      <div className="min-w-0 flex-1">
+        <p className="typo-subtitle text-gray-black">
+          {SHARED_VIEW_TEXT.CTA_BRAND}
+        </p>
+        {/* break-keep — 없으면 한국어가 어절 중간에서 끊긴다 ("...볼까 / 요?").
+            CSS 기본 word-break 는 한국어 어절 경계를 지켜주지 않는다. */}
+        <p className="typo-caption text-gray-60 break-keep">
+          {SHARED_VIEW_TEXT.CTA_QUESTION}
+        </p>
+      </div>
       <button
         type="button"
         onClick={() => openExternal(PLAY_STORE_URL)}
-        className="bg-peach ease-fitpl typo-subtitle text-gray-white hover:bg-peach-hover active:bg-peach-active h-10 shrink-0 cursor-pointer rounded-full px-4 transition-colors duration-200"
+        className="bg-peach ease-fitpl typo-caption text-gray-white hover:bg-peach-hover active:bg-peach-active h-9 shrink-0 cursor-pointer rounded-full px-3.5 font-medium transition-colors duration-200"
       >
         {SHARED_VIEW_TEXT.CTA_BUTTON}
       </button>

@@ -10,11 +10,17 @@ import GlobalConfirmModal from "@/components/common/modal/GlobalConfirmModal";
 import GlobalLoading from "@/components/common/loading/GlobalLoading";
 import GlobalErrorScreen from "@/components/common/error/GlobalErrorScreen";
 import { useFcmForegroundMessage } from "@/hooks/useFcmForegroundMessage";
+import { useFcmRegistrationResync } from "@/hooks/useFcmRegistrationResync";
+import { useForcedLogoutNotice } from "@/hooks/useForcedLogoutNotice";
 import { useAppUpdateCheck } from "@/hooks/useAppUpdateCheck";
 
 function App() {
   // 포그라운드 FCM 메시지를 toast로 표시 (앱 생애 1회 구독)
   useFcmForegroundMessage();
+  // FCM 토큰 갱신 감지 — 부팅 시·포그라운드 복귀 시 서버 등록과 대조해 재등록
+  useFcmRegistrationResync();
+  // 사용자가 직접 로그아웃한 게 아닌데 로그인 화면으로 돌아왔다면 이유를 알린다
+  useForcedLogoutNotice();
   // 앱 버전 체크 (앱 생애 1회). 라우터 의존이 없어 BrowserRouter 바깥에서 호출해도 무해하다
   useAppUpdateCheck();
 

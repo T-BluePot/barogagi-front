@@ -27,7 +27,22 @@ const WithdrawalModal = ({
   const [shouldRenderLayout, setShouldRenderLayout] = useState(isOpen);
   const [showAnimation, setShowAnimation] = useState(false);
 
-  const isConfirmDisabled = !selectedReason;
+  /** 현재 선택된 사유의 원본 DTO. 서버로 보낼 reasonNo 와 필수 여부 판정에 쓴다 */
+  const selectedReasonItem = reasons.find(
+    (r: WithdrawalReasonDTO) => r.reasonNm === selectedReason
+  );
+
+  /**
+   * 사유 텍스트가 필수인지. 서버가 `essentialYn` 으로 알려준다("기타" 등).
+   *
+   * ⚠️ 이걸 안 보면 확인 버튼이 그냥 눌리고, 서버가 `D402 탈퇴 사유를 입력해주세요` 로
+   *    거절한다. 그런데 화면에는 "탈퇴에 실패했습니다" 만 떠서 사용자는 이유를 모른 채
+   *    같은 실패를 반복하게 된다 — 사실상 탈퇴가 막힌다. (실측 확인)
+   */
+  const isDetailRequired = selectedReasonItem?.essentialYn === "Y";
+
+  const isConfirmDisabled =
+    !selectedReason || (isDetailRequired && !detail.trim());
 
   const reasonOptions = reasons.map((r: WithdrawalReasonDTO) => r.reasonNm);
 
@@ -44,11 +59,9 @@ const WithdrawalModal = ({
   }, [isOpen]);
 
   const handleConfirm = () => {
-    if (isConfirmDisabled || !selectedReason) return;
-    const matched = reasons.find((r: WithdrawalReasonDTO) => r.reasonNm === selectedReason);
-    if (!matched) return;
+    if (isConfirmDisabled || !selectedReasonItem) return;
     const trimmed = detail.trim();
-    onConfirm(matched.reasonNo, trimmed || undefined);
+    onConfirm(selectedReasonItem.reasonNo, trimmed || undefined);
   };
 
   const handleCancel = () => {
@@ -125,6 +138,13 @@ const WithdrawalModal = ({
         maxLength={500}
         className="mt-4"
       />
+
+      {/* 확인 버튼이 반응하지 않는 이유를 알려준다 — 안내가 없으면 버튼이 고장 난 것으로 보인다 */}
+      {isDetailRequired && !detail.trim() && (
+        <p className="typo-caption mt-1.5 text-left text-alert-red">
+          {WITHDRAWAL_MODAL_TEXT.DETAIL_REQUIRED}
+        </p>
+      )}
     </CommonConfirmModalLayout>
   );
 };

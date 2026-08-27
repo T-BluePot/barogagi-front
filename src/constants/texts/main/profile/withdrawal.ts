@@ -35,6 +35,16 @@ export const WITHDRAWAL_MODAL_TEXT = {
   REASON_LABEL: "탈퇴사유",
   REASON_PLACEHOLDER: "탈퇴 사유를 선택해주세요.",
   DETAIL_PLACEHOLDER: "탈퇴 사유를 입력해주세요.",
+  /**
+   * 서버가 `essentialYn: "Y"` 로 내려주는 사유("기타" 등)를 골랐는데 내용을 안 썼을 때.
+   *
+   * 이 안내가 없으면 확인 버튼이 아무 반응도 하지 않아 사용자는 버튼이 고장 난 줄 안다.
+   * (안내를 안 띄우고 그냥 보내면 서버가 `D402 탈퇴 사유를 입력해주세요` 로 거절하는데,
+   *  화면에는 "회원 탈퇴에 실패했습니다" 만 떠서 이유를 알 수 없다 — 실측 확인)
+   *
+   * 사유명을 문구에 박지 않는다 — 어떤 사유가 필수인지는 서버가 정하고 바뀔 수 있다.
+   */
+  DETAIL_REQUIRED: "선택하신 사유는 내용을 입력해주세요.",
   CONFIRM_LABEL: "확인",
   CANCEL_LABEL: "취소",
   SUCCESS_MESSAGE: "회원 탈퇴되었습니다.",
