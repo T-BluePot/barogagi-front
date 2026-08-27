@@ -72,6 +72,10 @@ export const useFcmStore = create<FcmState>()(
       setStatus: (status) => set({ status }),
       markRegistered: (token, deviceId, appVersion) =>
         set({
+          // token 도 함께 채운다 — syncFcmToken 은 setToken 이후에 레거시 정리로
+          // reset() 을 부를 수 있어, 여기서 복구하지 않으면 status 는 "registered" 인데
+          // token 만 null 인 상태로 남는다(그대로 영속화된다).
+          token,
           registeredToken: token,
           registeredDeviceId: deviceId,
           registeredAppVersion: appVersion,

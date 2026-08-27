@@ -47,10 +47,15 @@ const ProfilePage = () => {
    *
    * ⚠️ `reset()` 을 먼저 해야 한다. store 에 등록 기록이 남아 있으면
    *    `syncFcmToken()` 이 "이미 등록됨"으로 보고 서버 등록을 skip 한다.
+   *
+   * ⚠️ 재등록을 **끝까지 기다린다**(await). 기다리지 않고 실패 알림을 띄우면,
+   *    사용자가 바로 탈퇴를 다시 눌렀을 때 두 번째 삭제 요청과 이 재등록이 경쟁한다.
+   *    삭제가 먼저 도착하고 재등록이 나중에 도착하면 탈퇴한 계정에 FCM 등록이 남는데,
+   *    탈퇴 후에는 인증이 없어 그걸 지울 방법이 영구히 없다.
    */
-  const restorePushAfterFailedWithdraw = () => {
+  const restorePushAfterFailedWithdraw = async () => {
     useFcmStore.getState().reset();
-    void syncFcmToken();
+    await syncFcmToken();
   };
 
   // 회원 탈퇴 처리
@@ -95,10 +100,12 @@ const ProfilePage = () => {
         return;
       }
 
-      restorePushAfterFailedWithdraw();
+      // await — 복구가 끝난 뒤에 알림을 띄운다. 그래야 사용자가 재시도할 시점에는
+      // 재등록이 이미 끝나 있어 다음 삭제 요청과 경쟁하지 않는다.
+      await restorePushAfterFailedWithdraw();
       openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
     } catch {
-      restorePushAfterFailedWithdraw();
+      await restorePushAfterFailedWithdraw();
       openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
     }
   };

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { logout } from "@/api/queries/authQueries";
 import { deleteFcmTokenForThisDevice } from "@/utils/fcm";
 import { handleForcedLogout } from "./handleLogout";
@@ -28,6 +29,25 @@ import { handleForcedLogout } from "./handleLogout";
  *   함께 import 하면 `client → axiosInterceptors → handleLogout → api/queries → client`
  *   순환이 생긴다. 서버 호출이 필요한 쪽만 이 파일로 떼어 순환을 끊는다.
  */
+/**
+ * 오류에서 진단에 필요한 값만 뽑는다 (자격증명이 딸려나가지 않도록).
+ *
+ * axios 오류는 `config.headers` 에 요청 헤더를 그대로 보관한다. 그래서 오류 객체를
+ * 통째로 로깅하면 인증 헤더가 함께 찍힌다. 여기서는 상태·코드·메시지만 남긴다.
+ */
+const extractSafeErrorInfo = (
+  err: unknown
+): { status?: number; code?: string; message?: string } => {
+  if (axios.isAxiosError(err)) {
+    return {
+      status: err.response?.status,
+      code: (err.response?.data as { code?: string } | undefined)?.code,
+      message: err.message,
+    };
+  }
+  return { message: err instanceof Error ? err.message : String(err) };
+};
+
 export const handleUserLogout = async (): Promise<void> => {
   // ① 이 기기의 FCM 등록 삭제 (실패해도 진행 — 내부에서 재시도/로깅 후 false 반환)
   await deleteFcmTokenForThisDevice();
@@ -36,7 +56,17 @@ export const handleUserLogout = async (): Promise<void> => {
   try {
     await logout();
   } catch (err) {
-    console.error("[handleUserLogout] 로그아웃 API 실패 — 로컬 정리는 계속", err);
+    // ⚠️ 오류 객체를 **통째로 찍지 않는다.**
+    //    logout() 은 REFRESH-TOKEN 을 요청 헤더에 싣는데, axios 오류는 요청 설정을
+    //    그대로 들고 있어 err 를 그냥 로깅하면 콘솔에 refresh token 이 노출된다.
+    //    이 앱은 `?debug` 로 누구나 모바일 콘솔(eruda)을 켤 수 있어 실제 노출 경로가 있고,
+    //    refresh token 은 유효기간이 30일이다. 진단에 필요한 비민감 필드만 남긴다.
+    const { status, code, message } = extractSafeErrorInfo(err);
+    console.error("[handleUserLogout] 로그아웃 API 실패 — 로컬 정리는 계속", {
+      status,
+      code,
+      message,
+    });
   }
 
   // ③ 로컬 정리 + 로그인 화면으로

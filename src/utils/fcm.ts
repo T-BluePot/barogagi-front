@@ -327,22 +327,6 @@ let resyncInFlight: Promise<void> | null = null;
 const LEGACY_DEVICE_TYPE = "WEB";
 
 /**
- * 종전 버전이 `"WEB"` 으로 등록해 둔 기록을 정리한다 (배포 1회성 마이그레이션).
- *
- * 이번 버전부터 `deviceType` 자리에 기기 식별자를 보낸다. 그런데 배포만으로는 FCM 토큰이
- * 갱신되지 않으므로, 그냥 새 값으로 등록하면 **같은 토큰이 옛 행(`"WEB"`)과 새 행(deviceId)에
- * 동시에** 남는다 → 같은 기기에 푸시가 두 번 간다.
- *
- * 판별은 `registeredDeviceId` 로 한다. 이 필드는 이번 버전에서 추가됐으므로,
- * **등록 기록은 있는데(`registeredToken`) 이 값만 비어 있다면** 종전 버전이 남긴 등록이다.
- *
- * ⚠️ 삭제에 실패하면 정리하지 않고 다음 기회로 미룬다.
- *    옛 행은 살아 있어 푸시가 계속 도달하므로 사용자 피해가 없고,
- *    억지로 재등록하면 오히려 중복 발송이 된다.
- *
- * @returns 정리를 수행했는지 여부. true 면 호출부가 새 식별자로 재등록해야 한다.
- */
-/**
  * 종전 버전이 남긴 등록이면 그때 등록했던 FCM 토큰을, 아니면 null 을 반환한다.
  *
  * 판정 근거: `registeredDeviceId` 는 이번 버전에서 추가된 필드다.
@@ -356,6 +340,21 @@ const getLegacyRegisteredToken = (): string | null => {
   return registeredToken && !registeredDeviceId ? registeredToken : null;
 };
 
+/**
+ * 종전 버전이 `"WEB"` 으로 등록해 둔 기록을 정리한다 (배포 1회성 마이그레이션).
+ *
+ * 이번 버전부터 `deviceType` 자리에 기기 식별자를 보낸다. 그런데 배포만으로는 FCM 토큰이
+ * 갱신되지 않으므로, 그냥 새 값으로 등록하면 **같은 토큰이 옛 행(`"WEB"`)과 새 행(deviceId)에
+ * 동시에** 남는다 → 같은 기기에 푸시가 두 번 간다.
+ *
+ * 대상 판별은 `getLegacyRegisteredToken()` 이 한다.
+ *
+ * ⚠️ 삭제에 실패하면 정리하지 않고 다음 기회로 미룬다.
+ *    옛 행은 살아 있어 푸시가 계속 도달하므로 사용자 피해가 없고,
+ *    억지로 재등록하면 오히려 중복 발송이 된다.
+ *
+ * @returns 정리를 수행했는지 여부. true 면 호출부가 새 식별자로 재등록해야 한다.
+ */
 const cleanupLegacyRegistration = async (): Promise<boolean> => {
   const legacyToken = getLegacyRegisteredToken();
   if (!legacyToken) return false;
