@@ -40,5 +40,6 @@ export const handleUserLogout = async (): Promise<void> => {
   }
 
   // ③ 로컬 정리 + 로그인 화면으로
-  await handleForcedLogout();
+  //    silent — 사용자가 직접 누른 로그아웃이므로 "로그인이 만료되었어요" 안내를 띄우지 않는다
+  await handleForcedLogout({ silent: true });
 };
