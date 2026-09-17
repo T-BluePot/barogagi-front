@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { withdrawMe } from "@/api/queries/authQueries";
 import { useMeQuery } from "@/hooks/queries/useMeQuery";
@@ -21,6 +21,20 @@ const ProfilePage = () => {
   const { openConfirmModal } = useConfirmModalStore();
   const { openAlertModal } = useAlertModalStore();
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
+
+  /**
+   * 탈퇴 진행 중 재진입 차단.
+   *
+   * 확인 버튼을 눌러도 성공 전까지는 모달이 닫히지 않고, `CommonConfirmModalLayout` 의
+   * confirmButtonInfo 에는 disabled 가 없어 버튼이 계속 살아 있다. 그래서 첫 요청이
+   * 네트워크를 기다리는 동안 두 번째 확인이 들어올 수 있다.
+   *
+   * 그러면 진행 중인 재등록(syncFcmToken)과 두 번째 deleteAllFcmTokens/withdrawMe 가
+   * 겹쳐, 순서에 따라 탈퇴한 계정에 FCM 등록이 남는다 — 탈퇴 후에는 지울 방법이 없다.
+   *
+   * state 가 아니라 ref 를 쓴다: 리렌더를 기다리지 않고 **동기적으로** 막아야 한다.
+   */
+  const isWithdrawingRef = useRef(false);
 
   // 사용자 정보 조회
   const { user: userData } = useMeQuery();
@@ -60,6 +74,9 @@ const ProfilePage = () => {
 
   // 회원 탈퇴 처리
   const handleWithdraw = async (reasonNo: number, withdrawReason?: string) => {
+    if (isWithdrawingRef.current) return;
+    isWithdrawingRef.current = true;
+
     try {
       // ⚠️ FCM 삭제가 탈퇴보다 **먼저**여야 한다.
       //    탈퇴 후에는 계정 자체가 사라져 삭제 API 를 부를 인증이 없다.
@@ -92,7 +109,15 @@ const ProfilePage = () => {
 
       if (response.code === "D200") {
         useFcmStore.getState().reset();
-        void clearAuthTokens();
+        // await — 영속 저장소 삭제가 끝난 뒤에 이동한다. 기다리지 않으면 삭제가 도는 중에
+        // 앱이 꺼지거나 새로고침될 때 토큰이 남고, 다음 부팅의 bootstrapTokens() 가 그걸
+        // 복원한다. 탈퇴는 7일 유예라 계정이 살아 있어 복원된 토큰이 실제로 먹힌다
+        // (로그인으로 간주되면 탈퇴가 철회될 여지까지 있다).
+        // 실패해도 탈퇴는 이미 서버에서 완료됐으므로 성공 처리로 진행한다 —
+        // 여기서 실패 모달을 띄우면 사용자가 탈퇴가 안 된 줄 알고 다시 시도한다.
+        await clearAuthTokens().catch((err: unknown) => {
+          console.error("[withdraw] 토큰 정리 실패 — 탈퇴는 완료됨", err);
+        });
 
         setIsWithdrawalModalOpen(false);
         openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.SUCCESS_MESSAGE });
@@ -107,6 +132,8 @@ const ProfilePage = () => {
     } catch {
       await restorePushAfterFailedWithdraw();
       openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+    } finally {
+      isWithdrawingRef.current = false;
     }
   };
 

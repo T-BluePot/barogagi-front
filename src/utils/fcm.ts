@@ -177,7 +177,19 @@ const getFcmDeviceInfo = async (): Promise<{
  */
 export const syncFcmToken = async (): Promise<void> => {
   const store = useFcmStore.getState();
-  const token = await issueFcmToken();
+
+  // 위 JSDoc 의 "throw 하지 않는다"를 실제로 보장한다.
+  // issueFcmToken 내부는 대부분 방어돼 있지만, Firebase SDK 초기화처럼 상위에서 새어 나올 수
+  // 있는 경로가 있었다. 호출부가 전부 `void syncFcmToken()` 이라 여기서 못 받으면
+  // unhandled rejection 이 되고, 탈퇴 복구 경로에서는 실패 알림조차 못 띄운다.
+  let token: string | null;
+  try {
+    token = await issueFcmToken();
+  } catch (err) {
+    console.error("[fcm] 토큰 발급 실패 — 서버 등록 skip", err);
+    store.setStatus("error");
+    return;
+  }
 
   if (!token) {
     store.setStatus("error");
@@ -204,9 +216,10 @@ export const syncFcmToken = async (): Promise<void> => {
   // 동시에 남아 같은 기기로 푸시가 두 번 간다.
   // 삭제에 실패하면 등록 자체를 건너뛴다 — 옛 행이 살아 있어 푸시는 계속 도달하므로
   // 사용자 피해가 없고, 억지로 등록하면 오히려 중복 발송이 된다. 다음 기회에 다시 시도한다.
-  if (await cleanupLegacyRegistration()) {
+  const legacyCleanup = await cleanupLegacyRegistration();
+  if (legacyCleanup === "cleaned") {
     console.log("[fcm] 레거시 등록 정리 후 재등록 진행");
-  } else if (getLegacyRegisteredToken()) {
+  } else if (legacyCleanup === "failed") {
     console.warn(
       "[fcm] 레거시 등록 삭제 실패 — 이번 등록은 건너뛴다(중복 발송 방지)"
     );
@@ -379,9 +392,17 @@ const getLegacyRegisteredToken = (): string | null => {
  *
  * @returns 정리를 수행했는지 여부. true 면 호출부가 새 식별자로 재등록해야 한다.
  */
-const cleanupLegacyRegistration = async (): Promise<boolean> => {
+/**
+ * 레거시 정리 결과.
+ *
+ * boolean 이 아니라 세 갈래로 돌려주는 이유 — 호출부가 `false` 를 받고 "대상이 없었나,
+ * 삭제가 실패했나"를 알려면 스토어를 다시 조회해야 한다. 그러면 같은 판정이 두 곳으로 갈라진다.
+ */
+type LegacyCleanupResult = "cleaned" | "failed" | "none";
+
+const cleanupLegacyRegistration = async (): Promise<LegacyCleanupResult> => {
   const legacyToken = getLegacyRegisteredToken();
-  if (!legacyToken) return false;
+  if (!legacyToken) return "none";
 
   const deleted = await runDelete(
     { fcmToken: legacyToken, deviceType: LEGACY_DEVICE_TYPE },
@@ -390,7 +411,7 @@ const cleanupLegacyRegistration = async (): Promise<boolean> => {
 
   if (!deleted) {
     console.warn("[fcm] 레거시 등록 삭제 실패 — 정리를 다음 기회로 미룬다");
-    return false;
+    return "failed";
   }
 
   // 서버 등록을 지웠으므로 로컬 기록도 비운다(안 그러면 뒤이은 재등록이 skip 된다)
@@ -398,7 +419,7 @@ const cleanupLegacyRegistration = async (): Promise<boolean> => {
   console.log("[fcm] 레거시(WEB) 등록 정리 완료", {
     token: maskToken(legacyToken),
   });
-  return true;
+  return "cleaned";
 };
 
 /**
@@ -499,10 +520,14 @@ export const resyncFcmRegistration = async (): Promise<void> => {
 
   resyncInFlight = (async () => {
     // 1) 레거시("WEB") 등록 정리 — 배포 직후 1회. 지운 뒤 현재 식별자로 다시 등록한다
-    if (await cleanupLegacyRegistration()) {
+    const legacyCleanup = await cleanupLegacyRegistration();
+    if (legacyCleanup === "cleaned") {
       await syncFcmToken();
       return;
     }
+    // 삭제 실패면 여기서 멈춘다 — 승격·재등록으로 넘어가면 옛 "WEB" 행이 남은 채
+    // 새 식별자로 등록돼 중복 발송이 된다. 다음 기회에 다시 시도한다.
+    if (legacyCleanup === "failed") return;
 
     // 2) 기기 식별자 승격 — 성공하면 새 식별자로 등록하고 끝낸다
     if (await promoteDeviceIdIfPossible()) {
