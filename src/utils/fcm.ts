@@ -28,6 +28,18 @@ import {
   buildSwConfigQuery,
 } from "@/lib/firebase";
 
+/**
+ * 로그에 남길 토큰 축약형. 앞 8자와 길이만 남긴다.
+ *
+ * 콘솔 로그는 네트워크 탭과 달리 **앱 시작부터 누적**되고, 사용자가 문제를 제보하면서
+ * 캡처해 공유하기도 한다. 이 앱은 `?debug` 로 누구나 모바일 콘솔을 켤 수 있어
+ * 운영에서도 노출 경로가 있다 → 값 전체를 찍지 않는다.
+ *
+ * 앞 8자만으로도 "같은 토큰인지 바뀐 토큰인지" 는 구분되므로 디버깅에는 충분하다.
+ */
+const maskToken = (token: string | null | undefined): string =>
+  token ? `${token.slice(0, 8)}…(${token.length}자)` : String(token);
+
 /** 네이티브 브릿지가 FCM 토큰 발급을 지원하는지 (RN 미구현 단계 방어) */
 const isBridgeFcmAvailable = (): boolean =>
   typeof window !== "undefined" &&
@@ -82,7 +94,7 @@ const issueFirebaseToken = async (): Promise<string | null> => {
     });
     console.log("[fcm] Firebase 토큰 발급", {
       source: "firebase",
-      token: firebaseToken,
+      token: maskToken(firebaseToken),
     });
     return firebaseToken;
   } catch (err) {
@@ -107,7 +119,7 @@ export const issueFcmToken = async (): Promise<string | null> => {
       const bridgeToken = await window.BarogagiApp!.getFcmToken!();
       console.log("[fcm] 브릿지 토큰 발급", {
         source: "bridge",
-        token: bridgeToken,
+        token: maskToken(bridgeToken),
       });
       return bridgeToken;
     } catch (err) {
@@ -121,7 +133,7 @@ export const issueFcmToken = async (): Promise<string | null> => {
   if (testToken && testToken.length > 0) {
     console.log("[fcm] 테스트 토큰 사용", {
       source: "test-env",
-      token: testToken,
+      token: maskToken(testToken),
     });
     return testToken;
   }
@@ -217,7 +229,7 @@ export const syncFcmToken = async (): Promise<void> => {
     registered.registeredAppVersion === appVersion
   ) {
     console.log("[fcm] 이미 등록된 토큰 — 서버 등록 skip", {
-      token,
+      token: maskToken(token),
       deviceType,
       appVersion,
     });
@@ -231,7 +243,11 @@ export const syncFcmToken = async (): Promise<void> => {
     store.setStatus("registering");
     await registerPushToken({ fcmToken: token, deviceType, appVersion });
     store.markRegistered(token, deviceType, appVersion);
-    console.log("[fcm] 서버 토큰 등록 완료", { token, deviceType, appVersion });
+    console.log("[fcm] 서버 토큰 등록 완료", {
+      token: maskToken(token),
+      deviceType,
+      appVersion,
+    });
   } catch (err) {
     console.error("[fcm] 서버 토큰 등록 실패", err);
     store.setStatus("error");
@@ -243,6 +259,14 @@ const DELETE_RETRY_DELAY_MS = 300;
 
 const delay = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+/** 삭제 대상을 로그용으로 축약한다 (토큰 값이 그대로 찍히지 않도록) */
+const describeDeleteTarget = (
+  params: { fcmToken: string; deviceType: string } | undefined
+): string =>
+  params
+    ? `${maskToken(params.fcmToken)} / ${params.deviceType}`
+    : "(회원 전체)";
 
 /**
  * 삭제 요청을 1회 재시도한다.
@@ -260,7 +284,7 @@ const runDelete = async (
 ): Promise<boolean> => {
   try {
     await deletePushToken(params);
-    console.log(`[fcm] ${label} 완료`, params ?? "(회원 전체)");
+    console.log(`[fcm] ${label} 완료`, describeDeleteTarget(params));
     return true;
   } catch (first) {
     console.warn(`[fcm] ${label} 실패 — 1회 재시도`, first);
@@ -270,7 +294,7 @@ const runDelete = async (
 
   try {
     await deletePushToken(params);
-    console.log(`[fcm] ${label} 완료(재시도)`, params ?? "(회원 전체)");
+    console.log(`[fcm] ${label} 완료(재시도)`, describeDeleteTarget(params));
     return true;
   } catch (second) {
     console.error(`[fcm] ${label} 재시도 실패 — 서버에 등록이 남는다`, second);
@@ -296,7 +320,7 @@ export const deleteFcmTokenForThisDevice = async (): Promise<boolean> => {
 
   if (!registeredToken || !registeredDeviceId) {
     console.log("[fcm] 서버에 등록된 기록이 없어 기기 토큰 삭제 skip", {
-      registeredToken,
+      registeredToken: maskToken(registeredToken),
       registeredDeviceId,
     });
     return true;
@@ -371,7 +395,9 @@ const cleanupLegacyRegistration = async (): Promise<boolean> => {
 
   // 서버 등록을 지웠으므로 로컬 기록도 비운다(안 그러면 뒤이은 재등록이 skip 된다)
   useFcmStore.getState().reset();
-  console.log("[fcm] 레거시(WEB) 등록 정리 완료", { token: legacyToken });
+  console.log("[fcm] 레거시(WEB) 등록 정리 완료", {
+    token: maskToken(legacyToken),
+  });
   return true;
 };
 
@@ -392,6 +418,14 @@ const cleanupLegacyRegistration = async (): Promise<boolean> => {
  * @returns 승격을 수행했는지 여부. true 면 호출부가 새 식별자로 재등록해야 한다.
  */
 const promoteDeviceIdIfPossible = async (): Promise<boolean> => {
+  // ⚠️ 레거시(`"WEB"`) 등록이 남아 있으면 승격하지 않는다.
+  //    레거시 상태는 `registeredToken` 은 있고 `registeredDeviceId` 만 없는 모양이라,
+  //    아래 "서버 등록 없음" 분기(`!registeredToken || !registeredDeviceId`)에 걸린다.
+  //    그대로 두면 옛 `"WEB"` 행을 못 지운 채 식별자만 바꾸고 재등록해 푸시가 두 번 간다
+  //    — `cleanupLegacyRegistration` 이 삭제 실패 시 일부러 막아둔 상황을 여기서 우회하는 셈이다.
+  //    레거시 정리가 끝난 뒤에 승격한다(정리 실패 시엔 다음 기회로 미뤄진다).
+  if (getLegacyRegisteredToken()) return false;
+
   const record = await getDeviceIdRecord();
   if (record.source === "native") return false; // 이미 정확한 값
 
@@ -493,8 +527,8 @@ export const resyncFcmRegistration = async (): Promise<void> => {
     if (registeredToken === currentToken) return; // 그대로 — 할 일 없음
 
     console.log("[fcm] 토큰 로테이션 감지 — 재등록", {
-      old: registeredToken,
-      new: currentToken,
+      old: maskToken(registeredToken),
+      new: maskToken(currentToken),
     });
 
     // 옛 등록 삭제 → 새 토큰 등록. 삭제 실패해도 등록은 진행한다(위 주석 참고).
