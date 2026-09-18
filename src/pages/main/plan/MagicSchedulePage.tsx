@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 // === constants ===
 import { ROUTES } from "@/constants/routes";
@@ -61,6 +61,9 @@ const WandIcon = () => (
  */
 const MagicSchedulePage = () => {
   const navigate = useNavigate();
+  // 기기에서 "동작 줄이기"를 켠 사용자에게는 지팡이를 흔들지 않는다.
+  // framer-motion 은 CSS 와 달리 이 설정을 자동으로 따르지 않는다(기본값 "never").
+  const shouldReduceMotion = useReducedMotion();
 
   const draft = useScheduleDraftStore((s) => s.draft);
   const setDraft = useScheduleDraftStore((s) => s.setDraft);
@@ -151,14 +154,20 @@ const MagicSchedulePage = () => {
             //
             // ease 는 linear 다. "easeInOut" 이면 키프레임마다 속도가 0이 되어 좌우 끝에서
             // 멈칫하고, 그러면 젓는 게 아니라 까딱이는 것처럼 읽힌다.
-            animate={{ rotate: [0, -16, 14, -13, 11, 0] }}
-            transition={{
-              duration: 0.55,
-              times: [0, 0.16, 0.38, 0.58, 0.78, 1],
-              repeat: Infinity,
-              repeatDelay: 2,
-              ease: "linear",
-            }}
+            animate={
+              shouldReduceMotion ? { rotate: 0 } : { rotate: [0, -16, 14, -13, 11, 0] }
+            }
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 0.55,
+                    times: [0, 0.16, 0.38, 0.58, 0.78, 1],
+                    repeat: Infinity,
+                    repeatDelay: 2,
+                    ease: "linear",
+                  }
+            }
           >
             <WandIcon />
           </motion.span>
