@@ -5,6 +5,7 @@ import { getPersistStorage } from "@/utils/bridgeStorage";
 // === schedule types ===
 import type {
   ScheduleRegistReqDTO,
+  MagicScheduleReqDTO,
   PlanRegistReqDTO,
   UserAddedPlaceDTO,
 } from "@/api/types";
@@ -16,6 +17,11 @@ import type {
   UserPlacePlanDraftType,
   UserCustomPlanDraftType,
 } from "@/types/api/scheduleTypes";
+
+import {
+  DEFAULT_MAGIC_BANDS,
+  toMagicTimeRange,
+} from "@/utils/main/plan/magicTimeBands";
 
 /** 초기값 */
 const initialDraft: ScheduleDraftType = {
@@ -29,6 +35,8 @@ const initialDraft: ScheduleDraftType = {
   scheduleTagRegistReqDTOList: [],
   scheduleRegionRegistReqDTOList: [],
   planRegistReqDTOList: [],
+  creationMode: "NORMAL",
+  magicTimeBands: [...DEFAULT_MAGIC_BANDS],
 };
 
 /**
@@ -161,6 +169,7 @@ export type ScheduleDraftStore = {
 
   // 서버 요청 DTO 생성
   buildRequest: () => ScheduleRegistReqDTO;
+  buildMagicRequest: () => MagicScheduleReqDTO;
 
   // 초기화
   reset: () => void;
@@ -365,6 +374,37 @@ export const useScheduleDraftStore = create<ScheduleDraftStore>()(
         };
 
         return req;
+      },
+
+      /**
+       * 마법봉 생성 요청 DTO.
+       * 태그·참고사항·플랜은 서버가 채우므로 날짜/지역/시간만 담는다.
+       * 시간 밴드를 모두 해제했으면 startTime/endTime 자체를 빼서 서버 기본값(11:00~19:00)에 맡긴다.
+       */
+      buildMagicRequest: () => {
+        const { draft } = get();
+
+        const startDate = draft.startDate ?? "";
+        const endDate = draft.endDate ?? "";
+
+        if (!startDate) throw new Error("시작 날짜가 필요합니다.");
+        if (!endDate) throw new Error("종료 날짜가 필요합니다.");
+        if (draft.scheduleRegionRegistReqDTOList.length === 0) {
+          throw new Error("지역이 필요합니다.");
+        }
+
+        const range = toMagicTimeRange(draft.magicTimeBands);
+
+        return {
+          // 일정명을 서버 기본값("마법봉 일정")에 맡기지 않는 이유:
+          // 결과 화면의 "다시 만들기"는 draft 기반 buildRequest() 를 타는데,
+          // 거기서는 scheduleNm 이 비면 throw 한다.
+          ...(draft.scheduleNm ? { scheduleNm: draft.scheduleNm } : {}),
+          startDate,
+          endDate,
+          ...(range ?? {}),
+          scheduleRegionRegistReqDTOList: draft.scheduleRegionRegistReqDTOList,
+        };
       },
 
       reset: () => set({ draft: initialDraft, editingPlanIndex: null }),
