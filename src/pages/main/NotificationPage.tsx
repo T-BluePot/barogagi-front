@@ -182,11 +182,25 @@ const NotificationPage = () => {
 
   const renderContent = () => {
     if (isLoading) {
+      // 실제 목록은 gap 없이 border-b 로 나뉘고, 한 행이 제목(21px)+gap-3+날짜(16px)에
+      // py-4 를 더한 높이다. 둥근 박스를 gap 으로 띄우면 로딩 후 행 구분 방식이 바뀐다.
       return (
-        <ul className={clsx("flex flex-col gap-3 pt-4", ROW_PADDING)}>
+        <ul className="flex flex-col">
           {[0, 1, 2].map((i) => (
-            <li key={i}>
-              <SkeletonBlock width="w-full" height="h-14" rounded="rounded-lg" />
+            <li key={i} className="border-b border-gray-10">
+              <div
+                className={clsx(
+                  "flex w-full flex-col gap-3 py-4",
+                  ROW_PADDING
+                )}
+              >
+                <div className="px-1">
+                  <SkeletonBlock width="w-3/5" height="h-[21px]" />
+                </div>
+                <div className="px-1">
+                  <SkeletonBlock width="w-20" height="h-4" />
+                </div>
+              </div>
             </li>
           ))}
         </ul>
