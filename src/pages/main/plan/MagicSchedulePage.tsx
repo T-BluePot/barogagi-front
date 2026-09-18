@@ -143,14 +143,17 @@ const MagicSchedulePage = () => {
           <motion.span
             aria-hidden
             className="inline-flex"
-            // 마법봉을 휙휙 두 번 털고 쉰다 — 장식이라 접근성 트리에서는 감춘다.
-            // 흔드는 구간만 짧게 잡는다. 느리게 돌면 "흔든다"가 아니라 "떠 있다"로 읽힌다.
-            animate={{ rotate: [0, -18, 14, 0] }}
+            // 마법봉을 휙휙 털고 쉰다 — 장식이라 접근성 트리에서는 감춘다.
+            //
+            // ease 가 "easeInOut" 이면 키프레임마다 속도가 0이 되어 양 끝에서 멈칫한다.
+            // 그러면 "휙휙"이 아니라 "휙 / 멈춤 / 휙"으로 읽힌다(실측: -17도에서 두 프레임 정지).
+            // linear 로 두어야 좌우가 끊기지 않고 이어진다.
+            animate={{ rotate: [0, -18, 16, -12, 0] }}
             transition={{
-              duration: 0.45,
+              duration: 0.5,
               repeat: Infinity,
               repeatDelay: 1.2,
-              ease: "easeInOut",
+              ease: "linear",
             }}
           >
             <WandIcon />
