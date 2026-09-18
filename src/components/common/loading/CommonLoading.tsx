@@ -23,7 +23,9 @@ const CommonLoading = ({
 
   return (
     <div className="flex flex-col h-full w-full justify-center items-center gap-3">
-      <div className="w-12 h-12 rounded-full border-3 border-gray-10 border-t-main animate-spin" />
+      {/* 감소 모션에서는 회전을 멈춘다. 마법봉 생성은 최대 120초라 무한 회전이 오래 간다.
+          문구(TypingText)가 계속 바뀌므로 멈춰도 "정지 화면"으로 보이지 않는다. */}
+      <div className="w-12 h-12 rounded-full border-3 border-gray-10 border-t-main animate-spin motion-reduce:animate-none" />
       {Array.isArray(message) ? (
         <TypingText
           items={message}
