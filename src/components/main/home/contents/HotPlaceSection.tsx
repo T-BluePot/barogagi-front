@@ -4,6 +4,7 @@ import SectionHeader from "@/components/common/SectionHeader";
 import EmptyContent from "@/components/common/EmptyContent";
 import HotPlaceCard from "./HotPlaceCard";
 import SkeletonHotPlaceCarousel from "./SkeletonHotPlaceCarousel";
+import SkeletonBlock from "@/components/common/loading/SkeletonBlock";
 import {
   formatBaseYm,
   formatHotPlaceRegion,
@@ -63,16 +64,22 @@ const HotPlaceSection: React.FC<Props> = ({ places, isLoading }) => {
       <SectionHeader
         title="오늘의 핫플레이스"
         subtitle={
-          (regionLabel || baseYmLabel) && (
-            <span className="flex min-w-0 items-center gap-2">
-              {regionLabel && <span className="truncate">{regionLabel}</span>}
-              {regionLabel && baseYmLabel && (
-                <span className="h-2.5 w-px shrink-0 bg-gray-20" />
-              )}
-              {baseYmLabel && (
-                <span className="shrink-0">{baseYmLabel} 기준</span>
-              )}
-            </span>
+          // 부제(지역·기준월)는 데이터가 와야 생긴다. 로딩 중 비워 두면 헤더가
+          // 26px 였다가 44px 로 커지면서 아래 섹션이 통째로 밀린다 → 자리를 미리 잡는다.
+          isLoading ? (
+            <SkeletonBlock width="w-32" height="h-4" />
+          ) : (
+            (regionLabel || baseYmLabel) && (
+              <span className="flex min-w-0 items-center gap-2">
+                {regionLabel && <span className="truncate">{regionLabel}</span>}
+                {regionLabel && baseYmLabel && (
+                  <span className="h-2.5 w-px shrink-0 bg-gray-20" />
+                )}
+                {baseYmLabel && (
+                  <span className="shrink-0">{baseYmLabel} 기준</span>
+                )}
+              </span>
+            )
           )
         }
       />
