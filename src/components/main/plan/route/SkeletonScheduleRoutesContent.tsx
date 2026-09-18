@@ -4,13 +4,15 @@ interface SkeletonScheduleRoutesContentProps {
   /** 표시할 계획 카드 수. 마법봉 생성은 슬롯 수를 미리 알 수 있어 넘겨준다 */
   count?: number;
   /**
-   * create: 생성 직후 화면(카드 88px, 메모 없음)
-   * detail: 저장된 일정 상세(카드 135px, 메모 입력 줄 포함)
+   * ScheduleRoutesContent 의 mode 와 1:1로 맞춘다.
+   *  - create: 생성 직후 화면 (카드 88px, 메모 없음, 제목 옆 편집 버튼 있음)
+   *  - detail: 저장된 일정 상세 (카드 135px, 메모 입력 줄 + 일정 메모 줄 포함)
+   *  - share : 공유 링크 조회 (카드 88px, 조회 전용이라 편집 버튼 없음)
    *
-   * 같은 카드처럼 보이지만 상세에는 메모 줄이 하나 더 있어 47px 더 높다.
-   * 한쪽에 맞추면 다른 쪽에서 목록 길이가 통째로 어긋난다.
+   * 같은 카드처럼 보이지만 상세에는 메모 줄이 하나 더 있어 47px 더 높고,
+   * 공유는 readOnly 라 제목 옆 28px 원형 버튼이 아예 없다.
    */
-  variant?: "create" | "detail";
+  variant?: "create" | "detail" | "share";
 }
 
 /**
@@ -30,6 +32,8 @@ const SkeletonScheduleRoutesContent = ({
   variant = "create",
 }: SkeletonScheduleRoutesContentProps) => {
   const isDetail = variant === "detail";
+  // 공유 화면은 조회 전용이라 제목 옆 편집 버튼이 없다
+  const hasEditButton = variant !== "share";
 
   return (
     <div className="flex h-full w-full flex-col bg-gray-5">
@@ -40,7 +44,9 @@ const SkeletonScheduleRoutesContent = ({
         </div>
         <div className="flex items-center justify-between px-1">
           <SkeletonBlock width="w-[132px]" height="h-[30px]" />
-          <SkeletonBlock width="w-7" height="h-7" rounded="rounded-full" />
+          {hasEditButton && (
+            <SkeletonBlock width="w-7" height="h-7" rounded="rounded-full" />
+          )}
         </div>
         {/* 일정 메모 줄 — 상세에만 있다. 빠뜨리면 헤더가 27px 짧아 목록이 통째로 밀린다.
          * 실제 화면은 mt-2 를 주지만 여기는 부모 gap-2 가 이미 8px 을 만든다 */}
