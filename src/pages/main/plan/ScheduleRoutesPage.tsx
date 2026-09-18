@@ -790,7 +790,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         <div className="bg-gray-white">
           <BackHeader onClick={() => navigate(-1)} />
         </div>
-        <SkeletonScheduleRoutesContent />
+        <SkeletonScheduleRoutesContent variant="detail" />
       </div>
     );
   }
