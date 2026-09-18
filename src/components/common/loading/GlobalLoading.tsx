@@ -8,7 +8,7 @@ import CommonLoading from "./CommonLoading";
  * - isDark: false → 밝은 배경 위 (어두운 오버레이 + 밝은 텍스트)
  */
 const GlobalLoading = () => {
-  const { isLoading, message, isDark } = useLoadingStore();
+  const { isLoading, message, srMessage, isDark } = useLoadingStore();
 
   if (!isLoading) return null;
 
@@ -18,7 +18,11 @@ const GlobalLoading = () => {
         isDark ? "bg-white/40" : "bg-black/40"
       }`}
     >
-      <CommonLoading message={message} dark={!isDark} />
+      <CommonLoading
+        message={message}
+        srMessage={srMessage}
+        dark={!isDark}
+      />
     </div>
   );
 };
