@@ -35,6 +35,13 @@
   /* Accent - 보조 강조색 (타임라인 인덱스 배지 등, peach와 대비되는 인디고 블루) */
   --color-accent: #666cfb;
 
+  /* Magic - 마법봉 전용 팔레트. 코랄 ↔ 노랑 두 색이 흐르는 그라데이션.
+   * 흰 글자가 얹히므로 peach(#ff8a65)보다 한 단계 진하게 잡았다.
+   * 실제 배경 조합과 흐르는 모션은 아래 .bg-magic 유틸리티가 갖는다.
+   * 마법봉 CTA 한 곳에서만 쓴다 — 일반 버튼에 번지지 않게 할 것. */
+  --color-magic-coral: #ff5f38;
+  --color-magic-yellow: #f2a007;
+
   /* Motion - 리디자인 공통 이징 */
   --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
 
@@ -133,6 +140,45 @@
  * - max()로 둘 중 큰 값 사용
  */
 @layer utilities {
+  /* 마법봉 CTA 배경 — 코랄 → 노랑 → 코랄.
+   *
+   * 좌우 대칭으로 색을 배치하고 배경을 200% 로 키운 뒤 position 을 민다.
+   * 양 끝이 같은 색이라 왕복(alternate)해도 이음매가 보이지 않는다.
+   * 비대칭 그라데이션으로 같은 걸 하면 되돌아오는 순간 색이 튄다. */
+  .bg-magic {
+    background-image: linear-gradient(
+      to right,
+      var(--color-magic-coral) 0%,
+      var(--color-magic-yellow) 51%,
+      var(--color-magic-coral) 100%
+    );
+    background-size: 200% auto;
+    background-position: left center;
+    transition: background-position 0.5s var(--ease-fitpl);
+  }
+
+  /* 포인터가 있는 환경(데스크톱)에서는 hover 에만 흐른다. */
+  @media (hover: hover) {
+    .bg-magic:hover {
+      animation: magic-shift 6s linear infinite alternate;
+    }
+  }
+
+  /* 터치 기기에는 hover 가 없다 — 실사용 환경이 폰이라 여기서는 항상 흐르게 둔다.
+   * hover 조건만 걸면 정작 앱에서는 모션이 한 번도 보이지 않는다. */
+  @media (hover: none) {
+    .bg-magic {
+      animation: magic-shift 6s linear infinite alternate;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-magic,
+    .bg-magic:hover {
+      animation: none;
+    }
+  }
+
   .pt-safe {
     padding-top: max(env(safe-area-inset-top, 0px), var(--sai-top, 0px));
   }
@@ -282,6 +328,16 @@
    * ⚠️ 반드시 typo-* 정의보다 아래에 있어야 한다. */
   .typo-strong {
     font-weight: 700;
+  }
+}
+
+/* 마법봉 CTA — 200% 폭 배경을 좌우로 민다 (alternate 로 왕복) */
+@keyframes magic-shift {
+  from {
+    background-position: left center;
+  }
+  to {
+    background-position: right center;
   }
 }
 
