@@ -143,10 +143,11 @@ const MagicSchedulePage = () => {
           <motion.span
             aria-hidden
             className="inline-flex"
-            // 마법봉을 살살 흔든다 — 장식이라 접근성 트리에서는 감춘다
-            animate={{ rotate: [0, -14, 10, -6, 0] }}
+            // 마법봉을 휙휙 두 번 털고 쉰다 — 장식이라 접근성 트리에서는 감춘다.
+            // 흔드는 구간만 짧게 잡는다. 느리게 돌면 "흔든다"가 아니라 "떠 있다"로 읽힌다.
+            animate={{ rotate: [0, -18, 14, 0] }}
             transition={{
-              duration: 1.6,
+              duration: 0.45,
               repeat: Infinity,
               repeatDelay: 1.2,
               ease: "easeInOut",
