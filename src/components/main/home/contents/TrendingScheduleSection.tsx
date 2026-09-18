@@ -17,7 +17,7 @@ const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
     if (isLoading)
       return <SkeletonBlock width="w-full" height="h-8" rounded="rounded-full" />;
     if (tags.length === 0)
-      return <EmptyContent message="인기 있는 일정이 없습니다." />;
+      return <EmptyContent message="인기 있는 태그가 없습니다." />;
 
     return (
       <div className="hide-scrollbar -mx-5.5 flex gap-2 overflow-x-auto px-5.5">
