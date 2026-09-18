@@ -43,7 +43,7 @@ const CreateScheduleActionMenu = ({
           role="menu"
           aria-label="일정 만들기 방식"
           // FAB(56px) + 간격 12px 만큼 띄워 FAB 바로 위에 붙인다
-          className="fixed right-[max(24px,calc(50vw-var(--app-max-width)/2+24px))] bottom-[calc(var(--fab-bottom)+var(--fab-size)+12px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-40 w-[208px] overflow-hidden rounded-2xl bg-gray-white shadow-[0_8px_24px_rgba(30,30,30,0.16)]"
+          className="fixed right-[max(24px,calc(50vw-var(--app-max-width)/2+24px))] bottom-[calc(var(--fab-bottom)+var(--fab-size)+12px+max(env(safe-area-inset-bottom,0px),var(--sai-bottom,0px)))] z-40 w-[208px] overflow-hidden rounded-2xl bg-gray-white shadow-popover"
           initial={{ opacity: 0, scale: 0.94, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 6 }}

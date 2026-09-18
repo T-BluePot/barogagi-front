@@ -51,6 +51,22 @@
   --shadow-raised: 0 2px 6px rgba(15, 23, 42, 0.08);
   --shadow-raised-pressed: 0 1px 3px rgba(15, 23, 42, 0.06);
 
+  /* 색이 있는 그림자는 원본 색 토큰에서 파생시킨다.
+   * 예전에는 컴포넌트에 rgba 를 직접 적어서, 코랄을 바꿔도 그림자만 옛 색으로 남았다.
+   * (마법봉 코랄은 하루에도 여러 번 바뀌었다)
+   *
+   * ⚠️ 아래 --shadow-* 값은 **반드시 한 줄로** 쓴다.
+   *    Tailwind v4 의 @theme 파서가 값 안의 줄바꿈을 넘기지 못해, 줄을 나누면
+   *    유틸리티는 생성되는데 값이 비어 그림자가 조용히 사라진다(실측).
+   *    prettier(printWidth 80)를 이 파일에 돌리면 그대로 깨진다 —
+   *    globals.css 는 원래도 prettier 대상 밖이고 devDependency 에도 없다. */
+  --shadow-fab: 0 2px 10px color-mix(in srgb, var(--color-peach) 45%, transparent);
+  --shadow-hero: 0 10px 26px color-mix(in srgb, var(--color-peach-active) 34%, transparent);
+  --shadow-magic-cta: 0 4px 16px color-mix(in srgb, var(--color-magic-coral) 32%, transparent);
+  --shadow-popover: 0 8px 24px color-mix(in srgb, var(--color-gray-black) 16%, transparent);
+  --shadow-floating: 0 6px 16px rgba(15, 23, 42, 0.15);
+  --shadow-tabbar: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.04);
+
   /* Layout - 웹 브라우저에서 앱 전체를 모바일 폭으로 제한하는 프레임
    * 큰 핸드폰(iPhone Pro Max 계열) 기준 폭 — 넓은 화면에서 좌우 여백 최소화 */
   --app-max-width: 430px;

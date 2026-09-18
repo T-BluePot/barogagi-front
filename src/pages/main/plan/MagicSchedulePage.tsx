@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 // === constants ===
 import { ROUTES } from "@/constants/routes";
+import { EASE_FITPL } from "@/constants/motion";
 import { MAGIC_SCHEDULE_TEXT } from "@/constants/texts/main/plan/magicSchedule";
 
 // === components ===
@@ -136,8 +137,8 @@ const MagicSchedulePage = () => {
           type="button"
           onClick={handleSubmit}
           whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-          className={`flex w-full max-w-xl items-center justify-center gap-2 h-[52px] rounded-full px-4 typo-body shadow-[0_4px_16px_rgba(255,95,56,0.32)] ${BUTTON_COLOR.magic}`}
+          transition={{ duration: 0.12, ease: EASE_FITPL }}
+          className={`flex w-full max-w-xl items-center justify-center gap-2 h-[52px] rounded-full px-4 typo-body shadow-magic-cta ${BUTTON_COLOR.magic}`}
         >
           <motion.span
             aria-hidden
