@@ -31,11 +31,19 @@ import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/Sele
 import { useQueryClient } from "@tanstack/react-query";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
-import { createSchedule, saveSchedule, getScheduleDetail } from "@/api/queries";
+import {
+  createSchedule,
+  createMagicSchedule,
+  saveSchedule,
+  getScheduleDetail,
+} from "@/api/queries";
 import { scheduleKeys } from "@/api/keyFactories";
+import { MAGIC_SCHEDULE_TEXT } from "@/constants/texts/main/plan/magicSchedule";
 import type {
   PlanRegistResDTO,
   ScheduleRegistResDTO,
+  ScheduleRegistReqDTO,
+  MagicScheduleReqDTO,
   BaseResponse,
   ScheduleListResDTO,
   UserAddedPlaceDTO,
@@ -72,7 +80,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- create: 일정 생성 로직 -----
   const queryClient = useQueryClient();
-  const { buildRequest, reset } = useScheduleDraftStore();
+  const { buildRequest, buildMagicRequest, reset } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
   const deleteScheduleMutation = useDeleteScheduleMutation();
@@ -110,14 +118,31 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     if (hasFetched.current) return; // 이미 호출됐으면 스킵
     hasFetched.current = true;
 
+    // 생성 방식은 플로우 진입 시 확정되므로 effect 진입 시점 값으로 고정한다
+    const isMagicCreate =
+      useScheduleDraftStore.getState().draft.creationMode === "MAGIC";
+
     setIsLoading(true);
-    showLoading("AI가 일정을 생성하고 있어요");
+    if (isMagicCreate) {
+      // 생성이 길어서 정지 화면처럼 보이지 않도록 문구를 타이핑으로 순환시킨다
+      showLoading(
+        [...MAGIC_SCHEDULE_TEXT.LOADING_MESSAGES],
+        false,
+        MAGIC_SCHEDULE_TEXT.LOADING_SR
+      );
+    } else {
+      showLoading("AI가 일정을 생성하고 있어요");
+    }
 
     const fetchCreateSchedule = async () => {
       try {
-        const req = buildRequest();
+        // 마법봉은 날짜/지역/시간만 보내고 슬롯 구성은 서버에 맡긴다.
+        // 응답 DTO·성공 코드가 같아 이후 처리는 일반 생성과 공유한다.
+        const req = isMagicCreate ? buildMagicRequest() : buildRequest();
         console.log("[create 요청]", JSON.stringify(req, null, 2));
-        const res = await createSchedule(req);
+        const res = isMagicCreate
+          ? await createMagicSchedule(req as MagicScheduleReqDTO)
+          : await createSchedule(req as ScheduleRegistReqDTO);
         console.log("[create 응답] code:", res.code, "message:", res.message);
         console.log("[create 응답] data:", res.data);
 

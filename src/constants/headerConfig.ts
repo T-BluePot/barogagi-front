@@ -165,6 +165,12 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
     isHeaderDark: false,
     backPath: ROUTES.PLAN.LOCATION,
   },
+  [ROUTES.PLAN.MAGIC]: {
+    type: "back",
+    label: "마법봉 일정",
+    isHeaderDark: false,
+    backPath: ROUTES.PLAN.LOCATION,
+  },
   [ROUTES.PLAN.STYLE]: {
     type: "back",
     label: "일정 스타일 선택",

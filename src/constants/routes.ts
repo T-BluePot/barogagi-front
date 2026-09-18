@@ -67,6 +67,7 @@ export const ROUTES = {
     DATE: "/plan/date", // 날짜 선택
     LOCATION: "/plan/location", // 지역 선택
     SETTING: "/plan/setting", // 일정 세팅
+    MAGIC: "/plan/magic", // 마법봉 생성 확인 (날짜·지역 확인 + 시간대 선택)
     STYLE: "/plan/style", // 일정 스타일 선택
     CREATE: "/plan/create", // 추천 루트 완료
     DETAIL: "/plan/:id/detail", // 루트 상세 페이지

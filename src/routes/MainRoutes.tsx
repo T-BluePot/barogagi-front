@@ -10,6 +10,7 @@ import ScheduleListPage from "@/pages/main/plan/ScheduleListPage";
 import SelectDatePage from "@/pages/main/plan/SelectDatePage";
 import SelectLocationPage from "../pages/main/plan/SelectLocationPage";
 import ScheduleStylePage from "@/pages/main/plan/ScheduleStylePage";
+import MagicSchedulePage from "@/pages/main/plan/MagicSchedulePage";
 import ScheduleRoutesPage from "@/pages/main/plan/ScheduleRoutesPage";
 import LocationSearchPage from "@/pages/main/plan/LocationSearchPage";
 import { PlanSettingPage } from "@/pages/main/plan/PlanSettingPage";
@@ -57,6 +58,7 @@ export const MainRoutes = () => (
       <Route path={ROUTES.PLAN.SETTING} element={<PlanSettingPage />}>
         <Route path="search" element={<LocationSearchPage />} />
       </Route>
+      <Route path={ROUTES.PLAN.MAGIC} element={<MagicSchedulePage />} />
       <Route path={ROUTES.PLAN.STYLE} element={<ScheduleStylePage />} />
       <Route
         path={ROUTES.PLAN.CREATE}
