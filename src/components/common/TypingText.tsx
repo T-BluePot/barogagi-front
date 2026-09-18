@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { EASE_FITPL } from "@/constants/motion";
 
 interface TypingTextProps {
   /** 순환할 문구 목록 */
@@ -110,7 +111,7 @@ const TypingText = ({
         className="absolute inset-0 block whitespace-pre"
         aria-hidden={srLabel ? true : undefined}
         animate={{ opacity: isExiting ? 0 : 1 }}
-        transition={{ duration: EXIT_MS / 1000, ease: [0.2, 0, 0, 1] }}
+        transition={{ duration: EXIT_MS / 1000, ease: EASE_FITPL }}
       >
         {visible}
         {isTyping && (

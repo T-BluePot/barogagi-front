@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { EASE_FITPL } from "@/constants/motion";
 
 import { MAGIC_SCHEDULE_TEXT } from "@/constants/texts/main/plan/magicSchedule";
 
@@ -37,7 +38,7 @@ const MagicSlotPreview = ({ bands }: MagicSlotPreviewProps) => {
         <motion.span
           className="ml-auto flex text-gray-40"
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
+          transition={{ duration: 0.2, ease: EASE_FITPL }}
         >
           <ChevronDownIcon className="h-4 w-4" aria-hidden />
         </motion.span>
@@ -50,7 +51,7 @@ const MagicSlotPreview = ({ bands }: MagicSlotPreviewProps) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.2, 0, 0, 1] }}
+            transition={{ duration: 0.22, ease: EASE_FITPL }}
           >
             <ul className="flex flex-col pb-3">
               {slots.map((slot, index) => (

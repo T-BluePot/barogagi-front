@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { EASE_FITPL } from "@/constants/motion";
 
 interface RotatingTextProps {
   /** 순환할 문구 목록 */
@@ -60,7 +61,7 @@ const RotatingText = ({
           initial={slide.initial}
           animate={slide.animate}
           exit={slide.exit}
-          transition={{ duration: 0.45, ease: [0.2, 0, 0, 1] }}
+          transition={{ duration: 0.45, ease: EASE_FITPL }}
         >
           {items[index]}
         </motion.span>
