@@ -9,7 +9,6 @@ import { CalendarView } from "@/components/main/plan/CalendarView";
 import ListView from "@/components/main/plan/main/ListView";
 
 import DeleteScheduleModal from "@/components/main/plan/DeleteScheduleModal";
-import SkeletonCalendar from "@/components/main/plan/SkeletonCalendar";
 import SkeletonListView from "@/components/main/plan/main/SkeletonListView";
 
 // === server ===
@@ -99,11 +98,10 @@ const ScheduleListPage = () => {
           </div>
         ) : (
           <div className="flex flex-col flex-1 w-full px-6 min-h-0 gap-6">
+            {/* 리스트 뷰에는 달력이 없다. 예전에는 여기서 달력 스켈레톤까지 같이 깔아서
+             * 로딩 중에는 동그라미 그리드가 떴다가 카드 목록으로 통째로 바뀌었다. */}
             {isLoading ? (
-              <>
-                <SkeletonCalendar />
-                <SkeletonListView />
-              </>
+              <SkeletonListView />
             ) : (
               <ListView
                 schedules={current}
