@@ -156,7 +156,7 @@ const MagicSchedulePage = () => {
               duration: 0.55,
               times: [0, 0.16, 0.38, 0.58, 0.78, 1],
               repeat: Infinity,
-              repeatDelay: 1.8,
+              repeatDelay: 2,
               ease: "linear",
             }}
           >
