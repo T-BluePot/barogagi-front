@@ -13,7 +13,8 @@ interface SkeletonBlockProps {
 
 /**
  * 공통 스켈레톤 블록
- * - 회색 배경 위에 흰색 사선 그라데이션이 좌→우로 이동하는 shimmer 효과
+ * - 회색 배경 위를 흰 띠가 좌→우로 지나간다.
+ * - 띠의 색·폭·속도는 globals.css 의 `.skeleton-shimmer` 가 갖는다.
  */
 const SkeletonBlock = ({
   width = "w-full",
@@ -31,13 +32,7 @@ const SkeletonBlock = ({
         className
       )}
     >
-      <div
-        className="absolute top-0 left-0 h-full w-full animate-shimmer"
-        style={{
-          background:
-            "linear-gradient(120deg, transparent 30%, var(--color-gray-white) 50%, transparent 70%)",
-        }}
-      />
+      <div className="skeleton-shimmer absolute top-0 left-0 h-full w-full" />
     </div>
   );
 };

@@ -116,7 +116,6 @@
   --tracking-tag: -0.025em;
 
   /* Animation */
-  --animate-shimmer: shimmer 1.2s infinite ease-in-out;
   --animate-warning-overlay-in: warning-overlay-in 0.9s ease-out forwards;
   /* 오버레이가 어느 정도 짙어진 뒤(0.3s delay) 모달이 흐릿→선명, 살짝 커지며 등장 */
   --animate-warning-modal-in: warning-modal-in 0.6s ease-out 0.3s both;
@@ -140,6 +139,31 @@
  * - max()로 둘 중 큰 값 사용
  */
 @layer utilities {
+  /* 스켈레톤 하이라이트 — 회색 바탕 위를 지나가는 흰 띠.
+   *
+   * 예전 값(1.2s ease-in-out, 순백, 30~70% 좁은 띠)은 화면을 채운 블록들이
+   * 동시에 빠르게 번쩍여 울렁거렸다. 세 가지를 같이 낮춘다.
+   *  - 속도: 1.2s → 2s, ease-in-out → linear (가감속이 있으면 박동처럼 읽힌다)
+   *  - 띠 폭: 30~70% → 15~85% (경계가 뭉개져 '번쩍'이 '스치는' 느낌이 된다)
+   *  - 밝기: 순백 → 흰색 45% (바탕이 gray-10 이라 순백은 대비가 과하다)
+   * 값을 만질 일이 있으면 여기 한 곳만 고친다. */
+  .skeleton-shimmer {
+    background: linear-gradient(
+      100deg,
+      transparent 15%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 85%
+    );
+    animation: shimmer 2s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton-shimmer {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
   /* 마법봉 CTA 배경 — 코랄 → 노랑 → 코랄.
    *
    * 좌우 대칭으로 색을 배치하고 배경을 200% 로 키운 뒤 position 을 민다.
