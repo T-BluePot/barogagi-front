@@ -31,6 +31,7 @@ import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/Sele
 import { useQueryClient } from "@tanstack/react-query";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
+import { buildMagicSlotPreview } from "@/utils/main/plan/magicTimeBands";
 import {
   createSchedule,
   createMagicSchedule,
@@ -80,7 +81,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- create: 일정 생성 로직 -----
   const queryClient = useQueryClient();
-  const { buildRequest, buildMagicRequest, reset } = useScheduleDraftStore();
+  const { draft, buildRequest, buildMagicRequest, reset } =
+    useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
   const deleteScheduleMutation = useDeleteScheduleMutation();
@@ -768,7 +770,18 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
-    return <SkeletonScheduleRoutesContent />;
+    // 마법봉은 시간대에서 슬롯 수가 정해지므로 카드 개수까지 맞출 수 있다.
+    // 일반 생성은 draft 의 계획 수를 그대로 쓴다.
+    const plannedCount =
+      draft.creationMode === "MAGIC"
+        ? buildMagicSlotPreview(draft.magicTimeBands).length
+        : draft.planRegistReqDTOList.length;
+
+    return (
+      <SkeletonScheduleRoutesContent
+        count={plannedCount > 0 ? plannedCount : undefined}
+      />
+    );
   }
 
   if (isDetail && isDetailLoading) {
