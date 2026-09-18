@@ -35,11 +35,21 @@ export interface HomeScheduleResponseDTO {
   regionInfoDTO: RegionInfoDTO | null;
 }
 
-/** GET /api/v1/home/tags/popular 응답 타입 */
-export interface PopularTagResponseDTO {
-  resultCode: string;
-  message: string;
-  tagInfoList: TagInfoDTO[];
+/**
+ * 인기 태그 API 원본 응답 아이템
+ * GET /api/v1/home/tags/popular
+ *
+ * 실측 기준 응답 키 2개 전부. **여기 없는 필드는 서버가 주지 않는다.**
+ * - `tagNum` / `tagType` 은 오지 않는다 — 위 `TagInfoDTO`(내 일정 요약용)와 다른 타입이다.
+ * - 실측 10건에서 `rankNo` 는 1~10, 중복 없음 → 리스트 key 로 쓸 수 있다.
+ *
+ * 봉투는 새 타입을 만들지 않고 기존 `BaseResponse<PopularTagDTO[]>` 를 쓴다.
+ */
+export interface PopularTagDTO {
+  /** 태그명 (예: "맛집") */
+  tagNm: string;
+  /** 인기 순위. 실측 1~10 */
+  rankNo: number;
 }
 
 /** 인기 지역 API 원본 응답 아이템 */

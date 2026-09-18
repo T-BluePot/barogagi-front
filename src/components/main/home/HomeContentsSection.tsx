@@ -3,10 +3,10 @@ import HeroCourseCard from "./HeroCourseCard";
 import HotPlaceSection from "./contents/HotPlaceSection";
 import TrendingScheduleSection from "./contents/TrendingScheduleSection";
 import MyScheduleSection from "./contents/MyScheduleSection";
-import type { TagInfoDTO, PopularRegionDTO, HotPlaceDTO } from "@/api/types";
+import type { PopularTagDTO, PopularRegionDTO, HotPlaceDTO } from "@/api/types";
 
 type Props = {
-  popularTags: TagInfoDTO[];
+  popularTags: PopularTagDTO[];
   isTagsLoading: boolean;
   /** 인기 지역(popular) — 히어로 카드의 지역 셀렉트가 계속 소비한다 */
   popularRegions: PopularRegionDTO[];

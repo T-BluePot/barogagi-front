@@ -4,10 +4,10 @@ import SectionHeader from "@/components/common/SectionHeader";
 import Chip from "@/components/common/Chip";
 import EmptyContent from "@/components/common/EmptyContent";
 import SkeletonBlock from "@/components/common/loading/SkeletonBlock";
-import type { TagInfoDTO } from "@/api/types";
+import type { PopularTagDTO } from "@/api/types";
 
 interface Props {
-  tags: TagInfoDTO[];
+  tags: PopularTagDTO[];
   isLoading: boolean;
 }
 
@@ -22,7 +22,7 @@ const TrendingScheduleSection: React.FC<Props> = ({ tags, isLoading }) => {
     return (
       <div className="hide-scrollbar -mx-5.5 flex gap-2 overflow-x-auto px-5.5">
         {tags.map((tag) => (
-          <Chip key={tag.tagNum} label={`# ${tag.tagNm}`} />
+          <Chip key={tag.rankNo} label={`# ${tag.tagNm}`} />
         ))}
       </div>
     );
