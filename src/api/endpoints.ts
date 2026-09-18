@@ -4,8 +4,26 @@
  * 그룹별로 객체로 묶어서 관리 (AUTH, PLAN 등)
  */
 
-export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+/**
+ * dev 서버에 **LAN IP 로 접속한 경우**(= 실기기 테스트)에만 Vite 프록시를 경유한다.
+ *
+ * 배경: API 서버의 CORS 허용 목록에는 `http://localhost:8080` 만 등록돼 있다.
+ * 폰에서 `http://<PC IP>:8080` 으로 접속하면 Origin 이 달라져 모든 API 가 preflight 에서
+ * 차단된다(`No 'Access-Control-Allow-Origin' header`). 백엔드에 IP 를 추가 등록하는 대신,
+ * baseURL 을 비워 같은 출처(dev 서버)로 요청하고 `vite.config.ts` 의 `server.proxy` 가
+ * 서버 대 서버로 중계하게 한다 — 브라우저 CORS 자체가 개입하지 않는다.
+ *
+ * ⚠️ localhost 접속과 운영 빌드는 종전 그대로 절대 URL 을 쓴다(동작 변경 없음).
+ */
+const shouldUseDevProxy = (): boolean => {
+  if (!import.meta.env.DEV || typeof window === "undefined") return false;
+  const { hostname } = window.location;
+  return hostname !== "localhost" && hostname !== "127.0.0.1";
+};
+
+export const API_BASE_URL = shouldUseDevProxy()
+  ? "" // 같은 출처로 요청 → vite server.proxy 가 중계
+  : import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 export const ENDPOINTS = {
   /** 회원 인증 및 관리 */
@@ -89,7 +107,7 @@ export const ENDPOINTS = {
 
   /** 푸시 알림 (Push) */
   PUSH: {
-    TOKEN: "/api/v1/push/token", // FCM 토큰 등록
+    TOKEN: "/api/v1/push/token", // FCM 토큰 등록(POST) / 삭제(DELETE) — 같은 경로
   },
 
   /** 공지사항 (Board) — 알림 화면에서 노출 */

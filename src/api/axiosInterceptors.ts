@@ -12,7 +12,7 @@ import { ENDPOINTS } from "./endpoints";
 import { refresh } from "./queries";
 import { saveAuthTokens } from "@/lib/auth/tokenStorage";
 import { getAccessToken, getRefreshToken } from "@/lib/auth/tokenCache";
-import { handleLogout } from "@/utils/auth/handleLogout";
+import { handleForcedLogout } from "@/utils/auth/handleLogout";
 import { API_ERROR_CODE } from "@/constants/apiErrorCodes";
 import { useCriticalErrorStore } from "@/stores/criticalErrorStore";
 import {
@@ -141,7 +141,7 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
       }
 
       // A100(잘못된 접근)은 API-KEY 계열 오류다 — 토큰 refresh 로 복구되지 않는다.
-      // 그대로 refresh 를 태우면 실패 → handleLogout → 하드 네비게이션으로
+      // 그대로 refresh 를 태우면 실패 → handleForcedLogout → 하드 네비게이션으로
       // 방금 띄운 config 오류 화면까지 날아가고 "강제 로그아웃"으로 위장된다.
       // (실측: 쓰레기 토큰으로는 A100 이 오지 않으므로 토큰 갱신 경로를 망가뜨리지 않는다)
       if (code === API_ERROR_CODE.INVALID_ACCESS) {
@@ -150,7 +150,7 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
 
       // 같은 요청은 1번만 재시도
       if (originalRequest._retry) {
-        await handleLogout();
+        await handleForcedLogout();
         return Promise.reject(error);
       }
       originalRequest._retry = true;
@@ -197,15 +197,15 @@ export function applyAuthInterceptors(instance: AxiosInstance) {
         // ⚠️ axios 에러인지 먼저 본다. 이 try 블록은 refreshToken 부재·응답 형식 오류에서
         //    직접 `Error` 를 throw 하는데, classifyApiError 는 비-axios 예외를 `config` 로 돌려준다
         //    (getApiKey 실패를 설정 오류로 잡기 위한 폴백). 그대로 두면 "토큰이 없어 로그아웃해야 할 상황"이
-        //    설정 오류 화면으로 바뀌어 handleLogout 이 실행되지 않는다.
+        //    설정 오류 화면으로 바뀌어 handleForcedLogout 이 실행되지 않는다.
         if (axios.isAxiosError(e) && isGlobalErrorKind(classifyApiError(e))) {
           // 토큰이 만료된 게 아니라 서버/네트워크 문제로 갱신이 실패한 것이므로 세션을 끊지 않는다.
-          // handleLogout 은 하드 네비게이션이라 오류 화면까지 날려버린다.
+          // handleForcedLogout 은 하드 네비게이션이라 오류 화면까지 날려버린다.
           raiseGlobalError(e);
           return Promise.reject(e);
         }
 
-        await handleLogout();
+        await handleForcedLogout();
         return Promise.reject(e);
       }
     }

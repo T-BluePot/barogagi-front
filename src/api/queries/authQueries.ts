@@ -5,6 +5,7 @@
 import { http, apiKeyHttp, refreshHttp } from "../client";
 import { ENDPOINTS } from "../endpoints";
 import { getRefreshToken } from "@/lib/auth/tokenCache";
+import { getDeviceId } from "@/utils/deviceId";
 
 // === request body type ===
 import type {
@@ -40,11 +41,18 @@ export const getOAuthLink = async (type: OAuthProviderType) => {
   return response.data;
 };
 
-/** 로그인 */
+/**
+ * 로그인
+ *
+ * `deviceId` 는 인자로 받지 않고 여기서 직접 조회한다.
+ * 호출부마다 챙기게 하면 한 곳만 빠뜨려도 서버가 400(C101)으로 튕기므로,
+ * 요청을 만드는 이 지점에서 한 번만 주입한다. (`getDeviceId()` 는 결과가 캐시된다)
+ */
 export const login = async (userId: string, password: string) => {
   const payload: LoginRequestType = {
     userId,
     password,
+    deviceId: await getDeviceId(),
   };
   const response = await apiKeyHttp.post<BaseResponse<LoginResponseDataType>>(
     ENDPOINTS.AUTH.LOGIN,
@@ -53,11 +61,33 @@ export const login = async (userId: string, password: string) => {
   return response.data;
 };
 
-/** 로그아웃 */
-export const logout = async (data: RefreshTokenRequestType) => {
+/**
+ * 로그아웃 (현재 기기)
+ *
+ * 서버는 전달된 refreshToken 이 속한 `(membershipNo, deviceId)` 의 VALID 토큰들을
+ * REVOKE 한다 — 즉 **이 기기의 세션만** 끊고 다른 기기 로그인은 유지된다.
+ *
+ * ⚠️ refreshToken 은 body 가 아니라 **`REFRESH-TOKEN` 헤더**로 보낸다.
+ *    종전 구현은 body 로 보내고 있었고(호출하는 곳이 없어 드러나지 않았다),
+ *    그대로 부르면 서버가 필수값 누락(C101)으로 거절한다. `refresh` / `withdrawMe` 와 동일 규약.
+ *
+ * 실패해도 로컬 세션 정리는 진행되어야 하므로 전역 오류 화면으로 승격하지 않는다.
+ */
+export const logout = async () => {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    throw new Error("refreshToken이 없습니다.");
+  }
+
   const response = await http.post<BaseResponse<unknown>>(
     ENDPOINTS.AUTH.LOGOUT,
-    data
+    null,
+    {
+      headers: {
+        "REFRESH-TOKEN": refreshToken, // 서버가 요구하는 필수 헤더
+      },
+      _skipGlobalError: true,
+    }
   );
   return response.data;
 };
@@ -216,11 +246,17 @@ export const updateMe = async (data: MemberRequestDTO) => {
   return response.data;
 };
 
-/** 비밀번호 재설정 */
+/**
+ * 비밀번호 재설정
+ *
+ * `deviceId` 를 함께 보낸다 — 이 엔드포인트의 requestBody 가 로그인과 같은 `LoginDTO` 라서
+ * 서버 검증상 필수값이다. 배경은 `PasswordResetConfirmDTO` 주석 참고.
+ */
 export const resetPassword = async (userId: string, password: string) => {
   const payload: PasswordResetConfirmDTO = {
     userId,
     password,
+    deviceId: await getDeviceId(),
   };
   const response = await apiKeyHttp.post<BaseResponse<unknown>>(
     ENDPOINTS.AUTH.RESET_PW_CONFIRM,

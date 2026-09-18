@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { withdrawMe } from "@/api/queries/authQueries";
 import { useMeQuery } from "@/hooks/queries/useMeQuery";
@@ -12,6 +12,9 @@ import WithdrawalModal from "@/components/main/profile/WithdrawalModal";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
 import { useAlertModalStore } from "@/stores/alertModalStore";
 import { clearAuthTokens } from "@/lib/auth/tokenCache";
+import { handleUserLogout } from "@/utils/auth/handleUserLogout";
+import { deleteAllFcmTokens, syncFcmToken } from "@/utils/fcm";
+import { useFcmStore } from "@/stores/fcmStore";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -19,32 +22,118 @@ const ProfilePage = () => {
   const { openAlertModal } = useAlertModalStore();
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
 
+  /**
+   * 탈퇴 진행 중 재진입 차단.
+   *
+   * 확인 버튼을 눌러도 성공 전까지는 모달이 닫히지 않고, `CommonConfirmModalLayout` 의
+   * confirmButtonInfo 에는 disabled 가 없어 버튼이 계속 살아 있다. 그래서 첫 요청이
+   * 네트워크를 기다리는 동안 두 번째 확인이 들어올 수 있다.
+   *
+   * 그러면 진행 중인 재등록(syncFcmToken)과 두 번째 deleteAllFcmTokens/withdrawMe 가
+   * 겹쳐, 순서에 따라 탈퇴한 계정에 FCM 등록이 남는다 — 탈퇴 후에는 지울 방법이 없다.
+   *
+   * state 가 아니라 ref 를 쓴다: 리렌더를 기다리지 않고 **동기적으로** 막아야 한다.
+   */
+  const isWithdrawingRef = useRef(false);
+
   // 사용자 정보 조회
   const { user: userData } = useMeQuery();
 
   // 로그아웃 처리
+  // 서버 정리(FCM 토큰 삭제 → 로그아웃 API)까지 handleUserLogout 이 담당하고,
+  // 마지막에 하드 리다이렉트까지 수행하므로 여기서 navigate 하지 않는다.
   const handleLogout = () => {
-    // TODO: API 로그아웃 호출 (서버 쿠키 등 정리 필요 시)
-    void clearAuthTokens();
-    navigate(ROUTES.AUTH.SIGNIN, { replace: true });
+    void handleUserLogout();
+  };
+
+  /**
+   * 탈퇴가 실패했을 때, 미리 지워둔 FCM 등록을 되돌린다.
+   *
+   * 삭제를 탈퇴보다 먼저 할 수밖에 없어(아래 주석 참고) 탈퇴가 실패하면
+   * 계정은 살아 있는데 푸시 등록만 사라진 상태가 된다. 그대로 두면 다음 로그인까지
+   * 알림이 끊기므로 즉시 재등록한다.
+   *
+   * ⚠️ 복구되는 건 **이 기기뿐**이다.
+   *    삭제는 회원의 모든 기기를 지웠는데(탈퇴 전제라 그래야 한다) 여기서는 현재 기기만
+   *    다시 등록할 수 있다. 다른 기기는 각자 앱을 켤 때 `resyncFcmRegistration()` 이
+   *    돌면서 복구되므로 영구 손실은 아니지만, 그때까지 알림이 끊기는 창이 있다.
+   *    인증이 사라지기 전에 지워야 하는 구조상 순서를 바꿔서는 해결되지 않는다.
+   *
+   * ⚠️ `reset()` 을 먼저 해야 한다. store 에 등록 기록이 남아 있으면
+   *    `syncFcmToken()` 이 "이미 등록됨"으로 보고 서버 등록을 skip 한다.
+   *
+   * ⚠️ 재등록을 **끝까지 기다린다**(await). 기다리지 않고 실패 알림을 띄우면,
+   *    사용자가 바로 탈퇴를 다시 눌렀을 때 두 번째 삭제 요청과 이 재등록이 경쟁한다.
+   *    삭제가 먼저 도착하고 재등록이 나중에 도착하면 탈퇴한 계정에 FCM 등록이 남는데,
+   *    탈퇴 후에는 인증이 없어 그걸 지울 방법이 영구히 없다.
+   */
+  const restorePushAfterFailedWithdraw = async () => {
+    useFcmStore.getState().reset();
+    await syncFcmToken();
   };
 
   // 회원 탈퇴 처리
   const handleWithdraw = async (reasonNo: number, withdrawReason?: string) => {
+    if (isWithdrawingRef.current) return;
+    isWithdrawingRef.current = true;
+
     try {
+      // ⚠️ FCM 삭제가 탈퇴보다 **먼저**여야 한다.
+      //    탈퇴 후에는 계정 자체가 사라져 삭제 API 를 부를 인증이 없다.
+      //    파라미터 없이 호출 = 회원의 **모든 기기** 토큰 삭제 — 계정이 없어지므로
+      //    다른 기기에 등록이 남으면 안 된다.
+      //
+      // ⚠️ 삭제에 실패하면 **탈퇴를 진행하지 않는다.**
+      //    그대로 탈퇴시키면 서버에 (탈퇴한 회원, 기기, 살아 있는 토큰) 행이 남는데,
+      //    인증이 사라져 클라이언트가 그걸 치울 방법이 **영구히** 없다.
+      //    등록해 둔 미래 일정이 남아 있으면 하루 전 알림이 그 토큰으로 발송된다
+      //    — 탈퇴한 사람 폰에 알림이 뜬다.
+      //
+      //    반대로 여기서 막았을 때의 피해는 "나중에 다시 시도"로 복구된다.
+      //    되돌릴 수 없는 쪽을 피한다. (deleteAllFcmTokens 는 내부에서 이미 1회 재시도한다)
+      const deleted = await deleteAllFcmTokens();
+      if (!deleted) {
+        console.error(
+          "[withdraw] FCM 토큰 삭제 실패 — 탈퇴를 중단한다(탈퇴 후에는 정리 불가)"
+        );
+        // 복구(restorePushAfterFailedWithdraw)는 부르지 않는다.
+        // 삭제가 실패했다는 건 서버 등록이 그대로 남아 있다는 뜻이고, deleteAllFcmTokens 는
+        // 로컬 store 도 건드리지 않는다 → 되돌릴 상태 자체가 없다.
+        // 여기서 reset() 후 재등록하면 멀쩡한 등록을 지웠다 붙이는 왕복이 되고,
+        // 그 재등록이 실패하면 오히려 상태가 나빠진다.
+        openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+        return;
+      }
+
       const response = await withdrawMe({ reasonNo, withdrawReason });
 
       if (response.code === "D200") {
-        void clearAuthTokens();
+        useFcmStore.getState().reset();
+        // await — 영속 저장소 삭제가 끝난 뒤에 이동한다. 기다리지 않으면 삭제가 도는 중에
+        // 앱이 꺼지거나 새로고침될 때 토큰이 남고, 다음 부팅의 bootstrapTokens() 가 그걸
+        // 복원한다. 탈퇴는 7일 유예라 계정이 살아 있어 복원된 토큰이 실제로 먹힌다
+        // (로그인으로 간주되면 탈퇴가 철회될 여지까지 있다).
+        // 실패해도 탈퇴는 이미 서버에서 완료됐으므로 성공 처리로 진행한다 —
+        // 여기서 실패 모달을 띄우면 사용자가 탈퇴가 안 된 줄 알고 다시 시도한다.
+        await clearAuthTokens().catch((err: unknown) => {
+          console.error("[withdraw] 토큰 정리 실패 — 탈퇴는 완료됨", err);
+        });
 
         setIsWithdrawalModalOpen(false);
         openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.SUCCESS_MESSAGE });
         navigate(ROUTES.AUTH.SIGNIN, { replace: true });
-      } else {
-        openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+        return;
       }
-    } catch {
+
+      // await — 복구가 끝난 뒤에 알림을 띄운다. 그래야 사용자가 재시도할 시점에는
+      // 재등록이 이미 끝나 있어 다음 삭제 요청과 경쟁하지 않는다.
+      await restorePushAfterFailedWithdraw();
       openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+    } catch {
+      await restorePushAfterFailedWithdraw();
+      openAlertModal({ title: WITHDRAWAL_MODAL_TEXT.FAIL_MESSAGE });
+    } finally {
+      isWithdrawingRef.current = false;
     }
   };
 

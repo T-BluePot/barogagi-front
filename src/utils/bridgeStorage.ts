@@ -48,8 +48,27 @@ declare global {
       // ⚠️ 이미 스토어에 배포된 구버전 앱에는 이 메서드가 없다 → optional.
       //    반드시 typeof 체크 후 호출한다 (getFcmToken 과 같은 이유).
       getAppVersion?(): Promise<string | null>;
-      // 푸시 토큰 등록용 deviceType. RN 에는 구현돼 있으나 타입 선언이 누락돼 있었다.
-      getDeviceType?(): Promise<"ANDROID" | "IOS">;
+      // === 기기 식별자 ===
+      // 이 기기를 구분하는 고유 문자열(react-native-device-info 의 getUniqueId()).
+      // 로그인 body 의 deviceId, FCM 토큰 저장/삭제의 deviceType 필드에 들어간다.
+      //
+      // ⚠️ 없어도 동작한다 — 웹이 자체 생성한 UUID 로 대체한다(utils/deviceId.ts).
+      //    다만 대체값은 앱 재설치 시 소실되므로 네이티브 값이 있으면 그쪽이 정확하다.
+      // ⚠️ 구버전 앱에는 없다 → optional + typeof 체크 (getFcmToken 과 같은 이유).
+      getDeviceId?(): Promise<string>;
+      // 푸시 토큰 등록용 deviceType. RN 에는 구현돼 있으나 웹은 호출하지 않는다.
+      //
+      // 지우지 않고 주석으로 남긴다 — RN 에는 실제로 구현돼 있는 메서드다.
+      // 용도가 사라진 경위:
+      //   서버의 FCM 저장/삭제 API 는 필드명이 `deviceType` 이지만, 실제로는
+      //   "기기를 식별할 수 있는 고유 데이터"(= deviceId)를 넣는 자리다(백엔드 API 문서 확인).
+      //   `"ANDROID"` / `"IOS"` 같은 기기 *종류* 를 넣는 곳이 아니므로 이 RPC 는 쓸 데가 없다.
+      //
+      // ⚠️ 되살릴 때 이름 충돌 주의:
+      //   react-native-device-info 의 `getDeviceType()` 은
+      //   `'Handset' | 'Tablet' | 'Tv' | 'Desktop' | 'unknown'` 을 반환한다 — 아래 선언과 값이 다르다.
+      //   RN 이 그 라이브러리로 갈아끼웠는지 먼저 확인할 것.
+      // getDeviceType?(): Promise<"ANDROID" | "IOS">;
     };
   }
 }
