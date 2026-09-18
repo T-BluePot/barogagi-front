@@ -56,7 +56,7 @@ const HeroCourseCard = ({ regions }: Props) => {
       <button
         type="button"
         aria-label={`${region} AI 추천 코스 만들기`}
-        onClick={startScheduleCreation}
+        onClick={() => startScheduleCreation("NORMAL")}
         className="absolute inset-0 rounded-[20px]"
       />
 

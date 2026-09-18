@@ -275,6 +275,14 @@
     line-height: var(--leading-tag);
     letter-spacing: var(--tracking-tag);
   }
+
+  /* typo-* 는 font-weight 까지 묶어 갖고 있어서, 같은 레이어에 있는 Tailwind 의
+   * font-semibold 를 함께 써도 뒤에 정의된 typo-* 가 이긴다(굵기가 안 먹는다).
+   * 크기·행간은 그대로 두고 굵기만 한 단계 올리고 싶을 때 이 클래스를 덧붙인다.
+   * ⚠️ 반드시 typo-* 정의보다 아래에 있어야 한다. */
+  .typo-strong {
+    font-weight: 700;
+  }
 }
 
 @keyframes shimmer {
