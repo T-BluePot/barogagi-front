@@ -11,7 +11,8 @@ interface TypingTextProps {
   holdMs?: number;
   /**
    * 스크린리더에 읽힐 고정 문구.
-   * 타이핑되는 글자는 aria-hidden 이다 — 한 글자마다 aria-live 가 울리면 소음이 된다.
+   * 생략하면 현재 문구를 그대로 읽힌다(문구가 바될 때마다 한 번).
+   * 상위 live region 안에서 쓰이므로, 순환이 쟦으면 이 값을 넘겨 한 번만 알린다.
    */
   srLabel?: string;
   /** 텍스트 스타일 (root 에 적용) */
@@ -97,10 +98,13 @@ const TypingText = ({
   const isTyping = !shouldReduce && !isExiting;
   // 가장 긴 문구로 폭을 미리 확보해 문구 전환 시 중심축 흔들림 방지
   const widest = items.reduce((a, b) => (b.length > a.length ? b : a), "");
+  // 타이핑되는 글자는 항상 접근성 트리에서 감춘다 — 상위가 live region 이면
+  // 한 글자마다 낭독되어 소음이 된다. 낭독은 여기 srText 로만 일어난다.
+  const srText = srLabel ?? current;
 
   return (
     <span className={`relative inline-block text-center ${className ?? ""}`}>
-      {srLabel && <span className="sr-only">{srLabel}</span>}
+      {srText && <span className="sr-only">{srText}</span>}
 
       {/* 폭 확보용 (보이지 않음) */}
       <span className="invisible block whitespace-pre" aria-hidden>
@@ -109,7 +113,7 @@ const TypingText = ({
 
       <motion.span
         className="absolute inset-0 block whitespace-pre"
-        aria-hidden={srLabel ? true : undefined}
+        aria-hidden
         animate={{ opacity: isExiting ? 0 : 1 }}
         transition={{ duration: EXIT_MS / 1000, ease: EASE_FITPL }}
       >

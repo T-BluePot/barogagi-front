@@ -13,16 +13,17 @@ const GlobalLoading = () => {
   if (!isLoading) return null;
 
   return (
+    // 오버레이가 떠도 스크린리더에는 아무 일도 일어나지 않는다 — 새로 마운트된
+    // 텍스트는 그냥 읽히지 않는다. 진행 안내가 낭독되려면 live region 이어야 한다.
+    // 마법봉 생성은 최대 120초라 이게 없으면 그동안 완전히 무음이다.
     <div
+      role="status"
+      aria-live="polite"
       className={`fixed inset-0 z-9999 flex items-center justify-center ${
         isDark ? "bg-white/40" : "bg-black/40"
       }`}
     >
-      <CommonLoading
-        message={message}
-        srMessage={srMessage}
-        dark={!isDark}
-      />
+      <CommonLoading message={message} srMessage={srMessage} dark={!isDark} />
     </div>
   );
 };
