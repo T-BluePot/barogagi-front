@@ -59,8 +59,11 @@ export const login = async (userId: string, password: string) => {
   });
 
   if (!deviceId) {
+    // 앱/웹 공통 문구를 쓴다. `isNativeApp()` 이 false 인 브라우저에서는
+    // "앱을 다시 실행하라"는 안내를 따를 수단이 없다
+    // (앱 전용 안내는 `ERROR_SCREEN_APP_HINT` 처럼 앱일 때만 붙이는 것이 이 리포의 규칙).
     throw new Error(
-      "기기 정보를 확인하지 못해 로그인할 수 없어요.\n앱을 다시 실행한 뒤 시도해주세요."
+      "기기 정보를 확인하지 못해 로그인할 수 없어요.\n잠시 후 다시 시도해주세요."
     );
   }
 
