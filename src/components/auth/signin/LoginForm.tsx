@@ -83,7 +83,10 @@ export const LoginForm = () => {
       {/* 에러 메시지 표시 */}
       {error && (
         <div className="mb-4 p-3 bg-alert-red/10 border border-alert-red rounded-lg">
-          <p className="typo-caption text-alert-red">{error}</p>
+          {/* 문구에 개행이 들어간다(handleLoginError). pre-line 이 없으면 한 줄로 이어붙는다 */}
+          <p className="typo-caption text-alert-red whitespace-pre-line">
+            {error}
+          </p>
         </div>
       )}
 

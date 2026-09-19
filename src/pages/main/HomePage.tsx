@@ -9,7 +9,7 @@ import {
 import { useHotPlacesQuery } from "@/hooks/queries/useHotPlacesQuery";
 import { useMeQuery } from "@/hooks/queries/useMeQuery";
 import { homeKeys } from "@/api/keyFactories";
-import type { TagInfoDTO, PopularRegionDTO } from "@/api/types";
+import type { PopularTagDTO, PopularRegionDTO } from "@/api/types";
 
 const HomePage = () => {
   const { data: scheduleData, isLoading: isScheduleLoading } = useQuery({
@@ -41,7 +41,7 @@ const HomePage = () => {
     sigunguCd: userData?.sigunguCd,
     enabled: !isMePending,
   });
-  const popularTags: TagInfoDTO[] = tagsData?.tagInfoList ?? [];
+  const popularTags: PopularTagDTO[] = tagsData?.data ?? [];
   const popularRegions: PopularRegionDTO[] = Array.isArray(regionsData?.data)
     ? regionsData.data
     : [];

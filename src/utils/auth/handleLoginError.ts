@@ -1,5 +1,7 @@
 import { AxiosError } from "axios";
 
+import { API_ERROR_CODE } from "@/constants/apiErrorCodes";
+
 type SetError = (message: string | null) => void;
 
 type HandleLoginErrorDeps = {
@@ -22,6 +24,12 @@ export const handleLoginError =
         A100: "서비스 설정 오류로 로그인할 수 없습니다.\n잠시 후 다시 시도해주세요.",
         "400":
           "로그인 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.",
+        // 서버 5xx. 로그인 화면에 머무르며 재시도를 유도한다 — 전체화면으로 승격하지 않는다.
+        // 백엔드 문구("서버 오류가 발생했습니다.")를 그대로 노출하지 않는 규칙을 따른다.
+        [API_ERROR_CODE.SERVER_ERROR]:
+          "일시적인 서버 오류로 로그인하지 못했어요.\n잠시 후 다시 시도해주세요.",
+        [API_ERROR_CODE.SERVER_ERROR_C]:
+          "일시적인 서버 오류로 로그인하지 못했어요.\n잠시 후 다시 시도해주세요.",
       };
 
       // 매핑된 코드면 해당 멘트 사용

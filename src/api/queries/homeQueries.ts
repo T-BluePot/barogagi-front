@@ -7,14 +7,14 @@ import type {
   BaseResponse,
   HomeScheduleResponseDTO,
   HotPlaceDTO,
-  PopularTagResponseDTO,
+  PopularTagDTO,
   PopularRegionResponseDTO,
   RegionCodeDTO,
 } from "../types";
 
 /** 인기 태그 조회 */
 export const getPopularTags = async () => {
-  const response = await apiKeyHttp.get<PopularTagResponseDTO>(
+  const response = await apiKeyHttp.get<BaseResponse<PopularTagDTO[]>>(
     ENDPOINTS.HOME.POPULAR_TAGS
   );
   return response.data;
