@@ -49,10 +49,28 @@ export const getOAuthLink = async (type: OAuthProviderType) => {
  * 요청을 만드는 이 지점에서 한 번만 주입한다. (`getDeviceId()` 는 결과가 캐시된다)
  */
 export const login = async (userId: string, password: string) => {
+  // 기기 식별자를 못 구하면 **요청을 보내지 않는다.**
+  // 서버는 deviceId 없이 들어온 로그인을 COMMON-500 으로 떨어뜨리는데(실측),
+  // 그러면 사용자에게는 원인 불명의 서버 장애로 보인다.
+  // 여기서 끊고 로그인 화면에 인라인 문구를 띄워 재시도하게 둔다.
+  const deviceId = await getDeviceId().catch((err: unknown) => {
+    console.error("[login] 기기 식별자 조회 실패", err);
+    return "";
+  });
+
+  if (!deviceId) {
+    // 앱/웹 공통 문구를 쓴다. `isNativeApp()` 이 false 인 브라우저에서는
+    // "앱을 다시 실행하라"는 안내를 따를 수단이 없다
+    // (앱 전용 안내는 `ERROR_SCREEN_APP_HINT` 처럼 앱일 때만 붙이는 것이 이 리포의 규칙).
+    throw new Error(
+      "기기 정보를 확인하지 못해 로그인할 수 없어요.\n잠시 후 다시 시도해주세요."
+    );
+  }
+
   const payload: LoginRequestType = {
     userId,
     password,
-    deviceId: await getDeviceId(),
+    deviceId,
   };
   const response = await apiKeyHttp.post<BaseResponse<LoginResponseDataType>>(
     ENDPOINTS.AUTH.LOGIN,
