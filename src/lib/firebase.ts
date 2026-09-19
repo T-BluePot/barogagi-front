@@ -10,7 +10,11 @@
  *   미설정 dev 환경을 방어한다. (절대 더미값으로 채우지 않는다)
  */
 
-import { initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app";
+import {
+  initializeApp,
+  type FirebaseApp,
+  type FirebaseOptions,
+} from "firebase/app";
 import { getMessaging, isSupported, type Messaging } from "firebase/messaging";
 
 const env = import.meta.env;
@@ -63,15 +67,27 @@ export const getFirebaseMessaging = async (): Promise<Messaging | null> => {
 
   const supported = await isSupported().catch(() => false);
   if (!supported) {
-    console.warn("[firebase] 현재 브라우저는 FCM(messaging)을 지원하지 않습니다.");
+    console.warn(
+      "[firebase] 현재 브라우저는 FCM(messaging)을 지원하지 않습니다."
+    );
     return null;
   }
 
-  const app = getFirebaseApp();
-  if (!app) return null;
+  // ⚠️ initializeApp / getMessaging 은 throw 할 수 있다 (잘못된 config, 미지원 환경 등).
+  //    이 함수는 위 JSDoc 에서 "throw 금지, null 반환"을 계약으로 선언하고 있으므로
+  //    여기서 반드시 받아낸다. 새어 나가면 호출 사슬 전체가 깨진다 —
+  //    issueFcmToken → syncFcmToken(“throw 하지 않는다”고 선언) → 탈퇴 복구 경로까지
+  //    reject 가 전파돼 실패 알림조차 못 띄운다.
+  try {
+    const app = getFirebaseApp();
+    if (!app) return null;
 
-  messagingInstance = getMessaging(app);
-  return messagingInstance;
+    messagingInstance = getMessaging(app);
+    return messagingInstance;
+  } catch (err) {
+    console.error("[firebase] messaging 초기화 실패", err);
+    return null;
+  }
 };
 
 /**

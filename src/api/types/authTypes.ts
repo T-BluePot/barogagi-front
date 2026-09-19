@@ -11,6 +11,14 @@ import { VERIFICATION_REQUEST_TYPE } from "@/constants/verificationTypes";
 export interface LoginRequestType {
   userId: string;
   password: string;
+  /**
+   * 기기를 식별할 수 있는 고유 데이터. 서버 필수값.
+   *
+   * 서버는 발급한 토큰을 `(membershipNo, deviceId)` 단위로 보관한다 — 로그아웃 API 가
+   * "전달된 refreshToken 이 속한 (membershipNo, deviceId) 의 토큰을 REVOKE" 하는 이유다.
+   * 값은 `utils/deviceId.ts` 의 `getDeviceId()` 로 얻는다 (호출부가 직접 만들지 않는다).
+   */
+  deviceId: string;
 }
 
 /** 로그인 응답 data 타입 */
@@ -120,6 +128,16 @@ export interface TermsProcessRequestType {
 export interface PasswordResetConfirmDTO {
   userId: string;
   password: string;
+  /**
+   * 기기 식별자. `getDeviceId()` 로 얻는다.
+   *
+   * ⚠️ 백엔드 API 문서에는 `userId` / `password` 만 적혀 있으나,
+   *    스웨거상 이 엔드포인트의 requestBody 는 로그인과 **같은 `LoginDTO`** 를 참조하고
+   *    `LoginDTO.required` 는 `["deviceId", "password", "userId"]` 다.
+   *    스웨거는 코드에서 생성되므로 실제 DTO 를 반영한다 → 문서 쪽이 오래된 것으로 보인다.
+   *    보내서 안 쓰이면 무시될 뿐이지만, 안 보냈다가 필수면 C101 로 튕긴다 → 보내는 쪽을 택한다.
+   */
+  deviceId: string;
 }
 
 /** 탈퇴 사유 항목 DTO */

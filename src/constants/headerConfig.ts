@@ -191,7 +191,7 @@ export const HEADER_CONFIG: Record<string, HeaderConfig> = {
 
   // 공유 뷰는 비로그인 방문자가 대상이므로 앱 레이아웃 헤더를 그리지 않는다.
   // 여기에 등록하지 않으면 기본값 type:"common" → CommonHeader → getMe() → 401 →
-  // 인터셉터가 handleLogout() → /auth/login 으로 하드 리다이렉트되어 일정을 볼 수 없다.
+  // 인터셉터가 handleForcedLogout() → /auth/login 으로 하드 리다이렉트되어 일정을 볼 수 없다.
   [ROUTES.SHARE.VIEW]: { type: "none" },
 
   // 메인 앱 라우트들
