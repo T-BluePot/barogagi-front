@@ -38,8 +38,10 @@ export const useStartScheduleCreation = () => {
           confirmLabel: "이어하기",
           cancelLabel: "새로 만들기",
         },
-        // 이어하기: 진행 중이던 플로우를 그대로 잇는다(모드도 draft 값 유지)
-        () => navigate(ROUTES.PLAN.DATE),
+        // 이어하기는 "만들던 내용"을 잇는 것이지 "진입 방식"까지 잇는 게 아니다.
+        // 모드를 갱신하지 않으면, 메뉴에서 마법봉을 골라도 예전 draft 의 NORMAL 이
+        // 남아 지역 선택 뒤 일반 플로우로 새는 걸 사용자가 알아챌 방법이 없다.
+        enterFlow,
         () => {
           reset();
           clearRegions();
