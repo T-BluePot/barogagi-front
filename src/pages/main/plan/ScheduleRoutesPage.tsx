@@ -43,8 +43,6 @@ import { MAGIC_SCHEDULE_TEXT } from "@/constants/texts/main/plan/magicSchedule";
 import type {
   PlanRegistResDTO,
   ScheduleRegistResDTO,
-  ScheduleRegistReqDTO,
-  MagicScheduleReqDTO,
   BaseResponse,
   ScheduleListResDTO,
   UserAddedPlaceDTO,
@@ -71,6 +69,15 @@ const toHHMM = (min: number) => {
   return `${String(Math.floor(clamped / 60)).padStart(2, "0")}:${String(
     clamped % 60
   ).padStart(2, "0")}`;
+};
+
+/**
+ * 생성 요청 본문 디버그 로그. 받은 값을 그대로 돌려주므로
+ * 호출부 타입이 유지된다 — 일반/마법봉 요청을 유니온으로 합치지 않아도 된다.
+ */
+const logCreateRequest = <T,>(req: T): T => {
+  console.log("[create 요청]", JSON.stringify(req, null, 2));
+  return req;
 };
 
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
@@ -140,11 +147,13 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
       try {
         // 마법봉은 날짜/지역/시간만 보내고 슬롯 구성은 서버에 맡긴다.
         // 응답 DTO·성공 코드가 같아 이후 처리는 일반 생성과 공유한다.
-        const req = isMagicCreate ? buildMagicRequest() : buildRequest();
-        console.log("[create 요청]", JSON.stringify(req, null, 2));
+        //
+        // 빌더는 분기 안에서 바로 호출한다. 요청을 먼저 유니온으로 합쳐 두면
+        // 호출부에서 as 로 되돌려야 하고, 그 단언이 나중에 빌더 반환 타입이
+        // 바뀌어도 오류를 덮어 잘못된 DTO 가 그대로 전송된다.
         const res = isMagicCreate
-          ? await createMagicSchedule(req as MagicScheduleReqDTO)
-          : await createSchedule(req as ScheduleRegistReqDTO);
+          ? await createMagicSchedule(logCreateRequest(buildMagicRequest()))
+          : await createSchedule(logCreateRequest(buildRequest()));
         console.log("[create 응답] code:", res.code, "message:", res.message);
         console.log("[create 응답] data:", res.data);
 
