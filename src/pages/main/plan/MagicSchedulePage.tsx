@@ -69,8 +69,14 @@ const MagicSchedulePage = () => {
   const setDraft = useScheduleDraftStore((s) => s.setDraft);
   const selectedRegions = useRegionSelectionStore((s) => s.selectedRegions);
 
+  // 지역은 두 스토어에 나뉜어 있다 — 요청 DTO 는 draft 가, 화면에 쓰는 지역명은
+  // regionSelectionStore 가 갖는다(RegionRegistReqDTO 에는 이름 필드가 없다).
+  // 한쪽만 남은 채로 들어오면 지역 줄이 빈 줄로 뜨고 일정명도 " 여행" 이 된다
+  // → 둘 다 있을 때만 이 화면을 열고, 아니면 앞 단계로 돌려보낸다.
   const hasRequired =
-    !!draft.startDate && draft.scheduleRegionRegistReqDTOList.length > 0;
+    !!draft.startDate &&
+    draft.scheduleRegionRegistReqDTOList.length > 0 &&
+    selectedRegions.length > 0;
 
   // 새로고침 등으로 날짜/지역이 비어 직접 진입한 경우 앞 단계로 돌려보낸다
   useEffect(() => {
