@@ -1044,6 +1044,135 @@ case 'share':
 
 ---
 
+## 13. 기기 식별자(deviceId)
+
+### 문제
+
+백엔드가 FCM 토큰을 **기기 단위로 저장·삭제**하도록 바꿨다(2026-08-26). 서버가 기기를 구분하는 열쇠가
+`deviceId` 다 — 로그인 body, OAuth authorize URL, FCM 저장/삭제 API 가 모두 이 값을 받는다.
+
+웹도 UUID 를 만들 수는 있다(현재 그렇게 동작 중). 다만 그 값은 **앱 데이터가 지워지거나 재설치되면 소실**된다.
+소실되면 새 식별자가 발급되고, 서버에는 옛 식별자로 등록된 FCM 토큰이 **지울 방법 없이** 남는다.
+기기에 묶인 값을 아는 쪽은 네이티브뿐이라 브릿지가 필요하다.
+
+### 현재 브릿지 상태 (2026-09-18 기준)
+
+| method | RN 구현 | 웹 사용 | 비고 |
+| --- | --- | --- | --- |
+| `getData` / `saveData` / `deleteData` | ✅ | ✅ | deviceId 도 `persistent` 네임스페이스에 저장한다 |
+| `getFcmToken` | ✅ | ✅ | 변경 없음 |
+| `getDeviceType` | ✅ | ❌ **사용 중단** | 아래 주의 참고. **지우지 말고 그대로 둘 것** |
+| `getAppVersion` | ❓ 반영 여부 미확인 | ✅ optional | §12 에서 요청한 건. 웹은 없으면 조용히 skip |
+| **`getDeviceId`** | ❌ **없음** | ✅ optional | **이번 요청 대상** |
+
+⚠️ `getDeviceType` 을 `getDeviceId` 로 바꾸거나 재활용하지 않는다. 서버 FCM API 의 필드명이
+`deviceType` 이라 헷갈리기 쉬운데, 그 필드는 기기 *종류* 가 아니라 **기기 고유 식별자**를 넣는 자리다
+(백엔드 API 문서상 로그인의 `deviceId` 와 설명이 동일). 그래서 `"ANDROID"` / `"IOS"` 를 돌려주는
+기존 RPC 는 웹에서 쓸 데가 없어졌을 뿐, 깨진 게 아니다. 웹 타입 선언은 주석으로 남겨뒀다.
+
+### 웹에서 완료한 작업
+
+| 항목 | 위치 |
+| --- | --- |
+| 브릿지 타입 선언 (`getDeviceId?`) | `src/utils/bridgeStorage.ts` `declare global` |
+| 식별자 발급·저장 (first-write-wins) | `src/utils/deviceId.ts` |
+| UUID 폴백 (`crypto.randomUUID` 없는 http 환경 대응) | `src/utils/deviceId.ts` `generateUuid` |
+| 인증 요청에 주입 (로그인 / 비밀번호 재설정 / OAuth) | `src/api/queries/authQueries.ts`, `src/utils/auth/startOAuthLogin.ts` |
+| FCM 등록·삭제 (`deviceType` 자리에 deviceId) | `src/utils/fcm.ts`, `src/api/queries/pushQueries.ts` |
+| local → native 승격 로직 | `src/utils/fcm.ts` `promoteDeviceIdIfPossible` |
+
+웹은 **`getDeviceId` 없이도 정상 동작한다.** 브릿지가 없으면 UUID 를 만들어 쓰고, 나중에 브릿지가
+붙으면 부팅·포그라운드 복귀 시점에 자동으로 네이티브 값으로 갈아탄다. **프론트 재배포는 필요 없다.**
+
+### RN에서 해야 할 일
+
+`getDeviceId` RPC 하나를 추가한다. 즉시 응답이므로 **기본 `rpc`(3초 timeout)** 를 쓴다.
+
+1. `react-native-device-info` 설치 여부 확인. 없으면 설치한다.
+
+```bash
+yarn add react-native-device-info && npx pod-install
+```
+
+2. `src/utils/bridgeInterface.ts` — `getDeviceType` 아래에 추가.
+
+```js
+    // 기기 고유 식별자. 웹이 로그인 body / FCM 토큰 등록·삭제에 사용.
+    getDeviceId: function() {
+      return rpc('getDeviceId', {});
+    },
+```
+
+3. `src/screens/WebViewScreen.tsx` — `case 'getDeviceType'` 블록 뒤, `default:` 앞에 추가.
+
+```ts
+        case 'getDeviceId': {
+          const deviceId = await DeviceInfo.getUniqueId();
+          if (!deviceId) throw new Error('deviceId 를 가져오지 못했다');
+          respond(true, deviceId);
+          break;
+        }
+```
+
+- `getUniqueId()` 는 v10 부터 **Promise** 다. `await` 를 빠뜨리면 웹에 `[object Promise]` 문자열이 간다.
+- Android 는 `ANDROID_ID`, iOS 는 `identifierForVendor` 를 돌려준다.
+
+### ⚠️ 지켜야 할 계약
+
+아래를 어기면 **같은 기기에 푸시가 두 번 간다.** 앱 업데이트로는 FCM 토큰이 갱신되지 않아,
+같은 토큰이 옛 식별자 행과 새 식별자 행에 동시에 남기 때문이다.
+
+| 항목 | 요구 |
+| --- | --- |
+| 타입 | `string`. **빈 문자열 금지** — 못 구하면 빈 값 대신 reject 한다(웹이 UUID 폴백으로 빠진다) |
+| 안정성 | 앱 업데이트 · **재설치** · 로그아웃에도 **같은 값** |
+| 금지 | 호출마다 새로 만드는 UUID |
+| 금지 | FCM 토큰 재사용 — 로테이션되므로 식별자로 쓸 수 없다 |
+
+기기 초기화(Android) / 벤더 앱 전체 삭제(iOS) 시에는 값이 바뀔 수 있다. 이건 허용 범위다 —
+어차피 그 시점엔 앱 저장소도 함께 날아가 웹이 새 기기로 취급한다.
+
+### 🕳️ 구버전 앱에는 이 메서드가 없다
+
+`getAppVersion` 과 같은 사정이다. 이미 스토어에 올라간 빌드에는 `getDeviceId` 가 없으므로
+웹 타입 선언은 **`optional` + `typeof` 체크**다. 필수로 선언하면 구버전 앱에서 런타임에 터진다.
+
+새 빌드가 배포되면 기존 사용자(UUID 로 시작한 기기)는 이렇게 전환된다.
+
+```
+부팅 / 포그라운드 복귀
+  → getDeviceId() 성공 → 옛 식별자로 서버 FCM 등록 삭제
+  → 삭제 성공했을 때만 식별자 교체 + 새 식별자로 재등록
+```
+
+**삭제가 실패하면 교체하지 않고 다음 기회로 미룬다.** 지우지 않고 바꾸면 중복 푸시가 되기 때문이다.
+
+### RN 측 체크리스트
+
+- [ ] `react-native-device-info` 설치 확인 (미설치 시 추가)
+- [ ] `bridgeInterface.ts` 에 `getDeviceId` 등록
+- [ ] `WebViewScreen.tsx` 에 `case 'getDeviceId'` 추가 + `DeviceInfo` import
+- [ ] `getUniqueId()` 를 `await` 로 호출 (Promise 반환)
+- [ ] 빈 문자열일 때 reject 하는지 확인
+- [ ] 실기기 WebView 콘솔에서 `await window.BarogagiApp.getDeviceId()` → 문자열 확인
+- [ ] 앱 강제 종료 후 재실행 → **같은 값**인지 확인
+- [ ] 앱 삭제 후 재설치 → **같은 값**인지 확인 (Android)
+- [ ] 기존 RPC(`getData` / `getFcmToken` / `getDeviceType`) 회귀 없음 확인
+- [ ] `getDeviceType` 을 지우거나 이름 바꾸지 않았는지 확인
+
+### 🔬 함께 확인할 미검증 항목
+
+웹 단독으로는 확인할 수 없어 앱 빌드가 나온 뒤 함께 봐야 한다.
+
+1. **실제 푸시 수신** — 브라우저에는 Firebase config 가 없어 토큰 발급 자체가 안 된다
+2. **기기 구분** — 2대 로그인 후 1대만 로그아웃했을 때 나머지 기기 알림이 유지되는지.
+   서버에 기기 목록 조회 API 가 없어 클라이언트로는 확인 불가
+3. **중복 푸시** — 배포 직후 알림이 두 번 오면 레거시(`"WEB"`) 등록 정리가 서버에서 안 먹은 것이다
+
+설계 배경과 서버 동작 실측은 [`docs/fcm-device-id-plan.md`](./fcm-device-id-plan.md) 에 있다.
+
+---
+
 ## 변경 이력
 
 | 날짜       | 내용                                                                                                                                         | 작성자            |
@@ -1053,3 +1182,5 @@ case 'share':
 | 2026-06-13 | OAuth 소셜 로그인 인앱 Custom Tab 흐름 추가(§10): 웹 `loginWithOAuth` 브릿지 호출 전환. RN `openAuth` 구현 명세·3초 timeout 우회 주의 명시         | fitpl-front 팀 |
 | 2026-07-17 | 카카오톡 공유 추가(§11): 웹은 SDK 연동·실패 흡수·`navigator.share` 미지원 시 '더보기' 자동 숨김까지 완료. RN은 §4-B가 `kakaolink://`를 이미 위임할 가능성이 높아 **실기기 확인이 먼저**. `openExternal`은 http(s)만 허용해 우회 불가임을 명시 | fitpl-front 팀 |
 | 2026-07-26 | 앱 버전 조회 / 업데이트 안내 추가(§12): 웹은 타입 선언·버전 비교 유틸·부팅 체크 훅·권장 안내 모달·FCM 재등록 트리거까지 완료. RN은 `getAppVersion` RPC 추가만 필요(`APP_VERSION` 상수는 이미 존재). **구버전 앱에는 메서드가 없어 웹은 optional + typeof 체크**. 판정 임계값 소스는 기획 결정 대기라 판정부는 `TODO`. 기존에 문서화 누락돼 있던 FCM 브릿지(`getFcmToken`/`getDeviceType`)도 함께 보강 | fitpl-front 팀 |
+
+| 2026-09-18 | 기기 식별자(deviceId) 추가(§13): 백엔드가 FCM 토큰을 기기 단위로 저장·삭제하도록 바뀌어, 서버가 기기를 구분하는 `deviceId` 가 필요해졌다. 웹은 발급·저장·인증 요청 주입·FCM 등록/삭제·승격 로직까지 완료했고 **`getDeviceId` 없이도 UUID 폴백으로 동작한다**(프론트 재배포 불필요). RN 은 `react-native-device-info` 의 `getUniqueId()` 를 돌려주는 RPC 추가만 필요. **기존 `getDeviceType`(`"ANDROID"`/`"IOS"`)과 다른 값이므로 재활용·개명 금지** — 서버 FCM API 의 `deviceType` 필드는 기기 종류가 아니라 식별자 자리다. 구버전 앱에는 메서드가 없어 웹은 optional + typeof 체크 | fitpl-front 팀 |

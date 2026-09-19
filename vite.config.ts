@@ -1,18 +1,67 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig({
-  server: {
-    port: 8080,
-  },
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": "/src",
+export default defineConfig(({ mode }) => {
+  // 프록시 대상은 앱이 쓰는 API 주소와 반드시 같아야 한다 → .env 에서 그대로 읽는다.
+  // (vite.config 는 Node 에서 실행되므로 import.meta.env 가 아니라 loadEnv 를 쓴다)
+  const env = loadEnv(mode, process.cwd(), "VITE_");
+
+  // ⚠️ 폴백을 두지 않는다.
+  //    값이 없을 때 localhost:8080 으로 떨어뜨리면 그건 **dev 서버 자기 자신**이라,
+  //    /api 요청이 프록시 → 자기 자신 → 프록시로 되돌아 무한 중계된다.
+  //    에러 없이 응답이 멎기만 해서 원인을 찾기 어렵다 → 아예 프록시를 걸지 않는다.
+  const apiTarget = env.VITE_API_BASE_URL;
+  if (!apiTarget) {
+    console.warn(
+      "[vite] VITE_API_BASE_URL 미설정 — /api 프록시를 비활성화한다. 실기기(LAN) 접속 시 API 가 CORS 로 차단된다."
+    );
+  }
+
+  return {
+    server: {
+      port: 8080,
+      /**
+       * 실기기(폰) 테스트용 API 프록시.
+       *
+       * API 서버의 CORS 허용 목록에는 `http://localhost:8080` 만 있어, 폰에서
+       * `http://<PC IP>:8080` 으로 접속하면 모든 API 가 preflight 에서 차단된다.
+       * 이 프록시를 거치면 브라우저에는 같은 출처 요청이 되고, 실제 호출은
+       * dev 서버가 서버 대 서버로 중계하므로 CORS 가 개입하지 않는다.
+       *
+       * `changeOrigin: true` — 대상 서버가 보는 Host/Origin 을 target 기준으로 바꾼다.
+       * localhost 접속 시에는 `API_BASE_URL` 이 절대 URL 이라 이 프록시를 타지 않는다
+       * (`src/api/endpoints.ts` 참고).
+       */
+      // apiTarget 이 없으면 프록시 자체를 만들지 않는다 (자기 자신으로의 무한 중계 방지)
+      proxy: !apiTarget
+        ? undefined
+        : {
+            "/api": {
+              target: apiTarget,
+              changeOrigin: true,
+              // ⚠️ 이 두 줄은 **서버의 Origin 검사를 우회한다.**
+              //    브라우저가 붙인 Origin(`http://<PC IP>:8080`)이 그대로 넘어가면 서버가 403 으로 막는다.
+              //    중계 요청은 서버 대 서버이므로 Origin/Referer 를 대상 도메인 기준으로 바꿔 보낸다.
+              //
+              //    의도적인 선택이며 **개발 서버에서만** 동작한다(운영 빌드에는 프록시 자체가 없다).
+              //    서버 측 방어를 로컬에서 무력화하는 것이므로, 이 설정을 스테이징·운영 경로로
+              //    옮기거나 target 을 신뢰할 수 없는 호스트로 바꾸지 말 것.
+              headers: {
+                Origin: apiTarget,
+                Referer: `${apiTarget}/`,
+              },
+            },
+          },
     },
-  },
-  css: {
-    postcss: "./postcss.config.js",
-  },
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        "@": "/src",
+      },
+    },
+    css: {
+      postcss: "./postcss.config.js",
+    },
+  };
 });
