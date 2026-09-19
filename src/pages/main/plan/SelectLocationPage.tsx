@@ -32,6 +32,7 @@ const SelectLocationPage = () => {
 
   // 일정 등록 store
   const setDraft = useScheduleDraftStore((s) => s.setDraft);
+  const creationMode = useScheduleDraftStore((s) => s.draft.creationMode);
 
   // regionSelectionStore 변경 후 scheduleDraftStore에도 동기화하는 헬퍼
   const syncToDraft = (regions: RegionSearchItemType[]) => {
@@ -108,8 +109,10 @@ const SelectLocationPage = () => {
               : SELECT_LOCATION_TEXT.NEXT_BUTTON.ENABLED
           }
           onClick={() => {
-            // 추후 선택된 일정 넘기기 로직 추가
-            navigate(ROUTES.PLAN.SETTING);
+            // 마법봉은 구성/스타일 단계를 건너뛰고 확인 화면으로 바로 간다
+            navigate(
+              creationMode === "MAGIC" ? ROUTES.PLAN.MAGIC : ROUTES.PLAN.SETTING
+            );
           }}
         />
       </div>

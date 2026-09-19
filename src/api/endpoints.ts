@@ -53,6 +53,9 @@ export const ENDPOINTS = {
     LIST: "/api/v1/schedule/list",
     DETAIL: "/api/v1/schedule/detail", // Query param: scheduleNum
     CREATE: "/api/v1/schedule/create", // 일정 생성 (등록 전)
+    // 마법봉 일정 생성 — 날짜/지역만 받아 서버가 2시간 슬롯·카테고리를 자동 구성한다.
+    // 응답 DTO 와 성공 코드(S201)는 CREATE 와 동일하므로 저장은 SAVE 를 그대로 쓴다.
+    MAGIC_CREATE: "/api/v1/schedule/magic-create",
     SAVE: "/api/v1/schedule/save", // 일정 저장 (최종 등록)
     UPDATE: "/api/v1/schedule/", // PUT
     DELETE: "/api/v1/schedule/", // DELETE

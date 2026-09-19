@@ -5,14 +5,18 @@ import { useScheduleDraftStore } from "@/stores/scheduleStore";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useConfirmModalStore } from "@/stores/confirmModalStore";
 
+import type { ScheduleCreationMode } from "@/types/api/scheduleTypes";
+
 /**
  * 새 일정 생성 플로우 진입 훅
  * - 작성 중이던 draft(지역 선택 이후 단계)가 있으면 이어하기/새로 만들기 확인 모달을 띄운다.
  * - FAB, 일정 리스트의 추가 버튼 등 진입점이 여러 곳이라 공용 훅으로 분리.
+ * - mode 로 일반/마법봉 플로우를 가른다. 진입 지점은 /plan/date 로 동일하고,
+ *   지역 선택 이후 분기는 draft.creationMode 가 결정한다.
  */
 export const useStartScheduleCreation = () => {
   const navigate = useNavigate();
-  const { draft, reset } = useScheduleDraftStore();
+  const { draft, reset, setDraft } = useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const { openConfirmModal } = useConfirmModalStore();
 
@@ -20,7 +24,12 @@ export const useStartScheduleCreation = () => {
   // 날짜만 정한 첫 페이지 이탈은 이어하기 대상이 아님 → 항상 새로 시작.
   const hasResumableDraft = draft.scheduleRegionRegistReqDTOList.length > 0;
 
-  const startScheduleCreation = () => {
+  const startScheduleCreation = (mode: ScheduleCreationMode = "NORMAL") => {
+    const enterFlow = () => {
+      setDraft({ creationMode: mode });
+      navigate(ROUTES.PLAN.DATE);
+    };
+
     if (hasResumableDraft) {
       openConfirmModal(
         {
@@ -29,18 +38,21 @@ export const useStartScheduleCreation = () => {
           confirmLabel: "이어하기",
           cancelLabel: "새로 만들기",
         },
-        () => navigate(ROUTES.PLAN.DATE),
+        // 이어하기는 "만들던 내용"을 잇는 것이지 "진입 방식"까지 잇는 게 아니다.
+        // 모드를 갱신하지 않으면, 메뉴에서 마법봉을 골라도 예전 draft 의 NORMAL 이
+        // 남아 지역 선택 뒤 일반 플로우로 새는 걸 사용자가 알아챌 방법이 없다.
+        enterFlow,
         () => {
           reset();
           clearRegions();
-          navigate(ROUTES.PLAN.DATE);
+          enterFlow();
         }
       );
     } else {
       // 지역 선택 전 단계(날짜 등)는 저장/복원하지 않고 깨끗한 상태로 시작
       reset();
       clearRegions();
-      navigate(ROUTES.PLAN.DATE);
+      enterFlow();
     }
   };
 

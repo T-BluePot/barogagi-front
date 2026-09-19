@@ -72,7 +72,7 @@ const RoutesCreateFooter = ({ onConfirm, onRegenerate }: FooterProps) => {
         {({ TransitionProps }) => (
           <ClickAwayListener onClickAway={closeHelp}>
             <Fade {...TransitionProps} timeout={350}>
-              <Box className="max-w-60 p-3 bg-gray-white rounded-xl shadow-[0_6px_16px_rgba(15,23,42,0.15)]">
+              <Box className="max-w-60 p-3 bg-gray-white rounded-xl shadow-floating">
                 <p className="typo-description text-gray-70 whitespace-pre-line">
                   {ROUTES_CREATE_TEXT.FOOTER_KEPT_NOTICE}
                 </p>

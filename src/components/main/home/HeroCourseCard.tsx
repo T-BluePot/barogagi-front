@@ -51,12 +51,12 @@ const HeroCourseCard = ({ regions }: Props) => {
   if (IS_COMING_SOON) return null;
 
   return (
-    <article className="relative w-full rounded-[20px] bg-[linear-gradient(135deg,#FF9A72,#FF7B4E)] px-5 py-4.5 text-left text-white shadow-[0_10px_26px_rgba(255,123,78,0.34)]">
+    <article className="relative w-full rounded-[20px] bg-[linear-gradient(135deg,#FF9A72,#FF7B4E)] px-5 py-4.5 text-left text-white shadow-hero">
       {/* 카드 전체 탭 영역 (셀렉트만 위에서 별도 인터랙션) */}
       <button
         type="button"
         aria-label={`${region} AI 추천 코스 만들기`}
-        onClick={startScheduleCreation}
+        onClick={() => startScheduleCreation("NORMAL")}
         className="absolute inset-0 rounded-[20px]"
       />
 

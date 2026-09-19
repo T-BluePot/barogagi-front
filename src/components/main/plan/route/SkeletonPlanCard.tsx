@@ -9,8 +9,12 @@ interface SkeletonPlanCardProps {
 /**
  * 재생성 중 "재추천되는 슬롯" 자리 표시 스켈레톤.
  * 시간대(레일: 순번·시작~종료)는 재생성 후에도 유지되므로 그대로 보여주고,
- * 바뀌는 카드 본문(장소·태그·이미지)만 스켈레톤 블록으로 대체한다.
+ * 바뀌는 카드 본문(장소·지역)만 스켈레톤 블록으로 대체한다.
  * 레일 마크업은 PlanDetailCard와 동일하게 맞춰 나열 시 어긋나지 않게 함.
+ *
+ * ⚠️ 이 컴포넌트는 create 모드에서만 쓰인다(재생성은 생성 화면 기능).
+ * 카드 높이도 create 카드와 같은 88px 이어야 한다 — 유지된 카드와 재추천 카드가
+ * 한 목록에 섞여 나오기 때문에, 높이가 다르면 그 줄만 튀어나온다.
  */
 const SkeletonPlanCard = ({
   index,
@@ -46,9 +50,14 @@ const SkeletonPlanCard = ({
         <div className="w-px flex-1 border-l border-dashed border-gray-20" />
       </div>
 
-      {/* 오른쪽 카드 본문 자리 — 스켈레톤 */}
-      <div className="flex-1 min-w-0">
-        <SkeletonBlock width="w-full" height="h-[100px]" rounded="rounded-xl" />
+      {/* 오른쪽 카드 본문 자리 — 실제 create 카드와 같은 여백·높이 */}
+      <div className="flex h-[88px] min-w-0 flex-1 flex-col gap-4 rounded-xl bg-gray-white px-5 pt-5 pb-4 shadow-md">
+        <div className="flex flex-col gap-2">
+          {/* 장소명 */}
+          <SkeletonBlock width="w-32" height="h-[21px]" />
+          {/* 지역 */}
+          <SkeletonBlock width="w-16" height="h-4" />
+        </div>
       </div>
     </article>
   );

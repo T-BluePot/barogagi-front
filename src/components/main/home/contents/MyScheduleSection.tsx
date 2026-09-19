@@ -88,7 +88,7 @@ const MyScheduleSection = () => {
       return (
         <button
           type="button"
-          onClick={startScheduleCreation}
+          onClick={() => startScheduleCreation("NORMAL")}
           className="flex w-full flex-col items-center gap-2 rounded-xl border border-dashed border-gray-30 py-8 transition-colors active:bg-gray-10/60"
         >
           {/* 텍스트 "+" 대신 아이콘을 쓴다 —
@@ -134,7 +134,7 @@ const MyScheduleSection = () => {
         title="나의 일정"
         actionIcon={ADD_ICON}
         actionAriaLabel="일정 추가"
-        onAction={startScheduleCreation}
+        onAction={() => startScheduleCreation("NORMAL")}
       />
       {renderContent()}
     </section>

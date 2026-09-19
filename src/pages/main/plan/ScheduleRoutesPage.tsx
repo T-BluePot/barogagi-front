@@ -31,8 +31,15 @@ import { SelectTimeConfirmModal } from "@/components/main/plan/common/modal/Sele
 import { useQueryClient } from "@tanstack/react-query";
 import { useRegionSelectionStore } from "@/stores/regionSelectionStore";
 import { useScheduleDraftStore } from "@/stores/scheduleStore";
-import { createSchedule, saveSchedule, getScheduleDetail } from "@/api/queries";
+import { buildMagicSlotPreview } from "@/utils/main/plan/magicTimeBands";
+import {
+  createSchedule,
+  createMagicSchedule,
+  saveSchedule,
+  getScheduleDetail,
+} from "@/api/queries";
 import { scheduleKeys } from "@/api/keyFactories";
+import { MAGIC_SCHEDULE_TEXT } from "@/constants/texts/main/plan/magicSchedule";
 import type {
   PlanRegistResDTO,
   ScheduleRegistResDTO,
@@ -64,6 +71,15 @@ const toHHMM = (min: number) => {
   ).padStart(2, "0")}`;
 };
 
+/**
+ * 생성 요청 본문 디버그 로그. 받은 값을 그대로 돌려주므로
+ * 호출부 타입이 유지된다 — 일반/마법봉 요청을 유니온으로 합치지 않아도 된다.
+ */
+const logCreateRequest = <T,>(req: T): T => {
+  console.log("[create 요청]", JSON.stringify(req, null, 2));
+  return req;
+};
+
 const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
   const navigate = useNavigate();
 
@@ -72,7 +88,8 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- create: 일정 생성 로직 -----
   const queryClient = useQueryClient();
-  const { buildRequest, reset } = useScheduleDraftStore();
+  const { draft, buildRequest, buildMagicRequest, reset } =
+    useScheduleDraftStore();
   const { clearRegions } = useRegionSelectionStore();
   const updateMutation = useUpdateScheduleMutation();
   const deleteScheduleMutation = useDeleteScheduleMutation();
@@ -110,14 +127,33 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
     if (hasFetched.current) return; // 이미 호출됐으면 스킵
     hasFetched.current = true;
 
+    // 생성 방식은 플로우 진입 시 확정되므로 effect 진입 시점 값으로 고정한다
+    const isMagicCreate =
+      useScheduleDraftStore.getState().draft.creationMode === "MAGIC";
+
     setIsLoading(true);
-    showLoading("AI가 일정을 생성하고 있어요");
+    if (isMagicCreate) {
+      // 생성이 길어서 정지 화면처럼 보이지 않도록 문구를 타이핑으로 순환시킨다
+      showLoading(
+        [...MAGIC_SCHEDULE_TEXT.LOADING_MESSAGES],
+        false,
+        MAGIC_SCHEDULE_TEXT.LOADING_SR
+      );
+    } else {
+      showLoading("AI가 일정을 생성하고 있어요");
+    }
 
     const fetchCreateSchedule = async () => {
       try {
-        const req = buildRequest();
-        console.log("[create 요청]", JSON.stringify(req, null, 2));
-        const res = await createSchedule(req);
+        // 마법봉은 날짜/지역/시간만 보내고 슬롯 구성은 서버에 맡긴다.
+        // 응답 DTO·성공 코드가 같아 이후 처리는 일반 생성과 공유한다.
+        //
+        // 빌더는 분기 안에서 바로 호출한다. 요청을 먼저 유니온으로 합쳐 두면
+        // 호출부에서 as 로 되돌려야 하고, 그 단언이 나중에 빌더 반환 타입이
+        // 바뀌어도 오류를 덮어 잘못된 DTO 가 그대로 전송된다.
+        const res = isMagicCreate
+          ? await createMagicSchedule(logCreateRequest(buildMagicRequest()))
+          : await createSchedule(logCreateRequest(buildRequest()));
         console.log("[create 응답] code:", res.code, "message:", res.message);
         console.log("[create 응답] data:", res.data);
 
@@ -743,7 +779,18 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
 
   // ----- 로딩 중 -----
   if (isCreate && isLoading) {
-    return <SkeletonScheduleRoutesContent />;
+    // 마법봉은 시간대에서 슬롯 수가 정해지므로 카드 개수까지 맞출 수 있다.
+    // 일반 생성은 draft 의 계획 수를 그대로 쓴다.
+    const plannedCount =
+      draft.creationMode === "MAGIC"
+        ? buildMagicSlotPreview(draft.magicTimeBands).length
+        : draft.planRegistReqDTOList.length;
+
+    return (
+      <SkeletonScheduleRoutesContent
+        count={plannedCount > 0 ? plannedCount : undefined}
+      />
+    );
   }
 
   if (isDetail && isDetailLoading) {
@@ -752,7 +799,7 @@ const ScheduleRoutesPage = ({ variant }: ScheduleRoutesPageProps) => {
         <div className="bg-gray-white">
           <BackHeader onClick={() => navigate(-1)} />
         </div>
-        <SkeletonScheduleRoutesContent />
+        <SkeletonScheduleRoutesContent variant="detail" />
       </div>
     );
   }

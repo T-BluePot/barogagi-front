@@ -75,7 +75,7 @@ const SharedSchedulePage = () => {
   if (isLoading) {
     return (
       <div className="bg-gray-5 h-dvh">
-        <SkeletonScheduleRoutesContent />
+        <SkeletonScheduleRoutesContent variant="share" />
       </div>
     );
   }

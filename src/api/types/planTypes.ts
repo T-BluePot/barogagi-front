@@ -79,6 +79,24 @@ export interface ScheduleRegistReqDTO {
   planRegistReqDTOList?: PlanRegistReqDTO[];
 }
 
+/**
+ * 마법봉 일정 생성 요청 DTO (POST /schedule/magic-create)
+ *
+ * 서버가 시간 범위를 2시간 슬롯으로 잘라 카테고리를 배정한 뒤,
+ * 내부에서 일반 생성(createSchedule) 파이프라인을 그대로 태운다.
+ * - scheduleNm 미전송 시 서버 기본값 "마법봉 일정"
+ * - startTime/endTime 미전송 시 서버 기본값 11:00~19:00
+ * - 태그·comment 는 서버가 빈 값으로 고정하므로 요청 필드 자체가 없다
+ */
+export interface MagicScheduleReqDTO {
+  scheduleNm?: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;
+  startTime?: string; // HH:mm
+  endTime?: string; // HH:mm
+  scheduleRegionRegistReqDTOList: RegionRegistReqDTO[];
+}
+
 /** 세부 일정(Plan) 응답 DTO */
 export interface PlanRegistResDTO {
   planSource?: PlanSource;

@@ -8,6 +8,7 @@ import { getEnvironment } from "../environment";
 import { normalizePlanForUpdate } from "@/utils/api/planMapper";
 import type {
   BaseResponse,
+  MagicScheduleReqDTO,
   ScheduleRegistReqDTO,
   ScheduleRegistResDTO,
   ScheduleDetailResDTO,
@@ -39,6 +40,22 @@ export const createSchedule = async (data: ScheduleRegistReqDTO) => {
     ENDPOINTS.SCHEDULE.CREATE,
     data,
     { timeout: 60000 }
+  );
+  return response.data;
+};
+
+/**
+ * 마법봉 일정 생성 — 날짜/지역(+선택 시간)만 보내면 서버가 나머지를 채운다.
+ *
+ * 응답은 createSchedule 과 동일한 ScheduleRegistResDTO(성공 코드 S201)라 이후 저장 흐름을 공유한다.
+ * ⚠️ 슬롯마다 Tavily 검색 → AI 추출 → 카카오 매칭이 순차로 돌고, 슬롯 실패를 서버가 삼키고
+ * 계속 진행하기 때문에 일반 생성(60초)보다 최악 소요가 길다. 타임아웃을 넉넉히 잡는다.
+ */
+export const createMagicSchedule = async (data: MagicScheduleReqDTO) => {
+  const response = await apiKeyHttp.post<BaseResponse<ScheduleRegistResDTO>>(
+    ENDPOINTS.SCHEDULE.MAGIC_CREATE,
+    data,
+    { timeout: 120000 }
   );
   return response.data;
 };

@@ -57,6 +57,16 @@ export type RegionSearchItemType = {
   regionNum: number;
 };
 
+/**
+ * 일정 생성 진입 경로.
+ * - NORMAL: 날짜 → 지역 → 구성 → 스타일 → 생성 (기존 플로우)
+ * - MAGIC : 날짜 → 지역 → 마법봉 확인 → 생성 (구성·스타일 단계 생략)
+ */
+export type ScheduleCreationMode = "NORMAL" | "MAGIC";
+
+/** 마법봉 시간대 밴드. 실제 시간 범위는 utils/main/plan/magicTimeBands 가 소유한다. */
+export type MagicTimeBand = "MORNING" | "AFTERNOON" | "EVENING";
+
 // 일정 드래프트 타입
 export type ScheduleDraftType = {
   scheduleNm?: string;
@@ -72,6 +82,10 @@ export type ScheduleDraftType = {
   scheduleTagRegistReqDTOList: TagRegistReqDTO[];
   scheduleRegionRegistReqDTOList: RegionRegistReqDTO[];
   planRegistReqDTOList: PlanDraftType[];
+
+  // 마법봉 전용 — NORMAL 플로우에서는 읽지 않는다
+  creationMode: ScheduleCreationMode;
+  magicTimeBands: MagicTimeBand[];
 };
 
 // 선택 결과로 상위에 올릴 payload

@@ -14,4 +14,10 @@ export const BUTTON_COLOR = {
     "bg-white border border-peach-border text-peach-text hover:bg-peach-light",
   outlinedDisabled:
     "bg-white border border-main-disable text-gray-40 cursor-not-allowed",
+  /**
+   * 마법봉 전용 — 코랄↔노랑이 흐르는 그라데이션(globals.css 의 .bg-magic).
+   * 색과 모션은 전부 .bg-magic 이 갖는다. 여기서는 글자색만 얹는다.
+   * 이 기능의 CTA 한 곳에서만 쓴다 — 일반 버튼에 번지지 않게 할 것.
+   */
+  magic: "bg-magic text-white",
 } as const;

@@ -35,6 +35,13 @@
   /* Accent - 보조 강조색 (타임라인 인덱스 배지 등, peach와 대비되는 인디고 블루) */
   --color-accent: #666cfb;
 
+  /* Magic - 마법봉 전용 팔레트. 코랄 ↔ 노랑 두 색이 흐르는 그라데이션.
+   * 흰 글자가 얹히므로 peach(#ff8a65)보다 한 단계 진하게 잡았다.
+   * 실제 배경 조합과 흐르는 모션은 아래 .bg-magic 유틸리티가 갖는다.
+   * 마법봉 CTA 한 곳에서만 쓴다 — 일반 버튼에 번지지 않게 할 것. */
+  --color-magic-coral: #ff5f38;
+  --color-magic-yellow: #f2a007;
+
   /* Motion - 리디자인 공통 이징 */
   --ease-fitpl: cubic-bezier(0.2, 0, 0, 1);
 
@@ -43,6 +50,22 @@
    * shadow-raised / active:shadow-raised-pressed 로 사용. */
   --shadow-raised: 0 2px 6px rgba(15, 23, 42, 0.08);
   --shadow-raised-pressed: 0 1px 3px rgba(15, 23, 42, 0.06);
+
+  /* 색이 있는 그림자는 원본 색 토큰에서 파생시킨다.
+   * 예전에는 컴포넌트에 rgba 를 직접 적어서, 코랄을 바꿔도 그림자만 옛 색으로 남았다.
+   * (마법봉 코랄은 하루에도 여러 번 바뀌었다)
+   *
+   * ⚠️ 아래 --shadow-* 값은 **반드시 한 줄로** 쓴다.
+   *    Tailwind v4 의 @theme 파서가 값 안의 줄바꿈을 넘기지 못해, 줄을 나누면
+   *    유틸리티는 생성되는데 값이 비어 그림자가 조용히 사라진다(실측).
+   *    prettier(printWidth 80)를 이 파일에 돌리면 그대로 깨진다 —
+   *    globals.css 는 원래도 prettier 대상 밖이고 devDependency 에도 없다. */
+  --shadow-fab: 0 2px 10px color-mix(in srgb, var(--color-peach) 45%, transparent);
+  --shadow-hero: 0 10px 26px color-mix(in srgb, var(--color-peach-active) 34%, transparent);
+  --shadow-magic-cta: 0 4px 16px color-mix(in srgb, var(--color-magic-coral) 32%, transparent);
+  --shadow-popover: 0 8px 24px color-mix(in srgb, var(--color-gray-black) 16%, transparent);
+  --shadow-floating: 0 6px 16px rgba(15, 23, 42, 0.15);
+  --shadow-tabbar: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.04);
 
   /* Layout - 웹 브라우저에서 앱 전체를 모바일 폭으로 제한하는 프레임
    * 큰 핸드폰(iPhone Pro Max 계열) 기준 폭 — 넓은 화면에서 좌우 여백 최소화 */
@@ -109,7 +132,6 @@
   --tracking-tag: -0.025em;
 
   /* Animation */
-  --animate-shimmer: shimmer 1.2s infinite ease-in-out;
   --animate-warning-overlay-in: warning-overlay-in 0.9s ease-out forwards;
   /* 오버레이가 어느 정도 짙어진 뒤(0.3s delay) 모달이 흐릿→선명, 살짝 커지며 등장 */
   --animate-warning-modal-in: warning-modal-in 0.6s ease-out 0.3s both;
@@ -133,6 +155,70 @@
  * - max()로 둘 중 큰 값 사용
  */
 @layer utilities {
+  /* 스켈레톤 하이라이트 — 회색 바탕 위를 지나가는 흰 띠.
+   *
+   * 예전 값(1.2s ease-in-out, 순백, 30~70% 좁은 띠)은 화면을 채운 블록들이
+   * 동시에 빠르게 번쩍여 울렁거렸다. 세 가지를 같이 낮춘다.
+   *  - 속도: 1.2s → 2s, ease-in-out → linear (가감속이 있으면 박동처럼 읽힌다)
+   *  - 띠 폭: 30~70% → 15~85% (경계가 뭉개져 '번쩍'이 '스치는' 느낌이 된다)
+   *  - 밝기: 순백 → 흰색 45% (바탕이 gray-10 이라 순백은 대비가 과하다)
+   * 값을 만질 일이 있으면 여기 한 곳만 고친다. */
+  .skeleton-shimmer {
+    background: linear-gradient(
+      100deg,
+      transparent 15%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 85%
+    );
+    animation: shimmer 2s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton-shimmer {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  /* 마법봉 CTA 배경 — 코랄 → 노랑 → 코랄.
+   *
+   * 좌우 대칭으로 색을 배치하고 배경을 200% 로 키운 뒤 position 을 민다.
+   * 양 끝이 같은 색이라 왕복(alternate)해도 이음매가 보이지 않는다.
+   * 비대칭 그라데이션으로 같은 걸 하면 되돌아오는 순간 색이 튄다. */
+  .bg-magic {
+    background-image: linear-gradient(
+      to right,
+      var(--color-magic-coral) 0%,
+      var(--color-magic-yellow) 51%,
+      var(--color-magic-coral) 100%
+    );
+    background-size: 200% auto;
+    background-position: left center;
+    transition: background-position 0.5s var(--ease-fitpl);
+  }
+
+  /* 포인터가 있는 환경(데스크톱)에서는 hover 에만 흐른다. */
+  @media (hover: hover) {
+    .bg-magic:hover {
+      animation: magic-shift 6s linear infinite alternate;
+    }
+  }
+
+  /* 터치 기기에는 hover 가 없다 — 실사용 환경이 폰이라 여기서는 항상 흐르게 둔다.
+   * hover 조건만 걸면 정작 앱에서는 모션이 한 번도 보이지 않는다. */
+  @media (hover: none) {
+    .bg-magic {
+      animation: magic-shift 6s linear infinite alternate;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-magic,
+    .bg-magic:hover {
+      animation: none;
+    }
+  }
+
   .pt-safe {
     padding-top: max(env(safe-area-inset-top, 0px), var(--sai-top, 0px));
   }
@@ -274,6 +360,24 @@
     font-weight: var(--font-weight-tag);
     line-height: var(--leading-tag);
     letter-spacing: var(--tracking-tag);
+  }
+
+  /* typo-* 는 font-weight 까지 묶어 갖고 있어서, 같은 레이어에 있는 Tailwind 의
+   * font-semibold 를 함께 써도 뒤에 정의된 typo-* 가 이긴다(굵기가 안 먹는다).
+   * 크기·행간은 그대로 두고 굵기만 한 단계 올리고 싶을 때 이 클래스를 덧붙인다.
+   * ⚠️ 반드시 typo-* 정의보다 아래에 있어야 한다. */
+  .typo-strong {
+    font-weight: 700;
+  }
+}
+
+/* 마법봉 CTA — 200% 폭 배경을 좌우로 민다 (alternate 로 왕복) */
+@keyframes magic-shift {
+  from {
+    background-position: left center;
+  }
+  to {
+    background-position: right center;
   }
 }
 

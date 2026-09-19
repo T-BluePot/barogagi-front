@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import Chip from "@/components/common/Chip";
+import { EASE_FITPL } from "@/constants/motion";
 import SkeletonBlock from "@/components/common/loading/SkeletonBlock";
 import {
   NOTIFICATION_TABS,
@@ -15,8 +16,6 @@ import { useBoardDetailQuery } from "@/hooks/queries/useBoardDetailQuery";
 import { useReadNotificationStore } from "@/stores/readNotificationStore";
 import type { BoardListItemDTO } from "@/api/types";
 
-/** globals.css 의 `--ease-fitpl` 와 같은 값 (framer-motion 은 CSS 변수를 못 읽는다) */
-const EASE_FITPL = [0.2, 0, 0, 1] as const;
 
 /** 좌우 여백은 페이지가 아니라 각 항목이 갖는다 — 구분선이 화면 끝까지 이어지도록 */
 const ROW_PADDING = "px-6";
@@ -182,11 +181,25 @@ const NotificationPage = () => {
 
   const renderContent = () => {
     if (isLoading) {
+      // 실제 목록은 gap 없이 border-b 로 나뉘고, 한 행이 제목(21px)+gap-3+날짜(16px)에
+      // py-4 를 더한 높이다. 둥근 박스를 gap 으로 띄우면 로딩 후 행 구분 방식이 바뀐다.
       return (
-        <ul className={clsx("flex flex-col gap-3 pt-4", ROW_PADDING)}>
+        <ul className="flex flex-col">
           {[0, 1, 2].map((i) => (
-            <li key={i}>
-              <SkeletonBlock width="w-full" height="h-14" rounded="rounded-lg" />
+            <li key={i} className="border-b border-gray-10">
+              <div
+                className={clsx(
+                  "flex w-full flex-col gap-3 py-4",
+                  ROW_PADDING
+                )}
+              >
+                <div className="px-1">
+                  <SkeletonBlock width="w-3/5" height="h-[21px]" />
+                </div>
+                <div className="px-1">
+                  <SkeletonBlock width="w-20" height="h-4" />
+                </div>
+              </div>
             </li>
           ))}
         </ul>
